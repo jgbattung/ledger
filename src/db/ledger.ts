@@ -42,7 +42,7 @@ export class Ledger extends Dexie {
     this.version(1).stores({
       customExercises: 'id, deletedAt',
       exerciseMeta: 'id, [source+exerciseId], deletedAt',
-      programs: 'id, isActive, deletedAt',
+      programs: 'id, deletedAt',
       programDays: 'id, programId, deletedAt',
       programExercises: 'id, programDayId, deletedAt',
       workouts: 'id, status, startedAt, deletedAt',

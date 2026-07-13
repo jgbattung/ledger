@@ -15,7 +15,9 @@ export const programs = {
 
   async setActive(id: string): Promise<void> {
     await db.transaction('rw', db.programs, db.syncState, async () => {
-      const currentlyActive = await db.programs.where({ isActive: true }).toArray()
+      // IndexedDB keys cannot be boolean, so a boolean-valued index cannot be
+      // queried via where(); filter() scans instead.
+      const currentlyActive = await db.programs.filter((program) => program.isActive).toArray()
       const timestamp = now()
 
       for (const program of currentlyActive) {

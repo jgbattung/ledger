@@ -43,4 +43,13 @@ describe('ledger schema v1', () => {
       }
     }
   })
+
+  it('does not declare the unqueryable boolean `isActive` index on the programs store', () => {
+    // IndexedDB keys cannot be boolean, so an `isActive` secondary index can
+    // never be queried; setActive() scans via filter() instead. Guard against
+    // the dead index being reintroduced (LG-002 Phase 4 remediation).
+    const indexNames = db.programs.schema.indexes.map((index) => index.name)
+    expect(indexNames).not.toContain('isActive')
+    expect(indexNames).toEqual(['deletedAt'])
+  })
 })

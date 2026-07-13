@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SettingsProvider } from '@/settings/SettingsProvider'
 import { SettingsPage } from './SettingsPage'
@@ -29,7 +29,12 @@ describe('SettingsPage theme toggle (shadcn Button)', () => {
     const user = userEvent.setup()
     renderSettings()
 
-    await user.click(screen.getByRole('button', { name: 'Dark' }))
+    // Settings hydrate asynchronously from Dexie; retry the click until the
+    // provider has hydrated and the optimistic update takes effect.
+    await waitFor(async () => {
+      await user.click(screen.getByRole('button', { name: 'Dark' }))
+      expect(screen.getByRole('button', { name: 'Dark' })).toHaveAttribute('data-variant', 'default')
+    })
     const dark = screen.getByRole('button', { name: 'Dark' })
     const light = screen.getByRole('button', { name: 'Light' })
 

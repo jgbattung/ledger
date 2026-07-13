@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
-import { useTheme, type Theme } from '@/theme/ThemeProvider'
+import { useTheme } from '@/settings/SettingsProvider'
+import type { Theme } from '@/db/types'
 import { cn } from '@/lib/utils'
 
 const THEME_OPTIONS: { value: Theme; label: string }[] = [

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ThemeProvider } from '@/theme/ThemeProvider'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { SettingsPage } from './SettingsPage'
 
 /**
@@ -11,9 +11,9 @@ import { SettingsPage } from './SettingsPage'
 
 function renderSettings() {
   return render(
-    <ThemeProvider>
+    <SettingsProvider>
       <SettingsPage />
-    </ThemeProvider>,
+    </SettingsProvider>,
   )
 }
 

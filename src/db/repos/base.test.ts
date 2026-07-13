@@ -52,6 +52,44 @@ describe('createRepo conventions (via customExercises)', () => {
     expect(list.find((r) => r.id === created.id)).toBeUndefined()
   })
 
+  it('softDelete stamps deletedAt and bumps updatedAt (replicates as an update)', async () => {
+    const created = await customExercises.create({
+      name: 'Row',
+      primaryMuscles: ['back'],
+      secondaryMuscles: ['biceps'],
+    })
+
+    await new Promise((resolve) => setTimeout(resolve, 5))
+    await customExercises.softDelete(created.id)
+
+    // Read the raw row directly, since get() intentionally hides soft-deleted rows.
+    const raw = await db.customExercises.get(created.id)
+    expect(typeof raw?.deletedAt).toBe('number')
+    expect(raw?.updatedAt).toBeGreaterThan(created.updatedAt)
+  })
+
+  it('update ignores caller attempts to overwrite id or createdAt', async () => {
+    const created = await customExercises.create({
+      name: 'Curl',
+      primaryMuscles: ['biceps'],
+      secondaryMuscles: [],
+    })
+
+    await customExercises.update(created.id, {
+      name: 'Hammer Curl',
+      // Callers must not be able to rewrite immutable base fields.
+      id: 'hacked-id',
+      createdAt: 0,
+    } as Partial<Parameters<typeof customExercises.update>[1]> & { id: string; createdAt: number })
+
+    const updated = await customExercises.get(created.id)
+    expect(updated?.id).toBe(created.id)
+    expect(updated?.createdAt).toBe(created.createdAt)
+    expect(updated?.name).toBe('Hammer Curl')
+    // The bogus id did not create a second row.
+    expect(await db.customExercises.get('hacked-id')).toBeUndefined()
+  })
+
   it('create/update/softDelete each leave a matching syncState row', async () => {
     const created = await customExercises.create({
       name: 'Overhead Press',

@@ -15,6 +15,10 @@ describe('catalog', () => {
     expect(exercise?.category).toBeTruthy()
     expect(exercise?.instructions.length).toBeGreaterThan(0)
     expect(exercise?.images.length).toBeGreaterThan(0)
+    // mechanic and equipment are nullable display-only tags (AC3); assert the
+    // keys are part of the record contract even when their value is null.
+    expect(exercise).toHaveProperty('mechanic')
+    expect(exercise).toHaveProperty('equipment')
   })
 
   it('getExerciseById returns undefined for an unknown id', () => {

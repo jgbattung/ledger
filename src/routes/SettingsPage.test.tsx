@@ -118,6 +118,26 @@ describe('SettingsPage', () => {
     })
   })
 
+  it('disables the Default RIR decrement at the lower bound (default 0)', async () => {
+    renderSettings()
+    await screen.findByText('Default RIR')
+
+    // RIR seeds at 0 (min), so it cannot be driven below zero.
+    expect(screen.getByRole('button', { name: 'Decrease default RIR' })).toBeDisabled()
+  })
+
+  it('disables the Default rest decrement at the lower bound (30s)', async () => {
+    // Seed the persisted row at the rest minimum before the provider hydrates.
+    await settingsRepo.getOrInit()
+    await settingsRepo.update({ defaultRestSeconds: 30 })
+
+    renderSettings()
+    await screen.findByText('Default rest')
+
+    expect(screen.getByText('0:30')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Decrease default rest' })).toBeDisabled()
+  })
+
   it('does not render any backup/sync/export/erase content', async () => {
     renderSettings()
     await screen.findByText('Default RIR')

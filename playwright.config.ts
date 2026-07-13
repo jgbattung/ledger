@@ -26,15 +26,29 @@ export default defineConfig({
     {
       name: 'mobile-chrome',
       use: { ...galaxyS23Ultra },
+      testIgnore: 'offline.spec.ts',
     },
     {
       name: 'desktop-chrome',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: 'offline.spec.ts',
+    },
+    {
+      name: 'offline-chrome',
+      use: { ...galaxyS23Ultra, baseURL: 'http://localhost:4173' },
+      testMatch: 'offline.spec.ts',
     },
   ],
-  webServer: {
-    command: 'npm run dev -- --port 5173 --strictPort',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: 'npm run dev -- --port 5173 --strictPort',
+      url: 'http://localhost:5173',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'npm run preview -- --port 4173 --strictPort',
+      url: 'http://localhost:4173',
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });

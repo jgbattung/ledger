@@ -47,3 +47,24 @@ test('setting persists through reload via real IndexedDB', async ({ page }) => {
     page.getByText('Default RIR').locator('..').locator('..').getByText('1', { exact: true }),
   ).toBeVisible();
 });
+
+test('theme toggle applies .dark and both themes paint distinct tokens', async ({ page }) => {
+  await page.goto('/settings');
+  await expect(page.getByRole('button', { name: 'Increase default RIR' })).toBeVisible();
+
+  const themeGroup = page.getByRole('radiogroup', { name: 'Theme' });
+
+  await themeGroup.getByRole('radio', { name: 'Dark' }).click();
+  await expect(page.locator('html')).toHaveClass(/dark/);
+  const darkBackground = await page.evaluate(
+    () => getComputedStyle(document.body).backgroundColor,
+  );
+
+  await themeGroup.getByRole('radio', { name: 'Light' }).click();
+  await expect(page.locator('html')).not.toHaveClass(/dark/);
+  const lightBackground = await page.evaluate(
+    () => getComputedStyle(document.body).backgroundColor,
+  );
+
+  expect(lightBackground).not.toBe(darkBackground);
+});

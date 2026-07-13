@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
@@ -67,6 +67,12 @@ describe('App shell', () => {
 
     const user = userEvent.setup()
     render(<App />)
+    // SettingsProvider hydrates from Dexie asynchronously on mount; flush that
+    // before interacting so its setState lands inside an act() boundary
+    // instead of racing the click loop below.
+    await act(async () => {
+      await Promise.resolve()
+    })
     // Exercise a full navigation cycle to surface any render-time errors.
     for (const route of ROUTES) {
       await user.click(within(nav()).getByRole('link', { name: route.name }))

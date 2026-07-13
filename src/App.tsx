@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { ThemeProvider } from '@/theme/ThemeProvider'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { AppShell } from '@/routes/AppShell'
 import { TodayPage } from '@/routes/TodayPage'
 import { LibraryPage } from '@/routes/LibraryPage'
@@ -9,7 +9,7 @@ import { SettingsPage } from '@/routes/SettingsPage'
 
 function App() {
   return (
-    <ThemeProvider>
+    <SettingsProvider>
       <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
@@ -21,7 +21,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </ThemeProvider>
+    </SettingsProvider>
   )
 }
 

@@ -62,4 +62,11 @@ describe.skipIf(!hasBuild)('PWA generated manifest (dist/)', () => {
   it('emits a service worker for offline precache of the shell', () => {
     expect(existsSync(path.join(root, 'dist', 'sw.js'))).toBe(true)
   })
+
+  it('precaches every vendored exercise image (LG-004)', () => {
+    const sw = readFileSync(path.join(root, 'dist', 'sw.js'), 'utf-8')
+    const matches = sw.match(/exercises\/[^"']+\.jpg/g) ?? []
+    const unique = new Set(matches)
+    expect(unique.size).toBe(1746)
+  })
 })

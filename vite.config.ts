@@ -12,8 +12,12 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      // Precache the built app shell only - the exercise DB is bundled and
-      // precached separately in LG-004, not here.
+      // Precache the built app shell plus every vendored exercise image
+      // (LG-004); the exercise JSON itself rides inside the JS bundle,
+      // which globPatterns already covers via the js extension.
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}', 'exercises/**/*.jpg'],
+      },
       manifest: {
         name: APP_NAME,
         short_name: APP_NAME,

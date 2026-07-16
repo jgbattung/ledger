@@ -34,7 +34,7 @@ export function LibraryPage() {
 
   return (
     <div>
-      <div className="sticky top-0 z-10 -mx-4 bg-background px-4 pb-3">
+      <div className="sticky top-0 z-10 -mx-4 bg-background px-4 pt-6 pb-3">
         <h1 className="text-2xl font-semibold">Library</h1>
         <div className="mt-3 flex flex-col gap-2">
           <ExerciseSearchField value={query} onChange={setQuery} />

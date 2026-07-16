@@ -91,6 +91,18 @@ test('sticky header regression: count line is not clipped, header stays pinned a
   expect(searchBoxAfterScroll).not.toBeNull();
   expect(searchBoxAfterScroll!.y).toBeGreaterThanOrEqual(0);
   expect(searchBoxAfterScroll!.y).toBeLessThan(200);
+
+  // Seal-the-band invariant (missed by the assertions above, which only
+  // proved the header's position was stable - true even with an open
+  // padding band above it): while scrolled, the pinned header's top must
+  // equal the scroll container's top, with no gap for list rows to paint
+  // through.
+  const mainBox = await page.evaluate(() => {
+    const main = document.querySelector('main');
+    const rect = main!.getBoundingClientRect();
+    return { x: rect.x, y: rect.y };
+  });
+  expect(headerBoxAfterScroll!.y).toBeCloseTo(mainBox.y, 0);
 });
 
 test('both themes: Library renders after switching theme in Settings', async ({ page }) => {

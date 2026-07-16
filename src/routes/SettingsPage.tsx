@@ -76,7 +76,7 @@ export function SettingsPage() {
   const { settings, updateSettings } = useSettings()
 
   return (
-    <div>
+    <div className="pt-6">
       <h1 className="text-2xl font-semibold">Settings</h1>
 
       {settings === null ? (

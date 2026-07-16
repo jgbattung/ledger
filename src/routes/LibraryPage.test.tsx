@@ -60,6 +60,59 @@ describe('LibraryPage', () => {
     expect(screen.getByText(chestBarbellExpected[0].name)).toBeInTheDocument()
   })
 
+  it('filters via the Category sheet (category facet path)', async () => {
+    const user = userEvent.setup()
+    renderLibrary()
+
+    const all = getAllExercises()
+
+    await user.click(screen.getByRole('button', { name: 'Category' }))
+    // Values are Title-cased for display; 'strength' -> 'Strength'.
+    await user.click(await screen.findByRole('button', { name: 'Strength' }))
+
+    const strengthExpected = all.filter((e) => e.category === 'strength')
+    expect(await screen.findByText(`${strengthExpected.length} exercises`)).toBeInTheDocument()
+    expect(strengthExpected.length).toBeGreaterThan(0)
+    // The chip now reflects the selected value.
+    expect(screen.getByRole('button', { name: 'Strength' })).toBeInTheDocument()
+  })
+
+  it('clears a facet from inside the sheet via the "All" row', async () => {
+    const user = userEvent.setup()
+    renderLibrary()
+
+    const all = getAllExercises()
+
+    await user.click(screen.getByRole('button', { name: 'Muscle' }))
+    await user.click(await screen.findByRole('button', { name: 'Chest' }))
+
+    const chestExpected = all.filter((e) => e.primaryMuscles.includes('chest'))
+    expect(await screen.findByText(`${chestExpected.length} exercises`)).toBeInTheDocument()
+
+    // Reopen the (now active) facet and pick "All" to clear it from the sheet.
+    await user.click(screen.getByRole('button', { name: 'Chest' }))
+    await user.click(await screen.findByRole('button', { name: 'All' }))
+
+    expect(await screen.findByText(`${all.length} exercises`)).toBeInTheDocument()
+  })
+
+  it("clears the query via the search field's own clear button", async () => {
+    const user = userEvent.setup()
+    renderLibrary()
+
+    const all = getAllExercises()
+    const search = screen.getByLabelText('Search exercises')
+
+    await user.type(search, 'curl')
+    const curlExpected = all.filter((e) => e.name.toLowerCase().includes('curl'))
+    expect(await screen.findByText(`${curlExpected.length} exercises`)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Clear search' }))
+
+    expect(await screen.findByText(`${all.length} exercises`)).toBeInTheDocument()
+    expect(search).toHaveValue('')
+  })
+
   it('clearing a chip restores the broader result set', async () => {
     const user = userEvent.setup()
     renderLibrary()

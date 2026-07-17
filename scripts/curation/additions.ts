@@ -30,6 +30,28 @@ const additions: Addition[] = [
     rationale: 'Ji-logged staple',
   },
   {
+    // Ji review round 3 (2026-07-17): corrects round 2, which wrongly
+    // renamed the seed's "Calf Press On The Leg Press Machine" (vertical/
+    // 45-degree leg press) to this name. Ji clarified they're different
+    // machines/movements - this is the horizontal seated leg press version,
+    // genuinely absent from the seed, so it's a proper net-new addition.
+    name: 'Seated Leg Press Calf Raise',
+    aliases: ['Seated Leg Press Calf Raises'],
+    primaryMuscles: ['calves'],
+    secondaryMuscles: [],
+    equipment: 'machine',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Sit in a horizontal (seated) leg press machine with the balls of both feet on the lower edge of the platform.',
+      'Straighten your legs against the platform, keeping a slight bend in the knees.',
+      'Press the platform away by extending your ankles, rising onto the balls of your feet.',
+      'Lower under control until you feel a stretch in the calves, then repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
     name: 'Single Leg Seated Leg Press Calf Raise',
     aliases: ['Single-Leg Seated Leg Press Calf Raise'],
     primaryMuscles: ['calves'],

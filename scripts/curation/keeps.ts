@@ -10,7 +10,8 @@ import type { KeepDecision } from './curate.ts'
 const keeps: Record<string, KeepDecision> = {
   // ---- abductors ----
   "Monster_Walk": { name: "Monster Walk", aliases: [], primaryMuscles: ["abductors"], secondaryMuscles: [], equipment: "band", category: "strength", mechanic: "compound" },
-  "Thigh_Abductor": { name: "Thigh Abductor", aliases: [], primaryMuscles: ["abductors"], secondaryMuscles: ["glutes"], equipment: "machine", category: "strength", mechanic: "isolation" },
+  // Ji review round 3 (2026-07-17): renamed per his edits to REVIEW.md.
+  "Thigh_Abductor": { name: "Seated Machine Hip Abduction", aliases: ["Thigh Abductor"], primaryMuscles: ["abductors"], secondaryMuscles: ["glutes"], equipment: "machine", category: "strength", mechanic: "isolation" },
   // ---- abs ----
   // Ji review round 1 (2026-07-17): trimmed hard to what he's actually
   // logged plus a small staple handful. See drops.ts "scope-trim" section
@@ -27,7 +28,8 @@ const keeps: Record<string, KeepDecision> = {
   "Sit-Up": { name: "Sit-Up", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
   // ---- adductors ----
   "Band_Hip_Adductions": { name: "Band Hip Adductions", aliases: [], primaryMuscles: ["adductors"], secondaryMuscles: [], equipment: "band", category: "strength", mechanic: "isolation" },
-  "Thigh_Adductor": { name: "Thigh Adductor", aliases: [], primaryMuscles: ["adductors"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "isolation" },
+  // Ji review round 3 (2026-07-17): renamed per his edits to REVIEW.md.
+  "Thigh_Adductor": { name: "Seated Machine Hip Adduction", aliases: ["Thigh Adductor"], primaryMuscles: ["adductors"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "isolation" },
   // ---- biceps ----
   "Alternate_Hammer_Curl": { name: "Alternate Hammer Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
   "Alternate_Incline_Dumbbell_Curl": { name: "Alternate Incline Dumbbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
@@ -75,10 +77,13 @@ const keeps: Record<string, KeepDecision> = {
   // ---- calves ----
   "Barbell_Seated_Calf_Raise": { name: "Barbell Seated Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
   "Calf_Press": { name: "Calf Press", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
-  // Ji review round 2 (2026-07-17): renamed from the seed's "Calf Press On
-  // The Leg Press Machine" to match his logged name; old name kept as alias
-  // rather than adding a duplicate net-new entry.
-  "Calf_Press_On_The_Leg_Press_Machine": { name: "Seated Leg Press Calf Raise", aliases: ["Calf Press On The Leg Press Machine"], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  // Ji review round 3 (2026-07-17): CORRECTS round 2. Ji clarified this seed
+  // entry (vertical/45-degree leg press that comes down) is a different
+  // movement from "Seated Leg Press Calf Raise" (horizontal seated leg
+  // press) - round 2 wrongly conflated them. Renamed to "Leg Press Machine
+  // Calf Raise" instead; "Seated Leg Press Calf Raise" is now a separate
+  // net-new addition (see additions.ts).
+  "Calf_Press_On_The_Leg_Press_Machine": { name: "Leg Press Machine Calf Raise", aliases: ["Calf Press On The Leg Press Machine"], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
   "Calf_Raise_On_A_Dumbbell": { name: "Calf Raise On A Dumbbell", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
   "Donkey_Calf_Raises": { name: "Donkey Calf Raises", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "other", category: "strength", mechanic: "isolation" },
   "Dumbbell_Seated_One-Leg_Calf_Raise": { name: "Dumbbell Seated One-Leg Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
@@ -89,19 +94,21 @@ const keeps: Record<string, KeepDecision> = {
   "Standing_Calf_Raises": { name: "Standing Calf Raises", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
   "Standing_Dumbbell_Calf_Raise": { name: "Standing Dumbbell Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
   // ---- chest ----
+  // Ji review round 3 (2026-07-17): dropped 19 narrow/unused variants (see
+  // drops.ts scope-trim/novelty-junk); "Butterfly" renamed to "Pec Deck
+  // Flye" (movement kept, name changed); "Machine Bench Press" renamed to
+  // "Machine Chest Press" (Ji's addition request - same seated machine
+  // press, not a duplicate); "Pushups (Close and Wide Hand Positions)"
+  // split into two flat-model entries, see additions.ts.
   "Alternating_Floor_Press": { name: "Alternating Floor Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
-  "Around_The_Worlds": { name: "Around The Worlds", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
   "Barbell_Bench_Press_-_Medium_Grip": { name: "Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
   "Barbell_Guillotine_Bench_Press": { name: "Barbell Guillotine Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
   "Bent-Arm_Dumbbell_Pullover": { name: "Bent-Arm Dumbbell Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["lats", "front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
   "Bodyweight_Flyes": { name: "Bodyweight Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "ez bar", category: "strength", mechanic: "isolation" },
-  "Butterfly": { name: "Butterfly", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Butterfly": { name: "Pec Deck Flye", aliases: ["Butterfly", "Pec Deck Fly", "Machine Flye"], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
   "Cable_Chest_Press": { name: "Cable Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
   "Cable_Crossover": { name: "Cable Crossover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "cable", category: "strength", mechanic: "isolation" },
-  "Cable_Iron_Cross": { name: "Cable Iron Cross", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
-  "Chain_Press": { name: "Chain Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
   "Dips_-_Chest_Version": { name: "Chest Dip", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
-  "Clock_Push-Up": { name: "Clock Push-Up", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
   "Decline_Barbell_Bench_Press": { name: "Decline Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
   "Decline_Dumbbell_Bench_Press": { name: "Decline Dumbbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
   "Decline_Dumbbell_Flyes": { name: "Decline Dumbbell Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "compound" },
@@ -110,10 +117,8 @@ const keeps: Record<string, KeepDecision> = {
   "Dumbbell_Bench_Press": { name: "Dumbbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
   "Dumbbell_Bench_Press_with_Neutral_Grip": { name: "Dumbbell Bench Press with Neutral Grip", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
   "Dumbbell_Flyes": { name: "Dumbbell Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
-  "Extended_Range_One-Arm_Kettlebell_Floor_Press": { name: "Extended Range One-Arm Kettlebell Floor Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
   "Flat_Bench_Cable_Flyes": { name: "Flat Bench Cable Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
   "Front_Raise_And_Pullover": { name: "Front Raise And Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["lats", "front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
-  "Hammer_Grip_Incline_DB_Bench_Press": { name: "Hammer Grip Incline DB Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
   "Barbell_Incline_Bench_Press_-_Medium_Grip": { name: "Incline Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
   "Incline_Cable_Chest_Press": { name: "Incline Cable Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
   "Incline_Cable_Flye": { name: "Incline Cable Flye", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "cable", category: "strength", mechanic: "isolation" },
@@ -124,33 +129,19 @@ const keeps: Record<string, KeepDecision> = {
   "Incline_Push-Up_Medium": { name: "Incline Push-Up Medium", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
   "Incline_Push-Up_Reverse_Grip": { name: "Incline Push-Up Reverse Grip", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
   "Incline_Push-Up_Wide": { name: "Incline Push-Up Wide", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
-  "Isometric_Wipers": { name: "Isometric Wipers", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
-  "Leg-Over_Floor_Press": { name: "Leg-Over Floor Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
-  "Leverage_Chest_Press": { name: "Leverage Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
-  "Leverage_Decline_Chest_Press": { name: "Leverage Decline Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
-  "Leverage_Incline_Chest_Press": { name: "Leverage Incline Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
   "Low_Cable_Crossover": { name: "Low Cable Crossover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "cable", category: "strength", mechanic: "isolation" },
-  "Machine_Bench_Press": { name: "Machine Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
-  "Neck_Press": { name: "Neck Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Machine_Bench_Press": { name: "Machine Chest Press", aliases: ["Machine Bench Press"], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
   "One_Arm_Dumbbell_Bench_Press": { name: "One Arm Dumbbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
   "One-Arm_Flat_Bench_Dumbbell_Flye": { name: "One-Arm Flat Bench Dumbbell Flye", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
-  "One-Arm_Kettlebell_Floor_Press": { name: "One-Arm Kettlebell Floor Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["triceps"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
-  "Plyo_Kettlebell_Pushups": { name: "Plyo Kettlebell Pushups", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
-  "Push_Up_to_Side_Plank": { name: "Push Up to Side Plank", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
-  "Push-Up_Wide": { name: "Push-Up Wide", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Push-Up_Wide": { name: "Wide Grip Push-Up", aliases: ["Push-Up Wide"], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
   "Push-Ups_With_Feet_Elevated": { name: "Push-Ups With Feet Elevated", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
-  "Push-Ups_With_Feet_On_An_Exercise_Ball": { name: "Push-Ups With Feet On An Exercise Ball", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
   "Pushups": { name: "Pushups", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
-  "Pushups_Close_and_Wide_Hand_Positions": { name: "Pushups (Close and Wide Hand Positions)", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
   "Single-Arm_Cable_Crossover": { name: "Single-Arm Cable Crossover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
   "Single-Arm_Push-Up": { name: "Single-Arm Push-Up", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
   "Smith_Machine_Bench_Press": { name: "Smith Machine Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
   "Smith_Machine_Decline_Press": { name: "Smith Machine Decline Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
   "Smith_Machine_Incline_Bench_Press": { name: "Smith Machine Incline Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
-  "Standing_Cable_Chest_Press": { name: "Standing Cable Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
   "Straight-Arm_Dumbbell_Pullover": { name: "Straight-Arm Dumbbell Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["lats", "front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
-  "Suspended_Push-Up": { name: "Suspended Push-Up", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
-  "Svend_Press": { name: "Svend Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["forearms", "front delts", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
   "Wide-Grip_Barbell_Bench_Press": { name: "Wide-Grip Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
   "Wide-Grip_Decline_Barbell_Bench_Press": { name: "Wide-Grip Decline Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
   "Wide-Grip_Decline_Barbell_Pullover": { name: "Wide-Grip Decline Barbell Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },

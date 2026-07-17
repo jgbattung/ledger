@@ -301,29 +301,6 @@
     ]
   },
   {
-    "id": "around-the-worlds",
-    "name": "Around The Worlds",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts"
-    ],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lay down on a flat bench holding a dumbbell in each hand with the palms of the hands facing towards the ceiling. Tip: Your arms should be parallel to the floor and next to your thighs. To avoid injury, make sure that you keep your elbows slightly bent. This will be your starting position.",
-      "Now move the dumbbells by creating a semi-circle as you displace them from the initial position to over the head. All of the movement should happen with the arms parallel to the floor at all times. Breathe in as you perform this portion of the movement.",
-      "Reverse the movement to return the weight to the starting position as you exhale."
-    ],
-    "images": [
-      "Around_The_Worlds/0.jpg",
-      "Around_The_Worlds/1.jpg"
-    ]
-  },
-  {
     "id": "ball-leg-curl",
     "name": "Ball Leg Curl",
     "aliases": [],
@@ -1733,29 +1710,6 @@
     ]
   },
   {
-    "id": "butterfly",
-    "name": "Butterfly",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Sit on the machine with your back flat on the pad.",
-      "Take hold of the handles. Tip: Your upper arms should be positioned parallel to the floor; adjust the machine accordingly. This will be your starting position.",
-      "Push the handles together slowly as you squeeze your chest in the middle. Breathe out during this part of the motion and hold the contraction for a second.",
-      "Return back to the starting position slowly as you inhale until your chest muscles are fully stretched.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Butterfly/0.jpg",
-      "Butterfly/1.jpg"
-    ]
-  },
-  {
     "id": "cable-chest-press",
     "name": "Cable Chest Press",
     "aliases": [],
@@ -1972,29 +1926,6 @@
     "images": [
       "Cable_Internal_Rotation/0.jpg",
       "Cable_Internal_Rotation/1.jpg"
-    ]
-  },
-  {
-    "id": "cable-iron-cross",
-    "name": "Cable Iron Cross",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Begin by moving the pulleys to the high position, select the resistance to be used, and take a handle in each hand.",
-      "Stand directly between both pulleys with your arms extended out to your sides. Your head and chest should be up while your arms form a \"T\". This will be your starting position.",
-      "Keeping the elbows extended, pull your arms straight to your sides.",
-      "Return your arms back to the starting position after a pause at the peak contraction.",
-      "Continue the movement for the prescribed number of repetitions."
-    ],
-    "images": [
-      "Cable_Iron_Cross/0.jpg",
-      "Cable_Iron_Cross/1.jpg"
     ]
   },
   {
@@ -2355,30 +2286,6 @@
     ]
   },
   {
-    "id": "chain-press",
-    "name": "Chain Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin by connecting the chains to the cable handle attachments. Position yourself on the flat bench in the same position as for a dumbbell press. Your wrists should be pronated and arms perpendicular to the floor. This will be your starting position.",
-      "Lower the chains by flexing the elbows, unloading some of the chain onto the floor.",
-      "Continue until your elbow forms a 90 degree angle, and then reverse the motion by extending through the elbow to lockout."
-    ],
-    "images": [
-      "Chain_Press/0.jpg",
-      "Chain_Press/1.jpg"
-    ]
-  },
-  {
     "id": "chair-squat",
     "name": "Chair Squat",
     "aliases": [],
@@ -2667,33 +2574,6 @@
     "images": [
       "Clean_Shrug/0.jpg",
       "Clean_Shrug/1.jpg"
-    ]
-  },
-  {
-    "id": "clock-push-up",
-    "name": "Clock Push-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Move into a prone position on the floor, supporting your weight on your hands and toes.",
-      "Your arms should be fully extended with the hands around shoulder width. Keep your body straight throughout the movement. This will be your starting position.",
-      "Descend by flexing at the elbow, lowering your chest toward the ground.",
-      "At the bottom, reverse the motion by pushing yourself up through elbow extension as quickly as possible until you are air borne. Aim to \"jump\" 12-18 inches to one side.",
-      "As you accelerate up, move your outside foot away from your direction of travel. Leaving the ground, shift your body about 30 degrees for the next repetition.",
-      "Return to the starting position and repeat the exercise, working all the way around until you are back where you started."
-    ],
-    "images": [
-      "Clock_Push-Up/0.jpg",
-      "Clock_Push-Up/1.jpg"
     ]
   },
   {
@@ -4336,29 +4216,6 @@
     ]
   },
   {
-    "id": "extended-range-one-arm-kettlebell-floor-press",
-    "name": "Extended Range One-Arm Kettlebell Floor Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on the floor and position a kettlebell for one arm to press. The kettlebell should be held by the handle. The leg on the same side that you are pressing should be bent, with the knee crossing over the midline of the body.",
-      "Press the kettlebell by extending the elbow and adducting the arm, pressing it above your body. Return to the starting position."
-    ],
-    "images": [
-      "Extended_Range_One-Arm_Kettlebell_Floor_Press/0.jpg",
-      "Extended_Range_One-Arm_Kettlebell_Floor_Press/1.jpg"
-    ]
-  },
-  {
     "id": "external-rotation",
     "name": "External Rotation",
     "aliases": [],
@@ -5167,34 +5024,6 @@
     "images": [
       "Hammer_Curls/0.jpg",
       "Hammer_Curls/1.jpg"
-    ]
-  },
-  {
-    "id": "hammer-grip-incline-db-bench-press",
-    "name": "Hammer Grip Incline DB Bench Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width.",
-      "Once at shoulder width, keep the palms of your hands with a neutral grip (palms facing each other). Keep your elbows flared out with the upper arms in line with the shoulders (perpendicular to the torso) and the elbows bent creating a 90-degree angle between the upper arm and the forearm. This will be your starting position.",
-      "Now bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbells at all times.",
-      "As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up.",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "When you are done, place the dumbbells back in your thighs and then on the floor. This is the safest manner to dispose of the dumbbells."
-    ],
-    "images": [
-      "Hammer_Grip_Incline_DB_Bench_Press/0.jpg",
-      "Hammer_Grip_Incline_DB_Bench_Press/1.jpg"
     ]
   },
   {
@@ -6012,32 +5841,6 @@
     ]
   },
   {
-    "id": "isometric-wipers",
-    "name": "Isometric Wipers",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Assume a push-up position, supporting your weight on your hands and toes while keeping your body straight. Your hands should be just outside of shoulder width. This will be your starting position.",
-      "Begin by shifting your body weight as far to one side as possible, allowing the elbow on that side to flex as you lower your body.",
-      "Reverse the motion by extending the flexed arm, pushing yourself up and then dropping to the other side.",
-      "Repeat for the desired number of repetitions."
-    ],
-    "images": [
-      "Isometric_Wipers/0.jpg",
-      "Isometric_Wipers/1.jpg"
-    ]
-  },
-  {
     "id": "jefferson-squats",
     "name": "Jefferson Squats",
     "aliases": [],
@@ -6706,52 +6509,28 @@
     ]
   },
   {
-    "id": "leg-over-floor-press",
-    "name": "Leg-Over Floor Press",
-    "aliases": [],
+    "id": "leg-press-machine-calf-raise",
+    "name": "Leg Press Machine Calf Raise",
+    "aliases": [
+      "Calf Press On The Leg Press Machine"
+    ],
     "primaryMuscles": [
-      "chest"
+      "calves"
     ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on the floor with one kettlebell in place on your chest, holding it by the handle. Extend leg on working side over leg on non-working side.Your free arm can be extended out to your side for support.",
-      "Press the kettlebll into a locked out position.",
-      "Lower the weight until the elbow touches the ground, keeping the kettlebell above the elbow. Repeat for the desired number of repetitions."
-    ],
-    "images": [
-      "Leg-Over_Floor_Press/0.jpg",
-      "Leg-Over_Floor_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "leverage-chest-press",
-    "name": "Leverage Chest Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
+    "secondaryMuscles": [],
     "equipment": "machine",
     "category": "strength",
-    "mechanic": "compound",
+    "mechanic": "isolation",
     "instructions": [
-      "Load an appropriate weight onto the pins and adjust the seat for your height. The handles should be near the bottom or middle of the pectorals at the beginning of the motion.",
-      "Your chest and head should be up and your shoulder blades retracted. This will be your starting position.",
-      "Press the handles forward by extending through the elbow.",
-      "After a brief pause at the top, return the weight just above the start position, keeping tension on the muscles by not returning the weight to the stops until the set is complete."
+      "Using a leg press machine, sit down on the machine and place your legs on the platform directly in front of you at a medium (shoulder width) foot stance.",
+      "Lower the safety bars holding the weighted platform in place and press the platform all the way up until your legs are fully extended in front of you without locking your knees. (Note: In some leg press units you can leave the safety bars on for increased safety. If your leg press unit allows for this, then this is the preferred method of performing the exercise.) Your torso and the legs should make perfect 90-degree angle. Now carefully place your toes and balls of your feet on the lower portion of the platform with the heels extending off. Toes should be facing forward, outwards or inwards as described at the beginning of the chapter. This will be your starting position.",
+      "Press on the platform by raising your heels as you breathe out by extending your ankles as high as possible and flexing your calf. Ensure that the knee is kept stationary at all times. There should be no bending at any time. Hold the contracted position by a second before you start to go back down.",
+      "Go back slowly to the starting position as you breathe in by lowering your heels as you bend the ankles until calves are stretched.",
+      "Repeat for the recommended amount of repetitions."
     ],
     "images": [
-      "Leverage_Chest_Press/0.jpg",
-      "Leverage_Chest_Press/1.jpg"
+      "Calf_Press_On_The_Leg_Press_Machine/0.jpg",
+      "Calf_Press_On_The_Leg_Press_Machine/1.jpg"
     ]
   },
   {
@@ -6778,30 +6557,6 @@
     ]
   },
   {
-    "id": "leverage-decline-chest-press",
-    "name": "Leverage Decline Chest Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Load an appropriate weight onto the pins and adjust the seat for your height. The handles should be near the bottom of the pectorals at the beginning of the motion. Your chest and head should be up and your shoulder blades retracted. This will be your starting position.",
-      "Press the handles forward by extending through the elbow.",
-      "After a brief pause at the top, return the weight just above the start position, keeping tension on the muscles by not returning the weight to the stops until the set is complete."
-    ],
-    "images": [
-      "Leverage_Decline_Chest_Press/0.jpg",
-      "Leverage_Decline_Chest_Press/1.jpg"
-    ]
-  },
-  {
     "id": "leverage-high-row",
     "name": "Leverage High Row",
     "aliases": [],
@@ -6823,30 +6578,6 @@
     "images": [
       "Leverage_High_Row/0.jpg",
       "Leverage_High_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "leverage-incline-chest-press",
-    "name": "Leverage Incline Chest Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Load an appropriate weight onto the pins and adjust the seat for your height. The handles should be near the top of the pectorals at the beginning of the motion. Your chest and head should be up and your shoulder blades retracted. This will be your starting position.",
-      "Press the handles forward by extending through the elbow.",
-      "After a brief pause at the top, return the weight just above the start position, keeping tension on the muscles by not returning the weight to the stops until the set is complete."
-    ],
-    "images": [
-      "Leverage_Incline_Chest_Press/0.jpg",
-      "Leverage_Incline_Chest_Press/1.jpg"
     ]
   },
   {
@@ -7368,9 +7099,33 @@
     ]
   },
   {
-    "id": "machine-bench-press",
-    "name": "Machine Bench Press",
+    "id": "machine-bicep-curl",
+    "name": "Machine Bicep Curl",
     "aliases": [],
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Adjust the seat to the appropriate height and make your weight selection. Place your upper arms against the pads and grasp the handles. This will be your starting position.",
+      "Perform the movement by flexing the elbow, pulling your lower arm towards your upper arm.",
+      "Pause at the top of the movement, and then slowly return the weight to the starting position.",
+      "Avoid returning the weight all the way to the stops until the set is complete to keep tension on the muscles being worked."
+    ],
+    "images": [
+      "Machine_Bicep_Curl/0.jpg",
+      "Machine_Bicep_Curl/1.jpg"
+    ]
+  },
+  {
+    "id": "machine-chest-press",
+    "name": "Machine Chest Press",
+    "aliases": [
+      "Machine Bench Press"
+    ],
     "primaryMuscles": [
       "chest"
     ],
@@ -7393,28 +7148,6 @@
     "images": [
       "Machine_Bench_Press/0.jpg",
       "Machine_Bench_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "machine-bicep-curl",
-    "name": "Machine Bicep Curl",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Adjust the seat to the appropriate height and make your weight selection. Place your upper arms against the pads and grasp the handles. This will be your starting position.",
-      "Perform the movement by flexing the elbow, pulling your lower arm towards your upper arm.",
-      "Pause at the top of the movement, and then slowly return the weight to the starting position.",
-      "Avoid returning the weight all the way to the stops until the set is complete to keep tension on the muscles being worked."
-    ],
-    "images": [
-      "Machine_Bicep_Curl/0.jpg",
-      "Machine_Bicep_Curl/1.jpg"
     ]
   },
   {
@@ -7746,32 +7479,6 @@
     "images": [
       "Natural_Glute_Ham_Raise/0.jpg",
       "Natural_Glute_Ham_Raise/1.jpg"
-    ]
-  },
-  {
-    "id": "neck-press",
-    "name": "Neck Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie back on a flat bench. Using a medium-width grip (a grip that creates a 90-degree angle in the middle of the movement between the forearms and the upper arms), lift the bar from the rack and hold it straight over your neck with your arms locked. This will be your starting position.",
-      "As you breathe in, come down slowly until you feel the bar on your neck.",
-      "After a second pause, bring the bar back to the starting position as you breathe out and push the bar using your chest muscles. Lock your arms and squeeze your chest in the contracted position, hold for a second and then start coming down slowly again. Tip: It should take at least twice as long to go down than to come up).",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "When you are done, place the bar back in the rack."
-    ],
-    "images": [
-      "Neck_Press/0.jpg",
-      "Neck_Press/1.jpg"
     ]
   },
   {
@@ -8205,29 +7912,6 @@
     "images": [
       "One-Arm_Kettlebell_Clean_and_Jerk/0.jpg",
       "One-Arm_Kettlebell_Clean_and_Jerk/1.jpg"
-    ]
-  },
-  {
-    "id": "one-arm-kettlebell-floor-press",
-    "name": "One-Arm Kettlebell Floor Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on the floor holding a kettlebell with one hand, with your upper arm supported by the floor. The palm should be facing in.",
-      "Press the kettlebell straight up toward the ceiling, rotating your wrist.",
-      "Lower the kettlebell back to the starting position and repeat."
-    ],
-    "images": [
-      "One-Arm_Kettlebell_Floor_Press/0.jpg",
-      "One-Arm_Kettlebell_Floor_Press/1.jpg"
     ]
   },
   {
@@ -8821,6 +8505,33 @@
     ]
   },
   {
+    "id": "pec-deck-flye",
+    "name": "Pec Deck Flye",
+    "aliases": [
+      "Butterfly",
+      "Pec Deck Fly",
+      "Machine Flye"
+    ],
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Sit on the machine with your back flat on the pad.",
+      "Take hold of the handles. Tip: Your upper arms should be positioned parallel to the floor; adjust the machine accordingly. This will be your starting position.",
+      "Push the handles together slowly as you squeeze your chest in the middle. Breathe out during this part of the motion and hold the contraction for a second.",
+      "Return back to the starting position slowly as you inhale until your chest muscles are fully stretched.",
+      "Repeat for the recommended amount of repetitions."
+    ],
+    "images": [
+      "Butterfly/0.jpg",
+      "Butterfly/1.jpg"
+    ]
+  },
+  {
     "id": "physioball-hip-bridge",
     "name": "Physioball Hip Bridge",
     "aliases": [],
@@ -8966,30 +8677,6 @@
     "images": [
       "Plie_Dumbbell_Squat/0.jpg",
       "Plie_Dumbbell_Squat/1.jpg"
-    ]
-  },
-  {
-    "id": "plyo-kettlebell-pushups",
-    "name": "Plyo Kettlebell Pushups",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place a kettlebell on the floor. Place yourself in a pushup position, on your toes with one hand on the ground and one hand holding the kettlebell, with your elbows extended. This will be your starting position.",
-      "Begin by lowering yourself as low as you can, keeping your back straight.",
-      "Quickly and forcefully reverse direction, pushing yourself up to the other side of the kettlebell, switching hands as you do so. Continue the movement by descending and repeating the movement back and forth."
-    ],
-    "images": [
-      "Plyo_Kettlebell_Pushups/0.jpg",
-      "Plyo_Kettlebell_Pushups/1.jpg"
     ]
   },
   {
@@ -9325,59 +9012,6 @@
     ]
   },
   {
-    "id": "push-up-to-side-plank",
-    "name": "Push Up to Side Plank",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Get into pushup position on the toes with your hands just outside of shoulder width.",
-      "Perform a pushup by allowing the elbows to flex. As you descend, keep your body straight.",
-      "Do one pushup and as you come up, shift your weight on the left side of the body, twist to the side while bringing the right arm up towards the ceiling in a side plank.",
-      "Lower the arm back to the floor for another pushup and then twist to the other side.",
-      "Repeat the series, alternating each side, for 10 or more reps."
-    ],
-    "images": [
-      "Push_Up_to_Side_Plank/0.jpg",
-      "Push_Up_to_Side_Plank/1.jpg"
-    ]
-  },
-  {
-    "id": "push-up-wide",
-    "name": "Push-Up Wide",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "With your hands wide apart, support your body on your toes and hands in a plank position. Your elbows should be extended and your body straight. Do not allow your hips to sag. This will be your starting position.",
-      "To begin, allow the elbows to flex, lowering your chest to the floor as you inhale.",
-      "Using your pectoral muscles, press your upper body back up to the starting position by extending the elbows. Exhale as you perform this step.",
-      "After pausing at the contracted position, repeat the movement for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Push-Up_Wide/0.jpg",
-      "Push-Up_Wide/1.jpg"
-    ]
-  },
-  {
     "id": "push-ups-with-feet-elevated",
     "name": "Push-Ups With Feet Elevated",
     "aliases": [],
@@ -9404,32 +9038,6 @@
     ]
   },
   {
-    "id": "push-ups-with-feet-on-an-exercise-ball",
-    "name": "Push-Ups With Feet On An Exercise Ball",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on the floor face down and place your hands about 36 inches apart from each other holding your torso up at arms length.",
-      "Place your toes on top of an exercise ball. This will allow your body to be elevated.",
-      "Lower yourself until your chest almost touches the floor as you inhale.",
-      "Using your pectoral muscles, press your upper body back up to the starting position and squeeze your chest. Breathe out as you perform this step.",
-      "After a second pause at the contracted position, repeat the movement for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Push-Ups_With_Feet_On_An_Exercise_Ball/0.jpg",
-      "Push-Ups_With_Feet_On_An_Exercise_Ball/1.jpg"
-    ]
-  },
-  {
     "id": "pushups",
     "name": "Pushups",
     "aliases": [],
@@ -9452,31 +9060,6 @@
     "images": [
       "Pushups/0.jpg",
       "Pushups/1.jpg"
-    ]
-  },
-  {
-    "id": "pushups-close-and-wide-hand-positions",
-    "name": "Pushups (Close and Wide Hand Positions)",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on the floor face down and body straight with your toes on the floor and the hands wider than shoulder width for a wide hand position and closer than shoulder width for a close hand position. Make sure you are holding your torso up at arms length.",
-      "Lower yourself until your chest almost touches the floor as you inhale.",
-      "Using your pectoral muscles, press your upper body back up to the starting position and squeeze your chest. Breathe out as you perform this step.",
-      "After a second pause at the contracted position, repeat the movement for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Pushups_Close_and_Wide_Hand_Positions/0.jpg",
-      "Pushups_Close_and_Wide_Hand_Positions/1.jpg"
     ]
   },
   {
@@ -10594,7 +10177,7 @@
     "id": "seated-leg-press-calf-raise",
     "name": "Seated Leg Press Calf Raise",
     "aliases": [
-      "Calf Press On The Leg Press Machine"
+      "Seated Leg Press Calf Raises"
     ],
     "primaryMuscles": [
       "calves"
@@ -10604,15 +10187,64 @@
     "category": "strength",
     "mechanic": "isolation",
     "instructions": [
-      "Using a leg press machine, sit down on the machine and place your legs on the platform directly in front of you at a medium (shoulder width) foot stance.",
-      "Lower the safety bars holding the weighted platform in place and press the platform all the way up until your legs are fully extended in front of you without locking your knees. (Note: In some leg press units you can leave the safety bars on for increased safety. If your leg press unit allows for this, then this is the preferred method of performing the exercise.) Your torso and the legs should make perfect 90-degree angle. Now carefully place your toes and balls of your feet on the lower portion of the platform with the heels extending off. Toes should be facing forward, outwards or inwards as described at the beginning of the chapter. This will be your starting position.",
-      "Press on the platform by raising your heels as you breathe out by extending your ankles as high as possible and flexing your calf. Ensure that the knee is kept stationary at all times. There should be no bending at any time. Hold the contracted position by a second before you start to go back down.",
-      "Go back slowly to the starting position as you breathe in by lowering your heels as you bend the ankles until calves are stretched.",
+      "Sit in a horizontal (seated) leg press machine with the balls of both feet on the lower edge of the platform.",
+      "Straighten your legs against the platform, keeping a slight bend in the knees.",
+      "Press the platform away by extending your ankles, rising onto the balls of your feet.",
+      "Lower under control until you feel a stretch in the calves, then repeat."
+    ],
+    "images": []
+  },
+  {
+    "id": "seated-machine-hip-abduction",
+    "name": "Seated Machine Hip Abduction",
+    "aliases": [
+      "Thigh Abductor"
+    ],
+    "primaryMuscles": [
+      "abductors"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "To begin, sit down on the abductor machine and select a weight you are comfortable with. When your legs are positioned properly, grip the handles on each side. Your entire upper body (from the waist up) should be stationary. This is the starting position.",
+      "Slowly press against the machine with your legs to move them away from each other while exhaling.",
+      "Feel the contraction for a second and begin to move your legs back to the starting position while breathing in. Note: Remember to keep your upper body stationary to prevent any injuries from occurring.",
       "Repeat for the recommended amount of repetitions."
     ],
     "images": [
-      "Calf_Press_On_The_Leg_Press_Machine/0.jpg",
-      "Calf_Press_On_The_Leg_Press_Machine/1.jpg"
+      "Thigh_Abductor/0.jpg",
+      "Thigh_Abductor/1.jpg"
+    ]
+  },
+  {
+    "id": "seated-machine-hip-adduction",
+    "name": "Seated Machine Hip Adduction",
+    "aliases": [
+      "Thigh Adductor"
+    ],
+    "primaryMuscles": [
+      "adductors"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "To begin, sit down on the adductor machine and select a weight you are comfortable with. When your legs are positioned properly on the leg pads of the machine, grip the handles on each side. Your entire upper body (from the waist up) should be stationary. This is the starting position.",
+      "Slowly press against the machine with your legs to move them towards each other while exhaling.",
+      "Feel the contraction for a second and begin to move your legs back to the starting position while breathing in. Note: Remember to keep your upper body stationary and avoid fast jerking motions in order to prevent any injuries from occurring.",
+      "Repeat for the recommended amount of repetitions."
+    ],
+    "images": [
+      "Thigh_Adductor/0.jpg",
+      "Thigh_Adductor/1.jpg"
     ]
   },
   {
@@ -12390,31 +12022,6 @@
     ]
   },
   {
-    "id": "standing-cable-chest-press",
-    "name": "Standing Cable Chest Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Position dual pulleys to chest height and select an appropriate weight. Stand a foot or two in front of the cables, holding one in each hand. You can stagger your stance for better stability.",
-      "Position the upper arm at a 90 degree angle with the shoulder blades together. This will be your starting position.",
-      "Keeping the rest of the body stationary, extend through the elbows to press the handles forward, drawing them together in front of you.",
-      "Pause at the top of the motion, and return to the starting position."
-    ],
-    "images": [
-      "Standing_Cable_Chest_Press/0.jpg",
-      "Standing_Cable_Chest_Press/1.jpg"
-    ]
-  },
-  {
     "id": "standing-calf-raises",
     "name": "Standing Calf Raises",
     "aliases": [],
@@ -13246,31 +12853,6 @@
     ]
   },
   {
-    "id": "suspended-push-up",
-    "name": "Suspended Push-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Anchor your suspension straps securely to the top of a rack or other object.",
-      "Leaning into the straps, take a handle in each hand and move into a push-up plank position. You should be as close to parallel to the ground as you can manage with your arms fully extended, maintaining good posture.",
-      "Maintaining a straight, rigid torso, descend slowly by allowing the elbows to flex.",
-      "Continue until your elbows break 90 degrees, pausing before you extend to return to the starting position."
-    ],
-    "images": [
-      "Suspended_Push-Up/0.jpg",
-      "Suspended_Push-Up/1.jpg"
-    ]
-  },
-  {
     "id": "suspended-row",
     "name": "Suspended Row",
     "aliases": [],
@@ -13323,32 +12905,6 @@
     ]
   },
   {
-    "id": "svend-press",
-    "name": "Svend Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "chest"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin in a standing position.",
-      "Press two lightweight plates together with your hands. Hold the plates together close to your chest to create an isometric contraction in your chest muscles. Your fingers should be pointed forward. This is your starting position.",
-      "Squeeze the plates between your palms and extend your arms directly out in front of you in a controlled motion.",
-      "Pause at the top of the motion, and then slowly return to the starting position."
-    ],
-    "images": [
-      "Svend_Press/0.jpg",
-      "Svend_Press/1.jpg"
-    ]
-  },
-  {
     "id": "t-bar-row-with-handle",
     "name": "T-Bar Row with Handle",
     "aliases": [],
@@ -13398,55 +12954,6 @@
     "images": [
       "Tate_Press/0.jpg",
       "Tate_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "thigh-abductor",
-    "name": "Thigh Abductor",
-    "aliases": [],
-    "primaryMuscles": [
-      "abductors"
-    ],
-    "secondaryMuscles": [
-      "glutes"
-    ],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "To begin, sit down on the abductor machine and select a weight you are comfortable with. When your legs are positioned properly, grip the handles on each side. Your entire upper body (from the waist up) should be stationary. This is the starting position.",
-      "Slowly press against the machine with your legs to move them away from each other while exhaling.",
-      "Feel the contraction for a second and begin to move your legs back to the starting position while breathing in. Note: Remember to keep your upper body stationary to prevent any injuries from occurring.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Thigh_Abductor/0.jpg",
-      "Thigh_Abductor/1.jpg"
-    ]
-  },
-  {
-    "id": "thigh-adductor",
-    "name": "Thigh Adductor",
-    "aliases": [],
-    "primaryMuscles": [
-      "adductors"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "hamstrings"
-    ],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "To begin, sit down on the adductor machine and select a weight you are comfortable with. When your legs are positioned properly on the leg pads of the machine, grip the handles on each side. Your entire upper body (from the waist up) should be stationary. This is the starting position.",
-      "Slowly press against the machine with your legs to move them towards each other while exhaling.",
-      "Feel the contraction for a second and begin to move your legs back to the starting position while breathing in. Note: Remember to keep your upper body stationary and avoid fast jerking motions in order to prevent any injuries from occurring.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Thigh_Adductor/0.jpg",
-      "Thigh_Adductor/1.jpg"
     ]
   },
   {
@@ -14042,6 +13549,34 @@
       "Lower under control and repeat."
     ],
     "images": []
+  },
+  {
+    "id": "wide-grip-push-up",
+    "name": "Wide Grip Push-Up",
+    "aliases": [
+      "Push-Up Wide"
+    ],
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "abs",
+      "front delts",
+      "triceps"
+    ],
+    "equipment": "bodyweight",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "With your hands wide apart, support your body on your toes and hands in a plank position. Your elbows should be extended and your body straight. Do not allow your hips to sag. This will be your starting position.",
+      "To begin, allow the elbows to flex, lowering your chest to the floor as you inhale.",
+      "Using your pectoral muscles, press your upper body back up to the starting position by extending the elbows. Exhale as you perform this step.",
+      "After pausing at the contracted position, repeat the movement for the prescribed amount of repetitions."
+    ],
+    "images": [
+      "Push-Up_Wide/0.jpg",
+      "Push-Up_Wide/1.jpg"
+    ]
   },
   {
     "id": "wide-stance-barbell-squat",

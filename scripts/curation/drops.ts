@@ -23,10 +23,16 @@ const drops: Record<string, DropReason> = {
   "Step_Mill": "cardio", // Step Mill
   "Trail_Running_Walking": "cardio", // Trail Running/Walking
   "Walking_Treadmill": "cardio", // Walking, Treadmill
-  // ---- duplicate-of (3) ----
+  // ---- duplicate-of (4) ----
   "Bench_Press_-_Powerlifting": "duplicate-of:barbell-bench-press", // Bench Press - Powerlifting
   "Crunch_-_Legs_On_Exercise_Ball": "duplicate-of:exercise-ball-crunch", // Crunch - Legs On Exercise Ball
   "Oblique_Crunches_-_On_The_Floor": "duplicate-of:oblique-crunches", // Oblique Crunches - On The Floor
+  // Ji review round 3 (2026-07-17): the seed's combined entry is redundant
+  // with two already-kept, already-separate flat-model entries - "Close-Grip
+  // Push-Up" (from Push-Ups_-_Close_Triceps_Position, keeps its own seed
+  // photography) and "Wide Grip Push-Up" (renamed from Push-Up_Wide, ditto).
+  // No new additions needed; both destinations already have real images.
+  "Pushups_Close_and_Wide_Hand_Positions": "duplicate-of:close-grip-push-up", // Pushups (Close and Wide Hand Positions) - also duplicates Wide Grip Push-Up
   // ---- neck (9) ----
   "Isometric_Neck_Exercise_-_Front_And_Back": "neck", // Isometric Neck Exercise - Front And Back
   "Isometric_Neck_Exercise_-_Sides": "neck", // Isometric Neck Exercise - Sides
@@ -37,16 +43,21 @@ const drops: Record<string, DropReason> = {
   "Seated_Head_Harness_Neck_Resistance": "neck", // Seated Head Harness Neck Resistance
   "Standing_Barbell_Press_Behind_Neck": "neck", // Standing Barbell Press Behind Neck
   "Wide-Grip_Pulldown_Behind_The_Neck": "neck", // Wide-Grip Pulldown Behind The Neck
-  // ---- novelty-junk (14) ----
+  // ---- novelty-junk (19) ----
   "Balance_Board": "novelty-junk", // Balance Board (Ji review round 2: balance/stability drill, not a targeted calf raise)
   "Back_Flyes_-_With_Bands": "novelty-junk", // Back Flyes - With Bands
   "Bench_Press_-_With_Bands": "novelty-junk", // Bench Press - With Bands
   "Bradford_Rocky_Presses": "novelty-junk", // Bradford/Rocky Presses
   "Calf_Raises_-_With_Bands": "novelty-junk", // Calf Raises - With Bands
+  "Chain_Press": "novelty-junk", // Chain Press (Ji review round 3: chain-accommodated resistance, same family as the "with Bands" entries)
+  "Clock_Push-Up": "novelty-junk", // Clock Push-Up (Ji review round 3: circular hand-walk drill, not a standard chest movement)
   "Close-Grip_EZ-Bar_Curl_with_Band": "novelty-junk", // Close-Grip EZ-Bar Curl with Band (Ji review round 2: band-accommodated variant, same treatment as other "with Bands" entries)
   "Cross_Over_-_With_Bands": "novelty-junk", // Cross Over - With Bands
   "Incline_Dumbbell_Flyes_-_With_A_Twist": "novelty-junk", // Incline Dumbbell Flyes - With A Twist
+  "Isometric_Wipers": "novelty-junk", // Isometric Wipers (Ji review round 3: isometric plank drill, not a loaded chest movement)
   "Lateral_Raise_-_With_Bands": "novelty-junk", // Lateral Raise - With Bands
+  "Plyo_Kettlebell_Pushups": "novelty-junk", // Plyo Kettlebell Pushups (Ji review round 3: plyometric push-up variant)
+  "Push_Up_to_Side_Plank": "novelty-junk", // Push Up to Side Plank (Ji review round 3: combo/gimmick movement)
   "Rocky_Pull-Ups_Pulldowns": "novelty-junk", // Rocky Pull-Ups/Pulldowns
   "Shoulder_Press_-_With_Bands": "novelty-junk", // Shoulder Press - With Bands
   "Squats_-_With_Bands": "novelty-junk", // Squats - With Bands
@@ -197,6 +208,22 @@ const drops: Record<string, DropReason> = {
   "Standing_Inner-Biceps_Curl": "scope-trim", // Standing Inner-Biceps Curl
   "Two-Arm_Dumbbell_Preacher_Curl": "scope-trim", // Two-Arm Dumbbell Preacher Curl
   "Rocking_Standing_Calf_Raise": "scope-trim", // Rocking Standing Calf Raise
+  // Ji review round 3 (2026-07-17): chest trim - legitimate narrow presses
+  // and grip/equipment variants Ji doesn't use.
+  "Around_The_Worlds": "scope-trim", // Around The Worlds
+  "Cable_Iron_Cross": "scope-trim", // Cable Iron Cross
+  "Extended_Range_One-Arm_Kettlebell_Floor_Press": "scope-trim", // Extended Range One-Arm Kettlebell Floor Press
+  "Hammer_Grip_Incline_DB_Bench_Press": "scope-trim", // Hammer Grip Incline DB Bench Press
+  "Leg-Over_Floor_Press": "scope-trim", // Leg-Over Floor Press
+  "Leverage_Chest_Press": "scope-trim", // Leverage Chest Press
+  "Leverage_Decline_Chest_Press": "scope-trim", // Leverage Decline Chest Press
+  "Leverage_Incline_Chest_Press": "scope-trim", // Leverage Incline Chest Press
+  "Neck_Press": "scope-trim", // Neck Press
+  "One-Arm_Kettlebell_Floor_Press": "scope-trim", // One-Arm Kettlebell Floor Press
+  "Push-Ups_With_Feet_On_An_Exercise_Ball": "scope-trim", // Push-Ups With Feet On An Exercise Ball
+  "Standing_Cable_Chest_Press": "scope-trim", // Standing Cable Chest Press
+  "Suspended_Push-Up": "scope-trim", // Suspended Push-Up
+  "Svend_Press": "scope-trim", // Svend Press
   // ---- stretch (122) ----
   "90_90_Hamstring": "stretch", // 90/90 Hamstring
   "Adductor": "stretch", // Adductor

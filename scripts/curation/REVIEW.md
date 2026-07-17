@@ -1,12 +1,12 @@
 # Exercise curation review (LG-047)
 
-Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
+Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 
 ## Kept (by primary muscle)
 
 ### abductors (2)
 - Monster Walk
-- Thigh Abductor
+- Seated Machine Hip Abduction
 
 ### abs (10)
 - Ab Roller
@@ -22,7 +22,7 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 
 ### adductors (2)
 - Band Hip Adductions
-- Thigh Adductor
+- Seated Machine Hip Adduction
 
 ### biceps (43)
 - Alternate Hammer Curl
@@ -75,28 +75,23 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Calf Raise On A Dumbbell
 - Donkey Calf Raises
 - Dumbbell Seated One-Leg Calf Raise
+- Leg Press Machine Calf Raise
 - Seated Calf Raise
-- Seated Leg Press Calf Raise
 - Smith Machine Calf Raise
 - Smith Machine Reverse Calf Raises
 - Standing Barbell Calf Raise
 - Standing Calf Raises
 - Standing Dumbbell Calf Raise
 
-### chest (65)
+### chest (45)
 - Alternating Floor Press
-- Around The Worlds
 - Barbell Bench Press
 - Barbell Guillotine Bench Press
 - Bent-Arm Dumbbell Pullover
 - Bodyweight Flyes
-- Butterfly
 - Cable Chest Press
 - Cable Crossover
-- Cable Iron Cross
-- Chain Press
 - Chest Dip
-- Clock Push-Up
 - Decline Barbell Bench Press
 - Decline Dumbbell Bench Press
 - Decline Dumbbell Flyes
@@ -105,10 +100,8 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Dumbbell Bench Press
 - Dumbbell Bench Press with Neutral Grip
 - Dumbbell Flyes
-- Extended Range One-Arm Kettlebell Floor Press
 - Flat Bench Cable Flyes
 - Front Raise And Pullover
-- Hammer Grip Incline DB Bench Press
 - Incline Barbell Bench Press
 - Incline Cable Chest Press
 - Incline Cable Flye
@@ -119,33 +112,20 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Incline Push-Up Medium
 - Incline Push-Up Reverse Grip
 - Incline Push-Up Wide
-- Isometric Wipers
-- Leg-Over Floor Press
-- Leverage Chest Press
-- Leverage Decline Chest Press
-- Leverage Incline Chest Press
 - Low Cable Crossover
-- Machine Bench Press
-- Neck Press
+- Machine Chest Press
 - One Arm Dumbbell Bench Press
 - One-Arm Flat Bench Dumbbell Flye
-- One-Arm Kettlebell Floor Press
-- Plyo Kettlebell Pushups
-- Push Up to Side Plank
-- Push-Up Wide
+- Pec Deck Flye
 - Push-Ups With Feet Elevated
-- Push-Ups With Feet On An Exercise Ball
 - Pushups
-- Pushups (Close and Wide Hand Positions)
 - Single-Arm Cable Crossover
 - Single-Arm Push-Up
 - Smith Machine Bench Press
 - Smith Machine Decline Press
 - Smith Machine Incline Bench Press
-- Standing Cable Chest Press
 - Straight-Arm Dumbbell Pullover
-- Suspended Push-Up
-- Svend Press
+- Wide Grip Push-Up
 - Wide-Grip Barbell Bench Press
 - Wide-Grip Decline Barbell Bench Press
 - Wide-Grip Decline Barbell Pullover
@@ -616,10 +596,11 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Trail Running/Walking
 - Walking, Treadmill
 
-### duplicate-of (3)
+### duplicate-of (4)
 - Bench Press - Powerlifting
 - Crunch - Legs On Exercise Ball
 - Oblique Crunches - On The Floor
+- Pushups (Close and Wide Hand Positions)
 
 ### neck (9)
 - Isometric Neck Exercise - Front And Back
@@ -632,16 +613,21 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Standing Barbell Press Behind Neck
 - Wide-Grip Pulldown Behind The Neck
 
-### novelty-junk (14)
+### novelty-junk (19)
 - Back Flyes - With Bands
 - Balance Board
 - Bench Press - With Bands
 - Bradford/Rocky Presses
 - Calf Raises - With Bands
+- Chain Press
+- Clock Push-Up
 - Close-Grip EZ-Bar Curl with Band
 - Cross Over - With Bands
 - Incline Dumbbell Flyes - With A Twist
+- Isometric Wipers
 - Lateral Raise - With Bands
+- Plyo Kettlebell Pushups
+- Push Up to Side Plank
 - Rocky Pull-Ups/Pulldowns
 - Shoulder Press - With Bands
 - Squats - With Bands
@@ -711,11 +697,12 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Supine Two-Arm Overhead Throw
 - Vertical Swing
 
-### scope-trim (73)
+### scope-trim (87)
 - 3/4 Sit-Up
 - Advanced Kettlebell Windmill
 - Air Bike
 - Alternate Heel Touchers
+- Around The Worlds
 - Barbell Ab Rollout
 - Barbell Ab Rollout - On Knees
 - Barbell Rollout from Bench
@@ -725,6 +712,7 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Bosu Ball Cable Crunch With Side Bends
 - Bottoms Up
 - Butt-Ups
+- Cable Iron Cross
 - Cable Judo Flip
 - Cable Reverse Crunch
 - Cable Russian Twists
@@ -740,11 +728,13 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Elbow to Knee
 - Exercise Ball Crunch
 - Exercise Ball Pull-In
+- Extended Range One-Arm Kettlebell Floor Press
 - Flat Bench Leg Pull-In
 - Flat Bench Lying Leg Raise
 - Flexor Incline Dumbbell Curls
 - Frog Sit-Ups
 - Gorilla Chin/Crunch
+- Hammer Grip Incline DB Bench Press
 - Hanging Pike
 - Incline Inner Biceps Curl
 - Jackknife Sit-Up
@@ -756,15 +746,22 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Kneeling Cable Crunch With Alternating Oblique Twists
 - Landmine 180's
 - Leg Pull-In
+- Leg-Over Floor Press
+- Leverage Chest Press
+- Leverage Decline Chest Press
+- Leverage Incline Chest Press
 - Lying Close-Grip Bar Curl On High Pulley
 - Lying High Bench Barbell Curl
+- Neck Press
 - One-Arm High-Pulley Cable Side Bends
+- One-Arm Kettlebell Floor Press
 - One-Arm Medicine Ball Slam
 - Otis-Up
 - Pallof Press
 - Pallof Press With Rotation
 - Plate Twist
 - Press Sit-Up
+- Push-Ups With Feet On An Exercise Ball
 - Rocking Standing Calf Raise
 - Rope Crunch
 - Seated Barbell Twist
@@ -774,12 +771,15 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - Smith Machine Hip Raise
 - Spell Caster
 - Spider Crawl
+- Standing Cable Chest Press
 - Standing Cable Lift
 - Standing Cable Wood Chop
 - Standing Inner-Biceps Curl
 - Standing Rope Crunch
 - Suspended Fallout
+- Suspended Push-Up
 - Suspended Reverse Crunch
+- Svend Press
 - Tuck Crunch
 - Two-Arm Dumbbell Preacher Curl
 - Weighted Ball Side Bend
@@ -941,6 +941,7 @@ Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 - **Incline Close Grip Bench Press** - AC coverage: incline + close-grip combination (upper chest/triceps emphasis) missing from the seed.
 - **Neutral Grip Lat Pulldown** - Grip-family completion for lat pulldown alongside the seed's wide-grip and close-grip variants.
 - **Neutral Grip Pull-Up** - Systematic pull-up grip family Ji expects as a first-class variant; shoulder-friendlier grip missing from the seed.
+- **Seated Leg Press Calf Raise** - Ji-logged staple
 - **Single Leg Seated Leg Press Calf Raise** - Ji-logged staple
 - **Underhand Bent Over Barbell Row** - Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.
 - **Wide Grip Cable Row** - AC coverage: wide-grip cable row is a staple back-width row missing from the seed.

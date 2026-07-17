@@ -1,50 +1,5 @@
 [
   {
-    "id": "3-4-sit-up",
-    "name": "3/4 Sit-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie down on the floor and secure your feet. Your legs should be bent at the knees.",
-      "Place your hands behind or to the side of your head. You will begin with your back on the ground. This will be your starting position.",
-      "Flex your hips and spine to raise your torso toward your knees.",
-      "At the top of the contraction your torso should be perpendicular to the ground. Reverse the motion, going only ¾ of the way down.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "3_4_Sit-Up/0.jpg",
-      "3_4_Sit-Up/1.jpg"
-    ]
-  },
-  {
-    "id": "ab-crunch-machine",
-    "name": "Ab Crunch Machine",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Select a light resistance and sit down on the ab machine placing your feet under the pads provided and grabbing the top handles. Your arms should be bent at a 90 degree angle as you rest the triceps on the pads provided. This will be your starting position.",
-      "At the same time, begin to lift the legs up as you crunch your upper torso. Breathe out as you perform this movement. Tip: Be sure to use a slow and controlled motion. Concentrate on using your abs to move the weight while relaxing your legs and feet.",
-      "After a second pause, slowly return to the starting position as you breathe in.",
-      "Repeat the movement for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Ab_Crunch_Machine/0.jpg",
-      "Ab_Crunch_Machine/1.jpg"
-    ]
-  },
-  {
     "id": "ab-roller",
     "name": "Ab Roller",
     "aliases": [],
@@ -66,56 +21,6 @@
     "images": [
       "Ab_Roller/0.jpg",
       "Ab_Roller/1.jpg"
-    ]
-  },
-  {
-    "id": "advanced-kettlebell-windmill",
-    "name": "Advanced Kettlebell Windmill",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "hamstrings",
-      "front delts"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Clean and press a kettlebell overhead with one arm.",
-      "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Keep the non-working arm behind your back and turn your feet out at a forty-five degree angle from the arm with the kettlebell.",
-      "Lower yourself as far as possible.",
-      "Pause for a second and reverse the motion back to the starting position."
-    ],
-    "images": [
-      "Advanced_Kettlebell_Windmill/0.jpg",
-      "Advanced_Kettlebell_Windmill/1.jpg"
-    ]
-  },
-  {
-    "id": "air-bike",
-    "name": "Air Bike",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie flat on the floor with your lower back pressed to the ground. For this exercise, you will need to put your hands beside your head. Be careful however to not strain with the neck as you perform it. Now lift your shoulders into the crunch position.",
-      "Bring knees up to where they are perpendicular to the floor, with your lower legs parallel to the floor. This will be your starting position.",
-      "Now simultaneously, slowly go through a cycle pedal motion kicking forward with the right leg and bringing in the knee of the left leg. Bring your right elbow close to your left knee by crunching to the side, as you breathe out.",
-      "Go back to the initial position as you breathe in.",
-      "Crunch to the opposite side as you cycle your legs and bring closer your left elbow to your right knee and exhale.",
-      "Continue alternating in this manner until all of the recommended repetitions for each side have been completed."
-    ],
-    "images": [
-      "Air_Bike/0.jpg",
-      "Air_Bike/1.jpg"
     ]
   },
   {
@@ -142,29 +47,6 @@
     "images": [
       "Alternate_Hammer_Curl/0.jpg",
       "Alternate_Hammer_Curl/1.jpg"
-    ]
-  },
-  {
-    "id": "alternate-heel-touchers",
-    "name": "Alternate Heel Touchers",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie on the floor with the knees bent and the feet on the floor around 18-24 inches apart. Your arms should be extended by your side. This will be your starting position.",
-      "Crunch over your torso forward and up about 3-4 inches to the right side and touch your right heel as you hold the contraction for a second. Exhale while performing this movement.",
-      "Now go back slowly to the starting position as you inhale.",
-      "Now crunch over your torso forward and up around 3-4 inches to the left side and touch your left heel as you hold the contraction for a second. Exhale while performing this movement and then go back to the starting position as you inhale. Now that both heels have been touched, that is considered 1 repetition.",
-      "Continue alternating sides in this manner until all prescribed repetitions are done."
-    ],
-    "images": [
-      "Alternate_Heel_Touchers/0.jpg",
-      "Alternate_Heel_Touchers/1.jpg"
     ]
   },
   {
@@ -636,31 +518,6 @@
     ]
   },
   {
-    "id": "barbell-ab-rollout",
-    "name": "Barbell Ab Rollout",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "lower back",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "For this exercise you will need to get into a pushup position, but instead of having your hands of the floor, you will be grabbing on to an Olympic barbell (loaded with 5-10 lbs on each side) instead. This will be your starting position.",
-      "While keeping a slight arch on your back, lift your hips and roll the barbell towards your feet as you exhale. Tip: As you perform the movement, your glutes should be coming up, you should be keeping the abs tight and should maintain your back posture at all times. Also your arms should be staying perpendicular to the floor throughout the movement. If you don't, you will work out your shoulders and back more than the abs.",
-      "After a second contraction at the top, start to roll the barbell back forward to the starting position slowly as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Barbell_Ab_Rollout/0.jpg",
-      "Barbell_Ab_Rollout/1.jpg"
-    ]
-  },
-  {
     "id": "barbell-bench-press",
     "name": "Barbell Bench Press",
     "aliases": [],
@@ -977,32 +834,6 @@
     ]
   },
   {
-    "id": "barbell-rollout-from-bench",
-    "name": "Barbell Rollout from Bench",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "hamstrings",
-      "lats",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place a loaded barbell on the ground, near the end of a bench. Kneel with both legs on the bench, and take a medium to narrow grip on the barbell. This will be your starting position.",
-      "To begin, extend through the hips to slowly roll the bar forward. As you roll out, flex the shoulder to roll the bar above your head. Ensure that your arms remain extended throughout the movement.",
-      "When the bar has been moved as far forward as possible, return to the starting position."
-    ],
-    "images": [
-      "Barbell_Rollout_from_Bench/0.jpg",
-      "Barbell_Rollout_from_Bench/1.jpg"
-    ]
-  },
-  {
     "id": "barbell-seated-calf-raise",
     "name": "Barbell Seated Calf Raise",
     "aliases": [],
@@ -1097,30 +928,6 @@
     "images": [
       "Barbell_Shrug_Behind_The_Back/0.jpg",
       "Barbell_Shrug_Behind_The_Back/1.jpg"
-    ]
-  },
-  {
-    "id": "barbell-side-bend",
-    "name": "Barbell Side Bend",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [
-      "lower back"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Stand up straight while holding a barbell placed on the back of your shoulders (slightly below the neck). Your feet should be shoulder width apart. This will be your starting position.",
-      "While keeping your back straight and your head up, bend only at the waist to the right as far as possible. Breathe in as you bend to the side. Then hold for a second and come back up to the starting position as you exhale. Tip: Keep the rest of the body stationary.",
-      "Now repeat the movement but bending to the left instead. Hold for a second and come back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Barbell_Side_Bend/0.jpg",
-      "Barbell_Side_Bend/1.jpg"
     ]
   },
   {
@@ -1585,34 +1392,6 @@
     ]
   },
   {
-    "id": "bent-press",
-    "name": "Bent Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "quads",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so. This will be your starting position.",
-      "Begin my leaning to the side opposite the kettlebell, continuing until you are able to touch the ground with your free hand, keeping your eyes on the kettlebell. As you do so, press the weight vertically be extending through the elbow, keeping your arm perpendicular to the ground.",
-      "Return to an upright position, with the kettlebell above your head. Return the kettlebell to the shoulder and repeat for the desired number of repetitions."
-    ],
-    "images": [
-      "Bent_Press/0.jpg",
-      "Bent_Press/1.jpg"
-    ]
-  },
-  {
     "id": "bent-arm-barbell-pullover",
     "name": "Bent-Arm Barbell Pullover",
     "aliases": [],
@@ -1666,29 +1445,6 @@
     "images": [
       "Bent-Arm_Dumbbell_Pullover/0.jpg",
       "Bent-Arm_Dumbbell_Pullover/1.jpg"
-    ]
-  },
-  {
-    "id": "bent-knee-hip-raise",
-    "name": "Bent-Knee Hip Raise",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lay flat on the floor with your arms next to your sides.",
-      "Now bend your knees at around a 75 degree angle and lift your feet off the floor by around 2 inches.",
-      "Using your lower abs, bring your knees in towards you as you maintain the 75 degree angle bend in your legs. Continue this movement until you raise your hips off of the floor by rolling your pelvis backward. Breathe out as you perform this portion of the movement. Tip: At the end of the movement your knees will be over your chest.",
-      "Squeeze your abs at the top of the movement for a second and then return to the starting position slowly as you breathe in. Tip: Maintain a controlled motion at all times.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Bent-Knee_Hip_Raise/0.jpg",
-      "Bent-Knee_Hip_Raise/1.jpg"
     ]
   },
   {
@@ -1868,55 +1624,6 @@
     ]
   },
   {
-    "id": "bosu-ball-cable-crunch-with-side-bends",
-    "name": "Bosu Ball Cable Crunch With Side Bends",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Connect a standard handle to each arm of a cable machine, and position them in the most downward position.",
-      "Grab a Bosu Ball and position it in front and center of the cable machine.",
-      "Lie down on the Bosu Ball with the small of your back arched around the ball. Your rear end should be close to the floor without touching it.",
-      "With both hands, reach back and grab the handle of each cable.",
-      "With your feet positioned in a wide stance, extend your arms straight out in front of you and in between your knees. Your hands should be at knee level.",
-      "Keep your arms straight and in-line with the upward angle of the cable. Elevate your torso in a crunching motion without dropping or bending your arms.",
-      "Maintain the rigid position with your arms. Slowly descend back to the starting position with your back arched around the Bosu Ball and your abdominals elongated.",
-      "Repeat the same series of movements to failure.",
-      "Once you reach failure, keep your abs tight and raise your torso into plank position so your back is elevated off the Bosu Ball.",
-      "Lower your arms down to your side; keep them straight. Start doing alternating side bends; reach for your heels! This finishing movement will focus on your obliques."
-    ],
-    "images": [
-      "Bosu_Ball_Cable_Crunch_With_Side_Bends/0.jpg",
-      "Bosu_Ball_Cable_Crunch_With_Side_Bends/1.jpg"
-    ]
-  },
-  {
-    "id": "bottoms-up",
-    "name": "Bottoms Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin by lying on your back on the ground. Your legs should be straight and your arms at your side. This will be your starting position.",
-      "To perform the movement, tuck the knees toward your chest by flexing the hips and knees. Following this, extend your legs directly above you so that they are perpendicular to the ground. Rotate and elevate your pelvis to raise your glutes from the floor.",
-      "After a brief pause, return to the starting position."
-    ],
-    "images": [
-      "Bottoms_Up/0.jpg",
-      "Bottoms_Up/1.jpg"
-    ]
-  },
-  {
     "id": "bottoms-up-clean-from-the-hang-position",
     "name": "Bottoms-Up Clean From The Hang Position",
     "aliases": [],
@@ -2047,29 +1754,6 @@
     "images": [
       "Butt_Lift_Bridge/0.jpg",
       "Butt_Lift_Bridge/1.jpg"
-    ]
-  },
-  {
-    "id": "butt-ups",
-    "name": "Butt-Ups",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin a pushup position but with your elbows on the ground and resting on your forearms. Your arms should be bent at a 90 degree angle.",
-      "Arch your back slightly out rather than keeping your back completely straight.",
-      "Raise your glutes toward the ceiling, squeezing your abs tightly to close the distance between your ribcage and hips. The end result will be that you'll end up in a high bridge position. Exhale as you perform this portion of the movement.",
-      "Lower back down slowly to your starting position as you breathe in. Tip: Don't let your back sag downwards.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Butt-Ups/0.jpg",
-      "Butt-Ups/1.jpg"
     ]
   },
   {
@@ -2338,29 +2022,6 @@
     ]
   },
   {
-    "id": "cable-judo-flip",
-    "name": "Cable Judo Flip",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Connect a rope attachment to a tower, and move the cable to the lowest pulley position. Stand with your side to the cable with a wide stance, and grab the rope with both hands.",
-      "Twist your body away from the pulley as you bring the rope over your shoulder like you're performing a judo flip.",
-      "Shift your weight between your feet as you twist and crunch forward, pulling the cable downward.",
-      "Return to the starting position and repeat until failure.",
-      "Then, reposition and repeat the same series of movements on the opposite side."
-    ],
-    "images": [
-      "Cable_Judo_Flip/0.jpg",
-      "Cable_Judo_Flip/1.jpg"
-    ]
-  },
-  {
     "id": "cable-lying-triceps-extension",
     "name": "Cable Lying Triceps Extension",
     "aliases": [],
@@ -2457,30 +2118,6 @@
     ]
   },
   {
-    "id": "cable-reverse-crunch",
-    "name": "Cable Reverse Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Connect an ankle strap attachment to a low pulley cable and position a mat on the floor in front of it.",
-      "Sit down with your feet toward the pulley and attach the cable to your ankles.",
-      "Lie down, elevate your legs and bend your knees at a 90-degree angle. Your legs and the cable should be aligned. If not, adjust the pulley up or down until they are.",
-      "With your hands behind your head, bring your knees inward to your torso and elevate your hips off the floor.",
-      "Pause for a moment and in a slow and controlled manner drop your hips and bring your legs back to the starting 90-degree angle. You should still have tension on your abs in the resting position.",
-      "Repeat the same movement to failure."
-    ],
-    "images": [
-      "Cable_Reverse_Crunch/0.jpg",
-      "Cable_Reverse_Crunch/1.jpg"
-    ]
-  },
-  {
     "id": "cable-rope-overhead-triceps-extension",
     "name": "Cable Rope Overhead Triceps Extension",
     "aliases": [],
@@ -2528,54 +2165,6 @@
     "images": [
       "Cable_Rope_Rear-Delt_Rows/0.jpg",
       "Cable_Rope_Rear-Delt_Rows/1.jpg"
-    ]
-  },
-  {
-    "id": "cable-russian-twists",
-    "name": "Cable Russian Twists",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Connect a standard handle attachment, and position the cable to a middle pulley position.",
-      "Lie on a stability ball perpendicular to the cable and grab the handle with one hand. You should be approximately arm's length away from the pulley, with the tension of the weight on the cable.",
-      "Grab the handle with both hands and fully extend your arms above your chest. You hands should be directly in-line with the pulley. If not, adjust the pulley up or down until they are.",
-      "Keep your hips elevated and abs engaged. Rotate your torso away from the pulley for a full-quarter rotation. Your body should be flat from head to knees.",
-      "Pause for a moment and in a slow and controlled manner reset to the starting position. You should still have side tension on the cable in the resting position.",
-      "Repeat the same movement to failure.",
-      "Then, reposition and repeat the same series of movements on the opposite side."
-    ],
-    "images": [
-      "Cable_Russian_Twists/0.jpg",
-      "Cable_Russian_Twists/1.jpg"
-    ]
-  },
-  {
-    "id": "cable-seated-crunch",
-    "name": "Cable Seated Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Seat on a flat bench with your back facing a high pulley.",
-      "Grasp the cable rope attachment with both hands (with the palms of the hands facing each other) and place your hands securely over both shoulders. Tip: Allow the weight to hyperextend the lower back slightly. This will be your starting position.",
-      "With the hips stationary, flex the waist so the elbows travel toward the hips. Breathe out as you perform this step.",
-      "As you inhale, go back to the initial position slowly.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Cable_Seated_Crunch/0.jpg",
-      "Cable_Seated_Crunch/1.jpg"
     ]
   },
   {
@@ -3431,27 +3020,6 @@
     ]
   },
   {
-    "id": "cocoons",
-    "name": "Cocoons",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin by lying on your back on the ground. Your legs should be straight and your arms extended behind your head. This will be your starting position.",
-      "To perform the movement, tuck the knees toward your chest, rotating your pelvis to lift your glutes from the floor. As you do so, flex the spine, bringing your arms back over your head to perform a simultaneous crunch motion.",
-      "After a brief pause, return to the starting position."
-    ],
-    "images": [
-      "Cocoons/0.jpg",
-      "Cocoons/1.jpg"
-    ]
-  },
-  {
     "id": "concentration-curls",
     "name": "Concentration Curls",
     "aliases": [],
@@ -3501,29 +3069,6 @@
     ]
   },
   {
-    "id": "cross-body-crunch",
-    "name": "Cross-Body Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie flat on your back and bend your knees about 60 degrees.",
-      "Keep your feet flat on the floor and place your hands loosely behind your head. This will be your starting position.",
-      "Now curl up and bring your right elbow and shoulder across your body while bring your left knee in toward your left shoulder at the same time. Reach with your elbow and try to touch your knee. Exhale as you perform this movement. Tip: Try to bring your shoulder up towards your knee rather than just your elbow and remember that the key is to contract the abs as you perform the movement; not just to move the elbow.",
-      "Now go back down to the starting position as you inhale and repeat with the left elbow and the right knee.",
-      "Continue alternating in this manner until all prescribed repetitions are done."
-    ],
-    "images": [
-      "Cross-Body_Crunch/0.jpg",
-      "Cross-Body_Crunch/1.jpg"
-    ]
-  },
-  {
     "id": "crunches",
     "name": "Crunches",
     "aliases": [],
@@ -3570,31 +3115,6 @@
     "images": [
       "Cuban_Press/0.jpg",
       "Cuban_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "dead-bug",
-    "name": "Dead Bug",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin lying on your back with your hands extended above you toward the ceiling.",
-      "Bring your feet, knees, and hips up to 90 degrees.",
-      "Exhale hard to bring your ribcage down and flatten your back onto the floor, rotating your pelvis up and squeezing your glutes. Hold this position throughout the movement. This will be your starting position.",
-      "Initiate the exercise by extending one leg, straightening the knee and hip to bring the leg just above the ground.",
-      "Maintain the position of your lumbar and pelvis as you perform the movement, as your back is going to want to arch.",
-      "Stay tight and return the working leg to the starting position.",
-      "Repeat on the opposite side, alternating until the set is complete."
-    ],
-    "images": [
-      "Dead_Bug/0.jpg",
-      "Dead_Bug/1.jpg"
     ]
   },
   {
@@ -3830,28 +3350,25 @@
     ]
   },
   {
-    "id": "decline-oblique-crunch",
-    "name": "Decline Oblique Crunch",
-    "aliases": [],
+    "id": "decline-leg-raise",
+    "name": "Decline Leg Raise",
+    "aliases": [
+      "Decline Leg Raises"
+    ],
     "primaryMuscles": [
-      "obliques"
+      "abs"
     ],
     "secondaryMuscles": [],
     "equipment": "bodyweight",
     "category": "strength",
-    "mechanic": "compound",
+    "mechanic": "isolation",
     "instructions": [
-      "Secure your legs at the end of the decline bench and slowly lay down on the bench.",
-      "Raise your upper body off the bench until your torso is about 35-45 degrees if measured from the floor.",
-      "Put one hand beside your head and the other on your thigh. This will be your starting position.",
-      "Raise your upper body slowly from the starting position while turning your torso to the left. Continue crunching up as you exhale until your right elbow touches your left knee. Hold this contracted position for a second. Tip: Focus on keeping your abs tight and keeping the movement slow and controlled.",
-      "Lower your body back down slowly to the starting position as you inhale.",
-      "After completing one set on the right for the recommended amount of repetitions, switch to your left side. Tip: Focus on really twisting your torso and feeling the contraction when you are in the up position."
+      "Lie back on a decline bench, gripping the pad or bench behind your head for support.",
+      "Extend your legs straight out with a slight bend at the knees.",
+      "Raise your legs up until your torso and legs form a V shape.",
+      "Lower back down under control without letting your feet touch the floor, and repeat."
     ],
-    "images": [
-      "Decline_Oblique_Crunch/0.jpg",
-      "Decline_Oblique_Crunch/1.jpg"
-    ]
+    "images": []
   },
   {
     "id": "decline-push-up",
@@ -3876,29 +3393,6 @@
     "images": [
       "Decline_Push-Up/0.jpg",
       "Decline_Push-Up/1.jpg"
-    ]
-  },
-  {
-    "id": "decline-reverse-crunch",
-    "name": "Decline Reverse Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on your back on a decline bench and hold on to the top of the bench with both hands. Don't let your body slip down from this position.",
-      "Hold your legs parallel to the floor using your abs to hold them there while keeping your knees and feet together. Tip: Your legs should be fully extended with a slight bend on the knee. This will be your starting position.",
-      "While exhaling, move your legs towards the torso as you roll your pelvis backwards and you raise your hips off the bench. At the end of this movement your knees will be touching your chest.",
-      "Hold the contraction for a second and move your legs back to the starting position while inhaling.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Decline_Reverse_Crunch/0.jpg",
-      "Decline_Reverse_Crunch/1.jpg"
     ]
   },
   {
@@ -4110,33 +3604,6 @@
     "images": [
       "Double_Kettlebell_Snatch/0.jpg",
       "Double_Kettlebell_Snatch/1.jpg"
-    ]
-  },
-  {
-    "id": "double-kettlebell-windmill",
-    "name": "Double Kettlebell Windmill",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "hamstrings",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Place a kettlebell in front of your front foot and clean and press a kettlebell overhead with your opposite arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so, so that the palm faces forward.",
-      "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell.",
-      "Bending at the hip to one side, sticking your butt out, slowly lean until you can retrieve the kettlebell from the floor. Keep your eyes on the kettlebell that you hold over your head at all times.",
-      "Pause for a second after retrieving the kettlebell from the ground and reverse the motion back to the starting position."
-    ],
-    "images": [
-      "Double_Kettlebell_Windmill/0.jpg",
-      "Double_Kettlebell_Windmill/1.jpg"
     ]
   },
   {
@@ -4784,28 +4251,6 @@
     ]
   },
   {
-    "id": "dumbbell-side-bend",
-    "name": "Dumbbell Side Bend",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Stand up straight while holding a dumbbell on the left hand (palms facing the torso) as you have the right hand holding your waist. Your feet should be placed at shoulder width. This will be your starting position.",
-      "While keeping your back straight and your head up, bend only at the waist to the right as far as possible. Breathe in as you bend to the side. Then hold for a second and come back up to the starting position as you exhale. Tip: Keep the rest of the body stationary.",
-      "Now repeat the movement but bending to the left instead. Hold for a second and come back to the starting position.",
-      "Repeat for the recommended amount of repetitions and then change hands."
-    ],
-    "images": [
-      "Dumbbell_Side_Bend/0.jpg",
-      "Dumbbell_Side_Bend/1.jpg"
-    ]
-  },
-  {
     "id": "dumbbell-squat",
     "name": "Dumbbell Squat",
     "aliases": [],
@@ -4910,27 +4355,6 @@
     ]
   },
   {
-    "id": "elbow-to-knee",
-    "name": "Elbow to Knee",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on the floor, crossing your right leg across your bent left knee. Clasp your hands behind your head, beginning with your shoulder blades on the ground. This will be your starting position.",
-      "Perform the motion by flexing the spine and rotating your torso to bring the left elbow to the right knee.",
-      "Return to the starting position and repeat the movement for the desired number of repetitions before switching sides."
-    ],
-    "images": [
-      "Elbow_to_Knee/0.jpg",
-      "Elbow_to_Knee/1.jpg"
-    ]
-  },
-  {
     "id": "elevated-back-lunge",
     "name": "Elevated Back Lunge",
     "aliases": [],
@@ -4981,52 +4405,6 @@
     "images": [
       "Elevated_Cable_Rows/0.jpg",
       "Elevated_Cable_Rows/1.jpg"
-    ]
-  },
-  {
-    "id": "exercise-ball-crunch",
-    "name": "Exercise Ball Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie on an exercise ball with your lower back curvature pressed against the spherical surface of the ball. Your feet should be bent at the knee and pressed firmly against the floor. The upper torso should be hanging off the top of the ball. The arms should either be kept alongside the body or crossed on top of your chest as these positions avoid neck strains (as opposed to the hands behind the back of the head position).",
-      "Lower your torso into a stretch position keeping the neck stationary at all times. This will be your starting position.",
-      "With the hips stationary, flex the waist by contracting the abdominals and curl the shoulders and trunk upward until you feel a nice contraction on your abdominals. The arms should simply slide up the side of your legs if you have them at the side or just stay on top of your chest if you have them crossed. The lower back should always stay in contact with the ball. Exhale as you perform this movement and hold the contraction for a second.",
-      "As you inhale, go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Exercise_Ball_Crunch/0.jpg",
-      "Exercise_Ball_Crunch/1.jpg"
-    ]
-  },
-  {
-    "id": "exercise-ball-pull-in",
-    "name": "Exercise Ball Pull-In",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place an exercise ball nearby and lay on the floor in front of it with your hands on the floor shoulder width apart in a push-up position.",
-      "Now place your lower shins on top of an exercise ball. Tip: At this point your legs should be fully extended with the shins on top of the ball and the upper body should be in a push-up type of position being supported by your two extended arms in front of you. This will be your starting position.",
-      "While keeping your back completely straight and the upper body stationary, pull your knees in towards your chest as you exhale, allowing the ball to roll forward under your ankles. Squeeze your abs and hold that position for a second.",
-      "Now slowly straighten your legs, rolling the ball back to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Exercise_Ball_Pull-In/0.jpg",
-      "Exercise_Ball_Pull-In/1.jpg"
     ]
   },
   {
@@ -5239,51 +4617,6 @@
     ]
   },
   {
-    "id": "flat-bench-leg-pull-in",
-    "name": "Flat Bench Leg Pull-In",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on an exercise mat or a flat bench with your legs off the end.",
-      "Place your hands either under your glutes with your palms down or by the sides holding on to the bench (or with palms down by the side on an exercise mat). Also extend your legs straight out. This will be your starting position.",
-      "Bend your knees and pull your upper thighs into your midsection as you breathe out. Continue this movement until your knees are near your chest. Hold the contracted position for a second.",
-      "As you breathe in, slowly return to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Flat_Bench_Leg_Pull-In/0.jpg",
-      "Flat_Bench_Leg_Pull-In/1.jpg"
-    ]
-  },
-  {
-    "id": "flat-bench-lying-leg-raise",
-    "name": "Flat Bench Lying Leg Raise",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie with your back flat on a bench and your legs extended in front of you off the end.",
-      "Place your hands either under your glutes with your palms down or by the sides holding on to the bench. This will be your starting position.",
-      "As you keep your legs extended, straight as possible with your knees slightly bent but locked raise your legs until they make a 90-degree angle with the floor. Exhale as you perform this portion of the movement and hold the contraction at the top for a second.",
-      "Now, as you inhale, slowly lower your legs back down to the starting position."
-    ],
-    "images": [
-      "Flat_Bench_Lying_Leg_Raise/0.jpg",
-      "Flat_Bench_Lying_Leg_Raise/1.jpg"
-    ]
-  },
-  {
     "id": "flexor-incline-dumbbell-curls",
     "name": "Flexor Incline Dumbbell Curls",
     "aliases": [],
@@ -5459,31 +4792,6 @@
     "images": [
       "Freehand_Jump_Squat/0.jpg",
       "Freehand_Jump_Squat/1.jpg"
-    ]
-  },
-  {
-    "id": "frog-sit-ups",
-    "name": "Frog Sit-Ups",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie with your back flat on the floor (or exercise mat) and your legs extended in front of you.",
-      "Now bend at the knees and place your outer thighs by the floor (or mat) as you make the soles of your feet touch each other.",
-      "Now try pushing both soles and bringing them up as near you as possible while you keep the outer thighs on the floor (or at least almost touching it). Tip: In this position your legs should create a diamond shape.",
-      "Now, cross your arms in front of you by touching the opposite shoulders. This will be your starting position.",
-      "As you exhale flatten your lower back to the floor while curling the torso upwards. Tip: This will be like performing the first 1/4 movement of a sit up. Hold at the top position for a second.",
-      "As you inhale, slowly lower back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Frog_Sit-Ups/0.jpg",
-      "Frog_Sit-Ups/1.jpg"
     ]
   },
   {
@@ -5906,32 +5214,6 @@
     ]
   },
   {
-    "id": "gorilla-chin-crunch",
-    "name": "Gorilla Chin/Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Hang from a chin-up bar using an underhand grip (palms facing you) that is slightly wider than shoulder width.",
-      "Now bend your knees at a 90 degree angle so that the calves are parallel to the floor while the thighs remain perpendicular to it. This will be your starting position.",
-      "As you exhale, pull yourself up while crunching your knees up at the same time until your knees are at chest level. You will stop going up as soon as your nose is at the same level as the bar. Tip: When you get to this point you should also be finishing the crunch at the same time.",
-      "Slowly start to inhale as you return to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Gorilla_Chin_Crunch/0.jpg",
-      "Gorilla_Chin_Crunch/1.jpg"
-    ]
-  },
-  {
     "id": "hack-squat",
     "name": "Hack Squat",
     "aliases": [],
@@ -6125,7 +5407,9 @@
   {
     "id": "hanging-leg-raise",
     "name": "Hanging Leg Raise",
-    "aliases": [],
+    "aliases": [
+      "Hanging Leg Raises"
+    ],
     "primaryMuscles": [
       "abs"
     ],
@@ -6142,29 +5426,6 @@
     "images": [
       "Hanging_Leg_Raise/0.jpg",
       "Hanging_Leg_Raise/1.jpg"
-    ]
-  },
-  {
-    "id": "hanging-pike",
-    "name": "Hanging Pike",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Hang from a chin-up bar with your legs and feet together using an overhand grip (palms facing away from you) that is slightly wider than shoulder width. Tip: You may use wrist wraps in order to facilitate holding on to the bar.",
-      "Now bend your knees at a 90 degree angle and bring the upper legs forward so that the calves are perpendicular to the floor while the thighs remain parallel to it. This will be your starting position.",
-      "Pull your legs up as you exhale until you almost touch your shins with the bar above you. Tip: Try to straighten your legs as much as possible while at the top.",
-      "Lower your legs as slowly as possible until you reach the starting position. Tip: Avoid swinging and using momentum at all times.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Hanging_Pike/0.jpg",
-      "Hanging_Pike/1.jpg"
     ]
   },
   {
@@ -6896,50 +6157,6 @@
     ]
   },
   {
-    "id": "jackknife-sit-up",
-    "name": "Jackknife Sit-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie flat on the floor (or exercise mat) on your back with your arms extended straight back behind your head and your legs extended also. This will be your starting position.",
-      "As you exhale, bend at the waist while simultaneously raising your legs and arms to meet in a jackknife position. Tip: The legs should be extended and lifted at approximately a 35-45 degree angle from the floor and the arms should be extended and parallel to your legs. The upper torso should be off the floor.",
-      "While inhaling, lower your arms and legs back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Jackknife_Sit-Up/0.jpg",
-      "Jackknife_Sit-Up/1.jpg"
-    ]
-  },
-  {
-    "id": "janda-sit-up",
-    "name": "Janda Sit-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Position your body on the floor in the basic sit-up position; knees to a ninety degree angle with feet flat on the floor and arms either crossed over your chest or to the sides. This will be your starting position.",
-      "As you strongly tighten your glutes and hamstrings, fill your lungs with air and in a slow (three to six second count) ascent, slowly exhale. Tip: It is important to tighten the glutes and hamstrings as this will cause the hip flexors to be inactivated in a process called reciprocal inhibition, which basically means that opposite muscles to the contracted ones will relax.",
-      "As you inhale, slowly go back in a controlled manner to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Janda_Sit-Up/0.jpg",
-      "Janda_Sit-Up/1.jpg"
-    ]
-  },
-  {
     "id": "jefferson-squats",
     "name": "Jefferson Squats",
     "aliases": [],
@@ -7096,29 +6313,6 @@
     ]
   },
   {
-    "id": "kettlebell-figure-8",
-    "name": "Kettlebell Figure 8",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "hamstrings",
-      "front delts"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Place one kettlebell between your legs and take a wider than shoulder width stance. Bend over by pushing your butt out and keeping your back flat.",
-      "Pick up a kettlebell and pass it to your other hand between your legs. The receiving hand should reach from behind the legs. Go back and forth for several repetitions."
-    ],
-    "images": [
-      "Kettlebell_Figure_8/0.jpg",
-      "Kettlebell_Figure_8/1.jpg"
-    ]
-  },
-  {
     "id": "kettlebell-hang-clean",
     "name": "Kettlebell Hang Clean",
     "aliases": [],
@@ -7167,30 +6361,6 @@
     "images": [
       "Kettlebell_One-Legged_Deadlift/0.jpg",
       "Kettlebell_One-Legged_Deadlift/1.jpg"
-    ]
-  },
-  {
-    "id": "kettlebell-pass-between-the-legs",
-    "name": "Kettlebell Pass Between The Legs",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "hamstrings",
-      "front delts"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place one kettlebell between your legs and take a comfortable stance. Bend over by pushing your butt out and keeping your back flat.",
-      "Pick up a kettlebell and pass it to your other hand between your legs, in the fashion of a \"W\". Go back and forth for several repetitions."
-    ],
-    "images": [
-      "Kettlebell_Pass_Between_The_Legs/0.jpg",
-      "Kettlebell_Pass_Between_The_Legs/1.jpg"
     ]
   },
   {
@@ -7395,32 +6565,6 @@
     ]
   },
   {
-    "id": "kettlebell-windmill",
-    "name": "Kettlebell Windmill",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "hamstrings",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place a kettlebell in front of your lead foot and clean and press it overhead with your opposite arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so, so that the palm faces forward. Press it overhead by extending the elbow.",
-      "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell. Bending at the hip to one side, sticking your butt out, slowly lean until you can touch the floor with your free hand. Keep your eyes on the kettlebell that you hold over your head at all times.",
-      "Pause for a second after reaching the ground and reverse the motion back to the starting position."
-    ],
-    "images": [
-      "Kettlebell_Windmill/0.jpg",
-      "Kettlebell_Windmill/1.jpg"
-    ]
-  },
-  {
     "id": "kipping-muscle-up",
     "name": "Kipping Muscle Up",
     "aliases": [],
@@ -7449,81 +6593,6 @@
     "images": [
       "Kipping_Muscle_Up/0.jpg",
       "Kipping_Muscle_Up/1.jpg"
-    ]
-  },
-  {
-    "id": "knee-hip-raise-on-parallel-bars",
-    "name": "Knee/Hip Raise On Parallel Bars",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Position your body on the vertical leg raise bench so that your forearms are resting on the pads next to the torso and holding on to the handles. Your arms will be bent at a 90 degree angle.",
-      "The torso should be straight with the lower back pressed against the pad of the machine and the legs extended pointing towards the floor. This will be your starting position.",
-      "Now as you breathe out, lift your legs up as you keep them extended. Continue this movement until your legs are roughly parallel to the floor and then hold the contraction for a second. Tip: Do not use any momentum or swinging as you perform this exercise.",
-      "Slowly go back to the starting position as you breathe in.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Knee_Hip_Raise_On_Parallel_Bars/0.jpg",
-      "Knee_Hip_Raise_On_Parallel_Bars/1.jpg"
-    ]
-  },
-  {
-    "id": "kneeling-barbell-ab-rollout",
-    "name": "Kneeling Barbell Ab Rollout",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "lower back",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Hold an Olympic barbell loaded with 5-10lbs on each side and kneel on the floor.",
-      "Now place the barbell on the floor in front of you so that you are on all your hands and knees (as in a kneeling push up position). This will be your starting position.",
-      "Slowly roll the barbell straight forward, stretching your body into a straight position. Tip: Go down as far as you can without touching the floor with your body. Breathe in during this portion of the movement.",
-      "After a second pause at the stretched position, start pulling yourself back to the starting position as you breathe out. Tip: Go slowly and keep your abs tight at all times."
-    ],
-    "images": [
-      "Barbell_Ab_Rollout_-_On_Knees/0.jpg",
-      "Barbell_Ab_Rollout_-_On_Knees/1.jpg"
-    ]
-  },
-  {
-    "id": "kneeling-cable-crunch-with-alternating-oblique-twists",
-    "name": "Kneeling Cable Crunch With Alternating Oblique Twists",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Connect a rope attachment to a high pulley cable and position a mat on the floor in front of it.",
-      "Grab the rope with both hands and kneel approximately two feet back from the tower.",
-      "Position the rope behind your head with your hands by your ears.",
-      "Keep your hands in the same place, contract your abs and pull downward on the rope in a crunching movement until your elbows reach your knees.",
-      "Pause briefly at the bottom and rise up in a slow and controlled manner until you reach the starting position.",
-      "Repeat the same downward movement until you're halfway down, at which time you'll begin rotating one of your elbows to the opposite knee.",
-      "Again, pause briefly at the bottom and rise up in a slow and controlled manner until you reach the starting position.",
-      "Repeat the same movement as before, but alternate the other elbow to the opposite knee.",
-      "Continue this series of movements to failure."
-    ],
-    "images": [
-      "Kneeling_Cable_Crunch_With_Alternating_Oblique_Twists/0.jpg",
-      "Kneeling_Cable_Crunch_With_Alternating_Oblique_Twists/1.jpg"
     ]
   },
   {
@@ -7652,33 +6721,6 @@
     ]
   },
   {
-    "id": "landmine-180-s",
-    "name": "Landmine 180's",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "lower back",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Position a bar into a landmine or securely anchor it in a corner. Load the bar to an appropriate weight.",
-      "Raise the bar from the floor, taking it to shoulder height with both hands with your arms extended in front of you. Adopt a wide stance. This will be your starting position.",
-      "Perform the movement by rotating the trunk and hips as you swing the weight all the way down to one side. Keep your arms extended throughout the exercise.",
-      "Reverse the motion to swing the weight all the way to the opposite side.",
-      "Continue alternating the movement until the set is complete."
-    ],
-    "images": [
-      "Landmine_180s/0.jpg",
-      "Landmine_180s/1.jpg"
-    ]
-  },
-  {
     "id": "landmine-linear-jammer",
     "name": "Landmine Linear Jammer",
     "aliases": [],
@@ -7780,28 +6822,6 @@
     "images": [
       "Leg_Press/0.jpg",
       "Leg_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "leg-pull-in",
-    "name": "Leg Pull-In",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on an exercise mat with your legs extended and your hands either palms facing down next to you or under your glutes. Tip: My preference is with the hands next to me. This will be your starting position.",
-      "Bend your knees and pull your upper thighs into your midsection as you breathe out. Continue the motion until your knees are around chest level. Contract your abs as you execute this movement and hold for a second at the top. Tip: As you perform the motion, the lower legs (calves) should always remain parallel to the floor.",
-      "Return to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Leg_Pull-In/0.jpg",
-      "Leg_Pull-In/1.jpg"
     ]
   },
   {
@@ -8564,6 +7584,30 @@
     ]
   },
   {
+    "id": "machine-crunch",
+    "name": "Machine Crunch",
+    "aliases": [
+      "Ab Crunch Machine"
+    ],
+    "primaryMuscles": [
+      "abs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Select a light resistance and sit down on the ab machine placing your feet under the pads provided and grabbing the top handles. Your arms should be bent at a 90 degree angle as you rest the triceps on the pads provided. This will be your starting position.",
+      "At the same time, begin to lift the legs up as you crunch your upper torso. Breathe out as you perform this movement. Tip: Be sure to use a slow and controlled motion. Concentrate on using your abs to move the weight while relaxing your legs and feet.",
+      "After a second pause, slowly return to the starting position as you breathe in.",
+      "Repeat the movement for the prescribed amount of repetitions."
+    ],
+    "images": [
+      "Ab_Crunch_Machine/0.jpg",
+      "Ab_Crunch_Machine/1.jpg"
+    ]
+  },
+  {
     "id": "machine-preacher-curls",
     "name": "Machine Preacher Curls",
     "aliases": [],
@@ -9256,32 +8300,6 @@
     ]
   },
   {
-    "id": "one-arm-high-pulley-cable-side-bends",
-    "name": "One-Arm High-Pulley Cable Side Bends",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Connect a standard handle to a tower. Move cable to highest pulley position.",
-      "Stand with side to cable. With one hand, reach up and grab handle with underhand grip.",
-      "Pull down cable until elbow touches your side and the handle is by your shoulder.",
-      "Position feet hip-width apart. Place free hand on hip to help gauge pivot point.",
-      "Keep arm in static position. Contract oblique to bring the weight down in a side crunch.",
-      "Once you reach maximum contraction, slowly release the weight to the starting position. The weight stack should never be unloaded in a resting position. The aim is constant tension during the set.",
-      "Repeat to failure.",
-      "Then, reposition and repeat the same series of movements on the opposite side."
-    ],
-    "images": [
-      "One-Arm_High-Pulley_Cable_Side_Bends/0.jpg",
-      "One-Arm_High-Pulley_Cable_Side_Bends/1.jpg"
-    ]
-  },
-  {
     "id": "one-arm-incline-lateral-raise",
     "name": "One-Arm Incline Lateral Raise",
     "aliases": [],
@@ -9627,31 +8645,6 @@
     ]
   },
   {
-    "id": "one-arm-medicine-ball-slam",
-    "name": "One-Arm Medicine Ball Slam",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "lats",
-      "front delts"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Start in a standing position with a staggered, athletic stance. Hold a medicine ball in one hand, on the same side as your back leg. This will be your starting position.",
-      "Begin by winding the arm, raising the medicine ball above your head. As you do so, extend through the hips, knees, and ankles to load up for the slam.",
-      "At peak extension, flex the shoulders, spine, and hips to throw the ball hard into the ground directly in front of you.",
-      "Catch the ball on the bounce and continue for the desired number of repetitions."
-    ],
-    "images": [
-      "One-Arm_Medicine_Ball_Slam/0.jpg",
-      "One-Arm_Medicine_Ball_Slam/1.jpg"
-    ]
-  },
-  {
     "id": "one-arm-open-palm-kettlebell-clean",
     "name": "One-Arm Open Palm Kettlebell Clean",
     "aliases": [],
@@ -9813,32 +8806,6 @@
     ]
   },
   {
-    "id": "otis-up",
-    "name": "Otis-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Secure your feet and lay back on the floor. Your knees should be bent. Hold a weight with both hands to your chest. This will be your starting position.",
-      "Initiate the movement by flexing the hips and spine to raise your torso up from the ground.",
-      "As you move up, press the weight up so that it is above your head at the top of the movement.",
-      "Return the weight to your chest as you reverse the sit-up motion, ensuring not to go all the way down to the floor."
-    ],
-    "images": [
-      "Otis-Up/0.jpg",
-      "Otis-Up/1.jpg"
-    ]
-  },
-  {
     "id": "overhead-cable-curl",
     "name": "Overhead Cable Curl",
     "aliases": [],
@@ -9860,29 +8827,6 @@
     "images": [
       "Overhead_Cable_Curl/0.jpg",
       "Overhead_Cable_Curl/1.jpg"
-    ]
-  },
-  {
-    "id": "overhead-crunch",
-    "name": "Overhead Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie on the floor with your back flat and knees bent with around a 60-degree angle between the hamstrings and the calves.",
-      "Keep your feet flat on the floor and stretch your arms overhead with your palms crossed. This will be your starting position.",
-      "Curl your upper body forward and bring your shoulder blades just off the floor. At all times, keep your arms aligned with your head, neck and shoulder. Don't move them forward from that position. Exhale as you perform this portion of the movement and hold the contraction for a second.",
-      "Slowly lower down to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Crunch_-_Hands_Overhead/0.jpg",
-      "Crunch_-_Hands_Overhead/1.jpg"
     ]
   },
   {
@@ -9915,65 +8859,6 @@
     "images": [
       "Overhead_Squat/0.jpg",
       "Overhead_Squat/1.jpg"
-    ]
-  },
-  {
-    "id": "pallof-press",
-    "name": "Pallof Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Connect a standard handle to a tower, and—if possible—position the cable to shoulder height. If not, a low pulley will suffice.",
-      "With your side to the cable, grab the handle with both hands and step away from the tower. You should be approximately arm's length away from the pulley, with the tension of the weight on the cable.",
-      "With your feet positioned hip-width apart and knees slightly bent, hold the cable to the middle of your chest. This will be your starting position.",
-      "Press the cable away from your chest, fully extending both arms. You core should be tight and engaged.",
-      "Hold the repetition for several seconds before returning to the starting position.",
-      "At the conclusion of the set, repeat facing the other direction."
-    ],
-    "images": [
-      "Pallof_Press/0.jpg",
-      "Pallof_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "pallof-press-with-rotation",
-    "name": "Pallof Press With Rotation",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Connect a standard handle to a tower, and position the cable to shoulder height.",
-      "With your side to the cable, grab the handle with one hand and step away from the tower. You should be approximately arm's length away from the pulley, with the tension of the weight on the cable. Align outstretched arm with cable.",
-      "With your feet positioned hip-width apart, pull the cable into your chest and grab the handle with your other hand. Both hands should be on the handle at this time.",
-      "Facing forward, press the cable away from your chest. You core should be tight and engaged.",
-      "Keeping your hips straight, twist your torso away from the pulley until you get a full quarter rotation.",
-      "Maintain your rigid stance and straight arms. Return to the neutral position in a slow and controlled manner. Your arms should be extended in front of you.",
-      "With the side tension still engaging your core, bring your hands to your chest and immediately press outward to a fully extended position. This constitutes one rep.",
-      "Repeat to failure.",
-      "Then, reposition and repeat the same series of movements on the opposite side."
-    ],
-    "images": [
-      "Pallof_Press_With_Rotation/0.jpg",
-      "Pallof_Press_With_Rotation/1.jpg"
     ]
   },
   {
@@ -10195,29 +9080,6 @@
     "images": [
       "Plate_Pinch/0.jpg",
       "Plate_Pinch/1.jpg"
-    ]
-  },
-  {
-    "id": "plate-twist",
-    "name": "Plate Twist",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie down on the floor or an exercise mat with your legs fully extended and your upper body upright. Grab the plate by its sides with both hands out in front of your abdominals with your arms slightly bent.",
-      "Slowly cross your legs near your ankles and lift them up off the ground. Your knees should also be bent slightly. Note: Move your upper body back slightly to help keep you balanced turning this exercise. This is the starting position.",
-      "Move the plate to the left side and touch the floor with it. Breathe out as you perform that movement.",
-      "Come back to the starting position as you breathe in and then repeat the movement but this time to the right side of the body. Tip: Use a slow controlled movement at all times. Jerking motions can injure the back.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Plate_Twist/0.jpg",
-      "Plate_Twist/1.jpg"
     ]
   },
   {
@@ -10534,32 +9396,6 @@
     "images": [
       "Preacher_Hammer_Dumbbell_Curl/0.jpg",
       "Preacher_Hammer_Dumbbell_Curl/1.jpg"
-    ]
-  },
-  {
-    "id": "press-sit-up",
-    "name": "Press Sit-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "To begin, lie down on a bench with a barbell resting on your chest. Position your legs so they are secure on the extension of the abdominal bench. This is the starting position.",
-      "While inhaling, tighten your abdominals and glutes. Simultaneously curl your torso as you do when performing a sit-up and press the barbell to an overhead position while exhaling. Tip: Use your arms to push the barbell out as you perform this exercise while still focusing on the abdominal muscles.",
-      "Lower your upper body back down to the starting position while bringing the barbell back down to your torso. Remember to breathe in while lowering the body.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Press_Sit-Up/0.jpg",
-      "Press_Sit-Up/1.jpg"
     ]
   },
   {
@@ -11463,29 +10299,6 @@
     ]
   },
   {
-    "id": "rope-crunch",
-    "name": "Rope Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Kneel 1-2 feet in front of a cable system with a rope attached.",
-      "After selecting an appropriate weight, grasp the rope with both hands reaching overhead. Your torso should be upright in the starting position.",
-      "To begin, flex at the spine, attempting to bring your rib cage to your legs as you pull the cable down.",
-      "Pause at the bottom of the motion, and then slowly return to the starting position.",
-      "These can be done with twists or to the side to hit the obliques."
-    ],
-    "images": [
-      "Rope_Crunch/0.jpg",
-      "Rope_Crunch/1.jpg"
-    ]
-  },
-  {
     "id": "rope-straight-arm-pulldown",
     "name": "Rope Straight-Arm Pulldown",
     "aliases": [],
@@ -11624,30 +10437,6 @@
     "images": [
       "Seated_Barbell_Military_Press/0.jpg",
       "Seated_Barbell_Military_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "seated-barbell-twist",
-    "name": "Seated Barbell Twist",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Start out by sitting at the end of a flat bench with a barbell placed on top of your thighs. Your feet should be shoulder width apart from each other.",
-      "Grip the bar with your palms facing down and make sure your hands are wider than shoulder width apart from each other. Begin to lift the barbell up over your head until your arms are fully extended.",
-      "Now lower the barbell behind your head until it is resting along the base of your neck. This is the starting position.",
-      "While keeping your feet and head stationary, move your waist from side to side so that your oblique muscles feel the contraction. Only move from side to side as far as your waist will allow you to go. Stretching or moving too far can cause an injury to occur. Tip: Use a slow and controlled motion.",
-      "Remember to breathe out while twisting your body to the side and in when moving back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Seated_Barbell_Twist/0.jpg",
-      "Seated_Barbell_Twist/1.jpg"
     ]
   },
   {
@@ -11945,28 +10734,6 @@
     ]
   },
   {
-    "id": "seated-flat-bench-leg-pull-in",
-    "name": "Seated Flat Bench Leg Pull-In",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Sit on a bench with the legs stretched out in front of you slightly below parallel and your arms holding on to the sides of the bench. Your torso should be leaning backwards around a 45-degree angle from the bench. This will be your starting position.",
-      "Bring the knees in toward you as you move your torso closer to them at the same time. Breathe out as you perform this movement.",
-      "After a second pause, go back to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Seated_Flat_Bench_Leg_Pull-In/0.jpg",
-      "Seated_Flat_Bench_Leg_Pull-In/1.jpg"
-    ]
-  },
-  {
     "id": "seated-good-mornings",
     "name": "Seated Good Mornings",
     "aliases": [],
@@ -12013,28 +10780,6 @@
     "images": [
       "Seated_Leg_Curl/0.jpg",
       "Seated_Leg_Curl/1.jpg"
-    ]
-  },
-  {
-    "id": "seated-leg-tucks",
-    "name": "Seated Leg Tucks",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Sit on a bench with the legs stretched out in front of you slightly below parallel and your arms holding on to the sides of the bench. Your torso should be leaning backwards around a 45-degree angle from the bench. This will be your starting position.",
-      "Bring the knees in toward you as you move your torso closer to them at the same time. Breathe out as you perform this movement.",
-      "After a second pause, go back to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Seated_Leg_Tucks/0.jpg",
-      "Seated_Leg_Tucks/1.jpg"
     ]
   },
   {
@@ -12282,42 +11027,6 @@
     ]
   },
   {
-    "id": "side-bridge",
-    "name": "Side Bridge",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "front delts"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [],
-    "images": [
-      "Side_Bridge/0.jpg",
-      "Side_Bridge/1.jpg"
-    ]
-  },
-  {
-    "id": "side-jackknife",
-    "name": "Side Jackknife",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [],
-    "images": [
-      "Side_Jackknife/0.jpg",
-      "Side_Jackknife/1.jpg"
-    ]
-  },
-  {
     "id": "side-lateral-raise",
     "name": "Side Lateral Raise",
     "aliases": [],
@@ -12363,6 +11072,27 @@
     "images": [
       "Side_Laterals_to_Front_Raise/0.jpg",
       "Side_Laterals_to_Front_Raise/1.jpg"
+    ]
+  },
+  {
+    "id": "side-plank",
+    "name": "Side Plank",
+    "aliases": [
+      "Side Bridge"
+    ],
+    "primaryMuscles": [
+      "abs"
+    ],
+    "secondaryMuscles": [
+      "front delts"
+    ],
+    "equipment": "bodyweight",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [],
+    "images": [
+      "Side_Bridge/0.jpg",
+      "Side_Bridge/1.jpg"
     ]
   },
   {
@@ -12890,28 +11620,6 @@
     ]
   },
   {
-    "id": "smith-machine-hip-raise",
-    "name": "Smith Machine Hip Raise",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "smith machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Position a bench in the rack and load the bar to an appropriate weight. Lie down on the bench, placing the bottom of your feet against the bar. Unlock the bar and extend your legs. You may need to use your hands to assist you. For added stability grasp the sides of the Smith Machine. This will be your starting position.",
-      "Initiate the movement by rotating your pelvis, flexing your spine to raise your hips off of the bench. Maintain a slight bend in the knees throughout the motion.",
-      "After a brief pause, return the hips to the bench.",
-      "Repeat for the desired number of repetitions."
-    ],
-    "images": [
-      "Smith_Machine_Hip_Raise/0.jpg",
-      "Smith_Machine_Hip_Raise/1.jpg"
-    ]
-  },
-  {
     "id": "smith-machine-incline-bench-press",
     "name": "Smith Machine Incline Bench Press",
     "aliases": [],
@@ -13426,56 +12134,6 @@
     ]
   },
   {
-    "id": "spell-caster",
-    "name": "Spell Caster",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "front delts"
-    ],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Hold a dumbbell in each hand with a pronated grip. Your feet should be wide with your hips and knees extended. This will be your starting position.",
-      "Begin the movement by pulling both of the dumbbells to one side next to your hip, rotating your torso.",
-      "Keeping your arms straight and the dumbbells parallel to the ground, rotate your torso to swing the weights to your opposite side.",
-      "Continue alternating, rotating from one side to the other until the set is complete."
-    ],
-    "images": [
-      "Spell_Caster/0.jpg",
-      "Spell_Caster/1.jpg"
-    ]
-  },
-  {
-    "id": "spider-crawl",
-    "name": "Spider Crawl",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin in a prone position on the floor. Support your weight on your hands and toes, with your feet together and your body straight. Your arms should be bent to 90 degrees. This will be your starting position.",
-      "Initiate the movement by raising one foot off of the ground. Externally rotate the leg and bring the knee toward your elbow, as far forward as possible.",
-      "Return this leg to the starting position and repeat on the opposite side."
-    ],
-    "images": [
-      "Spider_Crawl/0.jpg",
-      "Spider_Crawl/1.jpg"
-    ]
-  },
-  {
     "id": "spider-curl",
     "name": "Spider Curl",
     "aliases": [],
@@ -13900,62 +12558,6 @@
     "images": [
       "Standing_Cable_Chest_Press/0.jpg",
       "Standing_Cable_Chest_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "standing-cable-lift",
-    "name": "Standing Cable Lift",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "front delts"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Connect a standard handle on a tower, and move the cable to the lowest pulley position.",
-      "With your side to the cable, grab the handle with one hand and step away from the tower. You should be approximately arm's length away from the pulley, with the tension of the weight on the cable. Your outstretched arm should be aligned with the cable.",
-      "With your feet positioned shoulder width apart, squat down and grab the handle with both hands. Your arms should still be fully extended.",
-      "In one motion, pull the handle up and across your body until your arms are in a fully-extended position above your head.",
-      "Keep your back straight and your arms close to your body as you pivot your back foot and straighten your legs to get a full range of motion.",
-      "Retract your arms and then your body. Return to the neutral position in a slow and controlled manner.",
-      "Repeat to failure.",
-      "Then, reposition and repeat the same series of movements on the opposite side."
-    ],
-    "images": [
-      "Standing_Cable_Lift/0.jpg",
-      "Standing_Cable_Lift/1.jpg"
-    ]
-  },
-  {
-    "id": "standing-cable-wood-chop",
-    "name": "Standing Cable Wood Chop",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "front delts"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Connect a standard handle to a tower, and move the cable to the highest pulley position.",
-      "With your side to the cable, grab the handle with one hand and step away from the tower. You should be approximately arm's length away from the pulley, with the tension of the weight on the cable. Your outstretched arm should be aligned with the cable.",
-      "With your feet positioned shoulder width apart, reach upward with your other hand and grab the handle with both hands. Your arms should still be fully extended.",
-      "In one motion, pull the handle down and across your body to your front knee while rotating your torso.",
-      "Keep your back and arms straight and core tight while you pivot your back foot and bend your knees to get a full range of motion.",
-      "Maintain your stance and straight arms. Return to the neutral position in a slow and controlled manner.",
-      "Repeat to failure.",
-      "Then, reposition and repeat the same series of movements on the opposite side."
-    ],
-    "images": [
-      "Standing_Cable_Wood_Chop/0.jpg",
-      "Standing_Cable_Wood_Chop/1.jpg"
     ]
   },
   {
@@ -14498,28 +13100,6 @@
     ]
   },
   {
-    "id": "standing-rope-crunch",
-    "name": "Standing Rope Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Attach a rope to a high pulley and select an appropriate weight.",
-      "Stand with your back to the cable tower. Take the rope with both hands over your shoulders, holding it to your upper chest. This will be your starting position.",
-      "Perform the movement by flexing the spine, crunching the weight down as far as you can.",
-      "Hold the peak contraction for a moment before returning to the starting position."
-    ],
-    "images": [
-      "Standing_Rope_Crunch/0.jpg",
-      "Standing_Rope_Crunch/1.jpg"
-    ]
-  },
-  {
     "id": "standing-towel-triceps-extension",
     "name": "Standing Towel Triceps Extension",
     "aliases": [],
@@ -14837,33 +13417,6 @@
     ]
   },
   {
-    "id": "suspended-fallout",
-    "name": "Suspended Fallout",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "lower back",
-      "front delts"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Adjust the straps so the handles are at an appropriate height, below waist level.",
-      "Begin standing and grasping the handles. Lean into the straps, moving to an incline push-up position. This will be your starting position.",
-      "Keeping your arms straight, lean further into the suspension straps, bringing your body closer to the ground, allowing your shoulders to extend, raising your arms up and over your head.",
-      "Maintain a neutral spine and keep the rest of your body straight, your shoulders being the only joints allowed to move.",
-      "Pause during the peak contraction, and then return to the starting position."
-    ],
-    "images": [
-      "Suspended_Fallout/0.jpg",
-      "Suspended_Fallout/1.jpg"
-    ]
-  },
-  {
     "id": "suspended-push-up",
     "name": "Suspended Push-Up",
     "aliases": [],
@@ -14886,28 +13439,6 @@
     "images": [
       "Suspended_Push-Up/0.jpg",
       "Suspended_Push-Up/1.jpg"
-    ]
-  },
-  {
-    "id": "suspended-reverse-crunch",
-    "name": "Suspended Reverse Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Secure a set of suspension straps with the handles hanging about a foot off of the ground. Move yourself into a pushup plank position facing away from the rack.",
-      "Place your feet into the handles. You should maintain a straight posture, not allowing the hips to sag. This will be your starting position.",
-      "Begin the movement by flexing the knees and hips, drawing the knees to your torso. As you do so, anteriorly tilt your pelvis, allowing your spine to flex.",
-      "At the top of the controlled motion, return to the starting position."
-    ],
-    "images": [
-      "Suspended_Reverse_Crunch/0.jpg",
-      "Suspended_Reverse_Crunch/1.jpg"
     ]
   },
   {
@@ -15204,30 +13735,6 @@
     "images": [
       "Triceps_Pushdown/0.jpg",
       "Triceps_Pushdown/1.jpg"
-    ]
-  },
-  {
-    "id": "tuck-crunch",
-    "name": "Tuck Crunch",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "To begin, lie down on the floor or an exercise mat with your back pressed against the floor. Your arms should be lying across your sides with the palms facing down.",
-      "Your legs should be crossed by wrapping one ankle around the other. Slowly elevate your legs up in the air until your thighs are perpendicular to the floor with a slight bend at the knees. Note: Your knees and toes should be parallel to the floor as opposed to the thighs.",
-      "Move your arms from the floor and cross them so they are resting on your chest. This is the starting position.",
-      "While keeping your lower back pressed against the floor, slowly lift your torso. Remember to exhale while perform this part of the exercise.",
-      "Slowly begin to lower your torso back down to the starting position while inhaling.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Tuck_Crunch/0.jpg",
-      "Tuck_Crunch/1.jpg"
     ]
   },
   {
@@ -15553,31 +14060,6 @@
     ]
   },
   {
-    "id": "weighted-ball-side-bend",
-    "name": "Weighted Ball Side Bend",
-    "aliases": [],
-    "primaryMuscles": [
-      "obliques"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "To begin, lie down on an exercise ball with your left side of the torso (waist, hips and shoulder) pressed against the ball.",
-      "Your feet should be on the floor while your legs are crossed and hanging from the ball. Hold a weighted plate with your right hand directly to the right side of your head. Tip: Make sure the smooth side of the plate is resting against your head.",
-      "Place your left arm across your torso so that your palm is on your obliques. There should be a right angle between your left forearm and upper arm. This is the starting position.",
-      "Raise the side of your torso up by laterally flexing at the waist while exhaling.",
-      "Hold the contraction for a second and slowly lower yourself back down to the starting position while inhaling.",
-      "Repeat for the recommended amount of repetitions.",
-      "Switch sides and repeat the exercise."
-    ],
-    "images": [
-      "Weighted_Ball_Side_Bend/0.jpg",
-      "Weighted_Ball_Side_Bend/1.jpg"
-    ]
-  },
-  {
     "id": "weighted-bench-dip",
     "name": "Weighted Bench Dip",
     "aliases": [],
@@ -15601,29 +14083,6 @@
     "images": [
       "Weighted_Bench_Dip/0.jpg",
       "Weighted_Bench_Dip/1.jpg"
-    ]
-  },
-  {
-    "id": "weighted-crunches",
-    "name": "Weighted Crunches",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie flat on your back with your feet flat on the ground or resting on a bench with your knees bent at a 90 degree angle.",
-      "Hold a weight to your chest, or you may hold it extended above your torso. This will be your starting position.",
-      "Now, exhale and slowly begin to roll your shoulders off the floor. Your shoulders should come up off the floor about 4 inches while your lower back remains on the floor.",
-      "At the top of the movement, flex your abdominals and hold for a brief pause.",
-      "Then inhale and slowly lower yourself back down to the starting position."
-    ],
-    "images": [
-      "Weighted_Crunches/0.jpg",
-      "Weighted_Crunches/1.jpg"
     ]
   },
   {
@@ -15983,28 +14442,6 @@
     "images": [
       "Wide-Grip_Standing_Barbell_Curl/0.jpg",
       "Wide-Grip_Standing_Barbell_Curl/1.jpg"
-    ]
-  },
-  {
-    "id": "wind-sprints",
-    "name": "Wind Sprints",
-    "aliases": [],
-    "primaryMuscles": [
-      "abs"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Hang from a pull-up bar using a pronated grip. Your arms and legs should be extended. This will be your starting position.",
-      "Begin by quickly raising one knee as high as you can. Do not swing your body or your legs. 3",
-      "Immediately reverse the motion, returning that leg to the starting position. Simultaneously raise the opposite knee as high as possible.",
-      "Continue alternating between legs until the set is complete."
-    ],
-    "images": [
-      "Wind_Sprints/0.jpg",
-      "Wind_Sprints/1.jpg"
     ]
   },
   {

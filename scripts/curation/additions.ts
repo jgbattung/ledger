@@ -13,6 +13,23 @@ import type { Addition } from './curate.ts'
 
 const additions: Addition[] = [
   {
+    name: 'Decline Leg Raise',
+    aliases: ['Decline Leg Raises'],
+    primaryMuscles: ['abs'],
+    secondaryMuscles: [],
+    equipment: 'bodyweight',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Lie back on a decline bench, gripping the pad or bench behind your head for support.',
+      'Extend your legs straight out with a slight bend at the knees.',
+      'Raise your legs up until your torso and legs form a V shape.',
+      'Lower back down under control without letting your feet touch the floor, and repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
     name: 'Wide Grip Cable Row',
     aliases: [],
     primaryMuscles: ['upper back', 'lats'],

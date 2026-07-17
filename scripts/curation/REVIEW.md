@@ -1,6 +1,6 @@
 # Exercise curation review (LG-047)
 
-Seed: 873 entries. Kept: 631. Dropped: 242. Added: 8. Final catalog: 639.
+Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 
 ## Kept (by primary muscle)
 
@@ -8,73 +8,17 @@ Seed: 873 entries. Kept: 631. Dropped: 242. Added: 8. Final catalog: 639.
 - Monster Walk
 - Thigh Abductor
 
-### abs (66)
-- 3/4 Sit-Up
-- Ab Crunch Machine
+### abs (10)
 - Ab Roller
-- Advanced Kettlebell Windmill
-- Air Bike
-- Alternate Heel Touchers
-- Barbell Ab Rollout
-- Barbell Rollout from Bench
-- Bent Press
-- Bent-Knee Hip Raise
-- Bottoms Up
-- Butt-Ups
 - Cable Crunch
-- Cable Judo Flip
-- Cable Reverse Crunch
-- Cable Seated Crunch
-- Cocoons
-- Cross-Body Crunch
 - Crunches
-- Dead Bug
 - Decline Crunch
-- Decline Reverse Crunch
-- Double Kettlebell Windmill
-- Elbow to Knee
-- Exercise Ball Crunch
-- Exercise Ball Pull-In
-- Flat Bench Leg Pull-In
-- Flat Bench Lying Leg Raise
-- Frog Sit-Ups
-- Gorilla Chin/Crunch
 - Hanging Leg Raise
-- Hanging Pike
-- Jackknife Sit-Up
-- Janda Sit-Up
-- Kettlebell Figure 8
-- Kettlebell Pass Between The Legs
-- Kettlebell Windmill
-- Knee/Hip Raise On Parallel Bars
-- Kneeling Barbell Ab Rollout
-- Landmine 180's
-- Leg Pull-In
-- One-Arm Medicine Ball Slam
-- Otis-Up
-- Overhead Crunch
-- Pallof Press
-- Pallof Press With Rotation
+- Machine Crunch
 - Plank
-- Press Sit-Up
 - Reverse Crunch
-- Rope Crunch
-- Seated Flat Bench Leg Pull-In
-- Seated Leg Tucks
-- Side Bridge
-- Side Jackknife
+- Side Plank
 - Sit-Up
-- Smith Machine Hip Raise
-- Spell Caster
-- Spider Crawl
-- Standing Cable Lift
-- Standing Cable Wood Chop
-- Standing Rope Crunch
-- Suspended Fallout
-- Suspended Reverse Crunch
-- Tuck Crunch
-- Weighted Crunches
-- Wind Sprints
 
 ### adductors (2)
 - Band Hip Adductions
@@ -437,19 +381,9 @@ Seed: 873 entries. Kept: 631. Dropped: 242. Added: 8. Final catalog: 639.
 - Stiff Leg Barbell Good Morning
 - Weighted Ball Hyperextension
 
-### obliques (12)
-- Barbell Side Bend
-- Bosu Ball Cable Crunch With Side Bends
-- Cable Russian Twists
-- Decline Oblique Crunch
-- Dumbbell Side Bend
-- Kneeling Cable Crunch With Alternating Oblique Twists
+### obliques (2)
 - Oblique Crunch
-- One-Arm High-Pulley Cable Side Bends
-- Plate Twist
 - Russian Twist
-- Seated Barbell Twist
-- Weighted Ball Side Bend
 
 ### quads (82)
 - Barbell Full Squat
@@ -784,6 +718,74 @@ Seed: 873 entries. Kept: 631. Dropped: 242. Added: 8. Final catalog: 639.
 - Supine Two-Arm Overhead Throw
 - Vertical Swing
 
+### scope-trim (66)
+- 3/4 Sit-Up
+- Advanced Kettlebell Windmill
+- Air Bike
+- Alternate Heel Touchers
+- Barbell Ab Rollout
+- Barbell Ab Rollout - On Knees
+- Barbell Rollout from Bench
+- Barbell Side Bend
+- Bent Press
+- Bent-Knee Hip Raise
+- Bosu Ball Cable Crunch With Side Bends
+- Bottoms Up
+- Butt-Ups
+- Cable Judo Flip
+- Cable Reverse Crunch
+- Cable Russian Twists
+- Cable Seated Crunch
+- Cocoons
+- Cross-Body Crunch
+- Crunch - Hands Overhead
+- Dead Bug
+- Decline Oblique Crunch
+- Decline Reverse Crunch
+- Double Kettlebell Windmill
+- Dumbbell Side Bend
+- Elbow to Knee
+- Exercise Ball Crunch
+- Exercise Ball Pull-In
+- Flat Bench Leg Pull-In
+- Flat Bench Lying Leg Raise
+- Frog Sit-Ups
+- Gorilla Chin/Crunch
+- Hanging Pike
+- Jackknife Sit-Up
+- Janda Sit-Up
+- Kettlebell Figure 8
+- Kettlebell Pass Between The Legs
+- Kettlebell Windmill
+- Knee/Hip Raise On Parallel Bars
+- Kneeling Cable Crunch With Alternating Oblique Twists
+- Landmine 180's
+- Leg Pull-In
+- One-Arm High-Pulley Cable Side Bends
+- One-Arm Medicine Ball Slam
+- Otis-Up
+- Pallof Press
+- Pallof Press With Rotation
+- Plate Twist
+- Press Sit-Up
+- Rope Crunch
+- Seated Barbell Twist
+- Seated Flat Bench Leg Pull-In
+- Seated Leg Tucks
+- Side Jackknife
+- Smith Machine Hip Raise
+- Spell Caster
+- Spider Crawl
+- Standing Cable Lift
+- Standing Cable Wood Chop
+- Standing Rope Crunch
+- Suspended Fallout
+- Suspended Reverse Crunch
+- Tuck Crunch
+- Weighted Ball Side Bend
+- Weighted Crunches
+- Wind Sprints
+
 ### stretch (122)
 - 90/90 Hamstring
 - Adductor
@@ -935,6 +937,7 @@ Seed: 873 entries. Kept: 631. Dropped: 242. Added: 8. Final catalog: 639.
 
 - **Close Grip Seated Cable Row** - Grip-width sibling to Wide Grip Cable Row, pairing with the seed's existing wide-grip-only cable row coverage.
 - **Close-Grip Pull-Up** - Grip-width sibling to Wide Grip Pull-Up; only the behind-neck wide variant existed in the seed.
+- **Decline Leg Raise** - Ji-logged staple
 - **Incline Close Grip Bench Press** - AC coverage: incline + close-grip combination (upper chest/triceps emphasis) missing from the seed.
 - **Neutral Grip Lat Pulldown** - Grip-family completion for lat pulldown alongside the seed's wide-grip and close-grip variants.
 - **Neutral Grip Pull-Up** - Systematic pull-up grip family Ji expects as a first-class variant; shoulder-friendlier grip missing from the seed.

@@ -46,6 +46,7 @@ export type DropReason =
   | 'strongman-event'
   | 'novelty-junk'
   | 'neck'
+  | 'scope-trim'
   | `duplicate-of:${string}`
 
 export type Addition = {

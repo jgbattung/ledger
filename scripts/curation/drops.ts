@@ -2,7 +2,8 @@
  * Dropped seed entries (LG-047 curation), grouped by reason. Every
  * removal carries a reason code so Ji can review and veto at the Phase 4
  * checkpoint. Reason codes: stretch, cardio, plyometric, strongman-event,
- * novelty-junk, neck, duplicate-of:<kept-id>.
+ * novelty-junk, neck, scope-trim (legitimate exercise, cut to match Ji's
+ * actual usage scope rather than a quality judgment), duplicate-of:<kept-id>.
  */
 import type { DropReason } from './curate.ts'
 
@@ -111,6 +112,78 @@ const drops: Record<string, DropReason> = {
   "Supine_One-Arm_Overhead_Throw": "plyometric", // Supine One-Arm Overhead Throw
   "Supine_Two-Arm_Overhead_Throw": "plyometric", // Supine Two-Arm Overhead Throw
   "Vertical_Swing": "plyometric", // Vertical Swing
+  // ---- scope-trim (66) ----
+  // Ji review round 1 (2026-07-17): legitimate exercises, not junk - cut to
+  // shrink the abs/obliques grouping down to what Ji actually logs plus a
+  // small staple handful (Plank/Sit-Up/Crunches/Russian Twist tier). See
+  // keeps.ts abs/obliques sections and .gsd/exercise-model.md for the kept
+  // list and reason-code note.
+  "3_4_Sit-Up": "scope-trim", // 3/4 Sit-Up
+  "Advanced_Kettlebell_Windmill": "scope-trim", // Advanced Kettlebell Windmill
+  "Air_Bike": "scope-trim", // Air Bike
+  "Alternate_Heel_Touchers": "scope-trim", // Alternate Heel Touchers
+  "Barbell_Ab_Rollout": "scope-trim", // Barbell Ab Rollout
+  "Barbell_Ab_Rollout_-_On_Knees": "scope-trim", // Kneeling Barbell Ab Rollout
+  "Barbell_Rollout_from_Bench": "scope-trim", // Barbell Rollout from Bench
+  "Barbell_Side_Bend": "scope-trim", // Barbell Side Bend
+  "Bent-Knee_Hip_Raise": "scope-trim", // Bent-Knee Hip Raise
+  "Bent_Press": "scope-trim", // Bent Press
+  "Bosu_Ball_Cable_Crunch_With_Side_Bends": "scope-trim", // Bosu Ball Cable Crunch With Side Bends
+  "Bottoms_Up": "scope-trim", // Bottoms Up
+  "Butt-Ups": "scope-trim", // Butt-Ups
+  "Cable_Judo_Flip": "scope-trim", // Cable Judo Flip
+  "Cable_Reverse_Crunch": "scope-trim", // Cable Reverse Crunch
+  "Cable_Russian_Twists": "scope-trim", // Cable Russian Twists
+  "Cable_Seated_Crunch": "scope-trim", // Cable Seated Crunch
+  "Cocoons": "scope-trim", // Cocoons
+  "Cross-Body_Crunch": "scope-trim", // Cross-Body Crunch
+  "Crunch_-_Hands_Overhead": "scope-trim", // Overhead Crunch
+  "Dead_Bug": "scope-trim", // Dead Bug
+  "Decline_Oblique_Crunch": "scope-trim", // Decline Oblique Crunch
+  "Decline_Reverse_Crunch": "scope-trim", // Decline Reverse Crunch
+  "Double_Kettlebell_Windmill": "scope-trim", // Double Kettlebell Windmill
+  "Dumbbell_Side_Bend": "scope-trim", // Dumbbell Side Bend
+  "Elbow_to_Knee": "scope-trim", // Elbow to Knee
+  "Exercise_Ball_Crunch": "scope-trim", // Exercise Ball Crunch
+  "Exercise_Ball_Pull-In": "scope-trim", // Exercise Ball Pull-In
+  "Flat_Bench_Leg_Pull-In": "scope-trim", // Flat Bench Leg Pull-In
+  "Flat_Bench_Lying_Leg_Raise": "scope-trim", // Flat Bench Lying Leg Raise
+  "Frog_Sit-Ups": "scope-trim", // Frog Sit-Ups
+  "Gorilla_Chin_Crunch": "scope-trim", // Gorilla Chin/Crunch
+  "Hanging_Pike": "scope-trim", // Hanging Pike
+  "Jackknife_Sit-Up": "scope-trim", // Jackknife Sit-Up
+  "Janda_Sit-Up": "scope-trim", // Janda Sit-Up
+  "Kettlebell_Figure_8": "scope-trim", // Kettlebell Figure 8
+  "Kettlebell_Pass_Between_The_Legs": "scope-trim", // Kettlebell Pass Between The Legs
+  "Kettlebell_Windmill": "scope-trim", // Kettlebell Windmill
+  "Knee_Hip_Raise_On_Parallel_Bars": "scope-trim", // Knee/Hip Raise On Parallel Bars
+  "Kneeling_Cable_Crunch_With_Alternating_Oblique_Twists": "scope-trim", // Kneeling Cable Crunch With Alternating Oblique Twists
+  "Landmine_180s": "scope-trim", // Landmine 180's
+  "Leg_Pull-In": "scope-trim", // Leg Pull-In
+  "One-Arm_High-Pulley_Cable_Side_Bends": "scope-trim", // One-Arm High-Pulley Cable Side Bends
+  "One-Arm_Medicine_Ball_Slam": "scope-trim", // One-Arm Medicine Ball Slam
+  "Otis-Up": "scope-trim", // Otis-Up
+  "Pallof_Press": "scope-trim", // Pallof Press
+  "Pallof_Press_With_Rotation": "scope-trim", // Pallof Press With Rotation
+  "Plate_Twist": "scope-trim", // Plate Twist
+  "Press_Sit-Up": "scope-trim", // Press Sit-Up
+  "Rope_Crunch": "scope-trim", // Rope Crunch
+  "Seated_Barbell_Twist": "scope-trim", // Seated Barbell Twist
+  "Seated_Flat_Bench_Leg_Pull-In": "scope-trim", // Seated Flat Bench Leg Pull-In
+  "Seated_Leg_Tucks": "scope-trim", // Seated Leg Tucks
+  "Side_Jackknife": "scope-trim", // Side Jackknife
+  "Smith_Machine_Hip_Raise": "scope-trim", // Smith Machine Hip Raise
+  "Spell_Caster": "scope-trim", // Spell Caster
+  "Spider_Crawl": "scope-trim", // Spider Crawl
+  "Standing_Cable_Lift": "scope-trim", // Standing Cable Lift
+  "Standing_Cable_Wood_Chop": "scope-trim", // Standing Cable Wood Chop
+  "Standing_Rope_Crunch": "scope-trim", // Standing Rope Crunch
+  "Suspended_Fallout": "scope-trim", // Suspended Fallout
+  "Suspended_Reverse_Crunch": "scope-trim", // Suspended Reverse Crunch
+  "Tuck_Crunch": "scope-trim", // Tuck Crunch
+  "Weighted_Ball_Side_Bend": "scope-trim", // Weighted Ball Side Bend
+  "Weighted_Crunches": "scope-trim", // Weighted Crunches
+  "Wind_Sprints": "scope-trim", // Wind Sprints
   // ---- stretch (122) ----
   "90_90_Hamstring": "stretch", // 90/90 Hamstring
   "Adductor": "stretch", // Adductor

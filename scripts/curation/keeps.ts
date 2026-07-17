@@ -1,0 +1,508 @@
+/**
+ * Kept seed entries (LG-047 curation). Every seed id below maps to a
+ * canonical name, aliases, and owned taxonomy values. Instructions and
+ * images carry over from the seed entry automatically (see curate.ts) -
+ * do not repeat them here. Grouped roughly by primary muscle region for
+ * reviewability.
+ */
+import type { KeepDecision } from './curate.ts'
+
+const keeps: Record<string, KeepDecision> = {
+  // ---- abductors ----
+  "Monster_Walk": { name: "Monster Walk", aliases: [], primaryMuscles: ["abductors"], secondaryMuscles: [], equipment: "band", category: "strength", mechanic: "compound" },
+  // Ji review round 3 (2026-07-17): renamed per his edits to REVIEW.md.
+  "Thigh_Abductor": { name: "Seated Machine Hip Abduction", aliases: ["Thigh Abductor"], primaryMuscles: ["abductors"], secondaryMuscles: ["glutes"], equipment: "machine", category: "strength", mechanic: "isolation" },
+  // ---- abs ----
+  // Ji review round 1 (2026-07-17): trimmed hard to what he's actually
+  // logged plus a small staple handful. See drops.ts "scope-trim" section
+  // for everything moved out of this muscle group.
+  "Ab_Crunch_Machine": { name: "Machine Crunch", aliases: ["Ab Crunch Machine"], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Ab_Roller": { name: "Ab Roller", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: ["front delts"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Cable_Crunch": { name: "Cable Crunch", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Crunches": { name: "Crunches", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Decline_Crunch": { name: "Decline Crunch", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Hanging_Leg_Raise": { name: "Hanging Leg Raise", aliases: ["Hanging Leg Raises"], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Plank": { name: "Plank", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Reverse_Crunch": { name: "Reverse Crunch", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Side_Bridge": { name: "Side Plank", aliases: ["Side Bridge"], primaryMuscles: ["abs"], secondaryMuscles: ["front delts"], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Sit-Up": { name: "Sit-Up", aliases: [], primaryMuscles: ["abs"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  // ---- adductors ----
+  "Band_Hip_Adductions": { name: "Band Hip Adductions", aliases: [], primaryMuscles: ["adductors"], secondaryMuscles: [], equipment: "band", category: "strength", mechanic: "isolation" },
+  // Ji review round 3 (2026-07-17): renamed per his edits to REVIEW.md.
+  "Thigh_Adductor": { name: "Seated Machine Hip Adduction", aliases: ["Thigh Adductor"], primaryMuscles: ["adductors"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "isolation" },
+  // ---- biceps ----
+  "Alternate_Hammer_Curl": { name: "Alternate Hammer Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Alternate_Incline_Dumbbell_Curl": { name: "Alternate Incline Dumbbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Barbell_Curl": { name: "Barbell Curl", aliases: ["Standing Barbell Curl"], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Barbell_Curls_Lying_Against_An_Incline": { name: "Barbell Curls Lying Against An Incline", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Cable_Hammer_Curls_-_Rope_Attachment": { name: "Cable Hammer Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Cable_Preacher_Curl": { name: "Cable Preacher Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Close-Grip_EZ_Bar_Curl": { name: "Close-Grip EZ Bar Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Close-Grip_Standing_Barbell_Curl": { name: "Close-Grip Standing Barbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Concentration_Curls": { name: "Concentration Curls", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Cross_Body_Hammer_Curl": { name: "Cross Body Hammer Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Drag_Curl": { name: "Drag Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Alternate_Bicep_Curl": { name: "Dumbbell Alternate Bicep Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Bicep_Curl": { name: "Dumbbell Bicep Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Prone_Incline_Curl": { name: "Dumbbell Prone Incline Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "EZ-Bar_Curl": { name: "EZ-Bar Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "ez bar", category: "strength", mechanic: "isolation" },
+  "Hammer_Curls": { name: "Hammer Curls", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "High_Cable_Curls": { name: "High Cable Curls", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Incline_Dumbbell_Curl": { name: "Incline Dumbbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Incline_Hammer_Curls": { name: "Incline Hammer Curls", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Lying_Cable_Curl": { name: "Lying Cable Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Lying_Supine_Dumbbell_Curl": { name: "Lying Supine Dumbbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Machine_Bicep_Curl": { name: "Machine Bicep Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Machine_Preacher_Curls": { name: "Machine Preacher Curls", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "One_Arm_Dumbbell_Preacher_Curl": { name: "One Arm Dumbbell Preacher Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Overhead_Cable_Curl": { name: "Overhead Cable Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Preacher_Curl": { name: "Preacher Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Preacher_Hammer_Dumbbell_Curl": { name: "Preacher Hammer Dumbbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Reverse_Barbell_Curl": { name: "Reverse Barbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Reverse_Barbell_Preacher_Curls": { name: "Reverse Barbell Preacher Curls", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "ez bar", category: "strength", mechanic: "isolation" },
+  "Reverse_Cable_Curl": { name: "Reverse Cable Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Reverse_Plate_Curls": { name: "Reverse Plate Curls", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Seated_Close-Grip_Concentration_Barbell_Curl": { name: "Seated Close-Grip Concentration Barbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Seated_Dumbbell_Curl": { name: "Seated Dumbbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_Dumbbell_Inner_Biceps_Curl": { name: "Seated Dumbbell Inner Biceps Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Spider_Curl": { name: "Spider Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "ez bar", category: "strength", mechanic: "isolation" },
+  "Standing_Biceps_Cable_Curl": { name: "Standing Biceps Cable Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Standing_Concentration_Curl": { name: "Standing Concentration Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Standing_Dumbbell_Reverse_Curl": { name: "Standing Dumbbell Reverse Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Standing_One-Arm_Cable_Curl": { name: "Standing One-Arm Cable Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Standing_One-Arm_Dumbbell_Curl_Over_Incline_Bench": { name: "Standing One-Arm Dumbbell Curl Over Incline Bench", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Wide-Grip_Standing_Barbell_Curl": { name: "Wide-Grip Standing Barbell Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Zottman_Curl": { name: "Zottman Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Zottman_Preacher_Curl": { name: "Zottman Preacher Curl", aliases: [], primaryMuscles: ["biceps"], secondaryMuscles: ["forearms"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  // ---- calves ----
+  "Barbell_Seated_Calf_Raise": { name: "Barbell Seated Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Calf_Press": { name: "Calf Press", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  // Ji review round 3 (2026-07-17): CORRECTS round 2. Ji clarified this seed
+  // entry (vertical/45-degree leg press that comes down) is a different
+  // movement from "Seated Leg Press Calf Raise" (horizontal seated leg
+  // press) - round 2 wrongly conflated them. Renamed to "Leg Press Machine
+  // Calf Raise" instead; "Seated Leg Press Calf Raise" is now a separate
+  // net-new addition (see additions.ts).
+  "Calf_Press_On_The_Leg_Press_Machine": { name: "Leg Press Machine Calf Raise", aliases: ["Calf Press On The Leg Press Machine"], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Calf_Raise_On_A_Dumbbell": { name: "Calf Raise On A Dumbbell", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Donkey_Calf_Raises": { name: "Donkey Calf Raises", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Seated_One-Leg_Calf_Raise": { name: "Dumbbell Seated One-Leg Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_Calf_Raise": { name: "Seated Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Calf_Raise": { name: "Smith Machine Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "smith machine", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Reverse_Calf_Raises": { name: "Smith Machine Reverse Calf Raises", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "smith machine", category: "strength", mechanic: "isolation" },
+  "Standing_Barbell_Calf_Raise": { name: "Standing Barbell Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Standing_Calf_Raises": { name: "Standing Calf Raises", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Standing_Dumbbell_Calf_Raise": { name: "Standing Dumbbell Calf Raise", aliases: [], primaryMuscles: ["calves"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  // ---- chest ----
+  // Ji review round 3 (2026-07-17): dropped 19 narrow/unused variants (see
+  // drops.ts scope-trim/novelty-junk); "Butterfly" renamed to "Pec Deck
+  // Flye" (movement kept, name changed); "Machine Bench Press" renamed to
+  // "Machine Chest Press" (Ji's addition request - same seated machine
+  // press, not a duplicate); "Pushups (Close and Wide Hand Positions)"
+  // split into two flat-model entries, see additions.ts.
+  "Alternating_Floor_Press": { name: "Alternating Floor Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
+  "Barbell_Bench_Press_-_Medium_Grip": { name: "Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Guillotine_Bench_Press": { name: "Barbell Guillotine Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Bent-Arm_Dumbbell_Pullover": { name: "Bent-Arm Dumbbell Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["lats", "front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Bodyweight_Flyes": { name: "Bodyweight Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "ez bar", category: "strength", mechanic: "isolation" },
+  "Butterfly": { name: "Pec Deck Flye", aliases: ["Butterfly", "Pec Deck Fly", "Machine Flye"], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Cable_Chest_Press": { name: "Cable Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Cable_Crossover": { name: "Cable Crossover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Dips_-_Chest_Version": { name: "Chest Dip", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Decline_Barbell_Bench_Press": { name: "Decline Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Decline_Dumbbell_Bench_Press": { name: "Decline Dumbbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Decline_Dumbbell_Flyes": { name: "Decline Dumbbell Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Decline_Push-Up": { name: "Decline Push-Up", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Decline_Smith_Press": { name: "Decline Smith Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Dumbbell_Bench_Press": { name: "Dumbbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Bench_Press_with_Neutral_Grip": { name: "Dumbbell Bench Press with Neutral Grip", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Flyes": { name: "Dumbbell Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Flat_Bench_Cable_Flyes": { name: "Flat Bench Cable Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Front_Raise_And_Pullover": { name: "Front Raise And Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["lats", "front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Incline_Bench_Press_-_Medium_Grip": { name: "Incline Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Incline_Cable_Chest_Press": { name: "Incline Cable Chest Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Incline_Cable_Flye": { name: "Incline Cable Flye", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Incline_Dumbbell_Bench_With_Palms_Facing_In": { name: "Incline Dumbbell Bench With Palms Facing In", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Incline_Dumbbell_Flyes": { name: "Incline Dumbbell Flyes", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Incline_Dumbbell_Press": { name: "Incline Dumbbell Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Incline_Push-Up": { name: "Incline Push-Up", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Incline_Push-Up_Medium": { name: "Incline Push-Up Medium", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Incline_Push-Up_Reverse_Grip": { name: "Incline Push-Up Reverse Grip", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Incline_Push-Up_Wide": { name: "Incline Push-Up Wide", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Low_Cable_Crossover": { name: "Low Cable Crossover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Machine_Bench_Press": { name: "Machine Chest Press", aliases: ["Machine Bench Press"], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "One_Arm_Dumbbell_Bench_Press": { name: "One Arm Dumbbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "One-Arm_Flat_Bench_Dumbbell_Flye": { name: "One-Arm Flat Bench Dumbbell Flye", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Push-Up_Wide": { name: "Wide Grip Push-Up", aliases: ["Push-Up Wide"], primaryMuscles: ["chest"], secondaryMuscles: ["abs", "front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Push-Ups_With_Feet_Elevated": { name: "Push-Ups With Feet Elevated", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Pushups": { name: "Pushups", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Single-Arm_Cable_Crossover": { name: "Single-Arm Cable Crossover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Single-Arm_Push-Up": { name: "Single-Arm Push-Up", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Smith_Machine_Bench_Press": { name: "Smith Machine Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Smith_Machine_Decline_Press": { name: "Smith Machine Decline Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Smith_Machine_Incline_Bench_Press": { name: "Smith Machine Incline Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Straight-Arm_Dumbbell_Pullover": { name: "Straight-Arm Dumbbell Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["lats", "front delts", "triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Wide-Grip_Barbell_Bench_Press": { name: "Wide-Grip Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Wide-Grip_Decline_Barbell_Bench_Press": { name: "Wide-Grip Decline Barbell Bench Press", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Wide-Grip_Decline_Barbell_Pullover": { name: "Wide-Grip Decline Barbell Pullover", aliases: [], primaryMuscles: ["chest"], secondaryMuscles: ["front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  // ---- forearms ----
+  // Ji review round 4 (2026-07-17): dropped 2 (see drops.ts). Global
+  // Supinated/Pronated naming rule (see .gsd/exercise-model.md) applied
+  // across every "Palms-Up"/"Palms-Down" canonical name in this section,
+  // old names kept as aliases; "Standing Palms-Up Barbell Behind The Back
+  // Wrist Curl" got an explicit rename instead (below), which wins over the
+  // global rule for that one entry. NOTE: "Seated Palm-Up Barbell Wrist
+  // Curl" (singular "Palm-Up", not "Palms-Up") was left as-is - it doesn't
+  // literally match the rule Ji specified; flagged for his call.
+  "Cable_Wrist_Curl": { name: "Cable Wrist Curl", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Lying_Pronation": { name: "Dumbbell Lying Pronation", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Lying_Supination": { name: "Dumbbell Lying Supination", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Finger_Curls": { name: "Finger Curls", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Palms-Down_Dumbbell_Wrist_Curl_Over_A_Bench": { name: "Pronated Dumbbell Wrist Curl Over A Bench", aliases: ["Palms-Down Dumbbell Wrist Curl Over A Bench"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Palms-Up_Barbell_Wrist_Curl_Over_A_Bench": { name: "Supinated Barbell Wrist Curl Over A Bench", aliases: ["Palms-Up Barbell Wrist Curl Over A Bench"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench": { name: "Supinated Dumbbell Wrist Curl Over A Bench", aliases: ["Palms-Up Dumbbell Wrist Curl Over A Bench"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Plate_Pinch": { name: "Plate Pinch", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Seated_Dumbbell_Palms-Down_Wrist_Curl": { name: "Seated Dumbbell Pronated Wrist Curl", aliases: ["Seated Dumbbell Palms-Down Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_Dumbbell_Palms-Up_Wrist_Curl": { name: "Seated Dumbbell Supinated Wrist Curl", aliases: ["Seated Dumbbell Palms-Up Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_One-Arm_Dumbbell_Palms-Down_Wrist_Curl": { name: "Seated One-Arm Dumbbell Pronated Wrist Curl", aliases: ["Seated One-Arm Dumbbell Palms-Down Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_One-Arm_Dumbbell_Palms-Up_Wrist_Curl": { name: "Seated One-Arm Dumbbell Supinated Wrist Curl", aliases: ["Seated One-Arm Dumbbell Palms-Up Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  // Ji review round 5 (2026-07-17): confirmed the singular "Palm-Up" entry
+  // follows the Supinated/Pronated convention too.
+  "Seated_Palm-Up_Barbell_Wrist_Curl": { name: "Seated Supinated Barbell Wrist Curl", aliases: ["Seated Palm-Up Barbell Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Seated_Palms-Down_Barbell_Wrist_Curl": { name: "Seated Pronated Barbell Wrist Curl", aliases: ["Seated Palms-Down Barbell Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Seated_Two-Arm_Palms-Up_Low-Pulley_Wrist_Curl": { name: "Seated Two-Arm Supinated Low-Pulley Wrist Curl", aliases: ["Seated Two-Arm Palms-Up Low-Pulley Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Standing_Olympic_Plate_Hand_Squeeze": { name: "Standing Olympic Plate Hand Squeeze", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: ["biceps"], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Standing_Palms-Up_Barbell_Behind_The_Back_Wrist_Curl": { name: "Barbell Behind The Back Wrist Curl", aliases: ["Standing Palms-Up Barbell Behind The Back Wrist Curl"], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Wrist_Roller": { name: "Wrist Roller", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: ["front delts"], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Wrist_Rotations_with_Straight_Bar": { name: "Wrist Rotations with Straight Bar", aliases: [], primaryMuscles: ["forearms"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  // ---- front delts ----
+  // Ji review round 4 (2026-07-17): dropped 35 (see drops.ts) - mostly
+  // kettlebell ballistics/olympic-style/strongman-adjacent movements Ji
+  // doesn't use; a few (Bent Over Low-Pulley Side Lateral, Cable Rope
+  // Rear-Delt Rows, Reverse Machine Flyes) are really rear-delt movements
+  // the muscle-mapping heuristic misfiled under front delts - dropped
+  // anyway per Ji's explicit call. "Machine Shoulder (Military) Press"
+  // renamed to "Machine Shoulder Press"; a neutral-grip sibling is a new
+  // addition (see additions.ts) since the default here is overhand grip.
+  "Alternating_Cable_Shoulder_Press": { name: "Alternating Cable Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Alternating_Deltoid_Raise": { name: "Alternating Deltoid Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Alternating_Kettlebell_Press": { name: "Alternating Kettlebell Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
+  "Anti-Gravity_Press": { name: "Anti-Gravity Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["upper back", "traps", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Arnold_Dumbbell_Press": { name: "Arnold Dumbbell Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Band_Pull_Apart": { name: "Band Pull Apart", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["upper back", "traps"], equipment: "band", category: "strength", mechanic: "isolation" },
+  "Barbell_Incline_Shoulder_Raise": { name: "Barbell Incline Shoulder Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["chest"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Shoulder_Press": { name: "Barbell Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["chest", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Cable_Internal_Rotation": { name: "Cable Internal Rotation", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Cable_Shoulder_Press": { name: "Cable Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Dumbbell_Incline_Shoulder_Raise": { name: "Dumbbell Incline Shoulder Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dumbbell_One-Arm_Shoulder_Press": { name: "Dumbbell One-Arm Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Raise": { name: "Dumbbell Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["biceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Scaption": { name: "Dumbbell Scaption", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["traps"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Shoulder_Press": { name: "Dumbbell Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "External_Rotation": { name: "External Rotation", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "External_Rotation_with_Band": { name: "External Rotation with Band", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "band", category: "strength", mechanic: "compound" },
+  "External_Rotation_with_Cable": { name: "External Rotation with Cable", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Front_Cable_Raise": { name: "Front Cable Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Front_Dumbbell_Raise": { name: "Front Dumbbell Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Front_Incline_Dumbbell_Raise": { name: "Front Incline Dumbbell Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Front_Plate_Raise": { name: "Front Plate Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Front_Two-Dumbbell_Raise": { name: "Front Two-Dumbbell Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Handstand_Push-Ups": { name: "Handstand Push-Ups", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Internal_Rotation_with_Band": { name: "Internal Rotation with Band", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "band", category: "strength", mechanic: "isolation" },
+  "Iron_Cross": { name: "Iron Cross", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["chest", "glutes", "hamstrings", "lower back", "quads", "traps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Jerk_Balance": { name: "Jerk Balance", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["glutes", "hamstrings", "quads", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Landmine_Linear_Jammer": { name: "Landmine Linear Jammer", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["abs", "calves", "chest", "hamstrings", "quads", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Leverage_Shoulder_Press": { name: "Leverage Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Low_Pulley_Row_To_Neck": { name: "Low Pulley Upright Row", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["biceps", "upper back", "traps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Machine_Shoulder_Military_Press": { name: "Machine Shoulder Press", aliases: ["Machine Shoulder (Military) Press", "Machine Military Press"], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Push_Press": { name: "Push Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["quads", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Seated_Barbell_Military_Press": { name: "Seated Barbell Military Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Seated_Cable_Shoulder_Press": { name: "Seated Cable Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Seated_Dumbbell_Press": { name: "Seated Dumbbell Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Side_Laterals_to_Front_Raise": { name: "Side Laterals to Front Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["traps"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Single_Dumbbell_Raise": { name: "Single Dumbbell Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["forearms", "traps"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Smith_Incline_Shoulder_Raise": { name: "Smith Incline Shoulder Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["chest"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Overhead_Shoulder_Press": { name: "Smith Machine Overhead Shoulder Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Standing_Alternating_Dumbbell_Press": { name: "Standing Alternating Dumbbell Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Standing_Bradford_Press": { name: "Standing Bradford Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Standing_Dumbbell_Press": { name: "Standing Dumbbell Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Standing_Dumbbell_Straight-Arm_Front_Delt_Raise_Above_Head": { name: "Standing Dumbbell Straight-Arm Front Delt Raise Above Head", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Standing_Front_Barbell_Raise_Over_Head": { name: "Standing Front Barbell Raise Over Head", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Standing_Low-Pulley_Deltoid_Raise": { name: "Standing Low-Pulley Deltoid Raise", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["forearms"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Standing_Military_Press": { name: "Standing Military Press", aliases: ["Military Press"], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Standing_Palm-In_One-Arm_Dumbbell_Press": { name: "Standing Palm-In One-Arm Dumbbell Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Standing_Palms-In_Dumbbell_Press": { name: "Standing Palms-In Dumbbell Press", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["triceps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Straight_Raises_on_Incline_Bench": { name: "Straight Raises on Incline Bench", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["traps"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Upright_Barbell_Row": { name: "Upright Barbell Row", aliases: [], primaryMuscles: ["front delts"], secondaryMuscles: ["traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  // ---- glutes ----
+  // Ji review round 5 (2026-07-17): dropped 6, all scope-trim (see drops.ts).
+  "Barbell_Glute_Bridge": { name: "Barbell Glute Bridge", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["calves", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Hip_Thrust": { name: "Barbell Hip Thrust", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["calves", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Butt_Lift_Bridge": { name: "Butt Lift (Bridge)", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["hamstrings"], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Glute_Kickback": { name: "Glute Kickback", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["hamstrings"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Hip_Extension_with_Bands": { name: "Hip Extension with Bands", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["hamstrings"], equipment: "band", category: "strength", mechanic: "compound" },
+  "Hip_Lift_with_Band": { name: "Hip Lift with Band", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["calves", "hamstrings"], equipment: "band", category: "strength", mechanic: "compound" },
+  "Leg_Lift": { name: "Leg Lift", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["hamstrings"], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "One-Legged_Cable_Kickback": { name: "One-Legged Cable Kickback", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["hamstrings"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Single_Leg_Glute_Bridge": { name: "Single Leg Glute Bridge", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["hamstrings"], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Step-up_with_Knee_Raise": { name: "Step-up with Knee Raise", aliases: [], primaryMuscles: ["glutes"], secondaryMuscles: ["hamstrings", "quads"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  // ---- hamstrings ----
+  // Ji review round 5 (2026-07-17): dropped 23 (see drops.ts) - mostly
+  // olympic-lift derivatives and kettlebell ballistics.
+  "Band_Good_Morning": { name: "Band Good Morning", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["glutes", "lower back"], equipment: "band", category: "strength", mechanic: "compound" },
+  "Clean": { name: "Clean", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "forearms", "glutes", "lower back", "quads", "front delts", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Clean_Deadlift": { name: "Clean Deadlift", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["forearms", "glutes", "lower back", "upper back", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Clean": { name: "Dumbbell Clean", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "forearms", "glutes", "lower back", "quads", "front delts", "traps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Floor_Glute-Ham_Raise": { name: "Floor Glute-Ham Raise", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "glutes"], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Glute_Ham_Raise": { name: "Glute Ham Raise", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "glutes"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Good_Morning": { name: "Good Morning", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["abs", "glutes", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Good_Morning_off_Pins": { name: "Good Morning off Pins", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["abs", "glutes", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Lunge_Pass_Through": { name: "Lunge Pass Through", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "glutes", "quads"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
+  "Lying_Leg_Curls": { name: "Lying Leg Curls", aliases: ["Lying Hamstring Curl"], primaryMuscles: ["hamstrings"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Natural_Glute_Ham_Raise": { name: "Natural Glute Ham Raise", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "glutes", "lower back"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Platform_Hamstring_Slides": { name: "Platform Hamstring Slides", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["glutes"], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Prone_Manual_Hamstring": { name: "Prone Manual Hamstring", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Reverse_Band_Sumo_Deadlift": { name: "Reverse Band Sumo Deadlift", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["abductors", "adductors", "calves", "forearms", "glutes", "lower back", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Reverse_Hyperextension": { name: "Reverse Hyperextension", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "glutes"], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Romanian_Deadlift": { name: "Romanian Deadlift", aliases: ["RDL"], primaryMuscles: ["hamstrings"], secondaryMuscles: ["calves", "glutes", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Romanian_Deadlift_from_Deficit": { name: "Romanian Deadlift from Deficit", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["forearms", "glutes", "lower back", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Seated_Band_Hamstring_Curl": { name: "Seated Band Hamstring Curl", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: [], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Seated_Leg_Curl": { name: "Seated Leg Curl", aliases: ["Machine Hamstring Curl"], primaryMuscles: ["hamstrings"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Hang_Power_Clean": { name: "Smith Machine Hang Power Clean", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["glutes", "lower back", "quads", "front delts", "traps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Smith_Machine_Stiff-Legged_Deadlift": { name: "Smith Machine Stiff-Legged Deadlift", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["glutes", "lower back"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Standing_Leg_Curl": { name: "Standing Leg Curl", aliases: ["Standing Hamstring Curl"], primaryMuscles: ["hamstrings"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Stiff-Legged_Barbell_Deadlift": { name: "Stiff-Legged Barbell Deadlift", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["glutes", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Stiff-Legged_Dumbbell_Deadlift": { name: "Stiff-Legged Dumbbell Deadlift", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["glutes", "lower back"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Sumo_Deadlift": { name: "Sumo Deadlift", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["adductors", "forearms", "glutes", "lower back", "upper back", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Wide_Stance_Stiff_Legs": { name: "Wide Stance Stiff Legs", aliases: [], primaryMuscles: ["hamstrings"], secondaryMuscles: ["adductors", "glutes", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  // ---- lats ----
+  // Ji review round 5 (2026-07-17): dropped 2 (see drops.ts). Lat pulldown
+  // grip/width grid completed (Wide/Medium/Close x Pronated/Supinated/
+  // Neutral, 9 slots) via renames + new additions - see additions.ts and
+  // the round-5 log entry for the full mapping. Cable row additions
+  // (Neutral/Overhand/Single-Arm Grip Cable Row) also in additions.ts;
+  // "Close Grip Seated Cable Row" (round-0 addition) renamed to "Neutral
+  // Grip Cable Row" there since a V-bar/close cable row is a neutral grip.
+  "Band_Assisted_Pull-Up": { name: "Band Assisted Pull-Up", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["abs", "forearms", "upper back"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Bent-Arm_Barbell_Pullover": { name: "Bent-Arm Barbell Pullover", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["chest", "lats", "front delts", "triceps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Cable_Incline_Pushdown": { name: "Cable Incline Pushdown", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Chin-Up": { name: "Chin-Up", aliases: ["Chin Up", "Chin Ups"], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "forearms", "upper back"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Close-Grip_Front_Lat_Pulldown": { name: "Close Grip Lat Pulldown", aliases: ["Close-Grip Front Lat Pulldown"], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Elevated_Cable_Rows": { name: "Elevated Cable Rows", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["upper back", "traps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Full_Range-Of-Motion_Lat_Pulldown": { name: "Full Range-Of-Motion Lat Pulldown", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Kipping_Muscle_Up": { name: "Kipping Muscle Up", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["abs", "biceps", "forearms", "upper back", "front delts", "traps", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Kneeling_High_Pulley_Row": { name: "Kneeling High Pulley Row", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Kneeling_Single-Arm_High_Pulley_Row": { name: "Kneeling Single-Arm High Pulley Row", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Leverage_Iso_Row": { name: "Leverage Iso Row", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Muscle_Up": { name: "Muscle Up", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["abs", "biceps", "forearms", "upper back", "front delts", "traps", "triceps"], equipment: "other", category: "strength", mechanic: "compound" },
+  "One_Arm_Lat_Pulldown": { name: "One Arm Lat Pulldown", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Pullups": { name: "Pull-Up", aliases: ["Pull-Ups"], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Rope_Climb": { name: "Rope Climb", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "forearms", "upper back", "front delts"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Rope_Straight-Arm_Pulldown": { name: "Rope Straight-Arm Pulldown", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Shotgun_Row": { name: "Shotgun Row", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Side_To_Side_Chins": { name: "Side To Side Chins", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "forearms", "upper back", "front delts"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Straight-Arm_Pulldown": { name: "Straight-Arm Pulldown", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Underhand_Cable_Pulldowns": { name: "Supinated Lat Pulldown", aliases: ["Underhand Cable Pulldowns"], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "V-Bar_Pullup": { name: "V-Bar Pull-Up", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "V-Bar_Pulldown": { name: "Close Neutral Grip Lat Pulldown", aliases: ["V-Bar Pulldown"], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Weighted_Pull_Ups": { name: "Weighted Pull Ups", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Wide-Grip_Lat_Pulldown": { name: "Wide Grip Lat Pulldown", aliases: ["Wide-Grip Lat Pulldown"], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Wide-Grip_Rear_Pull-Up": { name: "Wide-Grip Rear Pull-Up", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  // ---- lower back ----
+  "Barbell_Deadlift": { name: "Barbell Deadlift", aliases: ["Conventional Deadlift"], primaryMuscles: ["lower back"], secondaryMuscles: ["calves", "forearms", "glutes", "hamstrings", "lats", "upper back", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Deadlift_with_Bands": { name: "Deadlift with Bands", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["forearms", "glutes", "hamstrings", "upper back", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Deadlift_with_Chains": { name: "Deadlift with Chains", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["forearms", "glutes", "hamstrings", "upper back", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Deficit_Deadlift": { name: "Deficit Deadlift", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["forearms", "glutes", "hamstrings", "upper back", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Hyperextensions_Back_Extensions": { name: "Hyperextensions (Back Extensions)", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "other", category: "strength", mechanic: "isolation" },
+  "Hyperextensions_With_No_Hyperextension_Bench": { name: "Hyperextensions With No Hyperextension Bench", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Rack_Pull_with_Bands": { name: "Rack Pull with Bands", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["forearms", "glutes", "hamstrings", "quads", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Rack_Pulls": { name: "Rack Pulls", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["forearms", "glutes", "hamstrings", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Reverse_Band_Deadlift": { name: "Reverse Band Deadlift", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["abductors", "adductors", "calves", "glutes", "hamstrings", "quads"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Seated_Good_Mornings": { name: "Seated Good Mornings", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["glutes"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Stiff_Leg_Barbell_Good_Morning": { name: "Stiff Leg Barbell Good Morning", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Weighted_Ball_Hyperextension": { name: "Weighted Ball Hyperextension", aliases: [], primaryMuscles: ["lower back"], secondaryMuscles: ["glutes", "hamstrings", "upper back"], equipment: "other", category: "strength", mechanic: "compound" },
+  // ---- obliques ----
+  // Ji review round 1 (2026-07-17): same trim sweep as abs above.
+  "Oblique_Crunches": { name: "Oblique Crunch", aliases: [], primaryMuscles: ["obliques"], secondaryMuscles: [], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Russian_Twist": { name: "Russian Twist", aliases: [], primaryMuscles: ["obliques"], secondaryMuscles: ["lower back"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  // ---- quads ----
+  // Ji review round 6 (2026-07-17): dropped 29 (see drops.ts) - mostly
+  // olympic-lift derivatives / accommodating-resistance variants. "One Leg
+  // Barbell Squat" and "Smith Single-Leg Split Squat" turned out (per their
+  // seed instructions) to be rear-foot-elevated Bulgarian split squats -
+  // renamed rather than adding duplicates; the latter's equipment was also
+  // corrected from "machine" to "smith machine" (an original-pass mapping
+  // oversight - its name always said Smith).
+  "Barbell_Hack_Squat": { name: "Barbell Hack Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "forearms", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Lunge": { name: "Barbell Lunge", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Side_Split_Squat": { name: "Barbell Side Split Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Squat": { name: "Barbell Squat", aliases: ["Back Squat"], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Squat_To_A_Bench": { name: "Barbell Squat To A Bench", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Step_Ups": { name: "Barbell Step Ups", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "quads"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Barbell_Walking_Lunge": { name: "Barbell Walking Lunge", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Bodyweight_Squat": { name: "Bodyweight Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Bodyweight_Walking_Lunge": { name: "Bodyweight Walking Lunge", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Box_Squat": { name: "Box Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["adductors", "calves", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Box_Squat_with_Bands": { name: "Box Squat with Bands", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["abductors", "adductors", "calves", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Cable_Deadlifts": { name: "Cable Deadlifts", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["forearms", "glutes", "hamstrings", "lower back"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Chair_Squat": { name: "Chair Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Dumbbell_Lunges": { name: "Dumbbell Lunges", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Rear_Lunge": { name: "Dumbbell Rear Lunge", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Squat": { name: "Dumbbell Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Squat_To_A_Bench": { name: "Dumbbell Squat To A Bench", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_Step_Ups": { name: "Dumbbell Step Ups", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Elevated_Back_Lunge": { name: "Elevated Back Lunge", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Front_Barbell_Squat": { name: "Front Barbell Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Front_Barbell_Squat_To_A_Bench": { name: "Front Barbell Squat To A Bench", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Front_Squat_Clean_Grip": { name: "Front Squat (Clean Grip)", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["abs", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Front_Squats_With_Two_Kettlebells": { name: "Front Squats With Two Kettlebells", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
+  "Goblet_Squat": { name: "Goblet Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "front delts"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
+  "Hack_Squat": { name: "Hack Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Hip_Flexion_with_Band": { name: "Hip Flexion with Band", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: [], equipment: "band", category: "strength", mechanic: "compound" },
+  "Jefferson_Squats": { name: "Jefferson Squats", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Kettlebell_Pistol_Squat": { name: "Kettlebell Pistol Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "front delts"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
+  "Leg_Extensions": { name: "Leg Extensions", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Leg_Press": { name: "Leg Press", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Leverage_Deadlift": { name: "Leverage Deadlift", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Lunge_Sprint": { name: "Lunge Sprint", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Lying_Machine_Squat": { name: "Lying Machine Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Narrow_Stance_Hack_Squats": { name: "Narrow Stance Hack Squats", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Narrow_Stance_Leg_Press": { name: "Narrow Stance Leg Press", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Narrow_Stance_Squats": { name: "Narrow Stance Squats", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "One_Leg_Barbell_Squat": { name: "Bulgarian Split Squat", aliases: ["Bulgarian Split Squats", "Rear Foot Elevated Split Squat", "One Leg Barbell Squat"], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "One-Arm_Overhead_Kettlebell_Squats": { name: "One-Arm Overhead Kettlebell Squats", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "front delts"], equipment: "kettlebell", category: "strength", mechanic: "compound" },
+  "One-Arm_Side_Deadlift": { name: "One-Arm Side Deadlift", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["abs", "calves", "glutes", "hamstrings", "lower back", "traps"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Reverse_Band_Box_Squat": { name: "Reverse Band Box Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["abductors", "adductors", "calves", "forearms", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Reverse_Band_Power_Squat": { name: "Reverse Band Power Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["adductors", "calves", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Single-Leg_High_Box_Squat": { name: "Single-Leg High Box Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Single-Leg_Leg_Extension": { name: "Single-Leg Leg Extension", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Leg_Press": { name: "Smith Machine Leg Press", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Smith_Machine_Pistol_Squat": { name: "Smith Machine Pistol Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Smith_Machine_Squat": { name: "Smith Machine Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Smith_Single-Leg_Split_Squat": { name: "Smith Machine Bulgarian Split Squat", aliases: ["Smith Single-Leg Split Squat"], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Suspended_Split_Squat": { name: "Suspended Split Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["abductors", "adductors", "calves", "glutes", "hamstrings"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Trap_Bar_Deadlift": { name: "Trap Bar Deadlift", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["glutes", "hamstrings"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Weighted_Sissy_Squat": { name: "Weighted Sissy Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Weighted_Squat": { name: "Weighted Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Wide_Stance_Barbell_Squat": { name: "Wide Stance Barbell Squat", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings", "lower back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Zercher_Squats": { name: "Zercher Squats", aliases: [], primaryMuscles: ["quads"], secondaryMuscles: ["calves", "glutes", "hamstrings"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  // ---- rear delts ----
+  // Ji review round 6 (2026-07-17): dropped Sled Reverse Flye (scope-trim).
+  "Barbell_Rear_Delt_Row": { name: "Barbell Rear Delt Row", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: ["biceps", "lats", "upper back"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench": { name: "Bent Over Dumbbell Rear Delt Raise With Head On Bench", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Cable_Rear_Delt_Fly": { name: "Cable Rear Delt Fly", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Face_Pull": { name: "Face Pull", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: ["upper back"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Lying_Rear_Delt_Raise": { name: "Lying Rear Delt Raise", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Reverse_Flyes": { name: "Reverse Flyes", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Reverse_Flyes_With_External_Rotation": { name: "Reverse Flyes With External Rotation", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_Bent-Over_Rear_Delt_Raise": { name: "Seated Bent-Over Rear Delt Raise", aliases: [], primaryMuscles: ["rear delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  // ---- side delts ----
+  "Cable_Seated_Lateral_Raise": { name: "Cable Seated Lateral Raise", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: ["upper back", "traps"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Lying_One-Arm_Rear_Lateral_Raise": { name: "Dumbbell Lying One-Arm Rear Lateral Raise", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: ["upper back"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Lying_Rear_Lateral_Raise": { name: "Dumbbell Lying Rear Lateral Raise", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dumbbell_One-Arm_Upright_Row": { name: "Dumbbell One-Arm Upright Row", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: ["biceps", "traps"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Lying_One-Arm_Lateral_Raise": { name: "Lying One-Arm Lateral Raise", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "One-Arm_Incline_Lateral_Raise": { name: "One-Arm Incline Lateral Raise", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_Side_Lateral_Raise": { name: "Seated Side Lateral Raise", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Side_Lateral_Raise": { name: "Side Lateral Raise", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_One-Arm_Upright_Row": { name: "Smith Machine One-Arm Upright Row", aliases: [], primaryMuscles: ["side delts"], secondaryMuscles: ["biceps", "traps"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  // ---- traps ----
+  // Ji review round 7 (2026-07-17): dropped 4 (see drops.ts).
+  "Barbell_Shrug": { name: "Barbell Shrug", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Barbell_Shrug_Behind_The_Back": { name: "Barbell Shrug Behind The Back", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: ["forearms", "upper back"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Cable_Shrugs": { name: "Cable Shrugs", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Calf-Machine_Shoulder_Shrug": { name: "Calf-Machine Shoulder Shrug", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "Dumbbell_Shrug": { name: "Dumbbell Shrug", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Scapular_Pull-Up": { name: "Scapular Pull-Up", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: ["lats", "upper back"], equipment: "bodyweight", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Behind_the_Back_Shrug": { name: "Smith Machine Behind the Back Shrug", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: ["front delts"], equipment: "smith machine", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Upright_Row": { name: "Smith Machine Upright Row", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: ["biceps", "upper back", "side delts"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Standing_Dumbbell_Upright_Row": { name: "Standing Dumbbell Upright Row", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: ["biceps", "side delts"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Upright_Cable_Row": { name: "Upright Cable Row", aliases: [], primaryMuscles: ["traps"], secondaryMuscles: ["front delts"], equipment: "cable", category: "strength", mechanic: "compound" },
+  // ---- triceps ----
+  // Ji review round 7 (2026-07-17): dropped 16 (see drops.ts). "Cable One
+  // Arm Tricep Extension" renamed to "Single-Arm Cable Triceps Pushdown" -
+  // its own seed instructions (high pulley, elbow locked to side, pulling
+  // down) already describe exactly that movement, so this resolves via
+  // rename rather than a duplicate addition.
+  "Cable_Incline_Triceps_Extension": { name: "Cable Incline Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Cable_Lying_Triceps_Extension": { name: "Cable Lying Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Cable_One_Arm_Tricep_Extension": { name: "Single-Arm Cable Triceps Pushdown", aliases: ["Cable One Arm Tricep Extension", "Single-Arm Cable Tricep Pushdown", "One-Arm Triceps Pushdown"], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Cable_Rope_Overhead_Triceps_Extension": { name: "Cable Rope Overhead Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Close-Grip_Barbell_Bench_Press": { name: "Close-Grip Barbell Bench Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Close-Grip_Dumbbell_Press": { name: "Close-Grip Dumbbell Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Close-Grip_EZ-Bar_Press": { name: "Close-Grip EZ-Bar Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "ez bar", category: "strength", mechanic: "compound" },
+  "Push-Ups_-_Close_Triceps_Position": { name: "Close-Grip Push-Up", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Decline_Close-Grip_Bench_To_Skull_Crusher": { name: "Decline Close-Grip Bench To Skull Crusher", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Decline_Dumbbell_Triceps_Extension": { name: "Decline Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Decline_EZ_Bar_Triceps_Extension": { name: "Decline EZ Bar Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Dip_Machine": { name: "Dip Machine", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Dumbbell_Floor_Press": { name: "Dumbbell Floor Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Dumbbell_One-Arm_Triceps_Extension": { name: "Dumbbell One-Arm Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "EZ-Bar_Skullcrusher": { name: "EZ-Bar Skullcrusher", aliases: ["Skullcrusher"], primaryMuscles: ["triceps"], secondaryMuscles: ["forearms"], equipment: "ez bar", category: "strength", mechanic: "isolation" },
+  "Floor_Press": { name: "Floor Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Incline_Barbell_Triceps_Extension": { name: "Incline Barbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["forearms"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Incline_Push-Up_Close-Grip": { name: "Incline Push-Up Close-Grip", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "JM_Press": { name: "JM Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Kneeling_Cable_Triceps_Extension": { name: "Kneeling Cable Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Low_Cable_Triceps_Extension": { name: "Low Cable Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Lying_Close-Grip_Barbell_Triceps_Extension_Behind_The_Head": { name: "Lying Close-Grip Barbell Triceps Extension Behind The Head", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Lying_Close-Grip_Barbell_Triceps_Press_To_Chin": { name: "Lying Close-Grip Barbell Triceps Press To Chin", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "ez bar", category: "strength", mechanic: "isolation" },
+  "Lying_Dumbbell_Tricep_Extension": { name: "Lying Dumbbell Tricep Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Lying_Triceps_Press": { name: "Lying Triceps Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "ez bar", category: "strength", mechanic: "isolation" },
+  "Machine_Triceps_Extension": { name: "Machine Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "machine", category: "strength", mechanic: "isolation" },
+  "One_Arm_Floor_Press": { name: "One Arm Floor Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "One_Arm_Pronated_Dumbbell_Triceps_Extension": { name: "One Arm Pronated Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "One_Arm_Supinated_Dumbbell_Triceps_Extension": { name: "One Arm Supinated Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Parallel_Bar_Dip": { name: "Parallel Bar Dip", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Pin_Presses": { name: "Pin Presses", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "forearms", "lats", "upper back", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Reverse_Grip_Triceps_Pushdown": { name: "Reverse Grip Triceps Pushdown", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Reverse_Triceps_Bench_Press": { name: "Reverse Triceps Bench Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Ring_Dips": { name: "Ring Dips", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Triceps_Pushdown_-_Rope_Attachment": { name: "Rope Triceps Pushdown", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Seated_Bent-Over_One-Arm_Dumbbell_Triceps_Extension": { name: "Seated Bent-Over One-Arm Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension": { name: "Seated Bent-Over Two-Arm Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Seated_Triceps_Press": { name: "Seated Triceps Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Smith_Machine_Close-Grip_Bench_Press": { name: "Smith Machine Close-Grip Bench Press", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Standing_Bent-Over_One-Arm_Dumbbell_Triceps_Extension": { name: "Standing Bent-Over One-Arm Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["front delts"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Standing_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension": { name: "Standing Bent-Over Two-Arm Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Standing_Dumbbell_Triceps_Extension": { name: "Standing Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Standing_Low-Pulley_One-Arm_Triceps_Extension": { name: "Standing Low-Pulley One-Arm Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Standing_One-Arm_Dumbbell_Triceps_Extension": { name: "Standing One-Arm Dumbbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Standing_Overhead_Barbell_Triceps_Extension": { name: "Standing Overhead Barbell Triceps Extension", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["front delts"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Tricep_Dumbbell_Kickback": { name: "Tricep Dumbbell Kickback", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  "Dips_-_Triceps_Version": { name: "Triceps Dip", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: ["chest", "front delts"], equipment: "bodyweight", category: "strength", mechanic: "compound" },
+  "Triceps_Overhead_Extension_with_Rope": { name: "Triceps Overhead Extension with Rope", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Triceps_Pushdown": { name: "Triceps Pushdown", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  "Triceps_Pushdown_-_V-Bar_Attachment": { name: "V-Bar Triceps Pushdown", aliases: [], primaryMuscles: ["triceps"], secondaryMuscles: [], equipment: "cable", category: "strength", mechanic: "isolation" },
+  // ---- upper back ----
+  // Ji review round 7 (2026-07-17): dropped 15 (see drops.ts). Cross-cutting
+  // row policy applied (grip/elbow angle -> primary muscle; documented in
+  // .gsd/exercise-model.md): supinated/tucked-elbow rows bias lats,
+  // pronated/flared-elbow rows bias upper back. "Bent Over Barbell Row"
+  // (pronated default) is co-primary [upper back, lats], alias "Pronated
+  // Bent Over Barbell Row". "Reverse Grip Bent-Over Rows" (supinated)
+  // renamed to "Supinated Bent Over Barbell Row", re-mapped to lats-primary,
+  // and folds in the round-0 addition "Underhand Bent Over Barbell Row"
+  // (same movement, now removed from additions.ts) as an alias.
+  "Bent_Over_Barbell_Row": { name: "Bent Over Barbell Row", aliases: ["Pronated Bent Over Barbell Row"], primaryMuscles: ["upper back", "lats"], secondaryMuscles: ["biceps", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Bodyweight_Mid_Row": { name: "Bodyweight Mid Row", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats"], equipment: "other", category: "strength", mechanic: "compound" },
+  "Incline_Bench_Pull": { name: "Incline Bench Pull", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["lats", "front delts"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Leverage_High_Row": { name: "Leverage High Row", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["lats"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Lying_Cambered_Barbell_Row": { name: "Lying Cambered Barbell Row", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats", "traps"], equipment: "barbell", category: "strength", mechanic: "isolation" },
+  "Lying_T-Bar_Row": { name: "Lying T-Bar Row", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats"], equipment: "machine", category: "strength", mechanic: "compound" },
+  "Middle_Back_Shrug": { name: "Middle Back Shrug", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: [], equipment: "dumbbell", category: "strength", mechanic: "isolation" },
+  // Elbows-tucked default (seed instructions: "row the dumbbells to your
+  // side") - re-mapped from upper back to lats per the row policy.
+  "Dumbbell_Incline_Row": { name: "Dumbbell Incline Row", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "forearms", "upper back", "front delts"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  // Elbows-tucked default (seed instructions: "keeping your upper arm close
+  // to your side") - re-mapped from upper back to lats per the row policy.
+  "One-Arm_Dumbbell_Row": { name: "One-Arm Dumbbell Row", aliases: [], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "dumbbell", category: "strength", mechanic: "compound" },
+  "Reverse_Grip_Bent-Over_Rows": { name: "Supinated Bent Over Barbell Row", aliases: ["Reverse Grip Bent-Over Rows", "Underhand Bent Over Barbell Row"], primaryMuscles: ["lats"], secondaryMuscles: ["biceps", "upper back", "front delts"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "Seated_Cable_Rows": { name: "Seated Cable Rows", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats", "front delts"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Seated_One-arm_Cable_Pulley_Rows": { name: "Seated One-arm Cable Pulley Rows", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats", "traps"], equipment: "cable", category: "strength", mechanic: "compound" },
+  "Smith_Machine_Bent_Over_Row": { name: "Smith Machine Bent Over Row", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats", "front delts"], equipment: "smith machine", category: "strength", mechanic: "compound" },
+  "Straight_Bar_Bench_Mid_Rows": { name: "Straight Bar Bench Mid Rows", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats"], equipment: "barbell", category: "strength", mechanic: "compound" },
+  "T-Bar_Row_with_Handle": { name: "T-Bar Row with Handle", aliases: [], primaryMuscles: ["upper back"], secondaryMuscles: ["biceps", "lats"], equipment: "barbell", category: "strength", mechanic: "compound" },
+}
+
+export default keeps

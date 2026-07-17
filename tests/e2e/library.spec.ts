@@ -6,8 +6,10 @@ import { fileURLToPath } from 'node:url';
 type Exercise = {
   id: string;
   name: string;
-  equipment: string | null;
+  aliases: string[];
+  equipment: string;
   primaryMuscles: string[];
+  images: string[];
 };
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -23,9 +25,9 @@ test('LIB-2: typing "curl" filters the visible list live', async ({ page }) => {
 
   await page.getByLabel('Search exercises').fill('curl');
 
-  const expectedCount = exercises.filter((e) => e.name.toLowerCase().includes('curl')).length;
-  await expect(page.getByText(`${expectedCount} exercises`)).toBeVisible();
-  await expect(page.getByText('Barbell Curl', { exact: true })).toBeVisible();
+  const curlMatches = exercises.filter((e) => e.name.toLowerCase().includes('curl'));
+  await expect(page.getByText(`${curlMatches.length} exercises`)).toBeVisible();
+  await expect(page.getByText(curlMatches[0].name, { exact: true })).toBeVisible();
 });
 
 test('LIB-3: Muscle=Chest + Equipment=Barbell combine with AND', async ({ page }) => {
@@ -103,6 +105,42 @@ test('sticky header regression: count line is not clipped, header stays pinned a
     return { x: rect.x, y: rect.y };
   });
   expect(headerBoxAfterScroll!.y).toBeCloseTo(mainBox.y, 0);
+});
+
+test('imageless entry renders the placeholder glyph (not a broken image) in both themes', async ({
+  page,
+}) => {
+  // LG-047 introduced the first imageless catalog rows (net-new additions ship
+  // with no photography and render a Dumbbell placeholder). Derive one from the
+  // dataset - never hardcode a curated name - and prove it paints the glyph, not
+  // a broken <img>, in a real browser under both themes. The jsdom component
+  // test covers the img-vs-svg branch; this guards the real render pipeline +
+  // design-system tokens end to end.
+  const imageless = exercises.find((e) => e.images.length === 0)!;
+  const rowFor = () =>
+    page
+      .locator('div.divide-y > div')
+      .filter({ has: page.getByText(imageless.name, { exact: true }) });
+
+  // Light theme.
+  await page.goto('/library');
+  await page.getByLabel('Search exercises').fill(imageless.name);
+  await expect(rowFor()).toBeVisible();
+  await expect(rowFor().locator('svg')).toBeVisible();
+  await expect(rowFor().locator('img')).toHaveCount(0);
+
+  // Dark theme.
+  await page.goto('/settings');
+  await page
+    .getByRole('radiogroup', { name: 'Theme' })
+    .getByRole('radio', { name: 'Dark' })
+    .click();
+  await page.goto('/library');
+  await expect(page.locator('html')).toHaveClass(/dark/);
+  await page.getByLabel('Search exercises').fill(imageless.name);
+  await expect(rowFor()).toBeVisible();
+  await expect(rowFor().locator('svg')).toBeVisible();
+  await expect(rowFor().locator('img')).toHaveCount(0);
 });
 
 test('both themes: Library renders after switching theme in Settings', async ({ page }) => {

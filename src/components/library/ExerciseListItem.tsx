@@ -1,3 +1,4 @@
+import { Dumbbell } from 'lucide-react'
 import { exerciseImageUrl } from '@/exercises/catalog'
 import { formatFilterValue } from '@/exercises/filtering'
 import type { Exercise } from '@/exercises/types'
@@ -23,13 +24,22 @@ export function ExerciseListItem({ exercise }: { exercise: Exercise }) {
       className="flex min-h-touch-primary items-center gap-3 py-2"
       style={{ contentVisibility: 'auto', containIntrinsicSize: `0 ${ROW_HEIGHT_PX}px` }}
     >
-      <img
-        src={exerciseImageUrl(exercise.images[0])}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        className="size-12 shrink-0 rounded-md bg-muted object-cover"
-      />
+      {exercise.images.length > 0 ? (
+        <img
+          src={exerciseImageUrl(exercise.images[0])}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="size-12 shrink-0 rounded-md bg-muted object-cover"
+        />
+      ) : (
+        <div
+          aria-hidden="true"
+          className="flex size-12 shrink-0 items-center justify-center rounded-md bg-muted"
+        >
+          <Dumbbell className="size-5 text-muted-foreground" />
+        </div>
+      )}
       <div className="min-w-0">
         <p className="truncate text-base">{exercise.name}</p>
         {meta ? <p className="mt-0.5 truncate text-sm text-muted-foreground">{meta}</p> : null}

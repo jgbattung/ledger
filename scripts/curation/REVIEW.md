@@ -1,6 +1,6 @@
 # Exercise curation review (LG-047)
 
-Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
+Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 
 ## Kept (by primary muscle)
 
@@ -130,30 +130,28 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Wide-Grip Decline Barbell Bench Press
 - Wide-Grip Decline Barbell Pullover
 
-### forearms (21)
-- Bottoms-Up Clean From The Hang Position
+### forearms (19)
+- Barbell Behind The Back Wrist Curl
 - Cable Wrist Curl
 - Dumbbell Lying Pronation
 - Dumbbell Lying Supination
 - Finger Curls
-- Palms-Down Dumbbell Wrist Curl Over A Bench
-- Palms-Down Wrist Curl Over A Bench
-- Palms-Up Barbell Wrist Curl Over A Bench
-- Palms-Up Dumbbell Wrist Curl Over A Bench
 - Plate Pinch
-- Seated Dumbbell Palms-Down Wrist Curl
-- Seated Dumbbell Palms-Up Wrist Curl
-- Seated One-Arm Dumbbell Palms-Down Wrist Curl
-- Seated One-Arm Dumbbell Palms-Up Wrist Curl
+- Pronated Dumbbell Wrist Curl Over A Bench
+- Seated Dumbbell Pronated Wrist Curl
+- Seated Dumbbell Supinated Wrist Curl
+- Seated One-Arm Dumbbell Pronated Wrist Curl
+- Seated One-Arm Dumbbell Supinated Wrist Curl
 - Seated Palm-Up Barbell Wrist Curl
-- Seated Palms-Down Barbell Wrist Curl
-- Seated Two-Arm Palms-Up Low-Pulley Wrist Curl
+- Seated Pronated Barbell Wrist Curl
+- Seated Two-Arm Supinated Low-Pulley Wrist Curl
 - Standing Olympic Plate Hand Squeeze
-- Standing Palms-Up Barbell Behind The Back Wrist Curl
+- Supinated Barbell Wrist Curl Over A Bench
+- Supinated Dumbbell Wrist Curl Over A Bench
 - Wrist Roller
 - Wrist Rotations with Straight Bar
 
-### front delts (85)
+### front delts (50)
 - Alternating Cable Shoulder Press
 - Alternating Deltoid Raise
 - Alternating Kettlebell Press
@@ -162,18 +160,8 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Band Pull Apart
 - Barbell Incline Shoulder Raise
 - Barbell Shoulder Press
-- Battling Ropes
-- Bent Over Low-Pulley Side Lateral
 - Cable Internal Rotation
-- Cable Rope Rear-Delt Rows
 - Cable Shoulder Press
-- Car Drivers
-- Clean and Jerk
-- Clean and Press
-- Cuban Press
-- Double Kettlebell Jerk
-- Double Kettlebell Push Press
-- Double Kettlebell Snatch
 - Dumbbell Incline Shoulder Raise
 - Dumbbell One-Arm Shoulder Press
 - Dumbbell Raise
@@ -191,38 +179,16 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Internal Rotation with Band
 - Iron Cross
 - Jerk Balance
-- Kettlebell Arnold Press
-- Kettlebell Pirate Ships
-- Kettlebell Seated Press
-- Kettlebell Seesaw Press
-- Kettlebell Thruster
-- Kettlebell Turkish Get-Up (Lunge style)
-- Kettlebell Turkish Get-Up (Squat style)
 - Landmine Linear Jammer
 - Leverage Shoulder Press
 - Low Pulley Upright Row
-- Machine Shoulder (Military) Press
-- One-Arm Kettlebell Clean and Jerk
-- One-Arm Kettlebell Jerk
-- One-Arm Kettlebell Military Press To The Side
-- One-Arm Kettlebell Para Press
-- One-Arm Kettlebell Push Press
-- One-Arm Kettlebell Snatch
-- One-Arm Kettlebell Split Jerk
-- One-Arm Kettlebell Split Snatch
-- One-Arm Side Laterals
-- Power Partials
+- Machine Shoulder Press
 - Push Press
-- Rack Delivery
-- Reverse Machine Flyes
 - Seated Barbell Military Press
 - Seated Cable Shoulder Press
 - Seated Dumbbell Press
-- See-Saw Press (Alternating Side Press)
 - Side Laterals to Front Raise
 - Single Dumbbell Raise
-- Single-Arm Linear Jammer
-- Sled Overhead Backward Walk
 - Smith Incline Shoulder Raise
 - Smith Machine Overhead Shoulder Press
 - Standing Alternating Dumbbell Press
@@ -235,9 +201,6 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Standing Palm-In One-Arm Dumbbell Press
 - Standing Palms-In Dumbbell Press
 - Straight Raises on Incline Bench
-- Two-Arm Kettlebell Clean
-- Two-Arm Kettlebell Jerk
-- Two-Arm Kettlebell Military Press
 - Upright Barbell Row
 
 ### glutes (16)
@@ -613,20 +576,23 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Standing Barbell Press Behind Neck
 - Wide-Grip Pulldown Behind The Neck
 
-### novelty-junk (19)
+### novelty-junk (22)
 - Back Flyes - With Bands
 - Balance Board
 - Bench Press - With Bands
 - Bradford/Rocky Presses
 - Calf Raises - With Bands
+- Car Drivers
 - Chain Press
 - Clock Push-Up
 - Close-Grip EZ-Bar Curl with Band
 - Cross Over - With Bands
 - Incline Dumbbell Flyes - With A Twist
 - Isometric Wipers
+- Kettlebell Pirate Ships
 - Lateral Raise - With Bands
 - Plyo Kettlebell Pushups
+- Power Partials
 - Push Up to Side Plank
 - Rocky Pull-Ups/Pulldowns
 - Shoulder Press - With Bands
@@ -697,7 +663,7 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Supine Two-Arm Overhead Throw
 - Vertical Swing
 
-### scope-trim (87)
+### scope-trim (121)
 - 3/4 Sit-Up
 - Advanced Kettlebell Windmill
 - Air Bike
@@ -707,22 +673,32 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Barbell Ab Rollout - On Knees
 - Barbell Rollout from Bench
 - Barbell Side Bend
+- Battling Ropes
+- Bent Over Low-Pulley Side Lateral
 - Bent Press
 - Bent-Knee Hip Raise
 - Bosu Ball Cable Crunch With Side Bends
 - Bottoms Up
+- Bottoms-Up Clean From The Hang Position
 - Butt-Ups
 - Cable Iron Cross
 - Cable Judo Flip
 - Cable Reverse Crunch
+- Cable Rope Rear-Delt Rows
 - Cable Russian Twists
 - Cable Seated Crunch
+- Clean and Jerk
+- Clean and Press
 - Cocoons
 - Cross-Body Crunch
 - Crunch - Hands Overhead
+- Cuban Press
 - Dead Bug
 - Decline Oblique Crunch
 - Decline Reverse Crunch
+- Double Kettlebell Jerk
+- Double Kettlebell Push Press
+- Double Kettlebell Snatch
 - Double Kettlebell Windmill
 - Dumbbell Side Bend
 - Elbow to Knee
@@ -739,8 +715,14 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Incline Inner Biceps Curl
 - Jackknife Sit-Up
 - Janda Sit-Up
+- Kettlebell Arnold Press
 - Kettlebell Figure 8
 - Kettlebell Pass Between The Legs
+- Kettlebell Seated Press
+- Kettlebell Seesaw Press
+- Kettlebell Thruster
+- Kettlebell Turkish Get-Up (Lunge style)
+- Kettlebell Turkish Get-Up (Squat style)
 - Kettlebell Windmill
 - Knee/Hip Raise On Parallel Bars
 - Kneeling Cable Crunch With Alternating Oblique Twists
@@ -754,20 +736,35 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Lying High Bench Barbell Curl
 - Neck Press
 - One-Arm High-Pulley Cable Side Bends
+- One-Arm Kettlebell Clean and Jerk
 - One-Arm Kettlebell Floor Press
+- One-Arm Kettlebell Jerk
+- One-Arm Kettlebell Military Press To The Side
+- One-Arm Kettlebell Para Press
+- One-Arm Kettlebell Push Press
+- One-Arm Kettlebell Snatch
+- One-Arm Kettlebell Split Jerk
+- One-Arm Kettlebell Split Snatch
 - One-Arm Medicine Ball Slam
+- One-Arm Side Laterals
 - Otis-Up
 - Pallof Press
 - Pallof Press With Rotation
+- Palms-Down Wrist Curl Over A Bench
 - Plate Twist
 - Press Sit-Up
 - Push-Ups With Feet On An Exercise Ball
+- Rack Delivery
+- Reverse Machine Flyes
 - Rocking Standing Calf Raise
 - Rope Crunch
 - Seated Barbell Twist
 - Seated Flat Bench Leg Pull-In
 - Seated Leg Tucks
+- See-Saw Press (Alternating Side Press)
 - Side Jackknife
+- Single-Arm Linear Jammer
+- Sled Overhead Backward Walk
 - Smith Machine Hip Raise
 - Spell Caster
 - Spider Crawl
@@ -782,6 +779,9 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - Svend Press
 - Tuck Crunch
 - Two-Arm Dumbbell Preacher Curl
+- Two-Arm Kettlebell Clean
+- Two-Arm Kettlebell Jerk
+- Two-Arm Kettlebell Military Press
 - Weighted Ball Side Bend
 - Weighted Crunches
 - Wind Sprints
@@ -940,7 +940,9 @@ Seed: 873 entries. Kept: 536. Dropped: 337. Added: 11. Final catalog: 547.
 - **Decline Leg Raise** - Ji-logged staple
 - **Incline Close Grip Bench Press** - AC coverage: incline + close-grip combination (upper chest/triceps emphasis) missing from the seed.
 - **Neutral Grip Lat Pulldown** - Grip-family completion for lat pulldown alongside the seed's wide-grip and close-grip variants.
+- **Neutral Grip Machine Shoulder Press** - Grip variant per flat model; default Machine Shoulder Press is overhand
 - **Neutral Grip Pull-Up** - Systematic pull-up grip family Ji expects as a first-class variant; shoulder-friendlier grip missing from the seed.
+- **One-Arm Front Cable Raise** - Ji-logged staple
 - **Seated Leg Press Calf Raise** - Ji-logged staple
 - **Single Leg Seated Leg Press Calf Raise** - Ji-logged staple
 - **Underhand Bent Over Barbell Row** - Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.

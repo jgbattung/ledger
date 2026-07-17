@@ -43,20 +43,23 @@ const drops: Record<string, DropReason> = {
   "Seated_Head_Harness_Neck_Resistance": "neck", // Seated Head Harness Neck Resistance
   "Standing_Barbell_Press_Behind_Neck": "neck", // Standing Barbell Press Behind Neck
   "Wide-Grip_Pulldown_Behind_The_Neck": "neck", // Wide-Grip Pulldown Behind The Neck
-  // ---- novelty-junk (19) ----
+  // ---- novelty-junk (22) ----
   "Balance_Board": "novelty-junk", // Balance Board (Ji review round 2: balance/stability drill, not a targeted calf raise)
   "Back_Flyes_-_With_Bands": "novelty-junk", // Back Flyes - With Bands
   "Bench_Press_-_With_Bands": "novelty-junk", // Bench Press - With Bands
   "Bradford_Rocky_Presses": "novelty-junk", // Bradford/Rocky Presses
   "Calf_Raises_-_With_Bands": "novelty-junk", // Calf Raises - With Bands
+  "Car_Drivers": "novelty-junk", // Car Drivers (Ji review round 4: gimmicky plate-rotation drill, not a standard shoulder movement)
   "Chain_Press": "novelty-junk", // Chain Press (Ji review round 3: chain-accommodated resistance, same family as the "with Bands" entries)
   "Clock_Push-Up": "novelty-junk", // Clock Push-Up (Ji review round 3: circular hand-walk drill, not a standard chest movement)
   "Close-Grip_EZ-Bar_Curl_with_Band": "novelty-junk", // Close-Grip EZ-Bar Curl with Band (Ji review round 2: band-accommodated variant, same treatment as other "with Bands" entries)
   "Cross_Over_-_With_Bands": "novelty-junk", // Cross Over - With Bands
   "Incline_Dumbbell_Flyes_-_With_A_Twist": "novelty-junk", // Incline Dumbbell Flyes - With A Twist
   "Isometric_Wipers": "novelty-junk", // Isometric Wipers (Ji review round 3: isometric plank drill, not a loaded chest movement)
+  "Kettlebell_Pirate_Ships": "novelty-junk", // Kettlebell Pirate Ships (Ji review round 4: novelty-named ballistic drill)
   "Lateral_Raise_-_With_Bands": "novelty-junk", // Lateral Raise - With Bands
   "Plyo_Kettlebell_Pushups": "novelty-junk", // Plyo Kettlebell Pushups (Ji review round 3: plyometric push-up variant)
+  "Power_Partials": "novelty-junk", // Power Partials (Ji review round 4: vague partial-rep gimmick, not a standard movement)
   "Push_Up_to_Side_Plank": "novelty-junk", // Push Up to Side Plank (Ji review round 3: combo/gimmick movement)
   "Rocky_Pull-Ups_Pulldowns": "novelty-junk", // Rocky Pull-Ups/Pulldowns
   "Shoulder_Press_-_With_Bands": "novelty-junk", // Shoulder Press - With Bands
@@ -224,6 +227,46 @@ const drops: Record<string, DropReason> = {
   "Standing_Cable_Chest_Press": "scope-trim", // Standing Cable Chest Press
   "Suspended_Push-Up": "scope-trim", // Suspended Push-Up
   "Svend_Press": "scope-trim", // Svend Press
+  // Ji review round 4 (2026-07-17): forearms trim.
+  "Bottoms-Up_Clean_From_The_Hang_Position": "scope-trim", // Bottoms-Up Clean From The Hang Position
+  "Palms-Down_Wrist_Curl_Over_A_Bench": "scope-trim", // Palms-Down Wrist Curl Over A Bench
+  // Ji review round 4 (2026-07-17): front delts trim - mostly kettlebell
+  // ballistics/olympic-style movements Ji doesn't use. Bent_Over_Low-Pulley_
+  // Side_Lateral, Cable_Rope_Rear-Delt_Rows, and Reverse_Machine_Flyes are
+  // really rear-delt movements the muscle heuristic misfiled here; still
+  // dropped per Ji's explicit call rather than reclassified.
+  "Battling_Ropes": "scope-trim", // Battling Ropes
+  "Bent_Over_Low-Pulley_Side_Lateral": "scope-trim", // Bent Over Low-Pulley Side Lateral
+  "Cable_Rope_Rear-Delt_Rows": "scope-trim", // Cable Rope Rear-Delt Rows
+  "Clean_and_Jerk": "scope-trim", // Clean and Jerk
+  "Clean_and_Press": "scope-trim", // Clean and Press
+  "Cuban_Press": "scope-trim", // Cuban Press
+  "Double_Kettlebell_Jerk": "scope-trim", // Double Kettlebell Jerk
+  "Double_Kettlebell_Push_Press": "scope-trim", // Double Kettlebell Push Press
+  "Double_Kettlebell_Snatch": "scope-trim", // Double Kettlebell Snatch
+  "Kettlebell_Arnold_Press": "scope-trim", // Kettlebell Arnold Press
+  "Kettlebell_Seated_Press": "scope-trim", // Kettlebell Seated Press
+  "Kettlebell_Seesaw_Press": "scope-trim", // Kettlebell Seesaw Press
+  "Kettlebell_Thruster": "scope-trim", // Kettlebell Thruster
+  "Kettlebell_Turkish_Get-Up_Lunge_style": "scope-trim", // Kettlebell Turkish Get-Up (Lunge style)
+  "Kettlebell_Turkish_Get-Up_Squat_style": "scope-trim", // Kettlebell Turkish Get-Up (Squat style)
+  "One-Arm_Kettlebell_Clean_and_Jerk": "scope-trim", // One-Arm Kettlebell Clean and Jerk
+  "One-Arm_Kettlebell_Jerk": "scope-trim", // One-Arm Kettlebell Jerk
+  "One-Arm_Kettlebell_Military_Press_To_The_Side": "scope-trim", // One-Arm Kettlebell Military Press To The Side
+  "One-Arm_Kettlebell_Para_Press": "scope-trim", // One-Arm Kettlebell Para Press
+  "One-Arm_Kettlebell_Push_Press": "scope-trim", // One-Arm Kettlebell Push Press
+  "One-Arm_Kettlebell_Snatch": "scope-trim", // One-Arm Kettlebell Snatch
+  "One-Arm_Kettlebell_Split_Jerk": "scope-trim", // One-Arm Kettlebell Split Jerk
+  "One-Arm_Kettlebell_Split_Snatch": "scope-trim", // One-Arm Kettlebell Split Snatch
+  "One-Arm_Side_Laterals": "scope-trim", // One-Arm Side Laterals
+  "Rack_Delivery": "scope-trim", // Rack Delivery
+  "Reverse_Machine_Flyes": "scope-trim", // Reverse Machine Flyes
+  "See-Saw_Press_Alternating_Side_Press": "scope-trim", // See-Saw Press (Alternating Side Press)
+  "Single-Arm_Linear_Jammer": "scope-trim", // Single-Arm Linear Jammer
+  "Sled_Overhead_Backward_Walk": "scope-trim", // Sled Overhead Backward Walk
+  "Two-Arm_Kettlebell_Clean": "scope-trim", // Two-Arm Kettlebell Clean
+  "Two-Arm_Kettlebell_Jerk": "scope-trim", // Two-Arm Kettlebell Jerk
+  "Two-Arm_Kettlebell_Military_Press": "scope-trim", // Two-Arm Kettlebell Military Press
   // ---- stretch (122) ----
   "90_90_Hamstring": "stretch", // 90/90 Hamstring
   "Adductor": "stretch", // Adductor

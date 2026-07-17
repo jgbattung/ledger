@@ -13,6 +13,43 @@ import type { Addition } from './curate.ts'
 
 const additions: Addition[] = [
   {
+    name: 'One-Arm Front Cable Raise',
+    aliases: ['Single Arm Front Cable Raise'],
+    primaryMuscles: ['front delts'],
+    secondaryMuscles: [],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Stand side-on to a low cable pulley and grip the handle in the hand farther from the machine, arm across your body.',
+      'Keep a slight bend in your elbow and brace your core.',
+      'Raise the handle in front of you to shoulder height, keeping the arm straight.',
+      'Lower under control back to the starting position, then repeat before switching sides.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    // Ji review round 4 (2026-07-17): the seed's "Machine Shoulder
+    // (Military) Press" (renamed "Machine Shoulder Press" in keeps.ts) is
+    // overhand grip by default; this is the neutral-grip sibling, its own
+    // exercise per the flat variation model.
+    name: 'Neutral Grip Machine Shoulder Press',
+    aliases: [],
+    primaryMuscles: ['front delts'],
+    secondaryMuscles: ['triceps'],
+    equipment: 'machine',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Sit in the shoulder press machine and grip the neutral (parallel) handles at shoulder height, palms facing each other.',
+      'Brace your core and press the handles straight overhead until your arms are extended.',
+      'Lower under control back to shoulder height and repeat.',
+    ],
+    images: [],
+    rationale: 'Grip variant per flat model; default Machine Shoulder Press is overhand',
+  },
+  {
     name: 'Decline Leg Raise',
     aliases: ['Decline Leg Raises'],
     primaryMuscles: ['abs'],

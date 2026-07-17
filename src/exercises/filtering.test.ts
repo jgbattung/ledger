@@ -1,17 +1,22 @@
 import { describe, it, expect } from 'vitest'
 import { getAllExercises } from './catalog'
-import { getFilterOptions, filterExercises, formatFilterValue } from './filtering'
+import { getFilterOptions, filterExercises, formatFilterValue, normalize } from './filtering'
 import type { LibraryFilters } from './filtering'
 
 const noFilters: LibraryFilters = { muscle: null, category: null, equipment: null }
+const datasetSize = getAllExercises().length
 
 describe('getFilterOptions', () => {
   const options = getFilterOptions()
+  const all = getAllExercises()
 
-  it('returns 17 muscles, 7 categories, 12 equipment values', () => {
-    expect(options.muscles.length).toBe(17)
-    expect(options.categories.length).toBe(7)
-    expect(options.equipment.length).toBe(12)
+  it('vocabulary sizes match the distinct values present in the dataset', () => {
+    const muscles = new Set(all.flatMap((e) => e.primaryMuscles))
+    const categories = new Set(all.map((e) => e.category))
+    const equipment = new Set(all.map((e) => e.equipment))
+    expect(options.muscles.length).toBe(muscles.size)
+    expect(options.categories.length).toBe(categories.size)
+    expect(options.equipment.length).toBe(equipment.size)
   })
 
   it('each vocabulary is alphabetically sorted', () => {
@@ -30,9 +35,18 @@ describe('getFilterOptions', () => {
   })
 })
 
+describe('normalize', () => {
+  it('lowercases, folds hyphens/slashes to spaces, and collapses whitespace', () => {
+    expect(normalize('Pull-Up')).toBe('pull up')
+    expect(normalize('Pull-Ups')).toBe('pull ups')
+    expect(normalize('3/4 Sit-Up')).toBe('3 4 sit up')
+    expect(normalize('  Wide   Grip  Cable Row ')).toBe('wide grip cable row')
+  })
+})
+
 describe('filterExercises - search', () => {
-  it('empty query and empty filters returns all 873 exercises', () => {
-    expect(filterExercises('', noFilters).length).toBe(873)
+  it('empty query and empty filters returns the full dataset', () => {
+    expect(filterExercises('', noFilters).length).toBe(datasetSize)
   })
 
   it('is case-insensitive', () => {
@@ -45,11 +59,32 @@ describe('filterExercises - search', () => {
   it('matches mid-word substrings', () => {
     const results = filterExercises('arbell', noFilters)
     expect(results.length).toBeGreaterThan(0)
-    expect(results.every((e) => e.name.toLowerCase().includes('arbell'))).toBe(true)
+    expect(results.every((e) => normalize(e.name).includes('arbell'))).toBe(true)
   })
 
-  it('whitespace-only query returns all exercises', () => {
-    expect(filterExercises('   ', noFilters).length).toBe(873)
+  it('whitespace-only query returns the full dataset', () => {
+    expect(filterExercises('   ', noFilters).length).toBe(datasetSize)
+  })
+
+  it('AC alias accept: "pull ups" resolves the Pull-Up entry', () => {
+    const results = filterExercises('pull ups', noFilters)
+    expect(results.some((e) => e.name === 'Pull-Up')).toBe(true)
+  })
+
+  it('matches hyphen/spacing variants of a multi-word name', () => {
+    const hyphenated = filterExercises('wide-grip cable row', noFilters)
+    const spaced = filterExercises('wide grip cable row', noFilters)
+    const squished = filterExercises('widegrip cable row', noFilters)
+    expect(hyphenated.some((e) => e.name === 'Wide Grip Cable Row')).toBe(true)
+    expect(spaced.some((e) => e.name === 'Wide Grip Cable Row')).toBe(true)
+    // "widegrip" (no separator) is not a substring match by design - only
+    // hyphen/slash/space variants normalize to the same token.
+    expect(squished.some((e) => e.name === 'Wide Grip Cable Row')).toBe(false)
+  })
+
+  it('matches against aliases, not just the canonical name', () => {
+    const results = filterExercises('machine hamstring curl', noFilters)
+    expect(results.some((e) => e.name === 'Seated Leg Curl')).toBe(true)
   })
 })
 
@@ -75,12 +110,7 @@ describe('filterExercises - facets', () => {
     expect(results.every((e) => e.equipment === 'dumbbell')).toBe(true)
   })
 
-  it('excludes null-equipment exercises from any equipment filter', () => {
-    const results = filterExercises('', { ...noFilters, equipment: 'barbell' })
-    expect(results.every((e) => e.equipment !== null)).toBe(true)
-  })
-
-  it('AND-combines Chest + Barbell (LIB-3 accept)', () => {
+  it('AND-combines a muscle + equipment facet (LIB-3 accept)', () => {
     const expected = getAllExercises().filter(
       (e) => e.primaryMuscles.includes('chest') && e.equipment === 'barbell',
     )
@@ -94,19 +124,19 @@ describe('filterExercises - facets', () => {
 
   it('combines search with facet filters', () => {
     const expected = getAllExercises().filter(
-      (e) => e.name.toLowerCase().includes('press') && e.equipment === 'barbell',
+      (e) => normalize(e.name).includes('press') && e.equipment === 'barbell',
     )
     const results = filterExercises('press', { ...noFilters, equipment: 'barbell' })
     expect(results.length).toBe(expected.length)
     expect(
-      results.every((e) => e.name.toLowerCase().includes('press') && e.equipment === 'barbell'),
+      results.every((e) => normalize(e.name).includes('press') && e.equipment === 'barbell'),
     ).toBe(true)
   })
 
   it('preserves dataset order', () => {
     const all = getAllExercises()
-    const results = filterExercises('', { ...noFilters, category: 'cardio' })
-    const expectedOrder = all.filter((e) => e.category === 'cardio').map((e) => e.id)
+    const results = filterExercises('', { ...noFilters, category: 'strength' })
+    const expectedOrder = all.filter((e) => e.category === 'strength').map((e) => e.id)
     expect(results.map((e) => e.id)).toEqual(expectedOrder)
   })
 })
@@ -117,8 +147,8 @@ describe('formatFilterValue', () => {
   })
 
   it('title-cases each word in multi-word values', () => {
-    expect(formatFilterValue('body only')).toBe('Body Only')
-    expect(formatFilterValue('e-z curl bar')).toBe('E-z Curl Bar')
+    expect(formatFilterValue('upper back')).toBe('Upper Back')
+    expect(formatFilterValue('smith machine')).toBe('Smith Machine')
   })
 })
 

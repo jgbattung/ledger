@@ -3,10 +3,15 @@
  * (LG-005). No React, no Dexie - operates entirely over the in-memory
  * catalog from `catalog.ts`. Filter vocabularies (muscles/categories/
  * equipment) are derived from the bundled dataset at runtime so
- * re-vendoring `exercises.json` never desyncs the UI.
+ * re-curating `exercises.json` never desyncs the UI.
+ *
+ * Search (LG-047 baseline; LG-048 builds ranking/fuzziness on top): the
+ * query is normalized (lowercase, hyphens/slashes -> space, collapse
+ * whitespace) and matched as a substring against the canonical name and
+ * every alias, normalized the same way.
  */
 import { getAllExercises } from './catalog'
-import type { Exercise } from './types'
+import type { Exercise, Muscle } from './types'
 
 export type LibraryFilters = {
   muscle: string | null
@@ -47,7 +52,18 @@ export function getFilterOptions(): FilterOptions {
   return filterOptions
 }
 
-type IndexedExercise = { exercise: Exercise; nameLower: string }
+/** Lowercase, `[-/]` -> space, collapse whitespace, trim. Applied to both
+ * the query and every candidate name/alias so hyphen/spacing variants
+ * ("pull-up", "pull ups") match regardless of which side has the dash. */
+export function normalize(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[-/]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+type IndexedExercise = { exercise: Exercise; normalizedNames: string[] }
 
 let searchIndex: IndexedExercise[] | null = null
 
@@ -55,19 +71,19 @@ function getSearchIndex(): IndexedExercise[] {
   if (!searchIndex) {
     searchIndex = getAllExercises().map((exercise) => ({
       exercise,
-      nameLower: exercise.name.toLowerCase(),
+      normalizedNames: [exercise.name, ...exercise.aliases].map(normalize),
     }))
   }
   return searchIndex
 }
 
 export function filterExercises(query: string, filters: LibraryFilters): Exercise[] {
-  const normalizedQuery = query.trim().toLowerCase()
+  const normalizedQuery = normalize(query)
 
   return getSearchIndex()
-    .filter(({ exercise, nameLower }) => {
-      if (normalizedQuery && !nameLower.includes(normalizedQuery)) return false
-      if (filters.muscle && !(exercise.primaryMuscles as string[]).includes(filters.muscle))
+    .filter(({ exercise, normalizedNames }) => {
+      if (normalizedQuery && !normalizedNames.some((n) => n.includes(normalizedQuery))) return false
+      if (filters.muscle && !exercise.primaryMuscles.includes(filters.muscle as Muscle))
         return false
       if (filters.category && exercise.category !== filters.category) return false
       if (filters.equipment && exercise.equipment !== filters.equipment) return false

@@ -89,6 +89,44 @@ describe('alias accept test', () => {
   })
 })
 
+describe('alias resolution (full dataset)', () => {
+  const all = getAllExercises()
+  const noFilters = { muscle: null, category: null, equipment: null }
+
+  // The whole point of aliases (AC #5) is that searching an alias surfaces the
+  // entry that owns it. The catalog carries ~70 aliases across 54 entries,
+  // accreted over 8 curation rounds of renames (Palms-Up -> Supinated, V-Bar
+  // row, "Machine Hamstring Curl", plurals, common names like "RDL"). This
+  // sweep drives every one through the real filterExercises path so a
+  // normalization/indexing regression, or an alias silently dropped in a future
+  // curation round, fails loudly instead of degrading search unnoticed.
+  const aliasCases = all.flatMap((e) => e.aliases.map((alias) => ({ alias, id: e.id, name: e.name })))
+
+  it('the dataset actually carries aliases to exercise this path', () => {
+    expect(aliasCases.length).toBeGreaterThan(0)
+  })
+
+  it.each(aliasCases)('alias "$alias" resolves its owner "$name"', ({ alias, id }) => {
+    const results = filterExercises(alias, noFilters)
+    expect(results.some((e) => e.id === id)).toBe(true)
+  })
+
+  // Named regression anchors for the specific multi-round renames the build
+  // flagged - if any of these historical spellings stops resolving, the failure
+  // names the culprit directly rather than hiding among the parametrized cases.
+  it.each([
+    ['V-Bar Row', 'Close Neutral Grip Seated Cable Row'],
+    ['V-Bar Cable Row', 'Close Neutral Grip Seated Cable Row'],
+    ['Palms-Up Barbell Wrist Curl Over A Bench', 'Supinated Barbell Wrist Curl Over A Bench'],
+    ['Butterfly', 'Pec Deck Flye'],
+    ['RDL', 'Romanian Deadlift'],
+    ['Machine Hamstring Curl', 'Seated Leg Curl'],
+  ])('historical alias "%s" still resolves "%s"', (alias, expectedName) => {
+    const results = filterExercises(alias, noFilters)
+    expect(results.some((e) => e.name === expectedName)).toBe(true)
+  })
+})
+
 describe('catalog conformance', () => {
   const all = getAllExercises()
 

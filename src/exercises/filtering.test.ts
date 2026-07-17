@@ -59,7 +59,12 @@ describe('filterExercises - search', () => {
   it('matches mid-word substrings', () => {
     const results = filterExercises('arbell', noFilters)
     expect(results.length).toBeGreaterThan(0)
-    expect(results.every((e) => normalize(e.name).includes('arbell'))).toBe(true)
+    // Matches can come from the canonical name or any alias (e.g. "Bulgarian
+    // Split Squat" via its "One Leg Barbell Squat" alias) - the contract is
+    // name-or-aliases, not name-only.
+    expect(
+      results.every((e) => [e.name, ...e.aliases].some((n) => normalize(n).includes('arbell'))),
+    ).toBe(true)
   })
 
   it('whitespace-only query returns the full dataset', () => {

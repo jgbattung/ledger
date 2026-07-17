@@ -33,6 +33,7 @@ const drops: Record<string, DropReason> = {
   // photography) and "Wide Grip Push-Up" (renamed from Push-Up_Wide, ditto).
   // No new additions needed; both destinations already have real images.
   "Pushups_Close_and_Wide_Hand_Positions": "duplicate-of:close-grip-push-up", // Pushups (Close and Wide Hand Positions) - also duplicates Wide Grip Push-Up
+  "Barbell_Full_Squat": "duplicate-of:barbell-squat", // Barbell Full Squat (Ji review round 6: same movement as Barbell Squat)
   // ---- neck (9) ----
   "Isometric_Neck_Exercise_-_Front_And_Back": "neck", // Isometric Neck Exercise - Front And Back
   "Isometric_Neck_Exercise_-_Sides": "neck", // Isometric Neck Exercise - Sides
@@ -43,10 +44,11 @@ const drops: Record<string, DropReason> = {
   "Seated_Head_Harness_Neck_Resistance": "neck", // Seated Head Harness Neck Resistance
   "Standing_Barbell_Press_Behind_Neck": "neck", // Standing Barbell Press Behind Neck
   "Wide-Grip_Pulldown_Behind_The_Neck": "neck", // Wide-Grip Pulldown Behind The Neck
-  // ---- novelty-junk (22) ----
+  // ---- novelty-junk (26) ----
   "Balance_Board": "novelty-junk", // Balance Board (Ji review round 2: balance/stability drill, not a targeted calf raise)
   "Back_Flyes_-_With_Bands": "novelty-junk", // Back Flyes - With Bands
   "Bench_Press_-_With_Bands": "novelty-junk", // Bench Press - With Bands
+  "Box_Squat_with_Chains": "novelty-junk", // Box Squat with Chains (Ji review round 6: chain-accommodated resistance, same family as the "with Bands"/Chain Press entries)
   "Bradford_Rocky_Presses": "novelty-junk", // Bradford/Rocky Presses
   "Calf_Raises_-_With_Bands": "novelty-junk", // Calf Raises - With Bands
   "Car_Drivers": "novelty-junk", // Car Drivers (Ji review round 4: gimmicky plate-rotation drill, not a standard shoulder movement)
@@ -63,6 +65,9 @@ const drops: Record<string, DropReason> = {
   "Push_Up_to_Side_Plank": "novelty-junk", // Push Up to Side Plank (Ji review round 3: combo/gimmick movement)
   "Rocky_Pull-Ups_Pulldowns": "novelty-junk", // Rocky Pull-Ups/Pulldowns
   "Shoulder_Press_-_With_Bands": "novelty-junk", // Shoulder Press - With Bands
+  "Squat_with_Bands": "novelty-junk", // Squat with Bands (Ji review round 6: same accommodating-resistance family)
+  "Squat_with_Chains": "novelty-junk", // Squat with Chains (Ji review round 6: same accommodating-resistance family)
+  "Squat_with_Plate_Movers": "novelty-junk", // Squat with Plate Movers (Ji review round 6: gimmick sliding-plate variant)
   "Squats_-_With_Bands": "novelty-junk", // Squats - With Bands
   "Upright_Row_-_With_Bands": "novelty-junk", // Upright Row - With Bands
   "Weighted_Sit-Ups_-_With_Bands": "novelty-junk", // Weighted Sit-Ups - With Bands
@@ -302,6 +307,35 @@ const drops: Record<string, DropReason> = {
   // Ji review round 5 (2026-07-17): lats trim.
   "Gironda_Sternum_Chins": "scope-trim", // Gironda Sternum Chins
   "London_Bridges": "scope-trim", // London Bridges
+  // Ji review round 6 (2026-07-17): quads trim - mostly olympic-lift
+  // derivatives. "Below-the-Knee Hang" matched to the quads-filed
+  // "Hang Clean - Below the Knees" seed entry.
+  "Hang_Clean_-_Below_the_Knees": "scope-trim", // Below-the-Knee Hang Clean
+  "Cable_Hip_Adduction": "scope-trim", // Cable Hip Adduction
+  "Clean_from_Blocks": "scope-trim", // Clean from Blocks
+  "Clean_Pull": "scope-trim", // Clean Pull
+  "Frankenstein_Squat": "scope-trim", // Frankenstein Squat
+  "Freehand_Jump_Squat": "scope-trim", // Freehand Jump Squat
+  "Hang_Clean": "scope-trim", // Hang Clean
+  "Heaving_Snatch_Balance": "scope-trim", // Heaving Snatch Balance
+  "Jerk_Dip_Squat": "scope-trim", // Jerk Dip Squat
+  "Olympic_Squat": "scope-trim", // Olympic Squat
+  "Overhead_Squat": "scope-trim", // Overhead Squat
+  "Plie_Dumbbell_Squat": "scope-trim", // Plie Dumbbell Squat
+  "Power_Jerk": "scope-trim", // Power Jerk
+  "Power_Snatch_from_Blocks": "scope-trim", // Power Snatch from Blocks
+  "Snatch": "scope-trim", // Snatch
+  "Snatch_Balance": "scope-trim", // Snatch Balance
+  "Snatch_from_Blocks": "scope-trim", // Snatch from Blocks
+  "Speed_Box_Squat": "scope-trim", // Speed Box Squat
+  "Speed_Squats": "scope-trim", // Speed Squats
+  "Split_Clean": "scope-trim", // Split Clean
+  "Split_Jerk": "scope-trim", // Split Jerk
+  "Split_Squat_with_Dumbbells": "scope-trim", // Split Squat with Dumbbells (superseded by the Split/Bulgarian Split Squat family added this round)
+  "Squat_Jerk": "scope-trim", // Squat Jerk
+  "Weighted_Jump_Squat": "scope-trim", // Weighted Jump Squat
+  // Ji review round 6 (2026-07-17): rear delts trim.
+  "Sled_Reverse_Flye": "scope-trim", // Sled Reverse Flye
   // ---- stretch (122) ----
   "90_90_Hamstring": "stretch", // 90/90 Hamstring
   "Adductor": "stretch", // Adductor

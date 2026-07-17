@@ -1,6 +1,6 @@
 # Exercise curation review (LG-047)
 
-Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
+Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 
 ## Kept (by primary muscle)
 
@@ -288,8 +288,7 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Oblique Crunch
 - Russian Twist
 
-### quads (82)
-- Barbell Full Squat
+### quads (53)
 - Barbell Hack Squat
 - Barbell Lunge
 - Barbell Side Split Squat
@@ -297,36 +296,27 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Barbell Squat To A Bench
 - Barbell Step Ups
 - Barbell Walking Lunge
-- Below-the-Knee Hang Clean
 - Bodyweight Squat
 - Bodyweight Walking Lunge
 - Box Squat
 - Box Squat with Bands
-- Box Squat with Chains
+- Bulgarian Split Squat
 - Cable Deadlifts
-- Cable Hip Adduction
 - Chair Squat
-- Clean from Blocks
-- Clean Pull
 - Dumbbell Lunges
 - Dumbbell Rear Lunge
 - Dumbbell Squat
 - Dumbbell Squat To A Bench
 - Dumbbell Step Ups
 - Elevated Back Lunge
-- Frankenstein Squat
-- Freehand Jump Squat
 - Front Barbell Squat
 - Front Barbell Squat To A Bench
 - Front Squat (Clean Grip)
 - Front Squats With Two Kettlebells
 - Goblet Squat
 - Hack Squat
-- Hang Clean
-- Heaving Snatch Balance
 - Hip Flexion with Band
 - Jefferson Squats
-- Jerk Dip Squat
 - Kettlebell Pistol Squat
 - Leg Extensions
 - Leg Press
@@ -336,43 +326,24 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Narrow Stance Hack Squats
 - Narrow Stance Leg Press
 - Narrow Stance Squats
-- Olympic Squat
-- One Leg Barbell Squat
 - One-Arm Overhead Kettlebell Squats
 - One-Arm Side Deadlift
-- Overhead Squat
-- Plie Dumbbell Squat
-- Power Jerk
-- Power Snatch from Blocks
 - Reverse Band Box Squat
 - Reverse Band Power Squat
 - Single-Leg High Box Squat
 - Single-Leg Leg Extension
+- Smith Machine Bulgarian Split Squat
 - Smith Machine Leg Press
 - Smith Machine Pistol Squat
 - Smith Machine Squat
-- Smith Single-Leg Split Squat
-- Snatch
-- Snatch Balance
-- Snatch from Blocks
-- Speed Box Squat
-- Speed Squats
-- Split Clean
-- Split Jerk
-- Split Squat with Dumbbells
-- Squat Jerk
-- Squat with Bands
-- Squat with Chains
-- Squat with Plate Movers
 - Suspended Split Squat
 - Trap Bar Deadlift
-- Weighted Jump Squat
 - Weighted Sissy Squat
 - Weighted Squat
 - Wide Stance Barbell Squat
 - Zercher Squats
 
-### rear delts (9)
+### rear delts (8)
 - Barbell Rear Delt Row
 - Bent Over Dumbbell Rear Delt Raise With Head On Bench
 - Cable Rear Delt Fly
@@ -381,7 +352,6 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Reverse Flyes
 - Reverse Flyes With External Rotation
 - Seated Bent-Over Rear Delt Raise
-- Sled Reverse Flye
 
 ### side delts (9)
 - Cable Seated Lateral Raise
@@ -528,7 +498,8 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Trail Running/Walking
 - Walking, Treadmill
 
-### duplicate-of (4)
+### duplicate-of (5)
+- Barbell Full Squat
 - Bench Press - Powerlifting
 - Crunch - Legs On Exercise Ball
 - Oblique Crunches - On The Floor
@@ -545,10 +516,11 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Standing Barbell Press Behind Neck
 - Wide-Grip Pulldown Behind The Neck
 
-### novelty-junk (22)
+### novelty-junk (26)
 - Back Flyes - With Bands
 - Balance Board
 - Bench Press - With Bands
+- Box Squat with Chains
 - Bradford/Rocky Presses
 - Calf Raises - With Bands
 - Car Drivers
@@ -565,6 +537,9 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Push Up to Side Plank
 - Rocky Pull-Ups/Pulldowns
 - Shoulder Press - With Bands
+- Squat with Bands
+- Squat with Chains
+- Squat with Plate Movers
 - Squats - With Bands
 - Upright Row - With Bands
 - Weighted Sit-Ups - With Bands
@@ -632,7 +607,7 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Supine Two-Arm Overhead Throw
 - Vertical Swing
 
-### scope-trim (152)
+### scope-trim (177)
 - 3/4 Sit-Up
 - Advanced Kettlebell Windmill
 - Air Bike
@@ -653,14 +628,17 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Bottoms Up
 - Bottoms-Up Clean From The Hang Position
 - Butt-Ups
+- Cable Hip Adduction
 - Cable Iron Cross
 - Cable Judo Flip
 - Cable Reverse Crunch
 - Cable Rope Rear-Delt Rows
 - Cable Russian Twists
 - Cable Seated Crunch
+- Clean Pull
 - Clean and Jerk
 - Clean and Press
+- Clean from Blocks
 - Cocoons
 - Cross-Body Crunch
 - Crunch - Hands Overhead
@@ -683,17 +661,23 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Flat Bench Lying Leg Raise
 - Flexor Incline Dumbbell Curls
 - Flutter Kicks
+- Frankenstein Squat
+- Freehand Jump Squat
 - Frog Sit-Ups
 - Gironda Sternum Chins
 - Gorilla Chin/Crunch
 - Hammer Grip Incline DB Bench Press
+- Hang Clean
+- Hang Clean - Below the Knees
 - Hang Snatch
 - Hang Snatch - Below Knees
 - Hanging Bar Good Morning
 - Hanging Pike
+- Heaving Snatch Balance
 - Incline Inner Biceps Curl
 - Jackknife Sit-Up
 - Janda Sit-Up
+- Jerk Dip Squat
 - Kettlebell Arnold Press
 - Kettlebell Dead Clean
 - Kettlebell Figure 8
@@ -721,6 +705,7 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Lying High Bench Barbell Curl
 - Muscle Snatch
 - Neck Press
+- Olympic Squat
 - One-Arm High-Pulley Cable Side Bends
 - One-Arm Kettlebell Clean
 - One-Arm Kettlebell Clean and Jerk
@@ -738,14 +723,18 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - One-Arm Side Laterals
 - Open Palm Kettlebell Clean
 - Otis-Up
+- Overhead Squat
 - Pallof Press
 - Pallof Press With Rotation
 - Palms-Down Wrist Curl Over A Bench
 - Physioball Hip Bridge
 - Plate Twist
+- Plie Dumbbell Squat
 - Power Clean
 - Power Clean from Blocks
+- Power Jerk
 - Power Snatch
+- Power Snatch from Blocks
 - Press Sit-Up
 - Pull Through
 - Push-Ups With Feet On An Exercise Ball
@@ -760,12 +749,22 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Side Jackknife
 - Single-Arm Linear Jammer
 - Sled Overhead Backward Walk
+- Sled Reverse Flye
 - Smith Machine Hip Raise
+- Snatch
+- Snatch Balance
 - Snatch Deadlift
 - Snatch Pull
+- Snatch from Blocks
+- Speed Box Squat
+- Speed Squats
 - Spell Caster
 - Spider Crawl
+- Split Clean
+- Split Jerk
 - Split Snatch
+- Split Squat with Dumbbells
+- Squat Jerk
 - Standing Cable Chest Press
 - Standing Cable Lift
 - Standing Cable Wood Chop
@@ -784,6 +783,7 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - Two-Arm Kettlebell Military Press
 - Weighted Ball Side Bend
 - Weighted Crunches
+- Weighted Jump Squat
 - Wind Sprints
 
 ### stretch (122)
@@ -935,9 +935,13 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 
 ## Added (net-new)
 
+- **Archer Pull** - Ji-logged staple
+- **Cable Lateral Raise** - Ji-logged staple
+- **Chest-Supported Incline Dumbbell Lateral Raise** - Ji-logged staple
 - **Close Supinated Lat Pulldown** - Lat pulldown grip/width grid: close supinated slot, missing from the seed
 - **Close-Grip Pull-Up** - Grip-width sibling to Wide Grip Pull-Up; only the behind-neck wide variant existed in the seed.
 - **Decline Leg Raise** - Ji-logged staple
+- **Facing-Up Incline Dumbbell Lateral Raise** - Ji-logged staple
 - **Incline Close Grip Bench Press** - AC coverage: incline + close-grip combination (upper chest/triceps emphasis) missing from the seed.
 - **Lat Pulldown** - Lat pulldown grip/width grid: medium pronated default, missing from the seed under any name
 - **Neutral Grip Cable Row** - Grip-width sibling to Wide Grip Cable Row, pairing with the seed's existing wide-grip-only cable row coverage.
@@ -949,7 +953,11 @@ Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 - **Seated Leg Press Calf Raise** - Ji-logged staple
 - **Single Leg Seated Leg Press Calf Raise** - Ji-logged staple
 - **Single Leg Standing Leg Curl on Leg Press Machine** - Ji-logged staple
+- **Single-Arm Cable Rear Delt Fly** - Ji-logged staple
 - **Single-Arm Cable Row** - Ji-logged staple
+- **Smith Machine Hinge Deadlift** - Ji-logged staple
+- **Smith Machine Split Squat** - Ji-logged staple
+- **Split Squat** - Ji-logged staple
 - **Underhand Bent Over Barbell Row** - Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.
 - **Wide Grip Cable Row** - AC coverage: wide-grip cable row is a staple back-width row missing from the seed.
 - **Wide Grip Pull-Up** - Front-facing wide-grip pull-up (to the chest); the seed only had the behind-the-neck rear variant.

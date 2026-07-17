@@ -1,6 +1,6 @@
 # Exercise curation review (LG-047)
 
-Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
+Seed: 873 entries. Kept: 468. Dropped: 405. Added: 20. Final catalog: 488.
 
 ## Kept (by primary muscle)
 
@@ -142,8 +142,8 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Seated Dumbbell Supinated Wrist Curl
 - Seated One-Arm Dumbbell Pronated Wrist Curl
 - Seated One-Arm Dumbbell Supinated Wrist Curl
-- Seated Palm-Up Barbell Wrist Curl
 - Seated Pronated Barbell Wrist Curl
+- Seated Supinated Barbell Wrist Curl
 - Seated Two-Arm Supinated Low-Pulley Wrist Curl
 - Standing Olympic Plate Hand Squeeze
 - Supinated Barbell Wrist Curl Over A Bench
@@ -203,55 +203,31 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Straight Raises on Incline Bench
 - Upright Barbell Row
 
-### glutes (16)
+### glutes (10)
 - Barbell Glute Bridge
 - Barbell Hip Thrust
 - Butt Lift (Bridge)
-- Downward Facing Balance
-- Flutter Kicks
 - Glute Kickback
 - Hip Extension with Bands
 - Hip Lift with Band
-- Kneeling Jump Squat
-- Kneeling Squat
 - Leg Lift
 - One-Legged Cable Kickback
-- Physioball Hip Bridge
-- Pull Through
 - Single Leg Glute Bridge
 - Step-up with Knee Raise
 
-### hamstrings (49)
-- Alternating Hang Clean
-- Ball Leg Curl
+### hamstrings (26)
 - Band Good Morning
-- Band Good Morning (Pull Through)
-- Below-the-Knee Hang Snatch
 - Clean
 - Clean Deadlift
-- Double Kettlebell Alternating Hang Clean
 - Dumbbell Clean
 - Floor Glute-Ham Raise
 - Glute Ham Raise
 - Good Morning
 - Good Morning off Pins
-- Hang Snatch
-- Hanging Bar Good Morning
-- Kettlebell Dead Clean
-- Kettlebell Hang Clean
-- Kettlebell One-Legged Deadlift
 - Lunge Pass Through
 - Lying Leg Curls
-- Muscle Snatch
 - Natural Glute Ham Raise
-- One-Arm Kettlebell Clean
-- One-Arm Kettlebell Swings
-- One-Arm Open Palm Kettlebell Clean
-- Open Palm Kettlebell Clean
 - Platform Hamstring Slides
-- Power Clean
-- Power Clean from Blocks
-- Power Snatch
 - Prone Manual Hamstring
 - Reverse Band Sumo Deadlift
 - Reverse Hyperextension
@@ -261,31 +237,25 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Seated Leg Curl
 - Smith Machine Hang Power Clean
 - Smith Machine Stiff-Legged Deadlift
-- Snatch Deadlift
-- Snatch Pull
-- Split Snatch
 - Standing Leg Curl
 - Stiff-Legged Barbell Deadlift
 - Stiff-Legged Dumbbell Deadlift
 - Sumo Deadlift
-- Sumo Deadlift with Bands
-- Sumo Deadlift with Chains
 - Wide Stance Stiff Legs
 
-### lats (27)
+### lats (25)
 - Band Assisted Pull-Up
 - Bent-Arm Barbell Pullover
 - Cable Incline Pushdown
 - Chin-Up
-- Close-Grip Front Lat Pulldown
+- Close Grip Lat Pulldown
+- Close Neutral Grip Lat Pulldown
 - Elevated Cable Rows
 - Full Range-Of-Motion Lat Pulldown
-- Gironda Sternum Chins
 - Kipping Muscle Up
 - Kneeling High Pulley Row
 - Kneeling Single-Arm High Pulley Row
 - Leverage Iso Row
-- London Bridges
 - Muscle Up
 - One Arm Lat Pulldown
 - Pull-Up
@@ -294,11 +264,10 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Shotgun Row
 - Side To Side Chins
 - Straight-Arm Pulldown
-- Underhand Cable Pulldowns
+- Supinated Lat Pulldown
 - V-Bar Pull-Up
-- V-Bar Pulldown
 - Weighted Pull Ups
-- Wide-Grip Lat Pulldown
+- Wide Grip Lat Pulldown
 - Wide-Grip Rear Pull-Up
 
 ### lower back (12)
@@ -663,12 +632,15 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Supine Two-Arm Overhead Throw
 - Vertical Swing
 
-### scope-trim (121)
+### scope-trim (152)
 - 3/4 Sit-Up
 - Advanced Kettlebell Windmill
 - Air Bike
 - Alternate Heel Touchers
+- Alternating Hang Clean
 - Around The Worlds
+- Ball Leg Curl
+- Band Good Morning (Pull Through)
 - Barbell Ab Rollout
 - Barbell Ab Rollout - On Knees
 - Barbell Rollout from Bench
@@ -696,10 +668,12 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Dead Bug
 - Decline Oblique Crunch
 - Decline Reverse Crunch
+- Double Kettlebell Alternating Hang Clean
 - Double Kettlebell Jerk
 - Double Kettlebell Push Press
 - Double Kettlebell Snatch
 - Double Kettlebell Windmill
+- Downward Facing Balance
 - Dumbbell Side Bend
 - Elbow to Knee
 - Exercise Ball Crunch
@@ -708,15 +682,23 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Flat Bench Leg Pull-In
 - Flat Bench Lying Leg Raise
 - Flexor Incline Dumbbell Curls
+- Flutter Kicks
 - Frog Sit-Ups
+- Gironda Sternum Chins
 - Gorilla Chin/Crunch
 - Hammer Grip Incline DB Bench Press
+- Hang Snatch
+- Hang Snatch - Below Knees
+- Hanging Bar Good Morning
 - Hanging Pike
 - Incline Inner Biceps Curl
 - Jackknife Sit-Up
 - Janda Sit-Up
 - Kettlebell Arnold Press
+- Kettlebell Dead Clean
 - Kettlebell Figure 8
+- Kettlebell Hang Clean
+- Kettlebell One-Legged Deadlift
 - Kettlebell Pass Between The Legs
 - Kettlebell Seated Press
 - Kettlebell Seesaw Press
@@ -726,16 +708,21 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Kettlebell Windmill
 - Knee/Hip Raise On Parallel Bars
 - Kneeling Cable Crunch With Alternating Oblique Twists
+- Kneeling Jump Squat
+- Kneeling Squat
 - Landmine 180's
 - Leg Pull-In
 - Leg-Over Floor Press
 - Leverage Chest Press
 - Leverage Decline Chest Press
 - Leverage Incline Chest Press
+- London Bridges
 - Lying Close-Grip Bar Curl On High Pulley
 - Lying High Bench Barbell Curl
+- Muscle Snatch
 - Neck Press
 - One-Arm High-Pulley Cable Side Bends
+- One-Arm Kettlebell Clean
 - One-Arm Kettlebell Clean and Jerk
 - One-Arm Kettlebell Floor Press
 - One-Arm Kettlebell Jerk
@@ -745,14 +732,22 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - One-Arm Kettlebell Snatch
 - One-Arm Kettlebell Split Jerk
 - One-Arm Kettlebell Split Snatch
+- One-Arm Kettlebell Swings
 - One-Arm Medicine Ball Slam
+- One-Arm Open Palm Kettlebell Clean
 - One-Arm Side Laterals
+- Open Palm Kettlebell Clean
 - Otis-Up
 - Pallof Press
 - Pallof Press With Rotation
 - Palms-Down Wrist Curl Over A Bench
+- Physioball Hip Bridge
 - Plate Twist
+- Power Clean
+- Power Clean from Blocks
+- Power Snatch
 - Press Sit-Up
+- Pull Through
 - Push-Ups With Feet On An Exercise Ball
 - Rack Delivery
 - Reverse Machine Flyes
@@ -766,13 +761,18 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 - Single-Arm Linear Jammer
 - Sled Overhead Backward Walk
 - Smith Machine Hip Raise
+- Snatch Deadlift
+- Snatch Pull
 - Spell Caster
 - Spider Crawl
+- Split Snatch
 - Standing Cable Chest Press
 - Standing Cable Lift
 - Standing Cable Wood Chop
 - Standing Inner-Biceps Curl
 - Standing Rope Crunch
+- Sumo Deadlift with Bands
+- Sumo Deadlift with Chains
 - Suspended Fallout
 - Suspended Push-Up
 - Suspended Reverse Crunch
@@ -935,16 +935,23 @@ Seed: 873 entries. Kept: 499. Dropped: 374. Added: 13. Final catalog: 512.
 
 ## Added (net-new)
 
-- **Close Grip Seated Cable Row** - Grip-width sibling to Wide Grip Cable Row, pairing with the seed's existing wide-grip-only cable row coverage.
+- **Close Supinated Lat Pulldown** - Lat pulldown grip/width grid: close supinated slot, missing from the seed
 - **Close-Grip Pull-Up** - Grip-width sibling to Wide Grip Pull-Up; only the behind-neck wide variant existed in the seed.
 - **Decline Leg Raise** - Ji-logged staple
 - **Incline Close Grip Bench Press** - AC coverage: incline + close-grip combination (upper chest/triceps emphasis) missing from the seed.
+- **Lat Pulldown** - Lat pulldown grip/width grid: medium pronated default, missing from the seed under any name
+- **Neutral Grip Cable Row** - Grip-width sibling to Wide Grip Cable Row, pairing with the seed's existing wide-grip-only cable row coverage.
 - **Neutral Grip Lat Pulldown** - Grip-family completion for lat pulldown alongside the seed's wide-grip and close-grip variants.
 - **Neutral Grip Machine Shoulder Press** - Grip variant per flat model; default Machine Shoulder Press is overhand
 - **Neutral Grip Pull-Up** - Systematic pull-up grip family Ji expects as a first-class variant; shoulder-friendlier grip missing from the seed.
 - **One-Arm Front Cable Raise** - Ji-logged staple
+- **Overhand Grip Cable Row** - Ji-logged staple
 - **Seated Leg Press Calf Raise** - Ji-logged staple
 - **Single Leg Seated Leg Press Calf Raise** - Ji-logged staple
+- **Single Leg Standing Leg Curl on Leg Press Machine** - Ji-logged staple
+- **Single-Arm Cable Row** - Ji-logged staple
 - **Underhand Bent Over Barbell Row** - Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.
 - **Wide Grip Cable Row** - AC coverage: wide-grip cable row is a staple back-width row missing from the seed.
 - **Wide Grip Pull-Up** - Front-facing wide-grip pull-up (to the chest); the seed only had the behind-the-neck rear variant.
+- **Wide Neutral Grip Lat Pulldown** - Lat pulldown grip/width grid: wide neutral slot, missing from the seed
+- **Wide Supinated Lat Pulldown** - Lat pulldown grip/width grid: wide supinated slot, missing from the seed

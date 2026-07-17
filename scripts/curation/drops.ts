@@ -267,6 +267,41 @@ const drops: Record<string, DropReason> = {
   "Two-Arm_Kettlebell_Clean": "scope-trim", // Two-Arm Kettlebell Clean
   "Two-Arm_Kettlebell_Jerk": "scope-trim", // Two-Arm Kettlebell Jerk
   "Two-Arm_Kettlebell_Military_Press": "scope-trim", // Two-Arm Kettlebell Military Press
+  // Ji review round 5 (2026-07-17): glutes trim.
+  "Downward_Facing_Balance": "scope-trim", // Downward Facing Balance
+  "Flutter_Kicks": "scope-trim", // Flutter Kicks
+  "Kneeling_Jump_Squat": "scope-trim", // Kneeling Jump Squat
+  "Kneeling_Squat": "scope-trim", // Kneeling Squat
+  "Physioball_Hip_Bridge": "scope-trim", // Physioball Hip Bridge
+  "Pull_Through": "scope-trim", // Pull Through
+  // Ji review round 5 (2026-07-17): hamstrings trim - mostly olympic-lift
+  // derivatives and kettlebell ballistics.
+  "Alternating_Hang_Clean": "scope-trim", // Alternating Hang Clean
+  "Ball_Leg_Curl": "scope-trim", // Ball Leg Curl
+  "Band_Good_Morning_Pull_Through": "scope-trim", // Band Good Morning (Pull Through)
+  "Hang_Snatch_-_Below_Knees": "scope-trim", // Below-the-Knee Hang Snatch
+  "Double_Kettlebell_Alternating_Hang_Clean": "scope-trim", // Double Kettlebell Alternating Hang Clean
+  "Hang_Snatch": "scope-trim", // Hang Snatch
+  "Hanging_Bar_Good_Morning": "scope-trim", // Hanging Bar Good Morning
+  "Kettlebell_Dead_Clean": "scope-trim", // Kettlebell Dead Clean
+  "Kettlebell_Hang_Clean": "scope-trim", // Kettlebell Hang Clean
+  "Kettlebell_One-Legged_Deadlift": "scope-trim", // Kettlebell One-Legged Deadlift
+  "Muscle_Snatch": "scope-trim", // Muscle Snatch
+  "One-Arm_Kettlebell_Clean": "scope-trim", // One-Arm Kettlebell Clean
+  "One-Arm_Kettlebell_Swings": "scope-trim", // One-Arm Kettlebell Swings
+  "One-Arm_Open_Palm_Kettlebell_Clean": "scope-trim", // One-Arm Open Palm Kettlebell Clean
+  "Open_Palm_Kettlebell_Clean": "scope-trim", // Open Palm Kettlebell Clean
+  "Power_Clean": "scope-trim", // Power Clean
+  "Power_Clean_from_Blocks": "scope-trim", // Power Clean from Blocks
+  "Power_Snatch": "scope-trim", // Power Snatch
+  "Snatch_Deadlift": "scope-trim", // Snatch Deadlift
+  "Snatch_Pull": "scope-trim", // Snatch Pull
+  "Split_Snatch": "scope-trim", // Split Snatch
+  "Sumo_Deadlift_with_Bands": "scope-trim", // Sumo Deadlift with Bands
+  "Sumo_Deadlift_with_Chains": "scope-trim", // Sumo Deadlift with Chains
+  // Ji review round 5 (2026-07-17): lats trim.
+  "Gironda_Sternum_Chins": "scope-trim", // Gironda Sternum Chins
+  "London_Bridges": "scope-trim", // London Bridges
   // ---- stretch (122) ----
   "90_90_Hamstring": "stretch", // 90/90 Hamstring
   "Adductor": "stretch", // Adductor

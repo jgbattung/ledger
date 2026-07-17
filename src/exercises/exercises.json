@@ -148,34 +148,6 @@
     ]
   },
   {
-    "id": "alternating-hang-clean",
-    "name": "Alternating Hang Clean",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "calves",
-      "forearms",
-      "glutes",
-      "lower back",
-      "traps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead.",
-      "Clean one kettlebell to your shoulder and hold on to the other kettlebell in a hanging position. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so.",
-      "Lower the cleaned kettlebell to a hanging position and clean the alternate kettlebell. Repeat."
-    ],
-    "images": [
-      "Alternating_Hang_Clean/0.jpg",
-      "Alternating_Hang_Clean/1.jpg"
-    ]
-  },
-  {
     "id": "alternating-kettlebell-press",
     "name": "Alternating Kettlebell Press",
     "aliases": [],
@@ -301,32 +273,6 @@
     ]
   },
   {
-    "id": "ball-leg-curl",
-    "name": "Ball Leg Curl",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Begin on the floor laying on your back with your feet on top of the ball.",
-      "Position the ball so that when your legs are extended your ankles are on top of the ball. This will be your starting position.",
-      "Raise your hips off of the ground, keeping your weight on the shoulder blades and your feet.",
-      "Flex the knees, pulling the ball as close to you as you can, contracting the hamstrings.",
-      "After a brief pause, return to the starting position."
-    ],
-    "images": [
-      "Ball_Leg_Curl/0.jpg",
-      "Ball_Leg_Curl/1.jpg"
-    ]
-  },
-  {
     "id": "band-assisted-pull-up",
     "name": "Band Assisted Pull-Up",
     "aliases": [],
@@ -374,30 +320,6 @@
     "images": [
       "Band_Good_Morning/0.jpg",
       "Band_Good_Morning/1.jpg"
-    ]
-  },
-  {
-    "id": "band-good-morning-pull-through",
-    "name": "Band Good Morning (Pull Through)",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "lower back"
-    ],
-    "equipment": "band",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Loop the band around a post. Standing a little ways away, loop the opposite end around the neck. Your hands can help hold the band in position.",
-      "Begin by bending at the hips, getting your butt back as far as possible. Keep your back flat and bend forward to about 90 degrees. Your knees should be only slightly bent.",
-      "Return to the starting position be driving through with the hips to come back to a standing position."
-    ],
-    "images": [
-      "Band_Good_Morning_Pull_Through/0.jpg",
-      "Band_Good_Morning_Pull_Through/1.jpg"
     ]
   },
   {
@@ -1078,37 +1000,6 @@
     "images": [
       "Hang_Clean_-_Below_the_Knees/0.jpg",
       "Hang_Clean_-_Below_the_Knees/1.jpg"
-    ]
-  },
-  {
-    "id": "below-the-knee-hang-snatch",
-    "name": "Below-the-Knee Hang Snatch",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "calves",
-      "forearms",
-      "glutes",
-      "lower back",
-      "quads",
-      "front delts",
-      "traps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a wide grip on the bar, with an overhand or hook grip. The feet should be directly below the hips with the feet turned out. Your knees should be slightly bent, and the torso inclined forward. The spine should be fully extended and the head facing forward. The bar should be just below the knees. This will be your starting position.",
-      "Aggressively extend through the legs and hips. At peak extension, shrug the shoulders and allow the elbows to flex to the side.",
-      "As you move your feet into the receiving position, forcefully pull yourself below the bar as you elevate the bar overhead. Receive the bar with your body as low as possible and the arms fully extended overhead.",
-      "Return to a standing position with the weight overhead, and then return the weight to the floor under control."
-    ],
-    "images": [
-      "Hang_Snatch_-_Below_Knees/0.jpg",
-      "Hang_Snatch_-_Below_Knees/1.jpg"
     ]
   },
   {
@@ -2407,23 +2298,83 @@
     ]
   },
   {
-    "id": "close-grip-seated-cable-row",
-    "name": "Close Grip Seated Cable Row",
-    "aliases": [],
+    "id": "close-grip-lat-pulldown",
+    "name": "Close Grip Lat Pulldown",
+    "aliases": [
+      "Close-Grip Front Lat Pulldown"
+    ],
     "primaryMuscles": [
-      "upper back",
       "lats"
     ],
     "secondaryMuscles": [
-      "biceps"
+      "biceps",
+      "upper back",
+      "front delts"
     ],
     "equipment": "cable",
     "category": "strength",
     "mechanic": "compound",
     "instructions": [
-      "Attach a close (V-bar or narrow neutral) handle to a low cable pulley and sit with knees slightly bent.",
-      "Grip the handle, arms extended, torso upright.",
-      "Pull the handle to your torso, driving elbows straight back and squeezing your back.",
+      "Sit down on a pull-down machine with a wide bar attached to the top pulley. Make sure that you adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
+      "Grab the bar with the palms facing forward using the prescribed grip. Note on grips: For a wide grip, your hands need to be spaced out at a distance wider than your shoulder width. For a medium grip, your hands need to be spaced out at a distance equal to your shoulder width and for a close grip at a distance smaller than your shoulder width.",
+      "As you have both arms extended in front of you - while holding the bar at the chosen grip width - bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.",
+      "As you breathe out, bring the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary (only the arms should move). The forearms should do no other work except for holding the bar; therefore do not try to pull the bar down using the forearms.",
+      "After a second in the contracted position, while squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement.",
+      "6. Repeat this motion for the prescribed amount of repetitions."
+    ],
+    "images": [
+      "Close-Grip_Front_Lat_Pulldown/0.jpg",
+      "Close-Grip_Front_Lat_Pulldown/1.jpg"
+    ]
+  },
+  {
+    "id": "close-neutral-grip-lat-pulldown",
+    "name": "Close Neutral Grip Lat Pulldown",
+    "aliases": [
+      "V-Bar Pulldown"
+    ],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back",
+      "front delts"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Sit down on a pull-down machine with a V-Bar attached to the top pulley.",
+      "Adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
+      "Grab the V-bar with the palms facing each other (a neutral grip). Stick your chest out and lean yourself back slightly (around 30-degrees) in order to better engage the lats. This will be your starting position.",
+      "Using your lats, pull the bar down as you squeeze your shoulder blades. Continue until your chest nearly touches the V-bar. Exhale as you execute this motion. Tip: Keep the torso stationary throughout the movement.",
+      "After a second hold on the contracted position, slowly bring the bar back to the starting position as you breathe in.",
+      "Repeat for the prescribed number of repetitions."
+    ],
+    "images": [
+      "V-Bar_Pulldown/0.jpg",
+      "V-Bar_Pulldown/1.jpg"
+    ]
+  },
+  {
+    "id": "close-supinated-lat-pulldown",
+    "name": "Close Supinated Lat Pulldown",
+    "aliases": [],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a close/narrow bar to a high pulley and sit with thighs secured under the pad.",
+      "Grip the bar just inside shoulder width, palms facing you, arms extended overhead.",
+      "Pull the bar down to your upper chest, driving elbows down and back.",
       "Slowly return to the stretched starting position and repeat."
     ],
     "images": []
@@ -2529,34 +2480,6 @@
     "images": [
       "Close-Grip_EZ-Bar_Press/0.jpg",
       "Close-Grip_EZ-Bar_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "close-grip-front-lat-pulldown",
-    "name": "Close-Grip Front Lat Pulldown",
-    "aliases": [],
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "upper back",
-      "front delts"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Sit down on a pull-down machine with a wide bar attached to the top pulley. Make sure that you adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
-      "Grab the bar with the palms facing forward using the prescribed grip. Note on grips: For a wide grip, your hands need to be spaced out at a distance wider than your shoulder width. For a medium grip, your hands need to be spaced out at a distance equal to your shoulder width and for a close grip at a distance smaller than your shoulder width.",
-      "As you have both arms extended in front of you - while holding the bar at the chosen grip width - bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.",
-      "As you breathe out, bring the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary (only the arms should move). The forearms should do no other work except for holding the bar; therefore do not try to pull the bar down using the forearms.",
-      "After a second in the contracted position, while squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement.",
-      "6. Repeat this motion for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Close-Grip_Front_Lat_Pulldown/0.jpg",
-      "Close-Grip_Front_Lat_Pulldown/1.jpg"
     ]
   },
   {
@@ -3109,58 +3032,6 @@
     "images": [
       "Donkey_Calf_Raises/0.jpg",
       "Donkey_Calf_Raises/1.jpg"
-    ]
-  },
-  {
-    "id": "double-kettlebell-alternating-hang-clean",
-    "name": "Double Kettlebell Alternating Hang Clean",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "calves",
-      "forearms",
-      "glutes",
-      "lower back",
-      "quads",
-      "traps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead.",
-      "Clean one kettlebell to your shoulder and hold on to the other kettlebell.",
-      "With a fluid motion, lower the top kettlebell while driving the bottom kettlebell up."
-    ],
-    "images": [
-      "Double_Kettlebell_Alternating_Hang_Clean/0.jpg",
-      "Double_Kettlebell_Alternating_Hang_Clean/1.jpg"
-    ]
-  },
-  {
-    "id": "downward-facing-balance",
-    "name": "Downward Facing Balance",
-    "aliases": [],
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "hamstrings"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie facedown on top of an exercise ball.",
-      "While resting on your stomach on the ball, walk your hands forward along the floor and lift your legs, extending your elbows and knees."
-    ],
-    "images": [
-      "Downward_Facing_Balance/0.jpg",
-      "Downward_Facing_Balance/1.jpg"
     ]
   },
   {
@@ -4202,31 +4073,6 @@
     ]
   },
   {
-    "id": "flutter-kicks",
-    "name": "Flutter Kicks",
-    "aliases": [],
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "hamstrings"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "On a flat bench lie facedown with the hips on the edge of the bench, the legs straight with toes high off the floor and with the arms on top of the bench holding on to the front edge.",
-      "Squeeze your glutes and hamstrings and straighten the legs until they are level with the hips. This will be your starting position.",
-      "Start the movement by lifting the left leg higher than the right leg.",
-      "Then lower the left leg as you lift the right leg.",
-      "Continue alternating in this manner (as though you are doing a flutter kick in water) until you have done the recommended amount of repetitions for each leg. Make sure that you keep a controlled movement at all times. Tip: You will breathe normally as you perform this movement."
-    ],
-    "images": [
-      "Flutter_Kicks/0.jpg",
-      "Flutter_Kicks/1.jpg"
-    ]
-  },
-  {
     "id": "frankenstein-squat",
     "name": "Frankenstein Squat",
     "aliases": [],
@@ -4551,33 +4397,6 @@
     ]
   },
   {
-    "id": "gironda-sternum-chins",
-    "name": "Gironda Sternum Chins",
-    "aliases": [],
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "upper back"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Grasp the pull-up bar with a shoulder width underhand grip.",
-      "Now hang with your arms fully extended and stick your chest out and lean back. Tip: You will be leaning back throughout the entire movement. This will be your starting position.",
-      "Start pulling yourself towards the bar with your spine arched throughout the movement and your head leaning back as far away from the bar as possible. Exhale as you perform this portion of the movement. Tip: At the upper end of the movement, your hips and legs will be at about a 45-degree angle to the floor.",
-      "Keep pulling until your collarbone passes the bar and your lower chest or sternum area touches it. Hold that contraction for a second. Tip: By the time you've completed this portion of the movement; your head will be parallel to the floor.",
-      "Slowly start going back to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Gironda_Sternum_Chins/0.jpg",
-      "Gironda_Sternum_Chins/1.jpg"
-    ]
-  },
-  {
     "id": "glute-ham-raise",
     "name": "Glute Ham Raise",
     "aliases": [],
@@ -4804,63 +4623,6 @@
     "images": [
       "Hang_Clean/0.jpg",
       "Hang_Clean/1.jpg"
-    ]
-  },
-  {
-    "id": "hang-snatch",
-    "name": "Hang Snatch",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "calves",
-      "forearms",
-      "glutes",
-      "lower back",
-      "quads",
-      "front delts",
-      "traps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a wide grip on the bar, with an overhand or hook grip. The feet should be directly below the hips with the feet turned out. Your knees should be slightly bent, and the torso inclined forward. The spine should be fully extended and the head facing forward. The bar should be at the hips. This will be your starting position.",
-      "Aggressively extend through the legs and hips. At peak extension, shrug the shoulders and allow the elbows to flex to the side.",
-      "As you move your feet into the receiving position, forcefully pull yourself below the bar as you elevate the bar overhead. Receive the bar with your body as low as possible and the arms fully extended overhead.",
-      "Return to a standing position with the weight overhead. Follow by returning the weight to the ground under control."
-    ],
-    "images": [
-      "Hang_Snatch/0.jpg",
-      "Hang_Snatch/1.jpg"
-    ]
-  },
-  {
-    "id": "hanging-bar-good-morning",
-    "name": "Hanging Bar Good Morning",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "glutes",
-      "lower back"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a bar on a rack at about the same height as your stomach. Suspend the bar using chains or suspension straps.",
-      "Bend over underneath the bar and rack the bar across the rear of your shoulders as you would a power squat, not on top of your traps. At the proper height, you should be near parallel to the floor when bent over. Keep your back tight, shoulder blades pinched together, and your knees slightly bent. Keep your back arched and your cervical spine in proper alignment.",
-      "Begin the motion by extending through the hips with your glutes and hamstrings, and you are standing with the weight.",
-      "Slowly lower the weight back to the starting position, where it is supported by the chains."
-    ],
-    "images": [
-      "Hanging_Bar_Good_Morning/0.jpg",
-      "Hanging_Bar_Good_Morning/1.jpg"
     ]
   },
   {
@@ -5673,84 +5435,6 @@
     ]
   },
   {
-    "id": "kettlebell-dead-clean",
-    "name": "Kettlebell Dead Clean",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "lower back",
-      "quads",
-      "traps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead.",
-      "Clean the kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
-      "Lower the kettlebell, keeping the hamstrings loaded by keeping your back straight and your butt out."
-    ],
-    "images": [
-      "Kettlebell_Dead_Clean/0.jpg",
-      "Kettlebell_Dead_Clean/1.jpg"
-    ]
-  },
-  {
-    "id": "kettlebell-hang-clean",
-    "name": "Kettlebell Hang Clean",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "lower back",
-      "front delts",
-      "traps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead.",
-      "Clean kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
-      "Lower kettlebell to a hanging position between your legs while keeping the hamstrings loaded. Keep your head up at all times."
-    ],
-    "images": [
-      "Kettlebell_Hang_Clean/0.jpg",
-      "Kettlebell_Hang_Clean/1.jpg"
-    ]
-  },
-  {
-    "id": "kettlebell-one-legged-deadlift",
-    "name": "Kettlebell One-Legged Deadlift",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "lower back"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Hold a kettlebell by the handle in one hand. Stand on one leg, on the same side that you hold the kettlebell.",
-      "Keeping that knee slightly bent, perform a stiff legged deadlift by bending at the hip, extending your free leg behind you for balance.",
-      "Continue lowering the kettlebell until you are parallel to the ground, and then return to the upright position."
-    ],
-    "images": [
-      "Kettlebell_One-Legged_Deadlift/0.jpg",
-      "Kettlebell_One-Legged_Deadlift/1.jpg"
-    ]
-  },
-  {
     "id": "kettlebell-pistol-squat",
     "name": "Kettlebell Pistol Squat",
     "aliases": [],
@@ -5884,32 +5568,6 @@
     ]
   },
   {
-    "id": "kneeling-jump-squat",
-    "name": "Kneeling Jump Squat",
-    "aliases": [],
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "hamstrings",
-      "quads"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin kneeling on the floor with a barbell racked across the back of your shoulders, or you can use your body weight for this exercise. This can be done inside of a power rack to make unracking easier.",
-      "Sit back with your hips until your glutes touch your feet, keeping your head and chest up.",
-      "Explode up with your hips, generating enough power to land with your feet flat on the floor.",
-      "Continue with the squat by driving through your heels and extending the knees to come to a standing position."
-    ],
-    "images": [
-      "Kneeling_Jump_Squat/0.jpg",
-      "Kneeling_Jump_Squat/1.jpg"
-    ]
-  },
-  {
     "id": "kneeling-single-arm-high-pulley-row",
     "name": "Kneeling Single-Arm High Pulley Row",
     "aliases": [],
@@ -5932,31 +5590,6 @@
     "images": [
       "Kneeling_Single-Arm_High_Pulley_Row/0.jpg",
       "Kneeling_Single-Arm_High_Pulley_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "kneeling-squat",
-    "name": "Kneeling Squat",
-    "aliases": [],
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "hamstrings",
-      "lower back"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Set the bar to the proper height in a power rack. Kneel behind the bar; it may be beneficial to put a mat down to pad your knees. Slide under the bar, racking it across the back of your shoulders. Your shoulder blades should be retracted and the bar tight across your back. Unrack the weight.",
-      "With your head looking forward, sit back with your butt until you touch your calves.",
-      "Reverse the motion, returning the torso to an upright position."
-    ],
-    "images": [
-      "Kneeling_Squat/0.jpg",
-      "Kneeling_Squat/1.jpg"
     ]
   },
   {
@@ -5988,6 +5621,28 @@
       "Landmine_Linear_Jammer/0.jpg",
       "Landmine_Linear_Jammer/1.jpg"
     ]
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "Lat Pulldown",
+    "aliases": [],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a straight or lat bar to a high pulley and sit with thighs secured under the pad.",
+      "Grip the bar shoulder-width, palms facing away, arms extended overhead.",
+      "Pull the bar down to your upper chest, driving elbows down and back.",
+      "Slowly return to the stretched starting position and repeat."
+    ],
+    "images": []
   },
   {
     "id": "leg-extensions",
@@ -6205,32 +5860,6 @@
     "images": [
       "Leverage_Shrug/0.jpg",
       "Leverage_Shrug/1.jpg"
-    ]
-  },
-  {
-    "id": "london-bridges",
-    "name": "London Bridges",
-    "aliases": [],
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "forearms",
-      "upper back"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Attach a climbing rope to a high beam or cross member. Below it, ensure that the smith machine bar is locked in place with the safeties and cannot move. Alternatively, a secure box could also be utilized.",
-      "Stand on the bar, using the rope to balance yourself. This will be your starting position.",
-      "Keeping your body straight, lean back and lower your body by slowly going hand over hand with the rope. Continue until you are perpendicular to the ground.",
-      "Keeping your body straight, reverse the motion, going hand over hand back to the starting position."
-    ],
-    "images": [
-      "London_Bridges/0.jpg",
-      "London_Bridges/1.jpg"
     ]
   },
   {
@@ -6872,33 +6501,6 @@
     ]
   },
   {
-    "id": "muscle-snatch",
-    "name": "Muscle Snatch",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "lower back",
-      "quads",
-      "front delts",
-      "triceps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a loaded barbell held at the mid thigh position with a wide grip. The feet should be directly below the hips, with the feet turned out as needed. Lower the hips, with the chest up and the head looking forward. The shoulders should be just in front of the bar. This will be the starting position.",
-      "Begin the pull by driving through the front of the heels, raising the bar. Transition into the second pull by extending through the hips knees and ankles, driving the bar up as quickly as possible. The bar should be close to the body.",
-      "Continue raising the bar to the overhead position, without rebending the knees."
-    ],
-    "images": [
-      "Muscle_Snatch/0.jpg",
-      "Muscle_Snatch/1.jpg"
-    ]
-  },
-  {
     "id": "muscle-up",
     "name": "Muscle Up",
     "aliases": [],
@@ -7038,6 +6640,30 @@
       "Natural_Glute_Ham_Raise/0.jpg",
       "Natural_Glute_Ham_Raise/1.jpg"
     ]
+  },
+  {
+    "id": "neutral-grip-cable-row",
+    "name": "Neutral Grip Cable Row",
+    "aliases": [
+      "Close Grip Seated Cable Row"
+    ],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "upper back",
+      "biceps"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a close (V-bar or narrow neutral) handle to a low cable pulley and sit with knees slightly bent.",
+      "Grip the handle, arms extended, torso upright.",
+      "Pull the handle to your torso, driving elbows straight back and squeezing your back.",
+      "Slowly return to the stretched starting position and repeat."
+    ],
+    "images": []
   },
   {
     "id": "neutral-grip-lat-pulldown",
@@ -7464,32 +7090,6 @@
     ]
   },
   {
-    "id": "one-arm-kettlebell-clean",
-    "name": "One-Arm Kettlebell Clean",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "glutes",
-      "lower back",
-      "front delts",
-      "traps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place a kettlebell between your feet. As you bend down to grab the kettlebell, push your butt back and keep your eyes looking forward.",
-      "Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
-      "Return the weight to the starting position."
-    ],
-    "images": [
-      "One-Arm_Kettlebell_Clean/0.jpg",
-      "One-Arm_Kettlebell_Clean/1.jpg"
-    ]
-  },
-  {
     "id": "one-arm-kettlebell-row",
     "name": "One-Arm Kettlebell Row",
     "aliases": [],
@@ -7509,28 +7109,6 @@
     "images": [
       "One-Arm_Kettlebell_Row/0.jpg",
       "One-Arm_Kettlebell_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "one-arm-kettlebell-swings",
-    "name": "One-Arm Kettlebell Swings",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "lower back",
-      "front delts"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [],
-    "images": [
-      "One-Arm_Kettlebell_Swings/0.jpg",
-      "One-Arm_Kettlebell_Swings/1.jpg"
     ]
   },
   {
@@ -7557,34 +7135,6 @@
     "images": [
       "One-Arm_Long_Bar_Row/0.jpg",
       "One-Arm_Long_Bar_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "one-arm-open-palm-kettlebell-clean",
-    "name": "One-Arm Open Palm Kettlebell Clean",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "glutes",
-      "lower back",
-      "quads",
-      "front delts"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place one kettlebell between your feet.",
-      "Grab the handle with one hand and raise the kettlebell rapidly, let it flip so that the ball of the kettlebell lands in the palm of your hand.",
-      "Throw the kettlebell out in front of you and catch the handle with one hand.",
-      "Take the kettlebell to the floor and repeat. Make sure to work both arms."
-    ],
-    "images": [
-      "One-Arm_Open_Palm_Kettlebell_Clean/0.jpg",
-      "One-Arm_Open_Palm_Kettlebell_Clean/1.jpg"
     ]
   },
   {
@@ -7671,30 +7221,28 @@
     ]
   },
   {
-    "id": "open-palm-kettlebell-clean",
-    "name": "Open Palm Kettlebell Clean",
-    "aliases": [],
+    "id": "overhand-grip-cable-row",
+    "name": "Overhand Grip Cable Row",
+    "aliases": [
+      "Pronated Grip Cable Row"
+    ],
     "primaryMuscles": [
-      "hamstrings"
+      "lats"
     ],
     "secondaryMuscles": [
-      "glutes",
-      "lower back",
-      "quads",
-      "front delts"
+      "upper back",
+      "biceps"
     ],
-    "equipment": "kettlebell",
+    "equipment": "cable",
     "category": "strength",
     "mechanic": "compound",
     "instructions": [
-      "Place one kettlebell between your feet. Clean the kettlebell by extending through the legs and hips as you raise the kettlebell towards your shoulders.",
-      "Release the kettlebell as it comes up, and let it flip so that the ball of the kettlebell lands in the palms of your hands.",
-      "Release the kettlebell out in front of you and catch the handle with both hands. Lower the kettlebell to the starting position and repeat."
+      "Attach a straight or lat bar to a low cable pulley and sit with knees slightly bent.",
+      "Grip the bar with palms facing down, arms extended, torso upright.",
+      "Pull the bar to your torso, driving elbows back and squeezing your back.",
+      "Slowly return to the stretched starting position and repeat."
     ],
-    "images": [
-      "Open_Palm_Kettlebell_Clean/0.jpg",
-      "Open_Palm_Kettlebell_Clean/1.jpg"
-    ]
+    "images": []
   },
   {
     "id": "overhead-cable-curl",
@@ -7802,29 +7350,6 @@
     "images": [
       "Butterfly/0.jpg",
       "Butterfly/1.jpg"
-    ]
-  },
-  {
-    "id": "physioball-hip-bridge",
-    "name": "Physioball Hip Bridge",
-    "aliases": [],
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "hamstrings"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lay on a ball so that your upper back is on the ball with your hips unsupported. Both feet should be flat on the floor, hip width apart or wider. This will be your starting position.",
-      "Begin by extending the hips using your glutes and hamstrings, raising your hips upward as you bridge.",
-      "Pause at the top of the motion and return to the starting position."
-    ],
-    "images": [
-      "Physioball_Hip_Bridge/0.jpg",
-      "Physioball_Hip_Bridge/1.jpg"
     ]
   },
   {
@@ -7953,83 +7478,6 @@
     ]
   },
   {
-    "id": "power-clean",
-    "name": "Power Clean",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "forearms",
-      "glutes",
-      "lower back",
-      "upper back",
-      "quads",
-      "front delts",
-      "traps",
-      "triceps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Stand with your feet slightly wider than shoulder width apart and toes pointing out slightly.",
-      "Squat down and grasp bar with a closed, pronated grip. Your hands should be slightly wider than shoulder width apart outside knees with elbows fully extended.",
-      "Place the bar about 1 inch in front of your shins and over the balls of your feet.",
-      "Your back should be flat or slightly arched, your chest held up and out and your shoulder blades should be retracted.",
-      "Keep your head in a neutral position (in line with vertebral column and not tilted or rotated) with your eyes focused straight ahead. Inhale during this phase.",
-      "Lift the bar from the floor by forcefully extending the hips and the knees as you exhale. Tip: The upper torso should maintain the same angle. Do not bend at the waist yet and do not let the hips rise before the shoulders (this would have the effect of pushing the glutes in the air and stretching the hamstrings.",
-      "Keep elbows fully extended with the head in a neutral position and the shoulders over the bar.",
-      "As the bar raises keep it as close to the shins as possible.",
-      "As the bar passes the knees, thrust your hips forward and slightly bend the knees to avoid locking them. Tip: At this point your thighs should be against the bar.",
-      "Keep the back flat or slightly arched, elbows fully extended and your head neutral. Tip: You will hold your breath until the next phase.",
-      "Inhale and then forcefully and quickly extend your hips and knees and stand on your toes.",
-      "Keep the bar as close to your body as possible. Tip: Your back should be flat with the elbows pointed out to the sides and your head in a neutral position. Also, keep your shoulders over the bar and arms straight as long as possible.",
-      "When your lower body joints are fully extended, shrug the shoulders upward rapidly without letting the elbows flex yet. Exhale during this portion of the movement.",
-      "As the shoulders reach their highest elevation flex your elbows to begin pulling your body under the bar.",
-      "Continue to pull the arms as high and as long as possible. Tip: Due to the explosive nature of this phase, your torso will be erect or with an arched back, your head will be tilted back slightly and your feet may lose contact with the floor.",
-      "After the lower body has fully extended and the bar reaches near maximal height, pull your body under the bar and rotate the arms around and under the bar.",
-      "Simultaneously, flex the hips and knees into a quarter squat position.",
-      "Once the arms are under the bar, inhale and then lift your elbows to position the upper arms parallel to the floor. Rack the bar across the front of your collar bones and front shoulder muscles.",
-      "Catch the bar with an erect and tight torso, a neutral head position and flat feet. Exhale during this movement.",
-      "Stand up by extending the hips and knees to a fully erect position.",
-      "Lower the bar by gradually reducing the muscular tension of the arms to allow a controlled descent of the bar to the thighs. Inhale during this movement.",
-      "Simultaneously flex the hips and knees to cushion the impact of the bar on the thighs.",
-      "Squat down with the elbows fully extended until the bar touches the floor.",
-      "Start over at Phase 1 and repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Power_Clean/0.jpg",
-      "Power_Clean/1.jpg"
-    ]
-  },
-  {
-    "id": "power-clean-from-blocks",
-    "name": "Power Clean from Blocks",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "quads"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "With a barbell on boxes of the desired height, take a grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
-      "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight. As the bar approaches the mid-thigh position, begin extending through the hips.",
-      "In a jumping motion, accelerate by extending the hips, knees, and ankles, using speed to move the bar upward. There should be no need to actively pull through the arms to accelerate the weight. At the end of the second pull, the body should be fully extended, leaning slightly back, with the arms still extended.",
-      "As full extension is achieved, transition into the third pull by aggressively shrugging and flexing the arms with the elbows up and out. At peak extension, pull yourself under the bar far enough that it can be racked onto the shoulders, rotating your elbows under the bar as you do so. The bar should be racked onto the protracted shoulders, lightly touching the throat with the hands relaxed.",
-      "Immediately recover by driving through the heels, keeping the torso upright and elbows up. Continue until you have risen to a standing position, and complete the repetition by returning the weight to the boxes."
-    ],
-    "images": [
-      "Power_Clean_from_Blocks/0.jpg",
-      "Power_Clean_from_Blocks/1.jpg"
-    ]
-  },
-  {
     "id": "power-jerk",
     "name": "Power Jerk",
     "aliases": [],
@@ -8057,37 +7505,6 @@
     "images": [
       "Power_Jerk/0.jpg",
       "Power_Jerk/1.jpg"
-    ]
-  },
-  {
-    "id": "power-snatch",
-    "name": "Power Snatch",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "lower back",
-      "quads",
-      "front delts",
-      "traps",
-      "triceps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a loaded barbell on the floor. The bar should be close to or touching the shins, and a wide grip should be taken on the bar. The feet should be directly below the hips, with the feet turned out as needed. Lower the hips, with the chest up and the head looking forward. The shoulders should be just in front of the bar. This will be the starting position.",
-      "Begin the first pull by driving through the front of the heels, raising the bar from the ground. The back angle should stay the same until the bar passes the knees.",
-      "Transition into the second pull by extending through the hips knees and ankles, driving the bar up as quickly as possible. The bar should be close to the body. At peak extension, shrug the shoulders and allow the elbows to flex to the side.",
-      "As you move your feet into the receiving position, a slightly wider position, pull yourself below the bar as you elevate the bar overhead. The bar should be received in a partial squat. Continue raising the bar to the overhead position, receiving the bar locked out overhead.",
-      "Return to a standing position with the weight over head."
-    ],
-    "images": [
-      "Power_Snatch/0.jpg",
-      "Power_Snatch/1.jpg"
     ]
   },
   {
@@ -8215,29 +7632,6 @@
     "images": [
       "Prone_Manual_Hamstring/0.jpg",
       "Prone_Manual_Hamstring/1.jpg"
-    ]
-  },
-  {
-    "id": "pull-through",
-    "name": "Pull Through",
-    "aliases": [],
-    "primaryMuscles": [
-      "glutes"
-    ],
-    "secondaryMuscles": [
-      "hamstrings",
-      "lower back"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin standing a few feet in front of a low pulley with a rope or handle attached. Face away from the machine, straddling the cable, with your feet set wide apart.",
-      "Begin the movement by reaching through your legs as far as possible, bending at the hips. Keep your knees slightly bent. Keeping your arms straight, extend through the hip to stand straight up. Avoid pulling upward through the shoulders; all of the motion should originate through the hips."
-    ],
-    "images": [
-      "Pull_Through/0.jpg",
-      "Pull_Through/1.jpg"
     ]
   },
   {
@@ -9563,29 +8957,6 @@
     ]
   },
   {
-    "id": "seated-palm-up-barbell-wrist-curl",
-    "name": "Seated Palm-Up Barbell Wrist Curl",
-    "aliases": [],
-    "primaryMuscles": [
-      "forearms"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Hold a barbell with both hands and your palms facing up; hands spaced about shoulder width.",
-      "Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart.",
-      "Lean forward and place your forearms on top of your upper thighs with your palms up. Tip: Make sure that the front of the wrists lay on top of your knees. This will be your starting position.",
-      "Lower the bar as far as possible while inhaling and keeping a tight grip.",
-      "Now curl bar up as high as possible while flexing the forearms and exhaling. Hold the contraction at the top for a second and Tip: Only the wrist should move."
-    ],
-    "images": [
-      "Seated_Palm-Up_Barbell_Wrist_Curl/0.jpg",
-      "Seated_Palm-Up_Barbell_Wrist_Curl/1.jpg"
-    ]
-  },
-  {
     "id": "seated-pronated-barbell-wrist-curl",
     "name": "Seated Pronated Barbell Wrist Curl",
     "aliases": [
@@ -9630,6 +9001,31 @@
     "images": [
       "Seated_Side_Lateral_Raise/0.jpg",
       "Seated_Side_Lateral_Raise/1.jpg"
+    ]
+  },
+  {
+    "id": "seated-supinated-barbell-wrist-curl",
+    "name": "Seated Supinated Barbell Wrist Curl",
+    "aliases": [
+      "Seated Palm-Up Barbell Wrist Curl"
+    ],
+    "primaryMuscles": [
+      "forearms"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "barbell",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Hold a barbell with both hands and your palms facing up; hands spaced about shoulder width.",
+      "Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart.",
+      "Lean forward and place your forearms on top of your upper thighs with your palms up. Tip: Make sure that the front of the wrists lay on top of your knees. This will be your starting position.",
+      "Lower the bar as far as possible while inhaling and keeping a tight grip.",
+      "Now curl bar up as high as possible while flexing the forearms and exhaling. Hold the contraction at the top for a second and Tip: Only the wrist should move."
+    ],
+    "images": [
+      "Seated_Palm-Up_Barbell_Wrist_Curl/0.jpg",
+      "Seated_Palm-Up_Barbell_Wrist_Curl/1.jpg"
     ]
   },
   {
@@ -9877,6 +9273,28 @@
     "images": []
   },
   {
+    "id": "single-leg-standing-leg-curl-on-leg-press-machine",
+    "name": "Single Leg Standing Leg Curl on Leg Press Machine",
+    "aliases": [
+      "Single-Leg Standing Leg Curl on Leg Press Machine",
+      "Single Leg Standing Leg Curls on Leg Press Machine"
+    ],
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Stand facing away from a leg press machine (or a dedicated standing leg curl attachment) with one foot planted on the lower platform.",
+      "Brace against the machine and curl the platform toward your glute by flexing the working knee.",
+      "Pause briefly at full contraction, then lower under control.",
+      "Complete all reps on one leg before switching sides."
+    ],
+    "images": []
+  },
+  {
     "id": "single-arm-cable-crossover",
     "name": "Single-Arm Cable Crossover",
     "aliases": [],
@@ -9898,6 +9316,31 @@
       "Single-Arm_Cable_Crossover/0.jpg",
       "Single-Arm_Cable_Crossover/1.jpg"
     ]
+  },
+  {
+    "id": "single-arm-cable-row",
+    "name": "Single-Arm Cable Row",
+    "aliases": [
+      "Single Arm Cable Row",
+      "One-Arm Cable Row"
+    ],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "upper back",
+      "biceps"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a single handle to a low cable pulley and sit (or stand in a split stance) facing the machine.",
+      "Grip the handle with one hand, arm extended, torso upright.",
+      "Pull the handle to your torso, driving your elbow back and squeezing your back.",
+      "Slowly return to the stretched starting position, then repeat before switching sides."
+    ],
+    "images": []
   },
   {
     "id": "single-arm-push-up",
@@ -10598,34 +10041,6 @@
     ]
   },
   {
-    "id": "snatch-deadlift",
-    "name": "Snatch Deadlift",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "quads",
-      "traps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "The snatch deadlift strengthens the first pull of the snatch. Begin with a wide snatch grip with the barbell placed on the platform. The feet should be directly under the hips, with the feet turned out. Squat down to the bar, keeping the back in absolute extension with the head facing forward.",
-      "Initiate the movement by driving through the heels, raising the hips. The back angle should remain the same until the bar passes the knees.",
-      "At that point, drive your hips through the bar as you lay back. Return the bar to the platform by reversing the motion."
-    ],
-    "images": [
-      "Snatch_Deadlift/0.jpg",
-      "Snatch_Deadlift/1.jpg"
-    ]
-  },
-  {
     "id": "snatch-from-blocks",
     "name": "Snatch from Blocks",
     "aliases": [],
@@ -10655,34 +10070,6 @@
     "images": [
       "Snatch_from_Blocks/0.jpg",
       "Snatch_from_Blocks/1.jpg"
-    ]
-  },
-  {
-    "id": "snatch-pull",
-    "name": "Snatch Pull",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "glutes",
-      "lower back",
-      "quads",
-      "traps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "With a barbell on the floor close to the shins, take a wide snatch grip. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
-      "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight. Move the weight with control as you continue to above the knees.",
-      "Next comes the second pull, the main source of acceleration for the pull. As the bar approaches the mid-thigh position, begin extending through the hips. In a jumping motion, accelerate by extending the hips, knees, and ankles, using speed to move the bar upward.",
-      "There should be no need to actively pull through the arms to accelerate the weight; at the end of the second pull, the body should be fully extended, leaning slightly back. Full extension should be violent and abrupt, and ensure that you do not prolong the extension for longer than necessary."
-    ],
-    "images": [
-      "Snatch_Pull/0.jpg",
-      "Snatch_Pull/1.jpg"
     ]
   },
   {
@@ -10868,40 +10255,6 @@
     "images": [
       "Split_Jerk/0.jpg",
       "Split_Jerk/1.jpg"
-    ]
-  },
-  {
-    "id": "split-snatch",
-    "name": "Split Snatch",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "calves",
-      "forearms",
-      "glutes",
-      "hamstrings",
-      "lower back",
-      "quads",
-      "front delts",
-      "traps",
-      "triceps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a loaded barbell on the floor. The bar should be close to or touching the shins, and a wide grip should be taken on the bar. The feet should be directly below the hips, with the feet turned out as needed. Lower the hips, with the chest up and the head looking forward. The shoulders should be just in front of the bar. This will be the starting position.",
-      "Begin the first pull by driving through the front of the heels, raising the bar from the ground. The back angle should stay the same until the bar passes the knees.",
-      "Transition into the second pull by extending through the hips knees and ankles, driving the bar up as quickly as possible. The bar should be close to the body. At peak extension, shrug the shoulders and allow the elbows to flex to the side.",
-      "As you move your feet into the receiving position, forcefully pull yourself below the bar as you elevate the bar overhead. The feet should move forcefully to a split position, one foot forward one foot back. Receive the bar with your body as low as possible and the arms fully extended overhead.",
-      "Keeping the bar aligned over the front of the heels, your head and chest up, drive through heels of the feet to move to a standing position, bringing your feet together.",
-      "Carefully return the weight to floor."
-    ],
-    "images": [
-      "Split_Snatch/0.jpg",
-      "Split_Snatch/1.jpg"
     ]
   },
   {
@@ -11933,69 +11286,6 @@
     ]
   },
   {
-    "id": "sumo-deadlift-with-bands",
-    "name": "Sumo Deadlift with Bands",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "forearms",
-      "glutes",
-      "lower back",
-      "upper back",
-      "quads",
-      "traps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "To deadlift with short bands, simply loop them over the bar before you start, and step into them to set up. Ensure that they under the back half of your foot, directly where you are driving into the floor.",
-      "Begin with a bar loaded on the ground. Approach the bar so that the bar intersects the middle of the feet. The feet should be set very wide, near the collars. Bend at the hips to grip the bar. The arms should be directly below the shoulders, inside the legs, and you can use a pronated grip, a mixed grip, or hook grip.",
-      "Take a breath, and then lower your hips, looking forward with your head with your chest up. Drive through the floor, spreading your feet apart, with your weight on the back half of your feet. Extend through the hips and knees.",
-      "As the bar passes through the knees, lean back and drive the hips into the bar, pulling your shoulder blades together.",
-      "Return the weight to the ground by bending at the hips and controlling the weight on the way down."
-    ],
-    "images": [
-      "Sumo_Deadlift_with_Bands/0.jpg",
-      "Sumo_Deadlift_with_Bands/1.jpg"
-    ]
-  },
-  {
-    "id": "sumo-deadlift-with-chains",
-    "name": "Sumo Deadlift with Chains",
-    "aliases": [],
-    "primaryMuscles": [
-      "hamstrings"
-    ],
-    "secondaryMuscles": [
-      "abductors",
-      "adductors",
-      "forearms",
-      "glutes",
-      "lower back",
-      "upper back",
-      "quads",
-      "traps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "You can attach the chains to the sleeves of the bar, or just drape the middle over the bar so there is a greater weight increase as you lift. Attempt to keep the ends of the chains away from the plates so you don't hit them when you lower the weight.",
-      "Begin with a bar loaded on the ground. Approach the bar so that the bar intersects the middle of the feet. The feet should be set very wide, near the collars. Bend at the hips to grip the bar. The arms should be directly below the shoulders, inside the legs, and you can use a pronated grip, a mixed grip, or hook grip. Relax the shoulders, which in effect lengthens your arms.",
-      "Take a breath, and then lower your hips, looking forward with your head with your chest up. Drive through the floor, spreading your feet apart, with your weight on the back half of your feet. Extend through the hips and knees.",
-      "As the bar passes through the knees, lean back and drive the hips into the bar, pulling your shoulder blades together.",
-      "Return the weight to the ground by bending at the hips and controlling the weight on the way down."
-    ],
-    "images": [
-      "Sumo_Deadlift_with_Chains/0.jpg",
-      "Sumo_Deadlift_with_Chains/1.jpg"
-    ]
-  },
-  {
     "id": "supinated-barbell-wrist-curl-over-a-bench",
     "name": "Supinated Barbell Wrist Curl Over A Bench",
     "aliases": [
@@ -12047,6 +11337,36 @@
     "images": [
       "Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench/0.jpg",
       "Palms-Up_Dumbbell_Wrist_Curl_Over_A_Bench/1.jpg"
+    ]
+  },
+  {
+    "id": "supinated-lat-pulldown",
+    "name": "Supinated Lat Pulldown",
+    "aliases": [
+      "Underhand Cable Pulldowns"
+    ],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back",
+      "front delts"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Sit down on a pull-down machine with a wide bar attached to the top pulley. Adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
+      "Grab the pull-down bar with the palms facing your torso (a supinated grip). Make sure that the hands are placed closer than the shoulder width.",
+      "As you have both arms extended in front of you holding the bar at the chosen grip width, bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.",
+      "As you breathe out, pull the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the fully contracted position and keep the elbows close to your body. The upper torso should remain stationary as your bring the bar to you and only the arms should move. The forearms should do no other work other than hold the bar.",
+      "After a second on the contracted position, while breathing in, slowly bring the bar back to the starting position when your arms are fully extended and the lats are fully stretched.",
+      "Repeat this motion for the prescribed amount of repetitions."
+    ],
+    "images": [
+      "Underhand_Cable_Pulldowns/0.jpg",
+      "Underhand_Cable_Pulldowns/1.jpg"
     ]
   },
   {
@@ -12319,34 +11639,6 @@
     "images": []
   },
   {
-    "id": "underhand-cable-pulldowns",
-    "name": "Underhand Cable Pulldowns",
-    "aliases": [],
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "upper back",
-      "front delts"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Sit down on a pull-down machine with a wide bar attached to the top pulley. Adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
-      "Grab the pull-down bar with the palms facing your torso (a supinated grip). Make sure that the hands are placed closer than the shoulder width.",
-      "As you have both arms extended in front of you holding the bar at the chosen grip width, bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.",
-      "As you breathe out, pull the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the fully contracted position and keep the elbows close to your body. The upper torso should remain stationary as your bring the bar to you and only the arms should move. The forearms should do no other work other than hold the bar.",
-      "After a second on the contracted position, while breathing in, slowly bring the bar back to the starting position when your arms are fully extended and the lats are fully stretched.",
-      "Repeat this motion for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Underhand_Cable_Pulldowns/0.jpg",
-      "Underhand_Cable_Pulldowns/1.jpg"
-    ]
-  },
-  {
     "id": "upright-barbell-row",
     "name": "Upright Barbell Row",
     "aliases": [],
@@ -12419,34 +11711,6 @@
     "images": [
       "V-Bar_Pullup/0.jpg",
       "V-Bar_Pullup/1.jpg"
-    ]
-  },
-  {
-    "id": "v-bar-pulldown",
-    "name": "V-Bar Pulldown",
-    "aliases": [],
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "upper back",
-      "front delts"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Sit down on a pull-down machine with a V-Bar attached to the top pulley.",
-      "Adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
-      "Grab the V-bar with the palms facing each other (a neutral grip). Stick your chest out and lean yourself back slightly (around 30-degrees) in order to better engage the lats. This will be your starting position.",
-      "Using your lats, pull the bar down as you squeeze your shoulder blades. Continue until your chest nearly touches the V-bar. Exhale as you execute this motion. Tip: Keep the torso stationary throughout the movement.",
-      "After a second hold on the contracted position, slowly bring the bar back to the starting position as you breathe in.",
-      "Repeat for the prescribed number of repetitions."
-    ],
-    "images": [
-      "V-Bar_Pulldown/0.jpg",
-      "V-Bar_Pulldown/1.jpg"
     ]
   },
   {
@@ -12653,6 +11917,36 @@
     "images": []
   },
   {
+    "id": "wide-grip-lat-pulldown",
+    "name": "Wide Grip Lat Pulldown",
+    "aliases": [
+      "Wide-Grip Lat Pulldown"
+    ],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back",
+      "front delts"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Sit down on a pull-down machine with a wide bar attached to the top pulley. Make sure that you adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
+      "Grab the bar with the palms facing forward using the prescribed grip. Note on grips: For a wide grip, your hands need to be spaced out at a distance wider than shoulder width. For a medium grip, your hands need to be spaced out at a distance equal to your shoulder width and for a close grip at a distance smaller than your shoulder width.",
+      "As you have both arms extended in front of you holding the bar at the chosen grip width, bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.",
+      "As you breathe out, bring the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary and only the arms should move. The forearms should do no other work except for holding the bar; therefore do not try to pull down the bar using the forearms.",
+      "After a second at the contracted position squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement.",
+      "Repeat this motion for the prescribed amount of repetitions."
+    ],
+    "images": [
+      "Wide-Grip_Lat_Pulldown/0.jpg",
+      "Wide-Grip_Lat_Pulldown/1.jpg"
+    ]
+  },
+  {
     "id": "wide-grip-pull-up",
     "name": "Wide Grip Pull-Up",
     "aliases": [],
@@ -12702,6 +11996,28 @@
       "Push-Up_Wide/0.jpg",
       "Push-Up_Wide/1.jpg"
     ]
+  },
+  {
+    "id": "wide-neutral-grip-lat-pulldown",
+    "name": "Wide Neutral Grip Lat Pulldown",
+    "aliases": [],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a wide parallel-grip (neutral) bar to a high pulley and sit with thighs secured under the pad.",
+      "Grip the handles wider than shoulder width, palms facing each other, arms extended overhead.",
+      "Pull the handles down to your upper chest, driving elbows down and back.",
+      "Slowly return to the stretched starting position and repeat."
+    ],
+    "images": []
   },
   {
     "id": "wide-stance-barbell-squat",
@@ -12755,6 +12071,28 @@
       "Wide_Stance_Stiff_Legs/0.jpg",
       "Wide_Stance_Stiff_Legs/1.jpg"
     ]
+  },
+  {
+    "id": "wide-supinated-lat-pulldown",
+    "name": "Wide Supinated Lat Pulldown",
+    "aliases": [],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a wide bar to a high pulley and sit with thighs secured under the pad.",
+      "Grip the bar wider than shoulder width, palms facing you, arms extended overhead.",
+      "Pull the bar down to your upper chest, driving elbows down and back.",
+      "Slowly return to the stretched starting position and repeat."
+    ],
+    "images": []
   },
   {
     "id": "wide-grip-barbell-bench-press",
@@ -12831,34 +12169,6 @@
     "images": [
       "Wide-Grip_Decline_Barbell_Pullover/0.jpg",
       "Wide-Grip_Decline_Barbell_Pullover/1.jpg"
-    ]
-  },
-  {
-    "id": "wide-grip-lat-pulldown",
-    "name": "Wide-Grip Lat Pulldown",
-    "aliases": [],
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "upper back",
-      "front delts"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Sit down on a pull-down machine with a wide bar attached to the top pulley. Make sure that you adjust the knee pad of the machine to fit your height. These pads will prevent your body from being raised by the resistance attached to the bar.",
-      "Grab the bar with the palms facing forward using the prescribed grip. Note on grips: For a wide grip, your hands need to be spaced out at a distance wider than shoulder width. For a medium grip, your hands need to be spaced out at a distance equal to your shoulder width and for a close grip at a distance smaller than your shoulder width.",
-      "As you have both arms extended in front of you holding the bar at the chosen grip width, bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.",
-      "As you breathe out, bring the bar down until it touches your upper chest by drawing the shoulders and the upper arms down and back. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary and only the arms should move. The forearms should do no other work except for holding the bar; therefore do not try to pull down the bar using the forearms.",
-      "After a second at the contracted position squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement.",
-      "Repeat this motion for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Wide-Grip_Lat_Pulldown/0.jpg",
-      "Wide-Grip_Lat_Pulldown/1.jpg"
     ]
   },
   {

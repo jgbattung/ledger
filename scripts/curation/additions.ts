@@ -225,10 +225,15 @@ const additions: Addition[] = [
     rationale: 'Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.',
   },
   {
-    name: 'Close Grip Seated Cable Row',
-    aliases: [],
-    primaryMuscles: ['upper back', 'lats'],
-    secondaryMuscles: ['biceps'],
+    // Ji review round 5 (2026-07-17): renamed from "Close Grip Seated Cable
+    // Row" - a close/V-bar cable row is a neutral grip, so this is the
+    // "Neutral Grip Cable Row" slot Ji asked for rather than a duplicate.
+    // primaryMuscles narrowed to lats per Ji's explicit spec for this row
+    // family (upper back moved to secondary).
+    name: 'Neutral Grip Cable Row',
+    aliases: ['Close Grip Seated Cable Row'],
+    primaryMuscles: ['lats'],
+    secondaryMuscles: ['upper back', 'biceps'],
     equipment: 'cable',
     category: 'strength',
     mechanic: 'compound',
@@ -240,6 +245,140 @@ const additions: Addition[] = [
     ],
     images: [],
     rationale: 'Grip-width sibling to Wide Grip Cable Row, pairing with the seed\'s existing wide-grip-only cable row coverage.',
+  },
+  {
+    name: 'Overhand Grip Cable Row',
+    aliases: ['Pronated Grip Cable Row'],
+    primaryMuscles: ['lats'],
+    secondaryMuscles: ['upper back', 'biceps'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a straight or lat bar to a low cable pulley and sit with knees slightly bent.',
+      'Grip the bar with palms facing down, arms extended, torso upright.',
+      'Pull the bar to your torso, driving elbows back and squeezing your back.',
+      'Slowly return to the stretched starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    name: 'Single-Arm Cable Row',
+    aliases: ['Single Arm Cable Row', 'One-Arm Cable Row'],
+    primaryMuscles: ['lats'],
+    secondaryMuscles: ['upper back', 'biceps'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a single handle to a low cable pulley and sit (or stand in a split stance) facing the machine.',
+      'Grip the handle with one hand, arm extended, torso upright.',
+      'Pull the handle to your torso, driving your elbow back and squeezing your back.',
+      'Slowly return to the stretched starting position, then repeat before switching sides.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    name: 'Single Leg Standing Leg Curl on Leg Press Machine',
+    aliases: [
+      'Single-Leg Standing Leg Curl on Leg Press Machine',
+      'Single Leg Standing Leg Curls on Leg Press Machine',
+    ],
+    primaryMuscles: ['hamstrings'],
+    secondaryMuscles: [],
+    equipment: 'machine',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Stand facing away from a leg press machine (or a dedicated standing leg curl attachment) with one foot planted on the lower platform.',
+      'Brace against the machine and curl the platform toward your glute by flexing the working knee.',
+      'Pause briefly at full contraction, then lower under control.',
+      'Complete all reps on one leg before switching sides.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  // ---- Lat pulldown grip/width grid (Ji review round 5) ----
+  // Completes the 3x3 grid (Wide/Medium/Close x Pronated/Supinated/Neutral).
+  // Medium Pronated ("Lat Pulldown", no modifier) is the default; the other
+  // 8 slots are covered by renamed seed keeps (see keeps.ts lats section)
+  // plus the 4 genuinely-missing slots added here.
+  {
+    // Medium Pronated - the default/plain lat pulldown; missing from the
+    // seed under any name (seed only had Wide-Grip and Close-Grip Front).
+    name: 'Lat Pulldown',
+    aliases: [],
+    primaryMuscles: ['lats'],
+    secondaryMuscles: ['biceps', 'upper back'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a straight or lat bar to a high pulley and sit with thighs secured under the pad.',
+      'Grip the bar shoulder-width, palms facing away, arms extended overhead.',
+      'Pull the bar down to your upper chest, driving elbows down and back.',
+      'Slowly return to the stretched starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Lat pulldown grip/width grid: medium pronated default, missing from the seed under any name',
+  },
+  {
+    // Wide Supinated - the seed only had underhand at an implied medium
+    // width (renamed to "Supinated Lat Pulldown" in keeps.ts).
+    name: 'Wide Supinated Lat Pulldown',
+    aliases: [],
+    primaryMuscles: ['lats'],
+    secondaryMuscles: ['biceps', 'upper back'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a wide bar to a high pulley and sit with thighs secured under the pad.',
+      'Grip the bar wider than shoulder width, palms facing you, arms extended overhead.',
+      'Pull the bar down to your upper chest, driving elbows down and back.',
+      'Slowly return to the stretched starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Lat pulldown grip/width grid: wide supinated slot, missing from the seed',
+  },
+  {
+    // Close Supinated.
+    name: 'Close Supinated Lat Pulldown',
+    aliases: [],
+    primaryMuscles: ['lats'],
+    secondaryMuscles: ['biceps', 'upper back'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a close/narrow bar to a high pulley and sit with thighs secured under the pad.',
+      'Grip the bar just inside shoulder width, palms facing you, arms extended overhead.',
+      'Pull the bar down to your upper chest, driving elbows down and back.',
+      'Slowly return to the stretched starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Lat pulldown grip/width grid: close supinated slot, missing from the seed',
+  },
+  {
+    // Wide Neutral - the seed's V-Bar Pulldown is close/narrow neutral
+    // (renamed "Close Neutral Grip Lat Pulldown" in keeps.ts).
+    name: 'Wide Neutral Grip Lat Pulldown',
+    aliases: [],
+    primaryMuscles: ['lats'],
+    secondaryMuscles: ['biceps', 'upper back'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a wide parallel-grip (neutral) bar to a high pulley and sit with thighs secured under the pad.',
+      'Grip the handles wider than shoulder width, palms facing each other, arms extended overhead.',
+      'Pull the handles down to your upper chest, driving elbows down and back.',
+      'Slowly return to the stretched starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Lat pulldown grip/width grid: wide neutral slot, missing from the seed',
   },
 ]
 

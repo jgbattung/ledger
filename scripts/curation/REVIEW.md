@@ -939,6 +939,7 @@ Seed: 873 entries. Kept: 403. Dropped: 470. Added: 35. Final catalog: 438.
 - **Cable Lateral Raise** - Ji-logged staple
 - **Chest-Supported Incline Dumbbell Lateral Raise** - Ji-logged staple
 - **Chest-Supported Machine Row** - Ji-logged staple
+- **Close Neutral Grip Seated Cable Row** - Grip-width sibling to Wide Grip Cable Row, pairing with the seed's existing wide-grip-only cable row coverage.
 - **Close Supinated Lat Pulldown** - Lat pulldown grip/width grid: close supinated slot, missing from the seed
 - **Close-Grip Pull-Up** - Grip-width sibling to Wide Grip Pull-Up; only the behind-neck wide variant existed in the seed.
 - **Decline Leg Raise** - Ji-logged staple
@@ -949,7 +950,6 @@ Seed: 873 entries. Kept: 403. Dropped: 470. Added: 35. Final catalog: 438.
 - **Katana Extension** - Ji-logged staple
 - **Kelso Shrug** - Ji-logged staple
 - **Lat Pulldown** - Lat pulldown grip/width grid: medium pronated default, missing from the seed under any name
-- **Neutral Grip Cable Row** - Grip-width sibling to Wide Grip Cable Row, pairing with the seed's existing wide-grip-only cable row coverage.
 - **Neutral Grip Lat Pulldown** - Grip-family completion for lat pulldown alongside the seed's wide-grip and close-grip variants.
 - **Neutral Grip Machine Shoulder Press** - Grip variant per flat model; default Machine Shoulder Press is overhand
 - **Neutral Grip Pull-Up** - Systematic pull-up grip family Ji expects as a first-class variant; shoulder-friendlier grip missing from the seed.

@@ -213,8 +213,24 @@ const additions: Addition[] = [
     // "Neutral Grip Cable Row" slot Ji asked for rather than a duplicate.
     // primaryMuscles narrowed to lats per Ji's explicit spec for this row
     // family (upper back moved to secondary).
-    name: 'Neutral Grip Cable Row',
-    aliases: ['Close Grip Seated Cable Row'],
+    // Ji review round 8 (2026-07-17): renamed again to match the catalog's
+    // established width-first naming convention from the lat pulldown grid
+    // ("Close Neutral Grip Lat Pulldown", "Wide Neutral Grip Lat Pulldown") -
+    // verified width-first is the unanimous order among every existing
+    // "Wide/Close ... Grip ..." canonical name (no grip-first examples
+    // exist), so no majority override was needed. This also resolves the
+    // round-7-flagged naming ambiguity against the upper-back seated-row
+    // family: the row grid is now Close Neutral (lats, this entry) / Neutral
+    // medium + Wide Neutral (upper back) + the seed's plain "Seated Cable
+    // Rows".
+    name: 'Close Neutral Grip Seated Cable Row',
+    aliases: [
+      'Neutral Grip Cable Row',
+      'Neutral Close Grip Seated Cable Row',
+      'Close Grip Seated Cable Row',
+      'V-Bar Cable Row',
+      'V-Bar Row',
+    ],
     primaryMuscles: ['lats'],
     secondaryMuscles: ['upper back', 'biceps'],
     equipment: 'cable',
@@ -613,10 +629,11 @@ const additions: Addition[] = [
     rationale: "Ji-logged staple; row policy - flared elbows bias upper back, distinct from the tucked-elbow default One-Arm Dumbbell Row (lats)",
   },
   {
-    // Naming note: distinct from round 5's "Neutral Grip Cable Row" (a lats
-    // V-bar/close cable row). This is the seated cable row family (upper
-    // back primary, elbows flared) - flagged for Ji in case he wants a
-    // clearer naming split between the two "neutral grip ... row" entries.
+    // Ji review round 8 (2026-07-17): the round-7-flagged ambiguity against
+    // "Neutral Grip Cable Row" (a lats V-bar/close cable row) is resolved -
+    // that entry is renamed to "Close Neutral Grip Seated Cable Row". This
+    // entry is the upper-back, elbows-flared medium-width slot in the same
+    // family.
     name: 'Neutral Grip Seated Cable Row',
     aliases: [],
     primaryMuscles: ['upper back'],

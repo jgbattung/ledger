@@ -1932,6 +1932,34 @@
     ]
   },
   {
+    "id": "close-neutral-grip-seated-cable-row",
+    "name": "Close Neutral Grip Seated Cable Row",
+    "aliases": [
+      "Neutral Grip Cable Row",
+      "Neutral Close Grip Seated Cable Row",
+      "Close Grip Seated Cable Row",
+      "V-Bar Cable Row",
+      "V-Bar Row"
+    ],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "upper back",
+      "biceps"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a close (V-bar or narrow neutral) handle to a low cable pulley and sit with knees slightly bent.",
+      "Grip the handle, arms extended, torso upright.",
+      "Pull the handle to your torso, driving elbows straight back and squeezing your back.",
+      "Slowly return to the stretched starting position and repeat."
+    ],
+    "images": []
+  },
+  {
     "id": "close-supinated-lat-pulldown",
     "name": "Close Supinated Lat Pulldown",
     "aliases": [],
@@ -5985,30 +6013,6 @@
       "Natural_Glute_Ham_Raise/0.jpg",
       "Natural_Glute_Ham_Raise/1.jpg"
     ]
-  },
-  {
-    "id": "neutral-grip-cable-row",
-    "name": "Neutral Grip Cable Row",
-    "aliases": [
-      "Close Grip Seated Cable Row"
-    ],
-    "primaryMuscles": [
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "upper back",
-      "biceps"
-    ],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Attach a close (V-bar or narrow neutral) handle to a low cable pulley and sit with knees slightly bent.",
-      "Grip the handle, arms extended, torso upright.",
-      "Pull the handle to your torso, driving elbows straight back and squeezing your back.",
-      "Slowly return to the stretched starting position and repeat."
-    ],
-    "images": []
   },
   {
     "id": "neutral-grip-lat-pulldown",

@@ -1,4 +1,17 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+type Exercise = { images: string[] };
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const exercises: Exercise[] = JSON.parse(
+  readFileSync(path.join(root, 'src/exercises/exercises.json'), 'utf-8'),
+);
+// LG-047: not every curated entry ships with images (net-new additions
+// render a placeholder instead) - probe the first one that does.
+const probeImage = exercises.find((e) => e.images.length > 0)!.images[0];
 
 // Asset-level proof of the LIB-1 offline promise: a prod build's service
 // worker precaches the app shell plus every vendored exercise image, so a
@@ -27,8 +40,9 @@ test('boots offline and serves a precached exercise image after SW install', asy
   const nav = page.getByRole('navigation', { name: 'Primary' });
   await expect(nav).toBeVisible();
 
-  const imageOk = await page.evaluate(() =>
-    fetch('/exercises/Barbell_Squat/0.jpg').then((r) => r.ok),
+  const imageOk = await page.evaluate(
+    (imagePath) => fetch(`/exercises/${imagePath}`).then((r) => r.ok),
+    probeImage,
   );
   expect(imageOk).toBe(true);
 });

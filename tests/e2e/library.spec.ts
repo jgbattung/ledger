@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 type Exercise = {
   id: string;
   name: string;
-  equipment: string | null;
+  aliases: string[];
+  equipment: string;
   primaryMuscles: string[];
 };
 
@@ -23,9 +24,9 @@ test('LIB-2: typing "curl" filters the visible list live', async ({ page }) => {
 
   await page.getByLabel('Search exercises').fill('curl');
 
-  const expectedCount = exercises.filter((e) => e.name.toLowerCase().includes('curl')).length;
-  await expect(page.getByText(`${expectedCount} exercises`)).toBeVisible();
-  await expect(page.getByText('Barbell Curl', { exact: true })).toBeVisible();
+  const curlMatches = exercises.filter((e) => e.name.toLowerCase().includes('curl'));
+  await expect(page.getByText(`${curlMatches.length} exercises`)).toBeVisible();
+  await expect(page.getByText(curlMatches[0].name, { exact: true })).toBeVisible();
 });
 
 test('LIB-3: Muscle=Chest + Equipment=Barbell combine with AND', async ({ page }) => {

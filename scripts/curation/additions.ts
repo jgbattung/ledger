@@ -208,23 +208,6 @@ const additions: Addition[] = [
     rationale: 'Grip-family completion for lat pulldown alongside the seed\'s wide-grip and close-grip variants.',
   },
   {
-    name: 'Underhand Bent Over Barbell Row',
-    aliases: ['Reverse Grip Bent Over Row'],
-    primaryMuscles: ['upper back', 'lats'],
-    secondaryMuscles: ['biceps', 'rear delts'],
-    equipment: 'barbell',
-    category: 'strength',
-    mechanic: 'compound',
-    instructions: [
-      'Grip a barbell shoulder-width with palms facing up (supinated).',
-      'Hinge at the hips until your torso is roughly parallel to the floor, knees slightly bent.',
-      'Row the bar to your lower ribs, driving elbows back and squeezing your back.',
-      'Lower under control and repeat.',
-    ],
-    images: [],
-    rationale: 'Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.',
-  },
-  {
     // Ji review round 5 (2026-07-17): renamed from "Close Grip Seated Cable
     // Row" - a close/V-bar cable row is a neutral grip, so this is the
     // "Neutral Grip Cable Row" slot Ji asked for rather than a duplicate.
@@ -517,6 +500,152 @@ const additions: Addition[] = [
       'Lie face-down (chest-supported) on an incline bench set to roughly 30-45 degrees, a dumbbell in each hand hanging below you.',
       'With a slight bend in your elbows, raise both arms out to the sides until roughly parallel to the floor.',
       'Lower under control back to the starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  // ---- Ji review round 7 (2026-07-17) ----
+  {
+    name: 'Kelso Shrug',
+    aliases: [],
+    primaryMuscles: ['traps'],
+    secondaryMuscles: ['upper back'],
+    equipment: 'machine',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Lie face-down (chest-supported) on an incline bench or chest-supported row machine, arms hanging straight down holding handles or a bar.',
+      'Without bending your elbows, shrug your shoulders up and back, squeezing your shoulder blades together.',
+      'Pause briefly at the top, then lower under control and repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    // Distinct from the seed's standing "Smith Machine Behind the Back
+    // Shrug", which stays kept.
+    name: 'Seated Smith Machine Behind the Back Shrug',
+    aliases: [],
+    primaryMuscles: ['traps'],
+    secondaryMuscles: ['front delts'],
+    equipment: 'smith machine',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Sit on a bench positioned behind the smith machine bar, gripping the bar behind your hips with an overhand grip.',
+      'Let your arms hang straight down, holding the bar behind your back.',
+      'Shrug your shoulders straight up, squeezing at the top.',
+      'Lower under control and repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    name: 'Katana Extension',
+    aliases: ['Katana Extensions'],
+    primaryMuscles: ['triceps'],
+    secondaryMuscles: [],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Attach a single handle to a high cable pulley and stand with your side to the machine.',
+      'Grip the handle with both hands overhead, elbow pointing up, like drawing a sword from over your shoulder.',
+      'Extend your arm by straightening the elbow, pulling the handle diagonally across and down.',
+      'Return under control to the starting position, then repeat before switching sides.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    name: 'Chest-Supported Machine Row',
+    aliases: [],
+    primaryMuscles: ['upper back'],
+    secondaryMuscles: ['biceps', 'lats'],
+    equipment: 'machine',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Sit or kneel facing into a chest-supported row machine, chest resting against the pad, and grip the handles.',
+      'Row the handles toward your torso, driving your elbows back and squeezing your shoulder blades together.',
+      'Slowly return to the stretched starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    // Reconciled with Ji's "Chest-Supported Dumbbell Row With Elbows
+    // Flared" request: a chest-supported dumbbell row is performed
+    // face-down on an incline bench, which is the same setup and elbow
+    // path as an elbows-flared incline dumbbell row - one entry, not two.
+    name: 'Elbows Flared Incline Dumbbell Row',
+    aliases: [
+      'Chest-Supported Dumbbell Row With Elbows Flared',
+      'Chest-Supported Dumbbell Row',
+    ],
+    primaryMuscles: ['upper back'],
+    secondaryMuscles: ['biceps', 'lats', 'rear delts'],
+    equipment: 'dumbbell',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Lie face-down (chest-supported) on an incline bench, a dumbbell in each hand hanging straight down.',
+      'Row both dumbbells up and out to the sides, flaring your elbows away from your torso, driving them toward shoulder height.',
+      'Squeeze your shoulder blades together at the top, then lower under control and repeat.',
+    ],
+    images: [],
+    rationale: "Ji-logged staple; row policy - flared elbows bias upper back, distinct from the tucked-elbow default Dumbbell Incline Row (lats)",
+  },
+  {
+    name: 'Elbows Flared One-Arm Dumbbell Row',
+    aliases: [],
+    primaryMuscles: ['upper back'],
+    secondaryMuscles: ['biceps', 'lats', 'rear delts'],
+    equipment: 'dumbbell',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Support yourself on a bench with one hand and knee, torso roughly parallel to the floor, holding a dumbbell in the free hand.',
+      'Row the dumbbell up and out to the side, flaring your elbow away from your torso toward shoulder height.',
+      'Squeeze your shoulder blade at the top, then lower under control and repeat, then switch sides.',
+    ],
+    images: [],
+    rationale: "Ji-logged staple; row policy - flared elbows bias upper back, distinct from the tucked-elbow default One-Arm Dumbbell Row (lats)",
+  },
+  {
+    // Naming note: distinct from round 5's "Neutral Grip Cable Row" (a lats
+    // V-bar/close cable row). This is the seated cable row family (upper
+    // back primary, elbows flared) - flagged for Ji in case he wants a
+    // clearer naming split between the two "neutral grip ... row" entries.
+    name: 'Neutral Grip Seated Cable Row',
+    aliases: [],
+    primaryMuscles: ['upper back'],
+    secondaryMuscles: ['biceps', 'lats', 'rear delts'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a neutral-grip (parallel handle) bar to a low cable pulley and sit with knees slightly bent.',
+      'Grip the handles with palms facing each other, arms extended, torso upright.',
+      'Pull the handles to your torso, flaring your elbows out to the sides and squeezing your shoulder blades together.',
+      'Slowly return to the stretched starting position and repeat.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
+    name: 'Wide Neutral Grip Seated Cable Row',
+    aliases: [],
+    primaryMuscles: ['upper back'],
+    secondaryMuscles: ['biceps', 'lats', 'rear delts'],
+    equipment: 'cable',
+    category: 'strength',
+    mechanic: 'compound',
+    instructions: [
+      'Attach a wide neutral-grip bar to a low cable pulley and sit with knees slightly bent.',
+      'Grip the handles wider than shoulder width, palms facing each other, arms extended, torso upright.',
+      'Pull the handles to your torso, flaring your elbows out to the sides and squeezing your shoulder blades together.',
+      'Slowly return to the stretched starting position and repeat.',
     ],
     images: [],
     rationale: 'Ji-logged staple',

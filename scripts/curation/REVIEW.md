@@ -1,6 +1,6 @@
 # Exercise curation review (LG-047)
 
-Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
+Seed: 873 entries. Kept: 403. Dropped: 470. Added: 35. Final catalog: 438.
 
 ## Kept (by primary muscle)
 
@@ -243,13 +243,14 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Sumo Deadlift
 - Wide Stance Stiff Legs
 
-### lats (25)
+### lats (28)
 - Band Assisted Pull-Up
 - Bent-Arm Barbell Pullover
 - Cable Incline Pushdown
 - Chin-Up
 - Close Grip Lat Pulldown
 - Close Neutral Grip Lat Pulldown
+- Dumbbell Incline Row
 - Elevated Cable Rows
 - Full Range-Of-Motion Lat Pulldown
 - Kipping Muscle Up
@@ -258,12 +259,14 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Leverage Iso Row
 - Muscle Up
 - One Arm Lat Pulldown
+- One-Arm Dumbbell Row
 - Pull-Up
 - Rope Climb
 - Rope Straight-Arm Pulldown
 - Shotgun Row
 - Side To Side Chins
 - Straight-Arm Pulldown
+- Supinated Bent Over Barbell Row
 - Supinated Lat Pulldown
 - V-Bar Pull-Up
 - Weighted Pull Ups
@@ -364,49 +367,34 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Side Lateral Raise
 - Smith Machine One-Arm Upright Row
 
-### traps (14)
+### traps (10)
 - Barbell Shrug
 - Barbell Shrug Behind The Back
 - Cable Shrugs
 - Calf-Machine Shoulder Shrug
-- Clean Shrug
 - Dumbbell Shrug
-- Kettlebell Sumo High Pull
-- Leverage Shrug
 - Scapular Pull-Up
 - Smith Machine Behind the Back Shrug
 - Smith Machine Upright Row
-- Snatch Shrug
 - Standing Dumbbell Upright Row
 - Upright Cable Row
 
-### triceps (66)
-- Band Skull Crusher
-- Bench Dips
-- Bench Press with Chains
-- Board Press
-- Body Tricep Press
-- Body-Up
+### triceps (50)
 - Cable Incline Triceps Extension
 - Cable Lying Triceps Extension
-- Cable One Arm Tricep Extension
 - Cable Rope Overhead Triceps Extension
-- Chain Handle Extension
 - Close-Grip Barbell Bench Press
 - Close-Grip Dumbbell Press
 - Close-Grip EZ-Bar Press
 - Close-Grip Push-Up
-- Close-Grip Push-Up off of a Dumbbell
 - Decline Close-Grip Bench To Skull Crusher
 - Decline Dumbbell Triceps Extension
 - Decline EZ Bar Triceps Extension
 - Dip Machine
 - Dumbbell Floor Press
 - Dumbbell One-Arm Triceps Extension
-- Dumbbell Tricep Extension -Pronated Grip
 - EZ-Bar Skullcrusher
 - Floor Press
-- Floor Press with Chains
 - Incline Barbell Triceps Extension
 - Incline Push-Up Close-Grip
 - JM Press
@@ -422,7 +410,6 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - One Arm Supinated Dumbbell Triceps Extension
 - Parallel Bar Dip
 - Pin Presses
-- Reverse Band Bench Press
 - Reverse Grip Triceps Pushdown
 - Reverse Triceps Bench Press
 - Ring Dips
@@ -430,55 +417,33 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Seated Bent-Over One-Arm Dumbbell Triceps Extension
 - Seated Bent-Over Two-Arm Dumbbell Triceps Extension
 - Seated Triceps Press
-- Sled Overhead Triceps Extension
+- Single-Arm Cable Triceps Pushdown
 - Smith Machine Close-Grip Bench Press
-- Speed Band Overhead Triceps
 - Standing Bent-Over One-Arm Dumbbell Triceps Extension
 - Standing Bent-Over Two-Arm Dumbbell Triceps Extension
 - Standing Dumbbell Triceps Extension
 - Standing Low-Pulley One-Arm Triceps Extension
 - Standing One-Arm Dumbbell Triceps Extension
 - Standing Overhead Barbell Triceps Extension
-- Standing Towel Triceps Extension
-- Tate Press
 - Tricep Dumbbell Kickback
 - Triceps Dip
 - Triceps Overhead Extension with Rope
 - Triceps Pushdown
 - V-Bar Triceps Pushdown
-- Weighted Bench Dip
 
-### upper back (30)
-- Alternating Kettlebell Row
-- Alternating Renegade Row
+### upper back (12)
 - Bent Over Barbell Row
-- Bent Over One-Arm Long Bar Row
-- Bent Over Two-Arm Long Bar Row
-- Bent Over Two-Dumbbell Row
-- Bent Over Two-Dumbbell Row With Palms In
 - Bodyweight Mid Row
-- Dumbbell Incline Row
 - Incline Bench Pull
-- Inverted Row
-- Inverted Row with Straps
 - Leverage High Row
 - Lying Cambered Barbell Row
 - Lying T-Bar Row
 - Middle Back Shrug
-- Mixed Grip Chin
-- One Arm Chin-Up
-- One-Arm Dumbbell Row
-- One-Arm Kettlebell Row
-- One-Arm Long Bar Row
-- Reverse Grip Bent-Over Rows
 - Seated Cable Rows
 - Seated One-arm Cable Pulley Rows
-- Sled Row
 - Smith Machine Bent Over Row
 - Straight Bar Bench Mid Rows
-- Suspended Row
 - T-Bar Row with Handle
-- Two-Arm Kettlebell Row
 
 ## Removed (by reason)
 
@@ -516,18 +481,22 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Standing Barbell Press Behind Neck
 - Wide-Grip Pulldown Behind The Neck
 
-### novelty-junk (26)
+### novelty-junk (33)
 - Back Flyes - With Bands
 - Balance Board
+- Band Skull Crusher
 - Bench Press - With Bands
+- Bench Press with Chains
 - Box Squat with Chains
 - Bradford/Rocky Presses
 - Calf Raises - With Bands
 - Car Drivers
+- Chain Handle Extension
 - Chain Press
 - Clock Push-Up
 - Close-Grip EZ-Bar Curl with Band
 - Cross Over - With Bands
+- Floor Press with Chains
 - Incline Dumbbell Flyes - With A Twist
 - Isometric Wipers
 - Kettlebell Pirate Ships
@@ -535,12 +504,15 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Plyo Kettlebell Pushups
 - Power Partials
 - Push Up to Side Plank
+- Reverse Band Bench Press
 - Rocky Pull-Ups/Pulldowns
 - Shoulder Press - With Bands
+- Speed Band Overhead Triceps
 - Squat with Bands
 - Squat with Chains
 - Squat with Plate Movers
 - Squats - With Bands
+- Standing Towel Triceps Extension
 - Upright Row - With Bands
 - Weighted Sit-Ups - With Bands
 
@@ -607,12 +579,14 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Supine Two-Arm Overhead Throw
 - Vertical Swing
 
-### scope-trim (177)
+### scope-trim (205)
 - 3/4 Sit-Up
 - Advanced Kettlebell Windmill
 - Air Bike
 - Alternate Heel Touchers
 - Alternating Hang Clean
+- Alternating Kettlebell Row
+- Alternating Renegade Row
 - Around The Worlds
 - Ball Leg Curl
 - Band Good Morning (Pull Through)
@@ -621,9 +595,17 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Barbell Rollout from Bench
 - Barbell Side Bend
 - Battling Ropes
+- Bench Dips
 - Bent Over Low-Pulley Side Lateral
+- Bent Over One-Arm Long Bar Row
+- Bent Over Two-Arm Long Bar Row
+- Bent Over Two-Dumbbell Row
+- Bent Over Two-Dumbbell Row With Palms In
 - Bent Press
 - Bent-Knee Hip Raise
+- Board Press
+- Body Tricep Press
+- Body-Up
 - Bosu Ball Cable Crunch With Side Bends
 - Bottoms Up
 - Bottoms-Up Clean From The Hang Position
@@ -636,9 +618,11 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Cable Russian Twists
 - Cable Seated Crunch
 - Clean Pull
+- Clean Shrug
 - Clean and Jerk
 - Clean and Press
 - Clean from Blocks
+- Close-Grip Push-Up off of a Dumbbell
 - Cocoons
 - Cross-Body Crunch
 - Crunch - Hands Overhead
@@ -653,6 +637,7 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Double Kettlebell Windmill
 - Downward Facing Balance
 - Dumbbell Side Bend
+- Dumbbell Tricep Extension -Pronated Grip
 - Elbow to Knee
 - Exercise Ball Crunch
 - Exercise Ball Pull-In
@@ -675,6 +660,8 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Hanging Pike
 - Heaving Snatch Balance
 - Incline Inner Biceps Curl
+- Inverted Row
+- Inverted Row with Straps
 - Jackknife Sit-Up
 - Janda Sit-Up
 - Jerk Dip Squat
@@ -686,6 +673,7 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Kettlebell Pass Between The Legs
 - Kettlebell Seated Press
 - Kettlebell Seesaw Press
+- Kettlebell Sumo High Pull
 - Kettlebell Thruster
 - Kettlebell Turkish Get-Up (Lunge style)
 - Kettlebell Turkish Get-Up (Squat style)
@@ -700,12 +688,15 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Leverage Chest Press
 - Leverage Decline Chest Press
 - Leverage Incline Chest Press
+- Leverage Shrug
 - London Bridges
 - Lying Close-Grip Bar Curl On High Pulley
 - Lying High Bench Barbell Curl
+- Mixed Grip Chin
 - Muscle Snatch
 - Neck Press
 - Olympic Squat
+- One Arm Chin-Up
 - One-Arm High-Pulley Cable Side Bends
 - One-Arm Kettlebell Clean
 - One-Arm Kettlebell Clean and Jerk
@@ -714,10 +705,12 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - One-Arm Kettlebell Military Press To The Side
 - One-Arm Kettlebell Para Press
 - One-Arm Kettlebell Push Press
+- One-Arm Kettlebell Row
 - One-Arm Kettlebell Snatch
 - One-Arm Kettlebell Split Jerk
 - One-Arm Kettlebell Split Snatch
 - One-Arm Kettlebell Swings
+- One-Arm Long Bar Row
 - One-Arm Medicine Ball Slam
 - One-Arm Open Palm Kettlebell Clean
 - One-Arm Side Laterals
@@ -749,12 +742,15 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Side Jackknife
 - Single-Arm Linear Jammer
 - Sled Overhead Backward Walk
+- Sled Overhead Triceps Extension
 - Sled Reverse Flye
+- Sled Row
 - Smith Machine Hip Raise
 - Snatch
 - Snatch Balance
 - Snatch Deadlift
 - Snatch Pull
+- Snatch Shrug
 - Snatch from Blocks
 - Speed Box Squat
 - Speed Squats
@@ -775,13 +771,17 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - Suspended Fallout
 - Suspended Push-Up
 - Suspended Reverse Crunch
+- Suspended Row
 - Svend Press
+- Tate Press
 - Tuck Crunch
 - Two-Arm Dumbbell Preacher Curl
 - Two-Arm Kettlebell Clean
 - Two-Arm Kettlebell Jerk
 - Two-Arm Kettlebell Military Press
+- Two-Arm Kettlebell Row
 - Weighted Ball Side Bend
+- Weighted Bench Dip
 - Weighted Crunches
 - Weighted Jump Squat
 - Wind Sprints
@@ -938,19 +938,26 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - **Archer Pull** - Ji-logged staple
 - **Cable Lateral Raise** - Ji-logged staple
 - **Chest-Supported Incline Dumbbell Lateral Raise** - Ji-logged staple
+- **Chest-Supported Machine Row** - Ji-logged staple
 - **Close Supinated Lat Pulldown** - Lat pulldown grip/width grid: close supinated slot, missing from the seed
 - **Close-Grip Pull-Up** - Grip-width sibling to Wide Grip Pull-Up; only the behind-neck wide variant existed in the seed.
 - **Decline Leg Raise** - Ji-logged staple
+- **Elbows Flared Incline Dumbbell Row** - Ji-logged staple; row policy - flared elbows bias upper back, distinct from the tucked-elbow default Dumbbell Incline Row (lats)
+- **Elbows Flared One-Arm Dumbbell Row** - Ji-logged staple; row policy - flared elbows bias upper back, distinct from the tucked-elbow default One-Arm Dumbbell Row (lats)
 - **Facing-Up Incline Dumbbell Lateral Raise** - Ji-logged staple
 - **Incline Close Grip Bench Press** - AC coverage: incline + close-grip combination (upper chest/triceps emphasis) missing from the seed.
+- **Katana Extension** - Ji-logged staple
+- **Kelso Shrug** - Ji-logged staple
 - **Lat Pulldown** - Lat pulldown grip/width grid: medium pronated default, missing from the seed under any name
 - **Neutral Grip Cable Row** - Grip-width sibling to Wide Grip Cable Row, pairing with the seed's existing wide-grip-only cable row coverage.
 - **Neutral Grip Lat Pulldown** - Grip-family completion for lat pulldown alongside the seed's wide-grip and close-grip variants.
 - **Neutral Grip Machine Shoulder Press** - Grip variant per flat model; default Machine Shoulder Press is overhand
 - **Neutral Grip Pull-Up** - Systematic pull-up grip family Ji expects as a first-class variant; shoulder-friendlier grip missing from the seed.
+- **Neutral Grip Seated Cable Row** - Ji-logged staple
 - **One-Arm Front Cable Raise** - Ji-logged staple
 - **Overhand Grip Cable Row** - Ji-logged staple
 - **Seated Leg Press Calf Raise** - Ji-logged staple
+- **Seated Smith Machine Behind the Back Shrug** - Ji-logged staple
 - **Single Leg Seated Leg Press Calf Raise** - Ji-logged staple
 - **Single Leg Standing Leg Curl on Leg Press Machine** - Ji-logged staple
 - **Single-Arm Cable Rear Delt Fly** - Ji-logged staple
@@ -958,8 +965,8 @@ Seed: 873 entries. Kept: 438. Dropped: 435. Added: 28. Final catalog: 466.
 - **Smith Machine Hinge Deadlift** - Ji-logged staple
 - **Smith Machine Split Squat** - Ji-logged staple
 - **Split Squat** - Ji-logged staple
-- **Underhand Bent Over Barbell Row** - Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.
 - **Wide Grip Cable Row** - AC coverage: wide-grip cable row is a staple back-width row missing from the seed.
 - **Wide Grip Pull-Up** - Front-facing wide-grip pull-up (to the chest); the seed only had the behind-the-neck rear variant.
 - **Wide Neutral Grip Lat Pulldown** - Lat pulldown grip/width grid: wide neutral slot, missing from the seed
+- **Wide Neutral Grip Seated Cable Row** - Ji-logged staple
 - **Wide Supinated Lat Pulldown** - Lat pulldown grip/width grid: wide supinated slot, missing from the seed

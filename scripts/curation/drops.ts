@@ -44,18 +44,22 @@ const drops: Record<string, DropReason> = {
   "Seated_Head_Harness_Neck_Resistance": "neck", // Seated Head Harness Neck Resistance
   "Standing_Barbell_Press_Behind_Neck": "neck", // Standing Barbell Press Behind Neck
   "Wide-Grip_Pulldown_Behind_The_Neck": "neck", // Wide-Grip Pulldown Behind The Neck
-  // ---- novelty-junk (26) ----
+  // ---- novelty-junk (33) ----
   "Balance_Board": "novelty-junk", // Balance Board (Ji review round 2: balance/stability drill, not a targeted calf raise)
   "Back_Flyes_-_With_Bands": "novelty-junk", // Back Flyes - With Bands
+  "Band_Skull_Crusher": "novelty-junk", // Band Skull Crusher (Ji review round 7: band-accommodated resistance, same family as prior "with Bands" entries)
   "Bench_Press_-_With_Bands": "novelty-junk", // Bench Press - With Bands
+  "Bench_Press_with_Chains": "novelty-junk", // Bench Press with Chains (Ji review round 7: chain-accommodated resistance)
   "Box_Squat_with_Chains": "novelty-junk", // Box Squat with Chains (Ji review round 6: chain-accommodated resistance, same family as the "with Bands"/Chain Press entries)
   "Bradford_Rocky_Presses": "novelty-junk", // Bradford/Rocky Presses
   "Calf_Raises_-_With_Bands": "novelty-junk", // Calf Raises - With Bands
   "Car_Drivers": "novelty-junk", // Car Drivers (Ji review round 4: gimmicky plate-rotation drill, not a standard shoulder movement)
+  "Chain_Handle_Extension": "novelty-junk", // Chain Handle Extension (Ji review round 7: gimmick chain-attachment variant)
   "Chain_Press": "novelty-junk", // Chain Press (Ji review round 3: chain-accommodated resistance, same family as the "with Bands" entries)
   "Clock_Push-Up": "novelty-junk", // Clock Push-Up (Ji review round 3: circular hand-walk drill, not a standard chest movement)
   "Close-Grip_EZ-Bar_Curl_with_Band": "novelty-junk", // Close-Grip EZ-Bar Curl with Band (Ji review round 2: band-accommodated variant, same treatment as other "with Bands" entries)
   "Cross_Over_-_With_Bands": "novelty-junk", // Cross Over - With Bands
+  "Floor_Press_with_Chains": "novelty-junk", // Floor Press with Chains (Ji review round 7: chain-accommodated resistance)
   "Incline_Dumbbell_Flyes_-_With_A_Twist": "novelty-junk", // Incline Dumbbell Flyes - With A Twist
   "Isometric_Wipers": "novelty-junk", // Isometric Wipers (Ji review round 3: isometric plank drill, not a loaded chest movement)
   "Kettlebell_Pirate_Ships": "novelty-junk", // Kettlebell Pirate Ships (Ji review round 4: novelty-named ballistic drill)
@@ -63,12 +67,15 @@ const drops: Record<string, DropReason> = {
   "Plyo_Kettlebell_Pushups": "novelty-junk", // Plyo Kettlebell Pushups (Ji review round 3: plyometric push-up variant)
   "Power_Partials": "novelty-junk", // Power Partials (Ji review round 4: vague partial-rep gimmick, not a standard movement)
   "Push_Up_to_Side_Plank": "novelty-junk", // Push Up to Side Plank (Ji review round 3: combo/gimmick movement)
+  "Reverse_Band_Bench_Press": "novelty-junk", // Reverse Band Bench Press (Ji review round 7: band-accommodated resistance)
   "Rocky_Pull-Ups_Pulldowns": "novelty-junk", // Rocky Pull-Ups/Pulldowns
   "Shoulder_Press_-_With_Bands": "novelty-junk", // Shoulder Press - With Bands
+  "Speed_Band_Overhead_Triceps": "novelty-junk", // Speed Band Overhead Triceps (Ji review round 7: band-accommodated resistance)
   "Squat_with_Bands": "novelty-junk", // Squat with Bands (Ji review round 6: same accommodating-resistance family)
   "Squat_with_Chains": "novelty-junk", // Squat with Chains (Ji review round 6: same accommodating-resistance family)
   "Squat_with_Plate_Movers": "novelty-junk", // Squat with Plate Movers (Ji review round 6: gimmick sliding-plate variant)
   "Squats_-_With_Bands": "novelty-junk", // Squats - With Bands
+  "Standing_Towel_Triceps_Extension": "novelty-junk", // Standing Towel Triceps Extension (Ji review round 7: improvised-equipment gimmick)
   "Upright_Row_-_With_Bands": "novelty-junk", // Upright Row - With Bands
   "Weighted_Sit-Ups_-_With_Bands": "novelty-junk", // Weighted Sit-Ups - With Bands
   // ---- plyometric (61) ----
@@ -336,6 +343,37 @@ const drops: Record<string, DropReason> = {
   "Weighted_Jump_Squat": "scope-trim", // Weighted Jump Squat
   // Ji review round 6 (2026-07-17): rear delts trim.
   "Sled_Reverse_Flye": "scope-trim", // Sled Reverse Flye
+  // Ji review round 7 (2026-07-17): traps trim.
+  "Clean_Shrug": "scope-trim", // Clean Shrug
+  "Kettlebell_Sumo_High_Pull": "scope-trim", // Kettlebell Sumo High Pull
+  "Leverage_Shrug": "scope-trim", // Leverage Shrug
+  "Snatch_Shrug": "scope-trim", // Snatch Shrug
+  // Ji review round 7 (2026-07-17): triceps trim.
+  "Bench_Dips": "scope-trim", // Bench Dips
+  "Board_Press": "scope-trim", // Board Press
+  "Body_Tricep_Press": "scope-trim", // Body Tricep Press
+  "Body-Up": "scope-trim", // Body-Up
+  "Close-Grip_Push-Up_off_of_a_Dumbbell": "scope-trim", // Close-Grip Push-Up off of a Dumbbell
+  "Dumbbell_Tricep_Extension_-Pronated_Grip": "scope-trim", // Dumbbell Tricep Extension -Pronated Grip
+  "Sled_Overhead_Triceps_Extension": "scope-trim", // Sled Overhead Triceps Extension
+  "Tate_Press": "scope-trim", // Tate Press
+  "Weighted_Bench_Dip": "scope-trim", // Weighted Bench Dip
+  // Ji review round 7 (2026-07-17): upper back trim.
+  "Alternating_Kettlebell_Row": "scope-trim", // Alternating Kettlebell Row
+  "Alternating_Renegade_Row": "scope-trim", // Alternating Renegade Row
+  "Bent_Over_One-Arm_Long_Bar_Row": "scope-trim", // Bent Over One-Arm Long Bar Row
+  "Bent_Over_Two-Arm_Long_Bar_Row": "scope-trim", // Bent Over Two-Arm Long Bar Row
+  "Bent_Over_Two-Dumbbell_Row": "scope-trim", // Bent Over Two-Dumbbell Row
+  "Bent_Over_Two-Dumbbell_Row_With_Palms_In": "scope-trim", // Bent Over Two-Dumbbell Row With Palms In
+  "Inverted_Row": "scope-trim", // Inverted Row
+  "Inverted_Row_with_Straps": "scope-trim", // Inverted Row with Straps
+  "Mixed_Grip_Chin": "scope-trim", // Mixed Grip Chin
+  "One_Arm_Chin-Up": "scope-trim", // One Arm Chin-Up
+  "One-Arm_Kettlebell_Row": "scope-trim", // One-Arm Kettlebell Row
+  "One-Arm_Long_Bar_Row": "scope-trim", // One-Arm Long Bar Row
+  "Sled_Row": "scope-trim", // Sled Row
+  "Suspended_Row": "scope-trim", // Suspended Row
+  "Two-Arm_Kettlebell_Row": "scope-trim", // Two-Arm Kettlebell Row
   // ---- stretch (122) ----
   "90_90_Hamstring": "stretch", // 90/90 Hamstring
   "Adductor": "stretch", // Adductor

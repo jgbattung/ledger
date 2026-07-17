@@ -171,57 +171,6 @@
     ]
   },
   {
-    "id": "alternating-kettlebell-row",
-    "name": "Alternating Kettlebell Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Place two kettlebells in front of your feet. Bend your knees slightly and push your butt out as much as possible. As you bend over to get into the starting position grab both kettlebells by the handles.",
-      "Pull one kettlebell off of the floor while holding on to the other kettlebell. Retract the shoulder blade of the working side, as you flex the elbow, drawing the kettlebell towards your stomach or rib cage.",
-      "Lower the kettlebell in the working arm and repeat with your other arm."
-    ],
-    "images": [
-      "Alternating_Kettlebell_Row/0.jpg",
-      "Alternating_Kettlebell_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "alternating-renegade-row",
-    "name": "Alternating Renegade Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "biceps",
-      "chest",
-      "lats",
-      "triceps"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place two kettlebells on the floor about shoulder width apart. Position yourself on your toes and your hands as though you were doing a pushup, with the body straight and extended. Use the handles of the kettlebells to support your upper body. You may need to position your feet wide for support.",
-      "Push one kettlebell into the floor and row the other kettlebell, retracting the shoulder blade of the working side as you flex the elbow, pulling it to your side.",
-      "Then lower the kettlebell to the floor and begin the kettlebell in the opposite hand. Repeat for several reps."
-    ],
-    "images": [
-      "Alternating_Renegade_Row/0.jpg",
-      "Alternating_Renegade_Row/1.jpg"
-    ]
-  },
-  {
     "id": "anti-gravity-press",
     "name": "Anti-Gravity Press",
     "aliases": [],
@@ -392,27 +341,6 @@
     "images": [
       "Band_Pull_Apart/0.jpg",
       "Band_Pull_Apart/1.jpg"
-    ]
-  },
-  {
-    "id": "band-skull-crusher",
-    "name": "Band Skull Crusher",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "band",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Secure a band to the base of a rack or the bench. Lay on the bench so that the band is lined up with your head.",
-      "Take hold of the band, raising your elbows so that the upper arm is perpendicular to the floor. With the elbow flexed, the band should be above your head. This will be your starting position.",
-      "Extend through the elbow to straighten your arm, keeping your upper arm in place. Pause at the top of the motion, and return to the starting position."
-    ],
-    "images": [
-      "Band_Skull_Crusher/0.jpg",
-      "Band_Skull_Crusher/1.jpg"
     ]
   },
   {
@@ -967,66 +895,17 @@
     ]
   },
   {
-    "id": "bench-dips",
-    "name": "Bench Dips",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "For this exercise you will need to place a bench behind your back. With the bench perpendicular to your body, and while looking away from it, hold on to the bench on its edge with the hands fully extended, separated at shoulder width. The legs will be extended forward, bent at the waist and perpendicular to your torso. This will be your starting position.",
-      "Slowly lower your body as you inhale by bending at the elbows until you lower yourself far enough to where there is an angle slightly smaller than 90 degrees between the upper arm and the forearm. Tip: Keep the elbows as close as possible throughout the movement. Forearms should always be pointing down.",
-      "Using your triceps to bring your torso up again, lift yourself back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Bench_Dips/0.jpg",
-      "Bench_Dips/1.jpg"
-    ]
-  },
-  {
-    "id": "bench-press-with-chains",
-    "name": "Bench Press with Chains",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "lats",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Adjust the leader chain, shortening it to the desired length.Place the chains on the sleeves of the bar.",
-      "Lying on the bench, get your head beyond the bar if possible. Tuck your feet underneath you and arch your back. Using the bar to help support your weight, lift your shoulder off the bench and retract them, squeezing the shoulder blades together. Use your feet to drive your traps into the bench. Maintain this tight body position throughout the movement. However wide your grip, it should cover the ring on the bar.",
-      "Pull the bar out of the rack without protracting your shoulders. Focus on squeezing the bar and trying to pull it apart. Lower the bar to your lower chest or upper stomach. The bar, wrist, and elbow should stay in line at all times.",
-      "Pause when the barbell touches your torso, and then drive the bar up with as much force as possible. The elbows should be tucked in until lockout."
-    ],
-    "images": [
-      "Bench_Press_with_Chains/0.jpg",
-      "Bench_Press_with_Chains/1.jpg"
-    ]
-  },
-  {
     "id": "bent-over-barbell-row",
     "name": "Bent Over Barbell Row",
-    "aliases": [],
+    "aliases": [
+      "Pronated Bent Over Barbell Row"
+    ],
     "primaryMuscles": [
-      "upper back"
+      "upper back",
+      "lats"
     ],
     "secondaryMuscles": [
       "biceps",
-      "lats",
       "front delts"
     ],
     "equipment": "barbell",
@@ -1064,113 +943,6 @@
     "images": [
       "Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench/0.jpg",
       "Bent_Over_Dumbbell_Rear_Delt_Raise_With_Head_On_Bench/1.jpg"
-    ]
-  },
-  {
-    "id": "bent-over-one-arm-long-bar-row",
-    "name": "Bent Over One-Arm Long Bar Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats",
-      "lower back",
-      "traps"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Put weight on one of the ends of an Olympic barbell. Make sure that you either place the other end of the barbell in the corner of two walls; or put a heavy object on the ground so the barbell cannot slide backward.",
-      "Bend forward until your torso is as close to parallel with the floor as you can and keep your knees slightly bent.",
-      "Now grab the bar with one arm just behind the plates on the side where the weight was placed and put your other hand on your knee. This will be your starting position.",
-      "Pull the bar straight up with your elbow in (to maximize back stimulation) until the plates touch your lower chest. Squeeze the back muscles as you lift the weight up and hold for a second at the top of the movement. Breathe out as you lift the weight. Tip: Do not allow for any swinging of the torso. Only the arm should move.",
-      "Slowly lower the bar to the starting position getting a nice stretch on the lats. Tip: Do not let the plates touch the floor. To ensure the best range of motion, I recommend using small plates (25-lb ones) as opposed to larger plates (like 35-45lb ones).",
-      "Repeat for the recommended amount of repetitions and switch arms."
-    ],
-    "images": [
-      "Bent_Over_One-Arm_Long_Bar_Row/0.jpg",
-      "Bent_Over_One-Arm_Long_Bar_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "bent-over-two-arm-long-bar-row",
-    "name": "Bent Over Two-Arm Long Bar Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Put weight on one of the ends of an Olympic barbell. Make sure that you either place the other end of the barbell in the corner of two walls; or put a heavy object on the ground so the barbell cannot slide backward.",
-      "Bend forward until your torso is as close to parallel with the floor as you can and keep your knees slightly bent.",
-      "Now grab the bar with both arms just behind the plates on the side where the weight was placed and put your other hand on your knee. This will be your starting position.",
-      "Pull the bar straight up with your elbows in (to maximize back stimulation) until the plates touch your lower chest. Squeeze the back muscles as you lift the weight up and hold for a second at the top of the movement. Breathe out as you lift the weight. Tip: Use a stirrup or double handle cable attachment by hooking it under the end of the bar.",
-      "Slowly lower the bar to the starting position getting a nice stretch on the lats. Tip: Do not let the plates touch the floor. To ensure the best range of motion, I recommend using small plates (25-lb ones) as opposed to larger plates (like 35-45lb ones).",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Bent_Over_Two-Arm_Long_Bar_Row/0.jpg",
-      "Bent_Over_Two-Arm_Long_Bar_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "bent-over-two-dumbbell-row",
-    "name": "Bent Over Two-Dumbbell Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats",
-      "front delts"
-    ],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "With a dumbbell in each hand (palms facing your torso), bend your knees slightly and bring your torso forward by bending at the waist; as you bend make sure to keep your back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
-      "While keeping the torso stationary, lift the dumbbells to your side (as you breathe out), keeping the elbows close to the body (do not exert any force with the forearm other than holding the weights). On the top contracted position, squeeze the back muscles and hold for a second.",
-      "Slowly lower the weight again to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Bent_Over_Two-Dumbbell_Row/0.jpg",
-      "Bent_Over_Two-Dumbbell_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "bent-over-two-dumbbell-row-with-palms-in",
-    "name": "Bent Over Two-Dumbbell Row With Palms In",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "With a dumbbell in each hand (palms facing each other), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
-      "While keeping the torso stationary, lift the dumbbells to your side as you breathe out, squeezing your shoulder blades together. On the top contracted position, squeeze the back muscles and hold for a second.",
-      "Slowly lower the weight again to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Bent_Over_Two-Dumbbell_Row_With_Palms_In/0.jpg",
-      "Bent_Over_Two-Dumbbell_Row_With_Palms_In/1.jpg"
     ]
   },
   {
@@ -1227,81 +999,6 @@
     "images": [
       "Bent-Arm_Dumbbell_Pullover/0.jpg",
       "Bent-Arm_Dumbbell_Pullover/1.jpg"
-    ]
-  },
-  {
-    "id": "board-press",
-    "name": "Board Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "forearms",
-      "lats",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin by lying on the bench, getting your head beyond the bar if possible. One to five boards, made out of 2x6's, can be screwed together and held in place by a training partner, bands, or just tucked under your shirt.",
-      "Tuck your feet underneath you and arch your back. Using the bar to help support your weight, lift your shoulder off the bench and retract them, squeezing the shoulder blades together. Use your feet to drive your traps into the bench. Maintain this tight body position throughout the movement.",
-      "You can take a standard bench grip, or shoulder width to focus on the triceps. Pull the bar out of the rack without protracting your shoulders. The bar, wrist, and elbow should stay in line at all times. Focus on squeezing the bar and trying to pull it apart.",
-      "Lower the bar to the boards, and then drive the bar up with as much force as possible. The elbows should be tucked in until lockout."
-    ],
-    "images": [
-      "Board_Press/0.jpg",
-      "Board_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "body-tricep-press",
-    "name": "Body Tricep Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Position a bar in a rack at chest height.",
-      "Standing, take a shoulder width grip on the bar and step a yard or two back, feet together and arms extended so that you are leaning on the bar. This will be your starting position.",
-      "Begin by flexing the elbow, lowering yourself towards the bar.",
-      "Pause, and then reverse the motion by extending the elbows.",
-      "Progress from bodyweight by adding chains over your shoulders."
-    ],
-    "images": [
-      "Body_Tricep_Press/0.jpg",
-      "Body_Tricep_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "body-up",
-    "name": "Body-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "forearms"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Assume a plank position on the ground. You should be supporting your bodyweight on your toes and forearms, keeping your torso straight. Your forearms should be shoulder-width apart. This will be your starting position.",
-      "Pressing your palms firmly into the ground, extend through the elbows to raise your body from the ground. Keep your torso rigid as you perform the movement.",
-      "Slowly lower your forearms back to the ground by allowing the elbows to flex.",
-      "Repeat."
-    ],
-    "images": [
-      "Body-Up/0.jpg",
-      "Body-Up/1.jpg"
     ]
   },
   {
@@ -1755,30 +1452,6 @@
     ]
   },
   {
-    "id": "cable-one-arm-tricep-extension",
-    "name": "Cable One Arm Tricep Extension",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "With your right hand, grasp a single handle attached to the high-cable pulley using a supinated (underhand; palms facing up) grip. You should be standing directly in front of the weight stack.",
-      "Now pull the handle down so that your upper arm and elbow are locked in to the side of your body. Your upper arm and forearm should form an acute angle (less than 90-degrees). You can keep the other arm by the waist and you can have one leg in front of you and the other one back for better balance. This will be your starting position.",
-      "As you contract the triceps, move the single handle attachment down to your side until your arm is straight. Breathe out as you perform this movement. Tip: Only the forearms should move. Your upper arms should remain stationary at all times.",
-      "Squeeze the triceps and hold for a second in this contracted position.",
-      "Slowly return the handle to the starting position.",
-      "Repeat for the recommended amount of repetitions and then perform the same movement with the other arm."
-    ],
-    "images": [
-      "Cable_One_Arm_Tricep_Extension/0.jpg",
-      "Cable_One_Arm_Tricep_Extension/1.jpg"
-    ]
-  },
-  {
     "id": "cable-preacher-curl",
     "name": "Cable Preacher Curl",
     "aliases": [],
@@ -2017,27 +1690,6 @@
     ]
   },
   {
-    "id": "chain-handle-extension",
-    "name": "Chain Handle Extension",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "You will need two cable handle attachments and a flat bench, as well as chains, for this exercise. Clip the middle of the chains to the handles, and position yourself on the flat bench. Your elbows should be pointing straight up.",
-      "Begin by extending through the elbow, keeping your upper arm still, with your wrists pronated.",
-      "Pause at the lockout, and reverse the motion to return to the starting position."
-    ],
-    "images": [
-      "Chain_Handle_Extension/0.jpg",
-      "Chain_Handle_Extension/1.jpg"
-    ]
-  },
-  {
     "id": "chair-squat",
     "name": "Chair Squat",
     "aliases": [],
@@ -2105,6 +1757,27 @@
       "Lie face-down (chest-supported) on an incline bench set to roughly 30-45 degrees, a dumbbell in each hand hanging below you.",
       "With a slight bend in your elbows, raise both arms out to the sides until roughly parallel to the floor.",
       "Lower under control back to the starting position and repeat."
+    ],
+    "images": []
+  },
+  {
+    "id": "chest-supported-machine-row",
+    "name": "Chest-Supported Machine Row",
+    "aliases": [],
+    "primaryMuscles": [
+      "upper back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "lats"
+    ],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Sit or kneel facing into a chest-supported row machine, chest resting against the pad, and grip the handles.",
+      "Row the handles toward your torso, driving your elbows back and squeezing your shoulder blades together.",
+      "Slowly return to the stretched starting position and repeat."
     ],
     "images": []
   },
@@ -2196,29 +1869,6 @@
     "images": [
       "Clean_Deadlift/0.jpg",
       "Clean_Deadlift/1.jpg"
-    ]
-  },
-  {
-    "id": "clean-shrug",
-    "name": "Clean Shrug",
-    "aliases": [],
-    "primaryMuscles": [
-      "traps"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a shoulder width, double overhand or hook grip, with the bar hanging at the mid thigh position. Your back should be straight and inclined slightly forward.",
-      "Shrug your shoulders towards your ears. While this exercise can usually by loaded with heavier weight than a clean, avoid overloading to the point that the execution slows down."
-    ],
-    "images": [
-      "Clean_Shrug/0.jpg",
-      "Clean_Shrug/1.jpg"
     ]
   },
   {
@@ -2451,32 +2101,6 @@
     "images": [
       "Push-Ups_-_Close_Triceps_Position/0.jpg",
       "Push-Ups_-_Close_Triceps_Position/1.jpg"
-    ]
-  },
-  {
-    "id": "close-grip-push-up-off-of-a-dumbbell",
-    "name": "Close-Grip Push-Up off of a Dumbbell",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "abs",
-      "chest",
-      "front delts"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Lie on the floor and place your hands on an upright dumbbell. Supporting your weight on your toes and hands, keep your torso rigid and your elbows in with your arms straight. This will be your starting position.",
-      "Lower your body, allowing the elbows to flex while you inhale. Keep your body straight, not allowing your hips to rise or sag.",
-      "Press yourself back up to the starting position by extending the elbows. Breathe out as you perform this step.",
-      "After a pause at the contracted position, repeat the movement for the prescribed amount of repetitions."
-    ],
-    "images": [
-      "Close-Grip_Push-Up_off_of_a_Dumbbell/0.jpg",
-      "Close-Grip_Push-Up_off_of_a_Dumbbell/1.jpg"
     ]
   },
   {
@@ -3165,12 +2789,12 @@
     "name": "Dumbbell Incline Row",
     "aliases": [],
     "primaryMuscles": [
-      "upper back"
+      "lats"
     ],
     "secondaryMuscles": [
       "biceps",
       "forearms",
-      "lats",
+      "upper back",
       "front delts"
     ],
     "equipment": "dumbbell",
@@ -3662,26 +3286,51 @@
     ]
   },
   {
-    "id": "dumbbell-tricep-extension-pronated-grip",
-    "name": "Dumbbell Tricep Extension -Pronated Grip",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
+    "id": "elbows-flared-incline-dumbbell-row",
+    "name": "Elbows Flared Incline Dumbbell Row",
+    "aliases": [
+      "Chest-Supported Dumbbell Row With Elbows Flared",
+      "Chest-Supported Dumbbell Row"
     ],
-    "secondaryMuscles": [],
+    "primaryMuscles": [
+      "upper back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "lats",
+      "rear delts"
+    ],
     "equipment": "dumbbell",
     "category": "strength",
-    "mechanic": "isolation",
+    "mechanic": "compound",
     "instructions": [
-      "Lie down on a flat bench holding two dumbbells directly above your shoulders. Your arms should be fully extended and form a 90 degree angle from your torso and the floor.",
-      "The palms of your hands should be facing forward, and your elbows should be tucked in. This will be your starting position.",
-      "Now, inhale and slowly lower the dumbbells until they are near your ears. Be sure to keep your upper arms stationary and your elbows tucked in.",
-      "Then, exhale and use your triceps to return the weight to the starting position."
+      "Lie face-down (chest-supported) on an incline bench, a dumbbell in each hand hanging straight down.",
+      "Row both dumbbells up and out to the sides, flaring your elbows away from your torso, driving them toward shoulder height.",
+      "Squeeze your shoulder blades together at the top, then lower under control and repeat."
     ],
-    "images": [
-      "Dumbbell_Tricep_Extension_-Pronated_Grip/0.jpg",
-      "Dumbbell_Tricep_Extension_-Pronated_Grip/1.jpg"
-    ]
+    "images": []
+  },
+  {
+    "id": "elbows-flared-one-arm-dumbbell-row",
+    "name": "Elbows Flared One-Arm Dumbbell Row",
+    "aliases": [],
+    "primaryMuscles": [
+      "upper back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "lats",
+      "rear delts"
+    ],
+    "equipment": "dumbbell",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Support yourself on a bench with one hand and knee, torso roughly parallel to the floor, holding a dumbbell in the free hand.",
+      "Row the dumbbell up and out to the side, flaring your elbow away from your torso toward shoulder height.",
+      "Squeeze your shoulder blade at the top, then lower under control and repeat, then switch sides."
+    ],
+    "images": []
   },
   {
     "id": "elevated-back-lunge",
@@ -3987,31 +3636,6 @@
     "images": [
       "Floor_Press/0.jpg",
       "Floor_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "floor-press-with-chains",
-    "name": "Floor Press with Chains",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Adjust the j-hooks so they are at the appropriate height to rack the bar. For this exercise, drape the chains directly over the end of the bar, trying to keep the ends away from the plates.",
-      "Begin lying on the floor with your head near the end of a power rack. Keeping your shoulder blades pulled together, pull the bar off of the hooks.",
-      "Lower the bar towards the bottom of your chest or upper stomach, squeezing the bar and attempting to pull it apart as you do so. Ensure that you tuck your elbows throughout the movement. Lower the bar until your upper arm contacts the ground and pause, preventing any slamming or bouncing of the weight.",
-      "Press the bar back up as fast as you can, keeping the bar, your wrists, and elbows in line as you do so."
-    ],
-    "images": [
-      "Floor_Press_with_Chains/0.jpg",
-      "Floor_Press_with_Chains/1.jpg"
     ]
   },
   {
@@ -5085,56 +4709,6 @@
     ]
   },
   {
-    "id": "inverted-row",
-    "name": "Inverted Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "lats"
-    ],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Position a bar in a rack to about waist height. You can also use a smith machine.",
-      "Take a wider than shoulder width grip on the bar and position yourself hanging underneath the bar. Your body should be straight with your heels on the ground with your arms fully extended. This will be your starting position.",
-      "Begin by flexing the elbow, pulling your chest towards the bar. Retract your shoulder blades as you perform the movement.",
-      "Pause at the top of the motion, and return yourself to the start position.",
-      "Repeat for the desired number of repetitions."
-    ],
-    "images": [
-      "Inverted_Row/0.jpg",
-      "Inverted_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "inverted-row-with-straps",
-    "name": "Inverted Row with Straps",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Hang a rope or suspension straps from a rack or other stable object. Grasp the ends and position yourself in a supine position hanging from the ropes. Your body should be straight with your heels on the ground with your arms fully extended. This will be your starting position.",
-      "Begin by flexing the elbow, pulling your chest to your hands. Retract your shoulder blades as you perform the movement.",
-      "Pause at the top of the motion, and return yourself to the start position.",
-      "Repeat for the desired number of repetitions."
-    ],
-    "images": [
-      "Inverted_Row_with_Straps/0.jpg",
-      "Inverted_Row_with_Straps/1.jpg"
-    ]
-  },
-  {
     "id": "iron-cross",
     "name": "Iron Cross",
     "aliases": [],
@@ -5242,6 +4816,47 @@
     ]
   },
   {
+    "id": "katana-extension",
+    "name": "Katana Extension",
+    "aliases": [
+      "Katana Extensions"
+    ],
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Attach a single handle to a high cable pulley and stand with your side to the machine.",
+      "Grip the handle with both hands overhead, elbow pointing up, like drawing a sword from over your shoulder.",
+      "Extend your arm by straightening the elbow, pulling the handle diagonally across and down.",
+      "Return under control to the starting position, then repeat before switching sides."
+    ],
+    "images": []
+  },
+  {
+    "id": "kelso-shrug",
+    "name": "Kelso Shrug",
+    "aliases": [],
+    "primaryMuscles": [
+      "traps"
+    ],
+    "secondaryMuscles": [
+      "upper back"
+    ],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Lie face-down (chest-supported) on an incline bench or chest-supported row machine, arms hanging straight down holding handles or a bar.",
+      "Without bending your elbows, shrug your shoulders up and back, squeezing your shoulder blades together.",
+      "Pause briefly at the top, then lower under control and repeat."
+    ],
+    "images": []
+  },
+  {
     "id": "kettlebell-pistol-squat",
     "name": "Kettlebell Pistol Squat",
     "aliases": [],
@@ -5266,32 +4881,6 @@
     "images": [
       "Kettlebell_Pistol_Squat/0.jpg",
       "Kettlebell_Pistol_Squat/1.jpg"
-    ]
-  },
-  {
-    "id": "kettlebell-sumo-high-pull",
-    "name": "Kettlebell Sumo High Pull",
-    "aliases": [],
-    "primaryMuscles": [
-      "traps"
-    ],
-    "secondaryMuscles": [
-      "adductors",
-      "glutes",
-      "hamstrings",
-      "quads",
-      "front delts"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place a kettlebell on the ground between your feet. Position your feet in a wide stance, and grasp the kettlebell with two hands. Set your hips back as far as possible, with your knees bent. Keep your chest and head up. This will be your starting position.",
-      "Begin by extending the hips and knees, simultaneously pulling the kettlebell to your shoulders, raising your elbows as you do so. Reverse the motion to return to the starting position."
-    ],
-    "images": [
-      "Kettlebell_Sumo_High_Pull/0.jpg",
-      "Kettlebell_Sumo_High_Pull/1.jpg"
     ]
   },
   {
@@ -5642,31 +5231,6 @@
     "images": [
       "Leverage_Shoulder_Press/0.jpg",
       "Leverage_Shoulder_Press/1.jpg"
-    ]
-  },
-  {
-    "id": "leverage-shrug",
-    "name": "Leverage Shrug",
-    "aliases": [],
-    "primaryMuscles": [
-      "traps"
-    ],
-    "secondaryMuscles": [
-      "forearms"
-    ],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Load the pins to an appropriate weight. Position yourself directly between the handles.",
-      "Grasp the top handles with a comfortable grip, and then lower your hips as you take a breath. Look forward with your head and keep your chest up.",
-      "Drive through the floor with your heels, extending your hips and knees as you rise to a standing position. Keep your arms straight throughout the movement, finishing with your shoulders back. This will be your starting position.",
-      "Raise the weight by shrugging the shoulders towards your ears, moving straight up and down.",
-      "Pause at the top of the motion, and then return the weight to the starting position."
-    ],
-    "images": [
-      "Leverage_Shrug/0.jpg",
-      "Leverage_Shrug/1.jpg"
     ]
   },
   {
@@ -6261,32 +5825,6 @@
     ]
   },
   {
-    "id": "mixed-grip-chin",
-    "name": "Mixed Grip Chin",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Using a spacing that is just about 1 inch wider than shoulder width, grab a pull-up bar with the palms of one hand facing forward and the palms of the other hand facing towards you. This will be your starting position.",
-      "Now start to pull yourself up as you exhale. Tip: With the arm that has the palms facing up concentrate on using the back muscles in order to perform the movement. The elbow of that arm should remain close to the torso. With the other arm that has the palms facing forward, the elbows will be away but in line with the torso. You will concentrate on using the lats to pull your body up.",
-      "After a second contraction at the top, start to slowly come down as you inhale.",
-      "Repeat for the recommended amount of repetitions.",
-      "On the following set, switch grips; so if you had the right hand with the palms facing you and the left one with the palms facing forward, on the next set you will have the palms facing forward for the right hand and facing you for the left."
-    ],
-    "images": [
-      "Mixed_Grip_Chin/0.jpg",
-      "Mixed_Grip_Chin/1.jpg"
-    ]
-  },
-  {
     "id": "monster-walk",
     "name": "Monster Walk",
     "aliases": [],
@@ -6538,6 +6076,29 @@
     "images": []
   },
   {
+    "id": "neutral-grip-seated-cable-row",
+    "name": "Neutral Grip Seated Cable Row",
+    "aliases": [],
+    "primaryMuscles": [
+      "upper back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "lats",
+      "rear delts"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a neutral-grip (parallel handle) bar to a low cable pulley and sit with knees slightly bent.",
+      "Grip the handles with palms facing each other, arms extended, torso upright.",
+      "Pull the handles to your torso, flaring your elbows out to the sides and squeezing your shoulder blades together.",
+      "Slowly return to the stretched starting position and repeat."
+    ],
+    "images": []
+  },
+  {
     "id": "oblique-crunch",
     "name": "Oblique Crunch",
     "aliases": [],
@@ -6560,35 +6121,6 @@
     "images": [
       "Oblique_Crunches/0.jpg",
       "Oblique_Crunches/1.jpg"
-    ]
-  },
-  {
-    "id": "one-arm-chin-up",
-    "name": "One Arm Chin-Up",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "forearms",
-      "lats"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "For this exercise, start out by placing a towel around a chin up bar.",
-      "Grab the chin-up bar with your palm facing you. One hand will be grabbing the chin-up bar and the other will be grabbing the towel.",
-      "Bring your torso back around 30 degrees or so while creating a curvature on your lower back and sticking your chest out. This is your starting position.v",
-      "Pull your torso up until the bar touches your upper chest by drawing the shoulders and the upper arms down and back. Exhale as you perform this portion of the movement. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. The upper torso should remain stationary as it moves through space and only the arms should move. The forearms should do no other work other than hold the bar.",
-      "After a second on the contracted position, start to inhale and slowly lower your torso back to the starting position when your arms are fully extended and the lats are fully stretched.",
-      "Repeat this motion for the prescribed amount of repetitions.",
-      "Switch arms and repeat the movement."
-    ],
-    "images": [
-      "One_Arm_Chin-Up/0.jpg",
-      "One_Arm_Chin-Up/1.jpg"
     ]
   },
   {
@@ -6749,11 +6281,11 @@
     "name": "One-Arm Dumbbell Row",
     "aliases": [],
     "primaryMuscles": [
-      "upper back"
+      "lats"
     ],
     "secondaryMuscles": [
       "biceps",
-      "lats",
+      "upper back",
       "front delts"
     ],
     "equipment": "dumbbell",
@@ -6840,54 +6372,6 @@
     "images": [
       "One-Arm_Incline_Lateral_Raise/0.jpg",
       "One-Arm_Incline_Lateral_Raise/1.jpg"
-    ]
-  },
-  {
-    "id": "one-arm-kettlebell-row",
-    "name": "One-Arm Kettlebell Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place a kettlebell in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position. Grab the kettlebell and pull it to your stomach, retracting your shoulder blade and flexing the elbow. Keep your back straight. Lower and repeat."
-    ],
-    "images": [
-      "One-Arm_Kettlebell_Row/0.jpg",
-      "One-Arm_Kettlebell_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "one-arm-long-bar-row",
-    "name": "One-Arm Long Bar Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Position a bar into a landmine or in a corner to keep it from moving. Load an appropriate weight onto your end.",
-      "Stand next to the bar, and take a grip with one hand close to the collar. Using your hips and legs, rise to a standing position.",
-      "Assume a bent-knee stance with your hips back and your chest up. Your arm should be extended. This will be your starting position.",
-      "Pull the weight to your side by retracting the shoulder and flexing the elbow. Do not jerk the weight or cheat during the movement.",
-      "After a brief pause, return to the starting position."
-    ],
-    "images": [
-      "One-Arm_Long_Bar_Row/0.jpg",
-      "One-Arm_Long_Bar_Row/1.jpg"
     ]
   },
   {
@@ -7418,34 +6902,6 @@
     ]
   },
   {
-    "id": "reverse-band-bench-press",
-    "name": "Reverse Band Bench Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "forearms",
-      "lats",
-      "upper back",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Position a bench inside a power rack, with the bar set to the correct height. Begin by anchoring bands either to band pegs or to the top of the rack. Ensure that you will be position properly under the bands. Attach the other end to the barbell.",
-      "Lie on the bench, tuck your feet underneath you and arch your back. Using the bar to help support your weight, lift your shoulder off the bench and retract them, squeezing the shoulder blades together. Use your feet to drive your traps into the bench. Maintain this tight body position throughout the movement. However wide your grip, it should cover the ring on the bar.",
-      "Pull the bar out of the rack without protracting your shoulders. Focus on squeezing the bar and trying to pull it apart. Lower the bar to your lower chest or upper stomach. The bar, wrist, and elbow should stay in line at all times.",
-      "Pause when the barbell touches your torso, and then drive the bar up with as much force as possible. The elbows should be tucked in until lockout."
-    ],
-    "images": [
-      "Reverse_Band_Bench_Press/0.jpg",
-      "Reverse_Band_Bench_Press/1.jpg"
-    ]
-  },
-  {
     "id": "reverse-band-box-squat",
     "name": "Reverse Band Box Squat",
     "aliases": [],
@@ -7708,33 +7164,6 @@
     "images": [
       "Reverse_Flyes_With_External_Rotation/0.jpg",
       "Reverse_Flyes_With_External_Rotation/1.jpg"
-    ]
-  },
-  {
-    "id": "reverse-grip-bent-over-rows",
-    "name": "Reverse Grip Bent-Over Rows",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Stand erect while holding a barbell with a supinated grip (palms facing up).",
-      "Bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The barbell should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
-      "While keeping the torso stationary, lift the barbell as you breathe out, keeping the elbows close to the body and not doing any force with the forearm other than holding the weights. On the top contracted position, squeeze the back muscles and hold for a second.",
-      "Slowly lower the weight again to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Reverse_Grip_Bent-Over_Rows/0.jpg",
-      "Reverse_Grip_Bent-Over_Rows/1.jpg"
     ]
   },
   {
@@ -8635,6 +8064,27 @@
     ]
   },
   {
+    "id": "seated-smith-machine-behind-the-back-shrug",
+    "name": "Seated Smith Machine Behind the Back Shrug",
+    "aliases": [],
+    "primaryMuscles": [
+      "traps"
+    ],
+    "secondaryMuscles": [
+      "front delts"
+    ],
+    "equipment": "smith machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Sit on a bench positioned behind the smith machine bar, gripping the bar behind your hips with an overhand grip.",
+      "Let your arms hang straight down, holding the bar behind your back.",
+      "Shrug your shoulders straight up, squeezing at the top.",
+      "Lower under control and repeat."
+    ],
+    "images": []
+  },
+  {
     "id": "seated-supinated-barbell-wrist-curl",
     "name": "Seated Supinated Barbell Wrist Curl",
     "aliases": [
@@ -8995,6 +8445,34 @@
     "images": []
   },
   {
+    "id": "single-arm-cable-triceps-pushdown",
+    "name": "Single-Arm Cable Triceps Pushdown",
+    "aliases": [
+      "Cable One Arm Tricep Extension",
+      "Single-Arm Cable Tricep Pushdown",
+      "One-Arm Triceps Pushdown"
+    ],
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "With your right hand, grasp a single handle attached to the high-cable pulley using a supinated (underhand; palms facing up) grip. You should be standing directly in front of the weight stack.",
+      "Now pull the handle down so that your upper arm and elbow are locked in to the side of your body. Your upper arm and forearm should form an acute angle (less than 90-degrees). You can keep the other arm by the waist and you can have one leg in front of you and the other one back for better balance. This will be your starting position.",
+      "As you contract the triceps, move the single handle attachment down to your side until your arm is straight. Breathe out as you perform this movement. Tip: Only the forearms should move. Your upper arms should remain stationary at all times.",
+      "Squeeze the triceps and hold for a second in this contracted position.",
+      "Slowly return the handle to the starting position.",
+      "Repeat for the recommended amount of repetitions and then perform the same movement with the other arm."
+    ],
+    "images": [
+      "Cable_One_Arm_Tricep_Extension/0.jpg",
+      "Cable_One_Arm_Tricep_Extension/1.jpg"
+    ]
+  },
+  {
     "id": "single-arm-push-up",
     "name": "Single-Arm Push-Up",
     "aliases": [],
@@ -9086,53 +8564,6 @@
     "images": [
       "Sit-Up/0.jpg",
       "Sit-Up/1.jpg"
-    ]
-  },
-  {
-    "id": "sled-overhead-triceps-extension",
-    "name": "Sled Overhead Triceps Extension",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Attach dual handles to a sled using a chain or rope. Load the sled to an appropriate load.",
-      "Facing away from the sled, step away until there is tension in the line. Raise your hands above your head, keeping them together, palms facing each other. Your elbows should be pointed upward with the elbows flexed. This will be your starting position.",
-      "Extend through the elbow to straighten the arm. Ensure that your upper arm stays in position to isolate the triceps.",
-      "Upon full extension, step forward to take the slack out of the line. You may keep your feet staggered for more stability."
-    ],
-    "images": [
-      "Sled_Overhead_Triceps_Extension/0.jpg",
-      "Sled_Overhead_Triceps_Extension/1.jpg"
-    ]
-  },
-  {
-    "id": "sled-row",
-    "name": "Sled Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Attach dual handles to a sled connected by a rope or chain. Load the sled to an appropriate weight. Face the sled, backing up until there is some tension in the line.",
-      "With a handle in each hand, bend the knees slightly, keep your head and chest up, and begin with your arms extended.",
-      "To initiate the movement, flex the elbow as you retract your shoulder blades, pulling the sled towards you.",
-      "Take a step or two back to get tension in the line and repeat."
-    ],
-    "images": [
-      "Sled_Row/0.jpg",
-      "Sled_Row/1.jpg"
     ]
   },
   {
@@ -9653,51 +9084,6 @@
     "images": [
       "Smith_Machine_Upright_Row/0.jpg",
       "Smith_Machine_Upright_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "snatch-shrug",
-    "name": "Snatch Shrug",
-    "aliases": [],
-    "primaryMuscles": [
-      "traps"
-    ],
-    "secondaryMuscles": [
-      "forearms",
-      "front delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Begin with a wide grip, with the bar hanging at the mid thigh position. You can use a hook or overhand grip. Your back should be straight and inclined slightly forward.",
-      "Shrug your shoulders towards your ears. While this exercise can usually by loaded with heavier weight than a snatch, avoid overloading to the point that the execution slows down."
-    ],
-    "images": [
-      "Snatch_Shrug/0.jpg",
-      "Snatch_Shrug/1.jpg"
-    ]
-  },
-  {
-    "id": "speed-band-overhead-triceps",
-    "name": "Speed Band Overhead Triceps",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "band",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "For this exercise anchor a band to the ground. We used an incline bench and anchored the band to the base, standing over the bench. Alternatively, this could be performed standing on the band.",
-      "To begin, pull the band behind your head, holding it with a pronated grip and your elbows up. This will be your starting position.",
-      "To perform the movement, extend through the elbow to to straighten your arms, ensuring that you keep your upper arm in place.",
-      "Pause, and then return to the starting position."
-    ],
-    "images": [
-      "Speed_Band_Overhead_Triceps/0.jpg",
-      "Speed_Band_Overhead_Triceps/1.jpg"
     ]
   },
   {
@@ -10384,28 +9770,6 @@
     ]
   },
   {
-    "id": "standing-towel-triceps-extension",
-    "name": "Standing Towel Triceps Extension",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "bodyweight",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "To begin, stand up with both arms fully extended above the head holding one end of a towel with both hands. Your elbows should be in and the arms perpendicular to the floor with the palms facing each other while your feet should be shoulder width apart from each other. This is the starting position.",
-      "Now communicate with your partner so that he/she can grip the other side of the towel to apply resistance. Keeping your upper arms close to your head (elbows in) and perpendicular to the floor, lower the resistance in a semicircular motion behind your head until your forearms touch your biceps. Tip: The upper arms should remain stationary and only the forearms should move. Breathe in as you perform this step.",
-      "Go back to the starting position by using the triceps to raise the towel. Breathe out as you perform this step.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Standing_Towel_Triceps_Extension/0.jpg",
-      "Standing_Towel_Triceps_Extension/1.jpg"
-    ]
-  },
-  {
     "id": "step-up-with-knee-raise",
     "name": "Step-up with Knee Raise",
     "aliases": [],
@@ -10665,6 +10029,36 @@
     ]
   },
   {
+    "id": "supinated-bent-over-barbell-row",
+    "name": "Supinated Bent Over Barbell Row",
+    "aliases": [
+      "Reverse Grip Bent-Over Rows",
+      "Underhand Bent Over Barbell Row"
+    ],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "upper back",
+      "front delts"
+    ],
+    "equipment": "barbell",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Stand erect while holding a barbell with a supinated grip (palms facing up).",
+      "Bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The barbell should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
+      "While keeping the torso stationary, lift the barbell as you breathe out, keeping the elbows close to the body and not doing any force with the forearm other than holding the weights. On the top contracted position, squeeze the back muscles and hold for a second.",
+      "Slowly lower the weight again to the starting position as you inhale.",
+      "Repeat for the recommended amount of repetitions."
+    ],
+    "images": [
+      "Reverse_Grip_Bent-Over_Rows/0.jpg",
+      "Reverse_Grip_Bent-Over_Rows/1.jpg"
+    ]
+  },
+  {
     "id": "supinated-dumbbell-wrist-curl-over-a-bench",
     "name": "Supinated Dumbbell Wrist Curl Over A Bench",
     "aliases": [
@@ -10722,30 +10116,6 @@
     ]
   },
   {
-    "id": "suspended-row",
-    "name": "Suspended Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Suspend your straps at around chest height. Take a handle in each hand and lean back. Keep your body erect and your head and chest up. Your arms should be fully extended. This will be your starting position.",
-      "Begin by flexing the elbow to initiate the movement. Protract your shoulder blades as you do so.",
-      "At the completion of the motion pause, and then return to the starting position."
-    ],
-    "images": [
-      "Suspended_Row/0.jpg",
-      "Suspended_Row/1.jpg"
-    ]
-  },
-  {
     "id": "suspended-split-squat",
     "name": "Suspended Split Squat",
     "aliases": [],
@@ -10797,32 +10167,6 @@
     "images": [
       "T-Bar_Row_with_Handle/0.jpg",
       "T-Bar_Row_with_Handle/1.jpg"
-    ]
-  },
-  {
-    "id": "tate-press",
-    "name": "Tate Press",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts"
-    ],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie down on a flat bench with a dumbbell in each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them in front of you at shoulder width. Note: when holding the dumbbells in front of you, make sure your arms are wider than shoulder width apart from each other using a pronated (palms forward) grip. Allow your elbows to point out. This is your starting position.",
-      "Keeping the upper arms stationary, slowly move the dumbbells in and down in a semi circular motion until they touch the upper chest while inhaling. Keep full control of the dumbbells at all times and do not move the upper arms nor rest the dumbbells on the chest.",
-      "As you breathe out, move the dumbbells up using your triceps and the same semi-circular motion but in reverse. Attempt to keep the dumbbells together as they move up. Lock your arms in the contracted position, hold for a second and then start coming down again slowly again. Tip: It should take at least twice as long to go down than to come up.",
-      "Repeat the movement for the prescribed amount of repetitions of your training program."
-    ],
-    "images": [
-      "Tate_Press/0.jpg",
-      "Tate_Press/1.jpg"
     ]
   },
   {
@@ -10941,54 +10285,6 @@
       "Triceps_Pushdown/0.jpg",
       "Triceps_Pushdown/1.jpg"
     ]
-  },
-  {
-    "id": "two-arm-kettlebell-row",
-    "name": "Two-Arm Kettlebell Row",
-    "aliases": [],
-    "primaryMuscles": [
-      "upper back"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "lats"
-    ],
-    "equipment": "kettlebell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place two kettlebells in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position.",
-      "Grab both kettlebells and pull them to your stomach, retracting your shoulder blades and flexing the elbows. Keep your back straight. Lower and repeat."
-    ],
-    "images": [
-      "Two-Arm_Kettlebell_Row/0.jpg",
-      "Two-Arm_Kettlebell_Row/1.jpg"
-    ]
-  },
-  {
-    "id": "underhand-bent-over-barbell-row",
-    "name": "Underhand Bent Over Barbell Row",
-    "aliases": [
-      "Reverse Grip Bent Over Row"
-    ],
-    "primaryMuscles": [
-      "upper back",
-      "lats"
-    ],
-    "secondaryMuscles": [
-      "biceps",
-      "rear delts"
-    ],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Grip a barbell shoulder-width with palms facing up (supinated).",
-      "Hinge at the hips until your torso is roughly parallel to the floor, knees slightly bent.",
-      "Row the bar to your lower ribs, driving elbows back and squeezing your back.",
-      "Lower under control and repeat."
-    ],
-    "images": []
   },
   {
     "id": "upright-barbell-row",
@@ -11112,32 +10408,6 @@
     "images": [
       "Weighted_Ball_Hyperextension/0.jpg",
       "Weighted_Ball_Hyperextension/1.jpg"
-    ]
-  },
-  {
-    "id": "weighted-bench-dip",
-    "name": "Weighted Bench Dip",
-    "aliases": [],
-    "primaryMuscles": [
-      "triceps"
-    ],
-    "secondaryMuscles": [
-      "chest",
-      "front delts"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "For this exercise you will need to place a bench behind your back and another one in front of you. With the benches perpendicular to your body, hold on to one bench on its edge with the hands close to your body, separated at shoulder width. Your arms should be fully extended.",
-      "The legs will be extended forward on top of the other bench. Your legs should be parallel to the floor while your torso is to be perpendicular to the floor. Have your partner place the dumbbell on your lap. Note: This exercise is best performed with a partner as placing the weight on your lap can be challenging and cause injury without assistance. This will be your starting position.",
-      "Slowly lower your body as you inhale by bending at the elbows until you lower yourself far enough to where there is an angle slightly smaller than 90 degrees between the upper arm and the forearm. Tip: Keep the elbows as close as possible throughout the movement. Forearms should always be pointing down.",
-      "Using your triceps to bring your torso up again, lift yourself back to the starting position while exhaling.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Weighted_Bench_Dip/0.jpg",
-      "Weighted_Bench_Dip/1.jpg"
     ]
   },
   {
@@ -11340,6 +10610,29 @@
       "Attach a wide parallel-grip (neutral) bar to a high pulley and sit with thighs secured under the pad.",
       "Grip the handles wider than shoulder width, palms facing each other, arms extended overhead.",
       "Pull the handles down to your upper chest, driving elbows down and back.",
+      "Slowly return to the stretched starting position and repeat."
+    ],
+    "images": []
+  },
+  {
+    "id": "wide-neutral-grip-seated-cable-row",
+    "name": "Wide Neutral Grip Seated Cable Row",
+    "aliases": [],
+    "primaryMuscles": [
+      "upper back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "lats",
+      "rear delts"
+    ],
+    "equipment": "cable",
+    "category": "strength",
+    "mechanic": "compound",
+    "instructions": [
+      "Attach a wide neutral-grip bar to a low cable pulley and sit with knees slightly bent.",
+      "Grip the handles wider than shoulder width, palms facing each other, arms extended, torso upright.",
+      "Pull the handles to your torso, flaring your elbows out to the sides and squeezing your shoulder blades together.",
       "Slowly return to the stretched starting position and repeat."
     ],
     "images": []

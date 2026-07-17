@@ -324,30 +324,6 @@
     ]
   },
   {
-    "id": "balance-board",
-    "name": "Balance Board",
-    "aliases": [],
-    "primaryMuscles": [
-      "calves"
-    ],
-    "secondaryMuscles": [
-      "hamstrings",
-      "quads"
-    ],
-    "equipment": "other",
-    "category": "strength",
-    "mechanic": "compound",
-    "instructions": [
-      "Place a balance board in front of you.",
-      "Stand up on it and try to balance yourself.",
-      "Hold the balance for as long as desired."
-    ],
-    "images": [
-      "Balance_Board/0.jpg",
-      "Balance_Board/1.jpg"
-    ]
-  },
-  {
     "id": "ball-leg-curl",
     "name": "Ball Leg Curl",
     "aliases": [],
@@ -2289,29 +2265,6 @@
     ]
   },
   {
-    "id": "calf-press-on-the-leg-press-machine",
-    "name": "Calf Press On The Leg Press Machine",
-    "aliases": [],
-    "primaryMuscles": [
-      "calves"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "machine",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Using a leg press machine, sit down on the machine and place your legs on the platform directly in front of you at a medium (shoulder width) foot stance.",
-      "Lower the safety bars holding the weighted platform in place and press the platform all the way up until your legs are fully extended in front of you without locking your knees. (Note: In some leg press units you can leave the safety bars on for increased safety. If your leg press unit allows for this, then this is the preferred method of performing the exercise.) Your torso and the legs should make perfect 90-degree angle. Now carefully place your toes and balls of your feet on the lower portion of the platform with the heels extending off. Toes should be facing forward, outwards or inwards as described at the beginning of the chapter. This will be your starting position.",
-      "Press on the platform by raising your heels as you breathe out by extending your ankles as high as possible and flexing your calf. Ensure that the knee is kept stationary at all times. There should be no bending at any time. Hold the contracted position by a second before you start to go back down.",
-      "Go back slowly to the starting position as you breathe in by lowering your heels as you bend the ankles until calves are stretched.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Calf_Press_On_The_Leg_Press_Machine/0.jpg",
-      "Calf_Press_On_The_Leg_Press_Machine/1.jpg"
-    ]
-  },
-  {
     "id": "calf-raise-on-a-dumbbell",
     "name": "Calf Raise On A Dumbbell",
     "aliases": [],
@@ -2840,31 +2793,6 @@
     "images": [
       "Close-Grip_EZ_Bar_Curl/0.jpg",
       "Close-Grip_EZ_Bar_Curl/1.jpg"
-    ]
-  },
-  {
-    "id": "close-grip-ez-bar-curl-with-band",
-    "name": "Close-Grip EZ-Bar Curl with Band",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [
-      "forearms"
-    ],
-    "equipment": "ez bar",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Attach a band to each end of the bar. Take the bar, placing a foot on the middle of the band. Stand upright with a narrow, supinated grip on the EZ bar. The elbows should be close to the torso. This will be your starting position.",
-      "While keeping the upper arms in place, flex the elbows to execute the curl. Exhale as the weight is lifted.",
-      "Continue the movement until your biceps are fully contracted and the bar is at shoulder level. Hold the contracted position for a second and squeeze the biceps hard.",
-      "Slowly begin to bring the bar back to starting position as your breathe in.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Close-Grip_EZ-Bar_Curl_with_Band/0.jpg",
-      "Close-Grip_EZ-Bar_Curl_with_Band/1.jpg"
     ]
   },
   {
@@ -4617,30 +4545,6 @@
     ]
   },
   {
-    "id": "flexor-incline-dumbbell-curls",
-    "name": "Flexor Incline Dumbbell Curls",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Hold the dumbbell towards the side farther from you so that you have more weight on the side closest to you. (This can be done for a good effect on all bicep dumbbell exercises). Now do a normal incline dumbbell curl, but keep your wrists as far back as possible so as to neutralize any stress that is placed on them.",
-      "Sit on an incline bench that is angled at 45-degrees while holding a dumbbell on each hand.",
-      "Let your arms hang down on your sides, with the elbows in, and turn the palms of your hands forward with the thumbs pointing away from the body. Tip: You will keep this hand position throughout the movement as there should not be any twisting of the hands as they come up. This will be your starting position.",
-      "Curl up the two dumbbells at the same time until your biceps are fully contracted and exhale. Tip: Do not swing the arms or use momentum. Keep a controlled motion at all times. Hold the contracted position for a second at the top.",
-      "As you inhale, slowly go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Flexor_Incline_Dumbbell_Curls/0.jpg",
-      "Flexor_Incline_Dumbbell_Curls/1.jpg"
-    ]
-  },
-  {
     "id": "floor-glute-ham-raise",
     "name": "Floor Glute-Ham Raise",
     "aliases": [],
@@ -5877,29 +5781,6 @@
     "images": [
       "Incline_Hammer_Curls/0.jpg",
       "Incline_Hammer_Curls/1.jpg"
-    ]
-  },
-  {
-    "id": "incline-inner-biceps-curl",
-    "name": "Incline Inner Biceps Curl",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Hold a dumbbell in each hand and lie back on an incline bench.",
-      "The dumbbells should be at arm's length hanging at your sides and your palms should be facing out. This will be your starting position.",
-      "Now as you exhale curl the weight outward and up while keeping your forearms in line with your side deltoids. Continue the curl until the dumbbells are at shoulder height and to the sides of your deltoids. Tip: The end of the movement should look similar to a double biceps pose.",
-      "After a second contraction at the top of the movement, start to inhale and slowly lower the weights back to the starting position using the same path used to bring them up.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Incline_Inner_Biceps_Curl/0.jpg",
-      "Incline_Inner_Biceps_Curl/1.jpg"
     ]
   },
   {
@@ -7245,31 +7126,6 @@
     ]
   },
   {
-    "id": "lying-close-grip-bar-curl-on-high-pulley",
-    "name": "Lying Close-Grip Bar Curl On High Pulley",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "cable",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Place a flat bench in front of a high pulley or lat pulldown machine.",
-      "Hold the straight bar attachment using an underhand grip (palms up) that is about shoulder width.",
-      "Lie on your back with your head over the end of the bench.",
-      "Now extend your arms straight above your shoulders. Your torso and your arms should make a 90-degree angle and the elbows should be in. This will be your starting position.",
-      "As you breathe out, curl the bar down in a semicircular motion until it touches your chin. Squeeze the biceps for a second at the top contracted position. Tip: As you execute this motion only the forearms should move. At no time should the upper arms be moving at all. They are to remain perpendicular throughout the movement.",
-      "Return to starting position slowly.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Lying_Close-Grip_Bar_Curl_On_High_Pulley/0.jpg",
-      "Lying_Close-Grip_Bar_Curl_On_High_Pulley/1.jpg"
-    ]
-  },
-  {
     "id": "lying-close-grip-barbell-triceps-extension-behind-the-head",
     "name": "Lying Close-Grip Barbell Triceps Extension Behind The Head",
     "aliases": [],
@@ -7338,28 +7194,6 @@
     "images": [
       "Lying_Dumbbell_Tricep_Extension/0.jpg",
       "Lying_Dumbbell_Tricep_Extension/1.jpg"
-    ]
-  },
-  {
-    "id": "lying-high-bench-barbell-curl",
-    "name": "Lying High Bench Barbell Curl",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Lie face forward on a tall flat bench while holding a barbell with a supinated grip (palms facing up). Tip: If you are holding a barbell grab it using a shoulder-width grip and if you are using an E-Z Bar grab it on the inner handles. Your upper body should be positioned in a way that the upper chest is over the end of the bench and the barbell is hanging in front of you with the arms extended and perpendicular to the floor. This will be your starting position.",
-      "While keeping the elbows in and the upper arms stationary, curl the weight up in a semi-circular motion as you contract the biceps and exhale. Hold at the top of the movement for a second.",
-      "As you inhale, slowly go back to the starting position. Tip: Maintain full control of the weight at all times and avoid any swinging. Remember, only the forearms should move throughout the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Lying_High_Bench_Barbell_Curl/0.jpg",
-      "Lying_High_Bench_Barbell_Curl/1.jpg"
     ]
   },
   {
@@ -10190,32 +10024,6 @@
     ]
   },
   {
-    "id": "rocking-standing-calf-raise",
-    "name": "Rocking Standing Calf Raise",
-    "aliases": [],
-    "primaryMuscles": [
-      "calves"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "barbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack that best matches your height. Once the correct height is chosen and the bar is loaded, step under the bar and place it on the back of your shoulders (slightly below the neck).",
-      "Hold on to the bar using both arms at each side and lift it off the rack by first pushing with your legs and at the same time straightening your torso.",
-      "Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance. Also maintain a straight back and keep the knees with a slight bend; never locked. This will be your starting position.",
-      "Raise your heels as you breathe out by extending your ankles as high as possible and flexing your calf. Ensure that the knee is kept stationary at all times. There should be no bending (other than the slight initial bend we created during positioning) at any time. Hold the contracted position by a second before you start to go back down.",
-      "Go back slowly to the starting position as you breathe in by lowering your heels as you bend the ankles until calves are stretched.",
-      "Now lift your toes by contracting the tibia muscles in the front of the calves as you breathe out.",
-      "Hold for a second and bring them back down as you breathe in.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Rocking_Standing_Calf_Raise/0.jpg",
-      "Rocking_Standing_Calf_Raise/1.jpg"
-    ]
-  },
-  {
     "id": "romanian-deadlift",
     "name": "Romanian Deadlift",
     "aliases": [
@@ -10783,6 +10591,31 @@
     ]
   },
   {
+    "id": "seated-leg-press-calf-raise",
+    "name": "Seated Leg Press Calf Raise",
+    "aliases": [
+      "Calf Press On The Leg Press Machine"
+    ],
+    "primaryMuscles": [
+      "calves"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Using a leg press machine, sit down on the machine and place your legs on the platform directly in front of you at a medium (shoulder width) foot stance.",
+      "Lower the safety bars holding the weighted platform in place and press the platform all the way up until your legs are fully extended in front of you without locking your knees. (Note: In some leg press units you can leave the safety bars on for increased safety. If your leg press unit allows for this, then this is the preferred method of performing the exercise.) Your torso and the legs should make perfect 90-degree angle. Now carefully place your toes and balls of your feet on the lower portion of the platform with the heels extending off. Toes should be facing forward, outwards or inwards as described at the beginning of the chapter. This will be your starting position.",
+      "Press on the platform by raising your heels as you breathe out by extending your ankles as high as possible and flexing your calf. Ensure that the knee is kept stationary at all times. There should be no bending at any time. Hold the contracted position by a second before you start to go back down.",
+      "Go back slowly to the starting position as you breathe in by lowering your heels as you bend the ankles until calves are stretched.",
+      "Repeat for the recommended amount of repetitions."
+    ],
+    "images": [
+      "Calf_Press_On_The_Leg_Press_Machine/0.jpg",
+      "Calf_Press_On_The_Leg_Press_Machine/1.jpg"
+    ]
+  },
+  {
     "id": "seated-one-arm-cable-pulley-rows",
     "name": "Seated One-arm Cable Pulley Rows",
     "aliases": [],
@@ -11172,6 +11005,27 @@
       "Single_Leg_Glute_Bridge/0.jpg",
       "Single_Leg_Glute_Bridge/1.jpg"
     ]
+  },
+  {
+    "id": "single-leg-seated-leg-press-calf-raise",
+    "name": "Single Leg Seated Leg Press Calf Raise",
+    "aliases": [
+      "Single-Leg Seated Leg Press Calf Raise"
+    ],
+    "primaryMuscles": [
+      "calves"
+    ],
+    "secondaryMuscles": [],
+    "equipment": "machine",
+    "category": "strength",
+    "mechanic": "isolation",
+    "instructions": [
+      "Sit in a leg press machine with one foot placed on the lower part of the platform, toes pointed forward.",
+      "Straighten that leg and hold the other leg out of the way.",
+      "Press the platform away by extending your ankle, rising onto the ball of your foot.",
+      "Lower under control until you feel a stretch in the calf, then repeat before switching legs."
+    ],
+    "images": []
   },
   {
     "id": "single-arm-cable-crossover",
@@ -12771,31 +12625,6 @@
     ]
   },
   {
-    "id": "standing-inner-biceps-curl",
-    "name": "Standing Inner-Biceps Curl",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Stand up with a dumbbell in each hand being held at arms length. The elbows should be close to the torso. Your legs should be at about shoulder's width apart from each other.",
-      "Rotate the palms of the hands so that they are facing inward in a neutral position. This will be your starting position.",
-      "While holding the upper arms stationary, curl the weights out while contracting the biceps as you breathe out. Your wrist should turn so that when the weights are fully elevated you have supinated grip (palms facing up).",
-      "Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Tip: Keep the forearms aligned with your outer deltoids.",
-      "Hold the contracted position for a second as you squeeze the biceps.",
-      "Slowly begin to bring the dumbbells back to the starting position as your breathe in. Remember to rotate the wrists as you lower the weight in order to switch back to a neutral grip.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Standing_Inner-Biceps_Curl/0.jpg",
-      "Standing_Inner-Biceps_Curl/1.jpg"
-    ]
-  },
-  {
     "id": "standing-leg-curl",
     "name": "Standing Leg Curl",
     "aliases": [
@@ -13735,28 +13564,6 @@
     "images": [
       "Triceps_Pushdown/0.jpg",
       "Triceps_Pushdown/1.jpg"
-    ]
-  },
-  {
-    "id": "two-arm-dumbbell-preacher-curl",
-    "name": "Two-Arm Dumbbell Preacher Curl",
-    "aliases": [],
-    "primaryMuscles": [
-      "biceps"
-    ],
-    "secondaryMuscles": [],
-    "equipment": "dumbbell",
-    "category": "strength",
-    "mechanic": "isolation",
-    "instructions": [
-      "Grab a dumbbell with each arm and place the upper arms on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length. This will be your starting position.",
-      "As you breathe in, slowly lower the dumbbells until your upper arm is extended and the biceps is fully stretched.",
-      "As you exhale, use the biceps to curl the weights up until your biceps is fully contracted and the dumbbells are at shoulder height.",
-      "Squeeze the biceps hard for a second at the contracted position and repeat for the recommended amount of repetitions."
-    ],
-    "images": [
-      "Two-Arm_Dumbbell_Preacher_Curl/0.jpg",
-      "Two-Arm_Dumbbell_Preacher_Curl/1.jpg"
     ]
   },
   {

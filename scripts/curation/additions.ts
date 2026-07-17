@@ -30,6 +30,23 @@ const additions: Addition[] = [
     rationale: 'Ji-logged staple',
   },
   {
+    name: 'Single Leg Seated Leg Press Calf Raise',
+    aliases: ['Single-Leg Seated Leg Press Calf Raise'],
+    primaryMuscles: ['calves'],
+    secondaryMuscles: [],
+    equipment: 'machine',
+    category: 'strength',
+    mechanic: 'isolation',
+    instructions: [
+      'Sit in a leg press machine with one foot placed on the lower part of the platform, toes pointed forward.',
+      'Straighten that leg and hold the other leg out of the way.',
+      'Press the platform away by extending your ankle, rising onto the ball of your foot.',
+      'Lower under control until you feel a stretch in the calf, then repeat before switching legs.',
+    ],
+    images: [],
+    rationale: 'Ji-logged staple',
+  },
+  {
     name: 'Wide Grip Cable Row',
     aliases: [],
     primaryMuscles: ['upper back', 'lats'],

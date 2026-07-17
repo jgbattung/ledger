@@ -37,11 +37,13 @@ const drops: Record<string, DropReason> = {
   "Seated_Head_Harness_Neck_Resistance": "neck", // Seated Head Harness Neck Resistance
   "Standing_Barbell_Press_Behind_Neck": "neck", // Standing Barbell Press Behind Neck
   "Wide-Grip_Pulldown_Behind_The_Neck": "neck", // Wide-Grip Pulldown Behind The Neck
-  // ---- novelty-junk (12) ----
+  // ---- novelty-junk (14) ----
+  "Balance_Board": "novelty-junk", // Balance Board (Ji review round 2: balance/stability drill, not a targeted calf raise)
   "Back_Flyes_-_With_Bands": "novelty-junk", // Back Flyes - With Bands
   "Bench_Press_-_With_Bands": "novelty-junk", // Bench Press - With Bands
   "Bradford_Rocky_Presses": "novelty-junk", // Bradford/Rocky Presses
   "Calf_Raises_-_With_Bands": "novelty-junk", // Calf Raises - With Bands
+  "Close-Grip_EZ-Bar_Curl_with_Band": "novelty-junk", // Close-Grip EZ-Bar Curl with Band (Ji review round 2: band-accommodated variant, same treatment as other "with Bands" entries)
   "Cross_Over_-_With_Bands": "novelty-junk", // Cross Over - With Bands
   "Incline_Dumbbell_Flyes_-_With_A_Twist": "novelty-junk", // Incline Dumbbell Flyes - With A Twist
   "Lateral_Raise_-_With_Bands": "novelty-junk", // Lateral Raise - With Bands
@@ -184,6 +186,17 @@ const drops: Record<string, DropReason> = {
   "Weighted_Ball_Side_Bend": "scope-trim", // Weighted Ball Side Bend
   "Weighted_Crunches": "scope-trim", // Weighted Crunches
   "Wind_Sprints": "scope-trim", // Wind Sprints
+  // Ji review round 2 (2026-07-17): biceps + calves trim. Biceps kept only
+  // what Ji actually logs; these are legitimate narrow-variant curls, not
+  // junk. Calves: Rocking Standing Calf Raise is a legitimate but unused
+  // variant (Balance Board is filed under novelty-junk above instead).
+  "Flexor_Incline_Dumbbell_Curls": "scope-trim", // Flexor Incline Dumbbell Curls
+  "Incline_Inner_Biceps_Curl": "scope-trim", // Incline Inner Biceps Curl
+  "Lying_Close-Grip_Bar_Curl_On_High_Pulley": "scope-trim", // Lying Close-Grip Bar Curl On High Pulley
+  "Lying_High_Bench_Barbell_Curl": "scope-trim", // Lying High Bench Barbell Curl
+  "Standing_Inner-Biceps_Curl": "scope-trim", // Standing Inner-Biceps Curl
+  "Two-Arm_Dumbbell_Preacher_Curl": "scope-trim", // Two-Arm Dumbbell Preacher Curl
+  "Rocking_Standing_Calf_Raise": "scope-trim", // Rocking Standing Calf Raise
   // ---- stretch (122) ----
   "90_90_Hamstring": "stretch", // 90/90 Hamstring
   "Adductor": "stretch", // Adductor

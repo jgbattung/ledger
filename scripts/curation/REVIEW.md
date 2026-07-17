@@ -1,6 +1,6 @@
 # Exercise curation review (LG-047)
 
-Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
+Seed: 873 entries. Kept: 556. Dropped: 317. Added: 10. Final catalog: 566.
 
 ## Kept (by primary muscle)
 
@@ -24,7 +24,7 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Band Hip Adductions
 - Thigh Adductor
 
-### biceps (50)
+### biceps (43)
 - Alternate Hammer Curl
 - Alternate Incline Dumbbell Curl
 - Barbell Curl
@@ -32,7 +32,6 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Cable Hammer Curl
 - Cable Preacher Curl
 - Close-Grip EZ Bar Curl
-- Close-Grip EZ-Bar Curl with Band
 - Close-Grip Standing Barbell Curl
 - Concentration Curls
 - Cross Body Hammer Curl
@@ -41,15 +40,11 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Dumbbell Bicep Curl
 - Dumbbell Prone Incline Curl
 - EZ-Bar Curl
-- Flexor Incline Dumbbell Curls
 - Hammer Curls
 - High Cable Curls
 - Incline Dumbbell Curl
 - Incline Hammer Curls
-- Incline Inner Biceps Curl
 - Lying Cable Curl
-- Lying Close-Grip Bar Curl On High Pulley
-- Lying High Bench Barbell Curl
 - Lying Supine Dumbbell Curl
 - Machine Bicep Curl
 - Machine Preacher Curls
@@ -68,24 +63,20 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Standing Biceps Cable Curl
 - Standing Concentration Curl
 - Standing Dumbbell Reverse Curl
-- Standing Inner-Biceps Curl
 - Standing One-Arm Cable Curl
 - Standing One-Arm Dumbbell Curl Over Incline Bench
-- Two-Arm Dumbbell Preacher Curl
 - Wide-Grip Standing Barbell Curl
 - Zottman Curl
 - Zottman Preacher Curl
 
-### calves (14)
-- Balance Board
+### calves (12)
 - Barbell Seated Calf Raise
 - Calf Press
-- Calf Press On The Leg Press Machine
 - Calf Raise On A Dumbbell
 - Donkey Calf Raises
 - Dumbbell Seated One-Leg Calf Raise
-- Rocking Standing Calf Raise
 - Seated Calf Raise
+- Seated Leg Press Calf Raise
 - Smith Machine Calf Raise
 - Smith Machine Reverse Calf Raises
 - Standing Barbell Calf Raise
@@ -641,11 +632,13 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Standing Barbell Press Behind Neck
 - Wide-Grip Pulldown Behind The Neck
 
-### novelty-junk (12)
+### novelty-junk (14)
 - Back Flyes - With Bands
+- Balance Board
 - Bench Press - With Bands
 - Bradford/Rocky Presses
 - Calf Raises - With Bands
+- Close-Grip EZ-Bar Curl with Band
 - Cross Over - With Bands
 - Incline Dumbbell Flyes - With A Twist
 - Lateral Raise - With Bands
@@ -718,7 +711,7 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Supine Two-Arm Overhead Throw
 - Vertical Swing
 
-### scope-trim (66)
+### scope-trim (73)
 - 3/4 Sit-Up
 - Advanced Kettlebell Windmill
 - Air Bike
@@ -749,9 +742,11 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Exercise Ball Pull-In
 - Flat Bench Leg Pull-In
 - Flat Bench Lying Leg Raise
+- Flexor Incline Dumbbell Curls
 - Frog Sit-Ups
 - Gorilla Chin/Crunch
 - Hanging Pike
+- Incline Inner Biceps Curl
 - Jackknife Sit-Up
 - Janda Sit-Up
 - Kettlebell Figure 8
@@ -761,6 +756,8 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Kneeling Cable Crunch With Alternating Oblique Twists
 - Landmine 180's
 - Leg Pull-In
+- Lying Close-Grip Bar Curl On High Pulley
+- Lying High Bench Barbell Curl
 - One-Arm High-Pulley Cable Side Bends
 - One-Arm Medicine Ball Slam
 - Otis-Up
@@ -768,6 +765,7 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Pallof Press With Rotation
 - Plate Twist
 - Press Sit-Up
+- Rocking Standing Calf Raise
 - Rope Crunch
 - Seated Barbell Twist
 - Seated Flat Bench Leg Pull-In
@@ -778,10 +776,12 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - Spider Crawl
 - Standing Cable Lift
 - Standing Cable Wood Chop
+- Standing Inner-Biceps Curl
 - Standing Rope Crunch
 - Suspended Fallout
 - Suspended Reverse Crunch
 - Tuck Crunch
+- Two-Arm Dumbbell Preacher Curl
 - Weighted Ball Side Bend
 - Weighted Crunches
 - Wind Sprints
@@ -941,6 +941,7 @@ Seed: 873 entries. Kept: 565. Dropped: 308. Added: 9. Final catalog: 574.
 - **Incline Close Grip Bench Press** - AC coverage: incline + close-grip combination (upper chest/triceps emphasis) missing from the seed.
 - **Neutral Grip Lat Pulldown** - Grip-family completion for lat pulldown alongside the seed's wide-grip and close-grip variants.
 - **Neutral Grip Pull-Up** - Systematic pull-up grip family Ji expects as a first-class variant; shoulder-friendlier grip missing from the seed.
+- **Single Leg Seated Leg Press Calf Raise** - Ji-logged staple
 - **Underhand Bent Over Barbell Row** - Grip variant of Bent Over Barbell Row (biceps-biased pull); only the overhand default existed in the seed.
 - **Wide Grip Cable Row** - AC coverage: wide-grip cable row is a staple back-width row missing from the seed.
 - **Wide Grip Pull-Up** - Front-facing wide-grip pull-up (to the chest); the seed only had the behind-the-neck rear variant.

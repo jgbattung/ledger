@@ -67,7 +67,8 @@ export function filterExercises(query: string, filters: LibraryFilters): Exercis
   return getSearchIndex()
     .filter(({ exercise, nameLower }) => {
       if (normalizedQuery && !nameLower.includes(normalizedQuery)) return false
-      if (filters.muscle && !exercise.primaryMuscles.includes(filters.muscle)) return false
+      if (filters.muscle && !(exercise.primaryMuscles as string[]).includes(filters.muscle))
+        return false
       if (filters.category && exercise.category !== filters.category) return false
       if (filters.equipment && exercise.equipment !== filters.equipment) return false
       return true

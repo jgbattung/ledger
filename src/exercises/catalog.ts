@@ -1,5 +1,6 @@
 /**
- * Read-only in-memory catalog over the bundled exercise dataset (LG-004).
+ * Read-only in-memory catalog over the Ledger-owned exercise dataset
+ * (LG-047, curated from a free-exercise-db seed via `scripts/curation/`).
  * No Dexie, no repo-layer involvement - `ExerciseRef` with `source: 'db'`
  * resolves through `getExerciseById`.
  */

@@ -5,8 +5,9 @@
  * display-boundary concern, not a data-layer one (PRD §3.13).
  */
 
-/** Reference to an exercise, which may live in the bundled read-only JSON
- * catalog (`source: 'db'`, LG-004) or in the user's `customExercises` table. */
+/** Reference to an exercise, which may live in the Ledger-owned read-only
+ * JSON catalog (`source: 'db'`, LG-047 - curated dataset, permanent IDs)
+ * or in the user's `customExercises` table. */
 export type ExerciseRef = {
   source: 'db' | 'custom'
   exerciseId: string

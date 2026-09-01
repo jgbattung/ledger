@@ -79,7 +79,7 @@ Custom and bundled exercises share one union type `ExerciseRef = { source: 'db' 
 Per-exercise user state, keyed by ExerciseRef: `isFavorite`, `lastUsed?: { weight, reps, unit, at }` (smart defaults carry-forward).
 
 ### 3.4 `programs`
-`name`, `notes?`, `isActive` (max one active; enforce in repo layer), `isArchived`, `currentDayIndex` (position in the rotating sequence, 0-based), `cycles?: CycleConfig[]` (per-week periodization: for cycle k, optional overrides of sets/repMin/repMax/RIR per program-exercise; `isDeload` flag per cycle), `currentCycleIndex`.
+`name`, `notes?`, `isActive` (max one active; enforce in repo layer), `isArchived`, `currentDayIndex` (position in the rotating sequence, 0-based), `currentCycleIndex` (completed-rotation counter; increments when the last day of a pass finishes), `targetCycleCount?` (planned number of cycles/weeks; drives the completion UI). No per-cycle target overrides exist.
 
 ### 3.5 `programDays`
 `programId`, `orderIndex`, `name`, `isRestDay`, `notes?`.
@@ -89,7 +89,7 @@ Per-exercise user state, keyed by ExerciseRef: `isFavorite`, `lastUsed?: { weigh
 `programDayId`, `orderIndex`, `exerciseRef`, `workingSets` (int), `repMin` (int), `repMax` (int), `rirTarget` (int, default 0), `restSeconds?` (fallback: global default 180), `warmupSetCount?` (fallback: global default), `notes?`.
 
 ### 3.7 `workouts`
-`programId?`, `programDayId?` (null for ad-hoc/blank), `name`, `startedAt`, `finishedAt?`, `status: 'in_progress' | 'finished' | 'discarded'`, `notes?`, `cycleIndexAtTime?`.
+`programId`, `programDayId`, `name`, `startedAt`, `finishedAt?`, `status: 'in_progress' | 'finished' | 'discarded'`, `notes?`, `cycleIndexAtTime?` (which cycle the workout was logged in). Every workout originates from a program day (no ad-hoc), so both refs are always set.
 
 ### 3.8 `workoutExercises`
 `workoutId`, `orderIndex`, `exerciseRef`, `notes?`, `targetsSnapshot?` (copy of programExercise targets at start — so later program edits don't rewrite history), `swappedFrom?: ExerciseRef`.
@@ -148,7 +148,7 @@ Conventions: "MUST" requirements are v1 acceptance criteria. Each requirement is
 - **LIB-3** — Library supports filters: primary muscle group, category, and equipment tag; filters combine (AND) and combine with search. *Accept: filter Chest + Barbell shows only matching exercises.*
 - **LIB-4** — Equipment is a **display-only tag** used for search/filter. There is no equipment entity, no CRUD, no gym profiles, no plate math anywhere in the app. *Accept: code search finds no equipment mutation path.*
 - **LIB-5** — Exercise detail page shows: name, primary muscles, secondary muscles, category/mechanic, instructions/cues, and demo images. *Accept: open any bundled exercise; all populated fields render.*
-- **LIB-6** — Custom exercises: create, edit, delete with fields name (required), muscle groups (≥1 primary required), optional equipment tag, optional notes. Custom exercises appear in the library alongside bundled ones and are selectable everywhere an exercise can be chosen. *Accept: create "SSB Squat", find it via search, add it to a program, log it.*
+- **LIB-6** — Custom exercises: create, edit, delete with fields name (required), primary muscles (≥1 required), optional secondary muscles, optional equipment tag, mechanic (compound/isolation), optional notes; category defaults to `strength`. Custom exercises appear in the library alongside bundled ones and are selectable everywhere an exercise can be chosen. *Accept: create "SSB Squat", find it via search, add it to a program, log it.*
 - **LIB-7** — Deleting a custom exercise soft-deletes it; historical sets logged against it remain intact and its history stays viewable from those workouts. *Accept: delete a logged custom exercise; past workout still renders it.*
 - **LIB-8** — Favorites: any exercise (bundled or custom) can be toggled favorite; a Favorites filter/section surfaces them first in pickers. *Accept: favorite an exercise; it appears in the Favorites group of the program-builder picker.*
 - **LIB-9** — Per-exercise history: from the exercise detail page, view every past logged set for that exercise, grouped by workout, newest first. *Accept: log sets across two workouts; history shows both sessions.*
@@ -161,8 +161,8 @@ Conventions: "MUST" requirements are v1 acceptance criteria. Each requirement is
 - **PROG-3** — Create/edit a program with name, optional notes, and any number of days; each day has a name, optional notes, and an ordered exercise list. *Accept: build PPL with per-day names and notes.*
 - **PROG-4** — Per-exercise configuration in the builder: working **sets** (int ≥1), **rep min** and **rep max** (two fields, min ≤ max), **RIR target** (default 0), **rest time** (optional; falls back to global 3:00), **warm-up set count** (optional; falls back to global default), **notes**. *Accept: all seven fields save and round-trip.*
 - **PROG-5** — Reorder exercises within a day and reorder days within a program via drag-and-drop (with an accessible fallback, e.g. up/down buttons). *Accept: drag Day 3 to position 1; order persists after reload.*
-- **PROG-6** — Per-week periodization (cycles): a program may define N cycles; each cycle can override sets/repMin/repMax/RIR per exercise; unset values inherit the base config. The active cycle advances when the rotation completes a full pass (Day N → Day 1). *Accept: cycle 2 overrides squat to 5 sets; second pass through the rotation shows 5 sets.*
-- **PROG-7** — A cycle can be marked **deload**; workouts logged during a deload cycle are flagged, and the flag is visible in workout history. *Accept: mark cycle 3 deload; its workouts show a deload badge in history.*
+- **PROG-6** — Cycles are a **completed-rotation counter**, not periodization: one cycle = one full pass through all days; the count increments when the last day of a pass finishes. **No per-cycle target overrides** — an exercise's targets are identical every cycle. A program sets a **target cycle count** (planned number of cycles); reaching it shows a completion state. **Naming:** a program of exactly 7 days labels this "Weeks"; any other length labels it "Cycles". *Accept: finish the last day of a pass → cycle counter increments; next pass shows the same targets; hitting the target count shows completion.*
+- **PROG-7** — *(Removed — out of scope.)* Deload cycles no longer exist; with no per-cycle target variation there is no deload concept. (ID retained to keep PROG numbering stable.)
 - **PROG-8** — Duplicate a whole program or a single day (deep copy with new IDs, name suffixed "copy"). *Accept: duplicate a day; editing the copy leaves the original unchanged.*
 - **PROG-9** — Programs support save, edit, archive, unarchive, delete (soft). Archived programs are hidden from active pickers but visible under an Archived section. *Accept: archive a program; it leaves the main list and can be restored.*
 - **PROG-10** — Exactly zero or one program is **active** at a time; activating one deactivates the previous. The active program's current rotation day pre-loads as "today's workout" on the home screen. *Accept: activate program B while A is active; A deactivates; home shows B's current day.*
@@ -170,11 +170,11 @@ Conventions: "MUST" requirements are v1 acceptance criteria. Each requirement is
 
 ### 5.3 Workout Logging — core loop (LOG)
 
-- **LOG-1** — Start a workout from: (a) the active program's current day (one tap from home), (b) any day of any saved program, or (c) a blank/ad-hoc session. *Accept: all three entry points create an in-progress workout.*
+- **LOG-1** — Start a workout from: (a) the active program's current day (one tap from home), or (b) any day of any saved program. There is no blank/ad-hoc path — every workout originates from a program day. *Accept: both entry points create an in-progress workout.*
 - **LOG-2** — Per-set logging fields: weight, reps, **RIR on a 0–6+ scale defaulting to 0** ("6+" is a distinct selectable value). *Accept: log a set with RIR 6+; it round-trips.*
 - **LOG-3** — Partial reps: a set can record an integer count of partial reps in addition to full reps; displayed as e.g. "8 + 2 partials". *Accept: log 8 reps + 2 partials; summary and history show both.*
 - **LOG-4** — Unilateral logging: a set can be toggled to left/right mode capturing separate left and right weight and reps. *Accept: log L 20×12 / R 20×10; both persist and display.*
-- **LOG-5** — Program-day workouts pre-populate exercises with their target sets (from the current cycle), showing rep range and RIR target per set; targets are a snapshot taken at workout start. *Accept: edit the program mid-workout; the in-progress workout's targets don't change.*
+- **LOG-5** — Program-day workouts pre-populate exercises with their target sets, showing rep range and RIR target per set; targets are a snapshot taken at workout start. *Accept: edit the program mid-workout; the in-progress workout's targets don't change.*
 - **LOG-6** — For analytics, a unilateral set counts as **one set**; its "weight" for records/charts is the max of left/right weight and its "reps" the corresponding side's reps. *Accept: L 20×12 / R 22×10 contributes 22×10.*
 - **LOG-7** — Add or remove sets on the fly for any exercise mid-workout. *Accept: planned 3 sets; add a 4th and delete the 2nd.*
 - **LOG-8** — Each set has a complete check-off; checking a set stamps `completedAt` and triggers the rest timer (TIM-1). Any logged set (checked or not) is editable in place. *Accept: check a set, then edit its reps; edit persists.*
@@ -196,7 +196,7 @@ Conventions: "MUST" requirements are v1 acceptance criteria. Each requirement is
 
 ### 5.5 Smart Warm-ups (WARM)
 
-- **WARM-1** — Warm-up set count resolves in priority order: (1) per-exercise value from the Program Builder, (2) global default in Settings, (3) inline override during logging (always available; required path for ad-hoc workouts). *Accept: all three sources drive the generated count.*
+- **WARM-1** — Warm-up set count resolves in priority order: (1) per-exercise value from the Program Builder, (2) global default in Settings, (3) inline override during logging (always available). *Accept: all three sources drive the generated count.*
 - **WARM-2** — Given the first working-set weight W and count N, warm-up weights are generated per the ramp algorithm in §6.1, displayed as suggested warm-up sets above the working sets. *Accept: W=100, N=3 → 50/70/85.*
 - **WARM-3** — Warm-up sets are logged with `type: 'warmup'`, are check-off-able, and are **excluded** from volume analytics, records, and progress charts. *Accept: a heavy typo'd warm-up never appears in records.*
 - **WARM-4** — Suggested warm-up weights are editable before/while logging; regeneration occurs if the first working weight changes before any warm-up is checked. *Accept: change W 100→110 pre-logging; suggestions update.*
@@ -204,7 +204,7 @@ Conventions: "MUST" requirements are v1 acceptance criteria. Each requirement is
 
 ### 5.6 Analytics & Insights (ANA / REC)
 
-Global rule — **ANA-0**: No estimated 1RM/3RM/10RM (or any derived-max formula) may appear anywhere in the app: no Epley/Brzycki/etc. code, no derived-max chart, no derived-max copy. Only actual logged working sets feed analytics. *Accept: code search for e1RM/Epley/Brzycki returns nothing; every analytics value is traceable to a logged set.*
+Global rule — **ANA-0 (amended — scoped E1RM exception)**: **E1RM (estimated 1-rep max) is the single permitted derived metric.** It is read-only and computed by the **Epley formula** `weight × (1 + reps/30)` from actual logged **working** sets of **≤ 12 reps only** (above 12 reps the estimate is unreliable and is not computed). No **other** derived max (3RM/10RM or any non-Epley formula) may appear anywhere. **Records (REC-1) and the rep-max grid (REC-2) remain actual-sets-only** — E1RM never feeds them. All other analytics values remain traceable to a logged set. *Accept: the only derived-max code is a single documented Epley E1RM feeding the ANA-9 trend + its in-workout readout; a search finds no Brzycki/other formulas, and records/rep-max grid contain no derived value.* (Originally a blanket ban; scoped open deliberately when E1RM gained a use — plateau detection via consecutive-session E1RM decline.)
 
 - **REC-1** — Records tracker per exercise, from actual working sets only: (a) heaviest weight ever lifted, (b) best set by weight×reps product. Each record links to its source workout. *Accept: values match hand-computed maxima; tapping opens the workout.*
 - **REC-2** — **Rep-max grid capped at 1–12:** for each rep count r = 1…12, show the best actual weight ever lifted for at least r reps, per the derivation in §6.2 (real sets only, nothing estimated). Rows with no qualifying set show "—". Sets of >12 reps qualify only for rows 1–12. *Accept: grid matches §6.2 hand-computation on fixture data.*
@@ -214,9 +214,10 @@ Global rule — **ANA-0**: No estimated 1RM/3RM/10RM (or any derived-max formula
 - **ANA-3** — Muscle-group body-map: heat-style front/back body diagram coloring each muscle group by working-set volume in the selected window ("Levels"-style). *Accept: legs-only fixture data colors only leg regions.*
 - **ANA-4** — Workout history list: reverse-chronological, searchable by text and filterable by program; each entry opens the full logged workout (read + edit per LOG-13). This view is high priority — first-class navigation item. *Accept: filter by program shows only its workouts.*
 - **ANA-5** — Consistency calendar: GitHub-style heatmap of workout days across the year, plus a weekly-frequency stat (workouts per week, honoring week-start setting). *Accept: heatmap cells match workout dates; frequency matches hand-count.*
-- **ANA-6** — Per-exercise progress chart, default view: **top working set per session** as a **dual-axis line chart** — weight (primary axis) and that set's reps (secondary axis) over time. Top set = highest weight; ties broken by higher reps. *Accept: fixture with weight↑/reps↓ renders both trends legibly.*
-- **ANA-7** — Progress chart toggle: top set / all sets (scatter or multi-line) / per-session volume (Σ weight×reps for that exercise). Never any estimated max (ANA-0). *Accept: all three modes render from the same data.*
+- **ANA-6** — Per-exercise progress chart, default view: **top working set per session** as **two stacked small-multiple line panels sharing one time axis** — weight (top panel) and that set's reps (bottom panel) over time. (Amended from "dual-axis": the mandatory `dataviz` design gate forbids two y-scales on one chart; dual-panel keeps both metrics with honest, independent scales.) Top set = highest weight; ties broken by higher reps. *Accept: fixture with weight↑/reps↓ renders both trends legibly in separate panels.*
+- **ANA-7** — Progress chart toggle: top set / all sets (scatter or multi-line) / per-session volume (Σ weight×reps for that exercise) / **E1RM trend** (ANA-9). Estimated max is limited to the E1RM mode per the ANA-0 exception; no other derived max. *Accept: all four modes render from the same data.*
 - **ANA-8** — Dashboard with customizable widgets: user picks and orders which analytics surface (records, volume, body-map, consistency, recent history, a chosen exercise's progress chart, bodyweight trend). Default layout: today's workout card, consistency calendar, weekly volume, recent records. *Accept: widget add/remove/reorder persists across reloads.*
+- **ANA-9** — **E1RM (estimated 1RM) tracking**, per the ANA-0 exception (Epley, working sets ≤ 12 reps, read-only). A session's E1RM = the highest Epley value among that session's qualifying ≤12-rep working sets for the exercise. Two surfaces: **(a) analytics** — an **E1RM trend line** as a mode of the per-exercise progress chart (ANA-6/7), for spotting plateau (consecutive-session E1RM decline signals switching to a movement-pattern variation); **(b) in-workout** — a small read-only E1RM on the focused exercise showing **today's best-set E1RM vs the previous session's**, as a live push/plateau cue. Never feeds records or the rep-max grid (ANA-0). *Accept: log 100×5, then 100×6 next session → session E1RM rises and the trend reflects it; a 100×15 set contributes no E1RM.*
 
 ### 5.7 Shareable Workout Card (SHARE)
 
@@ -295,8 +296,8 @@ Maintain per-exercise bests derived on read (or cached and invalidated on any se
 Sequential phases for the coding agent; each phase must build, pass its tests, and be usable before the next starts.
 
 1. **M1 — Foundation & Library:** project scaffold (Vite/TS/Tailwind/shadcn/Router/Zustand), Dexie schema + repository layer (§3), bundled exercise data, Library module (LIB-1…10), Settings skeleton (SET-1 fields, no backup yet).
-2. **M2 — Logging core loop:** ad-hoc workouts end-to-end (LOG-1c, LOG-2…9, 11…16), rest timer (TIM-1…4), warm-ups (WARM-1…5), workout summary (records stubbed).
-3. **M3 — Program Builder:** PROG-1…11; program-driven workout start (LOG-1a/b, LOG-5, LOG-10); rotation advancement.
+2. **M2 — Program Builder:** PROG-1…11; save/activate programs, rotation model + advancement. Pulled ahead of the logging loop: with no ad-hoc path, a workout can only start from a program day, so the builder must exist first.
+3. **M3 — Logging core loop:** program-driven workouts end-to-end (LOG-1a/b, LOG-5, LOG-2…16 incl. swap), rest timer (TIM-1…4), warm-ups (WARM-1…5), workout summary (records stubbed).
 4. **M4 — Analytics:** REC-1…3 + ANA-0…8, incl. history list, dashboard, body-map. Body metrics & photos (BODY-1…4).
 5. **M5 — Sharing:** SHARE-1…5.
 6. **M6 — Data safety & PWA polish:** DATA-1, DATA-2, DATA-4…6, full offline audit, notification polish (Android Chrome first), theme, install UX, erase-data.

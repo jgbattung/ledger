@@ -41,6 +41,11 @@ test('the FAB opens the quick-action sheet', async ({ page }) => {
 
   await page.keyboard.press('Escape');
   await expect(sheet).toBeHidden();
+
+  // Closing must hand focus back to the FAB, not drop it on <body>. Radix only
+  // restores to a <Dialog.Trigger>, and this sheet is controlled by the nav's
+  // FAB, so ui/sheet.tsx restores focus itself (WCAG 2.4.3).
+  await expect(nav.getByRole('button', { name: 'Quick actions' })).toBeFocused();
 });
 
 test('setting persists through reload via real IndexedDB', async ({ page }) => {

@@ -1,6 +1,7 @@
 import { useDeferredValue, useMemo, useState } from 'react'
 import { filterExercises, getFilterOptions } from '@/exercises/filtering'
 import type { LibraryFilters } from '@/exercises/filtering'
+import { BackLink } from '@/components/BackLink'
 import { ExerciseSearchField } from '@/components/library/ExerciseSearchField'
 import { FilterChipRow } from '@/components/library/FilterChipRow'
 import { FilterSheet } from '@/components/library/FilterSheet'
@@ -35,6 +36,7 @@ export function LibraryPage() {
   return (
     <div>
       <div className="sticky top-0 z-10 -mx-4 bg-background px-4 pt-6 pb-3">
+        <BackLink to="/more" label="Back to More" />
         <h1 className="text-2xl font-semibold">Library</h1>
         <div className="mt-3 flex flex-col gap-2">
           <ExerciseSearchField value={query} onChange={setQuery} />

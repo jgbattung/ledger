@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useSettings } from '@/settings/SettingsProvider'
+import { BackLink } from '@/components/BackLink'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { Stepper, formatSeconds } from '@/components/ui/stepper'
 import { cn } from '@/lib/utils'
@@ -77,6 +78,7 @@ export function SettingsPage() {
 
   return (
     <div className="pt-6">
+      <BackLink to="/more" label="Back to More" />
       <h1 className="text-2xl font-semibold">Settings</h1>
 
       {settings === null ? (

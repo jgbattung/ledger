@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { getAllExercises } from '@/exercises/catalog'
 import { LibraryPage } from './LibraryPage'
 
@@ -10,8 +11,14 @@ import { LibraryPage } from './LibraryPage'
  * asserted against the live dataset, never hardcoded (LIB-2/LIB-3).
  */
 
+// LG-049: the screen moved under More and gained a top back link, so it now
+// needs a router in scope. Wrapper only - no assertion changed.
 function renderLibrary() {
-  return render(<LibraryPage />)
+  return render(
+    <MemoryRouter>
+      <LibraryPage />
+    </MemoryRouter>,
+  )
 }
 
 describe('LibraryPage', () => {

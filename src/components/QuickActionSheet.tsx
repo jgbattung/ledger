@@ -30,7 +30,7 @@ export function QuickActionSheet({
         <SheetHeader>
           <SheetTitle>Quick actions</SheetTitle>
         </SheetHeader>
-        <ul className="divide-y divide-border overflow-y-auto border-t border-border">
+        <ul className="divide-y divide-border overflow-y-auto border-t border-border px-4">
           {QUICK_ACTIONS.map((label) => (
             <li key={label}>
               <SoonRow label={label} />

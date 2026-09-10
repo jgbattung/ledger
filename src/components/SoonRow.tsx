@@ -13,7 +13,7 @@ export function SoonRow({ label }: { label: string }) {
     <button
       type="button"
       disabled
-      className="flex min-h-touch-primary w-full items-center justify-between gap-4 px-4 py-3 text-left"
+      className="flex min-h-touch-primary w-full items-center justify-between gap-4 py-3 text-left"
     >
       <span className="text-base text-muted-foreground">{label}</span>
       <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">

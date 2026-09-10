@@ -13,6 +13,11 @@
   --touch-min: 44px;
   --touch-primary: 56px;
 
+  /* How far the bottom bar's center FAB rises above the bar's top edge. Read by
+     BottomNav (to raise the disc) and by AppShell (to keep scrolled content from
+     sliding under it) - one value, two consumers. */
+  --fab-raise: 14px;
+
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -107,6 +112,7 @@
 
   --spacing-touch-min: var(--touch-min);
   --spacing-touch-primary: var(--touch-primary);
+  --spacing-fab-raise: var(--fab-raise);
 
   --ease-out-app: var(--ease-out);
 }

@@ -77,7 +77,7 @@ export function BottomNav({ onQuickActions }: { onQuickActions: () => void }) {
             onClick={onQuickActions}
             aria-label="Quick actions"
             className={cn(
-              'absolute bottom-3.5 left-1/2 -translate-x-1/2',
+              'absolute bottom-fab-raise left-1/2 -translate-x-1/2',
               'flex size-touch-primary items-center justify-center rounded-full',
               'border-[3px] border-background bg-primary text-primary-foreground',
               'outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50',

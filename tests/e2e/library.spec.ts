@@ -18,7 +18,7 @@ const exercises: Exercise[] = JSON.parse(
 );
 
 test('LIB-2: typing "curl" filters the visible list live', async ({ page }) => {
-  await page.goto('/library');
+  await page.goto('/more/library');
 
   const fullCount = exercises.length;
   await expect(page.getByText(`${fullCount} exercises`)).toBeVisible();
@@ -31,7 +31,7 @@ test('LIB-2: typing "curl" filters the visible list live', async ({ page }) => {
 });
 
 test('LIB-3: Muscle=Chest + Equipment=Barbell combine with AND', async ({ page }) => {
-  await page.goto('/library');
+  await page.goto('/more/library');
 
   await page.getByRole('button', { name: 'Muscle' }).click();
   await page.getByRole('button', { name: 'Chest' }).click();
@@ -50,7 +50,7 @@ test('LIB-3: Muscle=Chest + Equipment=Barbell combine with AND', async ({ page }
 });
 
 test('mobile scroll: the full list scrolls to its last exercise', async ({ page }) => {
-  await page.goto('/library');
+  await page.goto('/more/library');
 
   const lastExercise = exercises[exercises.length - 1];
   await page.getByText(lastExercise.name, { exact: true }).scrollIntoViewIfNeeded();
@@ -60,7 +60,7 @@ test('mobile scroll: the full list scrolls to its last exercise', async ({ page 
 test('sticky header regression: count line is not clipped, header stays pinned after scroll', async ({
   page,
 }) => {
-  await page.goto('/library');
+  await page.goto('/more/library');
 
   const header = page.locator('div.sticky.top-0').first();
   const count = page.getByText(`${exercises.length} exercises`);
@@ -123,19 +123,19 @@ test('imageless entry renders the placeholder glyph (not a broken image) in both
       .filter({ has: page.getByText(imageless.name, { exact: true }) });
 
   // Light theme.
-  await page.goto('/library');
+  await page.goto('/more/library');
   await page.getByLabel('Search exercises').fill(imageless.name);
   await expect(rowFor()).toBeVisible();
   await expect(rowFor().locator('svg')).toBeVisible();
   await expect(rowFor().locator('img')).toHaveCount(0);
 
   // Dark theme.
-  await page.goto('/settings');
+  await page.goto('/more/settings');
   await page
     .getByRole('radiogroup', { name: 'Theme' })
     .getByRole('radio', { name: 'Dark' })
     .click();
-  await page.goto('/library');
+  await page.goto('/more/library');
   await expect(page.locator('html')).toHaveClass(/dark/);
   await page.getByLabel('Search exercises').fill(imageless.name);
   await expect(rowFor()).toBeVisible();
@@ -144,17 +144,27 @@ test('imageless entry renders the placeholder glyph (not a broken image) in both
 });
 
 test('both themes: Library renders after switching theme in Settings', async ({ page }) => {
-  await page.goto('/settings');
+  await page.goto('/more/settings');
   const themeGroup = page.getByRole('radiogroup', { name: 'Theme' });
 
+  // LG-049: the catalog is no longer a bottom tab - it is reached through More.
+  const openLibrary = async () => {
+    await page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'More' }).click();
+    await page.getByRole('link', { name: 'Exercise Library' }).click();
+  };
+  const openSettings = async () => {
+    await page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'More' }).click();
+    await page.getByRole('link', { name: 'Settings' }).click();
+  };
+
   await themeGroup.getByRole('radio', { name: 'Dark' }).click();
-  await page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Library' }).click();
+  await openLibrary();
   await expect(page.getByRole('heading', { name: 'Library' })).toBeVisible();
   await expect(page.getByText(exercises[0].name, { exact: true })).toBeVisible();
 
-  await page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Settings' }).click();
+  await openSettings();
   await themeGroup.getByRole('radio', { name: 'Light' }).click();
-  await page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'Library' }).click();
+  await openLibrary();
   await expect(page.getByRole('heading', { name: 'Library' })).toBeVisible();
   await expect(page.getByText(exercises[0].name, { exact: true })).toBeVisible();
 });

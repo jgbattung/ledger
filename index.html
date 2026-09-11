@@ -5,7 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0075b3" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      viewport-fit=cover is load-bearing, not cosmetic: without it
+      env(safe-area-inset-*) resolves to 0 on device, and the bottom bar, the
+      FAB's clearance and the sheet's bottom padding all silently lose their
+      allowance for the Android gesture bar. Enforced by src/design-tokens.test.ts.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Ledger</title>
   </head>
   <body>

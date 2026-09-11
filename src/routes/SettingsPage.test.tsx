@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { SettingsProvider } from '@/settings/SettingsProvider'
 import { SettingsPage } from './SettingsPage'
 import { settings as settingsRepo } from '@/db/repos'
@@ -13,10 +14,14 @@ import { resetDb } from '@/db/test-utils'
  */
 
 function renderSettings() {
+  // LG-049: the screen moved under More and gained a top back link, so it now
+  // needs a router in scope. Wrapper only - no assertion changed.
   return render(
-    <SettingsProvider>
-      <SettingsPage />
-    </SettingsProvider>,
+    <MemoryRouter>
+      <SettingsProvider>
+        <SettingsPage />
+      </SettingsProvider>
+    </MemoryRouter>,
   )
 }
 

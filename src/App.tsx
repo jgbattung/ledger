@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { SettingsProvider } from '@/settings/SettingsProvider'
-import { AppShell } from '@/routes/AppShell'
-import { TodayPage } from '@/routes/TodayPage'
+import { AppShell, ChromelessShell } from '@/routes/AppShell'
+import { DashboardPage } from '@/routes/DashboardPage'
+import { WorkoutPage } from '@/routes/WorkoutPage'
+import { LevelsPage } from '@/routes/LevelsPage'
+import { MorePage } from '@/routes/MorePage'
 import { LibraryPage } from '@/routes/LibraryPage'
-import { ProgramsPage } from '@/routes/ProgramsPage'
-import { ProgressPage } from '@/routes/ProgressPage'
 import { SettingsPage } from '@/routes/SettingsPage'
 
 function App() {
@@ -13,12 +14,21 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<AppShell />}>
-            <Route index element={<TodayPage />} />
-            <Route path="library" element={<LibraryPage />} />
-            <Route path="programs" element={<ProgramsPage />} />
-            <Route path="progress" element={<ProgressPage />} />
-            <Route path="settings" element={<SettingsPage />} />
+            <Route index element={<DashboardPage />} />
+            <Route path="workout" element={<WorkoutPage />} />
+            <Route path="levels" element={<LevelsPage />} />
+            {/*
+              `more/settings` and `more/library` are nested paths but NOT nested
+              UI - they are siblings of the menu, so they must never render
+              inside MorePage's row list.
+            */}
+            <Route path="more" element={<MorePage />} />
+            <Route path="more/settings" element={<SettingsPage />} />
+            <Route path="more/library" element={<LibraryPage />} />
           </Route>
+          {/* Full-screen takeovers (LG-010) mount here. No children yet. */}
+          <Route element={<ChromelessShell />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </SettingsProvider>

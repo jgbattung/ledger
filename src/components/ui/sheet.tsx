@@ -33,13 +33,43 @@ function SheetOverlay({ className, ...props }: React.ComponentProps<typeof Dialo
 function SheetContent({
   className,
   children,
+  onOpenAutoFocus,
+  onCloseAutoFocus,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content>) {
+  /**
+   * Radix restores focus on close to `<Dialog.Trigger>` and nothing else, and it
+   * calls `preventDefault()` first, which cancels FocusScope's own
+   * restore-to-previously-focused behaviour. Every sheet in this app is a
+   * *controlled* sheet opened from a control outside the dialog (the nav's FAB,
+   * a filter chip), so there is no `SheetTrigger`, `triggerRef` is null, and
+   * focus would otherwise land on `<body>` - losing a keyboard or screen-reader
+   * user's place entirely (WCAG 2.4.3).
+   *
+   * So capture whatever was focused when the sheet opened and put focus back
+   * there ourselves. With a `SheetTrigger` this is the trigger anyway, so the
+   * behaviour is identical in that case.
+   */
+  const restoreFocusRef = React.useRef<HTMLElement | null>(null)
+
   return (
     <DialogPrimitive.Portal>
       <SheetOverlay />
       <DialogPrimitive.Content
         data-slot="sheet-content"
+        onOpenAutoFocus={(event) => {
+          restoreFocusRef.current = document.activeElement as HTMLElement | null
+          onOpenAutoFocus?.(event)
+        }}
+        onCloseAutoFocus={(event) => {
+          onCloseAutoFocus?.(event)
+          if (event.defaultPrevented) return
+          const target = restoreFocusRef.current
+          if (target?.isConnected) {
+            event.preventDefault()
+            target.focus()
+          }
+        }}
         className={cn(
           'fixed inset-x-0 bottom-0 z-50 flex max-h-[70svh] flex-col',
           'rounded-t-xl border-t border-border bg-card text-card-foreground',

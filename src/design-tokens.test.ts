@@ -79,3 +79,30 @@ describe('--fab-raise consumer coupling', () => {
     expect(shell).toContain('env(safe-area-inset-bottom)')
   })
 })
+
+/**
+ * `env(safe-area-inset-*)` resolves to 0 unless the viewport opts in with
+ * `viewport-fit=cover`. Three separate files spend that inset to clear the
+ * Android gesture bar, and one meta tag switches all three on or off - with no
+ * visible symptom on desktop or in a headless browser, where the inset is 0
+ * either way. Removing it would silently put the bar and the FAB under the
+ * gesture strip on the primary target device (S23 Ultra, installed PWA).
+ */
+describe('safe-area inset opt-in', () => {
+  const read = (p: string) => readFileSync(path.join(root, p), 'utf-8')
+
+  it('index.html opts into the safe-area insets with viewport-fit=cover', () => {
+    const html = read('index.html')
+    const viewport = html.match(/<meta\s+name="viewport"[^>]*>/)?.[0] ?? ''
+    expect(viewport, 'a viewport meta tag must exist').not.toBe('')
+    expect(viewport, 'viewport must opt into safe-area insets').toContain('viewport-fit=cover')
+  })
+
+  it.each([
+    ['src/components/BottomNav.tsx', 'the bottom bar pads itself past the gesture bar'],
+    ['src/routes/AppShell.tsx', "<main>'s bottom padding clears the bar and the FAB"],
+    ['src/components/ui/sheet.tsx', 'the sheet pads its own bottom edge'],
+  ])('%s spends the inset (%s)', (file) => {
+    expect(read(file)).toContain('env(safe-area-inset-bottom)')
+  })
+})

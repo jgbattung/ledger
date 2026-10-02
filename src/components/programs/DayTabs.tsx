@@ -2,9 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { DraftDay } from '@/programs/model'
-
-export const dayTabId = (dayId: string) => `day-tab-${dayId}`
-export const dayPanelId = (dayId: string) => `day-panel-${dayId}`
+import { dayPanelId, dayTabId } from './dayIds'
 
 /**
  * Horizontally scrollable day tabs with a trailing "+ Day". The selected tab

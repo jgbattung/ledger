@@ -121,4 +121,25 @@ describe('ExercisePickerPage', () => {
     await router.navigate(`${router.state.location.pathname}?day=nope`)
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/programs\/[^/]+$/))
   })
+
+  it('works on /programs/new: Add returns to the same draft without re-opening the name prompt', async () => {
+    const user = userEvent.setup()
+    const router = renderEditor('/programs/new')
+    await user.click(await screen.findByRole('button', { name: 'Close' }))
+    await user.click(await screen.findByRole('link', { name: 'Add exercises' }))
+    await screen.findByRole('heading', { name: /^Add to / })
+    expect(router.state.location.pathname).toBe('/programs/new/exercises')
+    expect(router.state.location.search).toMatch(/^[?]day=.+/)
+    await narrowTo(user, 'Incline Barbell Bench')
+    await user.click(row('Incline Barbell Bench Press'))
+    await user.click(screen.getByRole('button', { name: 'Add 1 exercise' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/programs/new'))
+    expect(await screen.findByText('1 exercise')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Program name')).not.toBeInTheDocument()
+    const draft = useProgramDraftStore.getState().draft!
+    expect(draft.isNew).toBe(true)
+    expect(draft.days[0].exercises.map((e) => e.exerciseRef.exerciseId)).toEqual([
+      'incline-barbell-bench-press',
+    ])
+  })
 })

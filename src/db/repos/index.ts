@@ -5,6 +5,7 @@
 export { customExercises } from '@/db/repos/customExercises'
 export { exerciseMeta } from '@/db/repos/exerciseMeta'
 export { programs } from '@/db/repos/programs'
+export type { ProgramTree } from '@/db/repos/programs'
 export { programDays } from '@/db/repos/programDays'
 export { programExercises } from '@/db/repos/programExercises'
 export { workouts } from '@/db/repos/workouts'

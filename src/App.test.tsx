@@ -151,6 +151,18 @@ describe('ChromelessShell', () => {
   })
 })
 
+describe('Program routes', () => {
+  it('renders /programs/new without the bottom nav', async () => {
+    window.history.pushState({}, '', '/programs/new')
+    render(<App />)
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(screen.getByRole('heading', { level: 1, name: 'Program' })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Primary' })).toBeNull()
+  })
+})
+
 afterEach(() => {
   vi.restoreAllMocks()
 })

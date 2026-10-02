@@ -158,8 +158,10 @@ describe('Program routes', () => {
     await act(async () => {
       await Promise.resolve()
     })
-    expect(screen.getByRole('heading', { level: 1, name: 'New program' })).toBeInTheDocument()
-    expect(screen.queryByRole('navigation', { name: 'Primary' })).toBeNull()
+    // The name prompt is open on a new program, so the page behind it is aria-hidden.
+    expect(await screen.findByText('Name your program')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'New program', hidden: true })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Primary', hidden: true })).toBeNull()
   })
 })
 

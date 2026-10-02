@@ -86,7 +86,9 @@ export const useProgramDraftStore = create<ProgramDraftState>((set, get) => ({
 
   setName: (name) => set(({ draft }) => ({ draft: draft && { ...draft, name } })),
 
-  setNotes: (notes) => set(({ draft }) => ({ draft: draft && { ...draft, notes } })),
+  // Empty notes are stored as absent so clearing a field never reads as dirty.
+  setNotes: (notes) =>
+    set(({ draft }) => ({ draft: draft && { ...draft, notes: notes || undefined } })),
 
   addDay: () =>
     set(({ draft }) => {
@@ -99,7 +101,7 @@ export const useProgramDraftStore = create<ProgramDraftState>((set, get) => ({
     set(({ draft }) => ({ draft: mapDay(draft, dayId, (day) => ({ ...day, name })) })),
 
   setDayNotes: (dayId, notes) =>
-    set(({ draft }) => ({ draft: mapDay(draft, dayId, (day) => ({ ...day, notes })) })),
+    set(({ draft }) => ({ draft: mapDay(draft, dayId, (day) => ({ ...day, notes: notes || undefined })) })),
 
   removeDay: (dayId) =>
     set(({ draft, selectedDayId }) => {

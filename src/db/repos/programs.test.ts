@@ -9,6 +9,7 @@ import { workouts } from '@/db/repos/workouts'
 import { workoutExercises } from '@/db/repos/workoutExercises'
 import { sets } from '@/db/repos/sets'
 import { programTreeToDraft } from '@/programs/model'
+import { useProgramDraftStore } from '@/stores/programDraftStore'
 import type { DraftExercise, ProgramDraft } from '@/programs/model'
 import type { Program } from '@/db/types'
 
@@ -141,6 +142,66 @@ describe('programs repo', () => {
     expect(await db.programDays.toArray()).toEqual(daysSnapshot)
     expect(await db.programExercises.toArray()).toEqual(exercisesSnapshot)
     expect(await db.programs.toArray()).toEqual(programSnapshot)
+  })
+
+  it('removing a day soft-deletes its programExercises and loadTree omits them', async () => {
+    const draft = pplDraft()
+    await programs.saveTree(draft)
+    const [push, pull, legs, rest] = draft.days
+    await programs.saveTree({ ...draft, days: [push, legs, rest] })
+
+    for (const row of pull.exercises) {
+      expect((await db.programExercises.get(row.id))?.deletedAt).not.toBeNull()
+    }
+    expect((await db.programDays.get(pull.id))?.deletedAt).not.toBeNull()
+    const tree = await programs.loadTree(draft.id)
+    expect(tree?.days.map((d) => d.day.name)).toEqual(['Push', 'Legs', 'Rest'])
+    const loadedIds = tree!.days.flatMap((d) => d.exercises.map((e) => e.id))
+    expect(loadedIds).not.toContain(pull.exercises[0].id)
+    expect((await db.programExercises.get(push.exercises[0].id))?.deletedAt).toBeNull()
+  })
+
+  it('clearing program and day notes through the store is not a change', async () => {
+    const draft = pplDraft()
+    delete draft.notes
+    delete draft.days[0].notes
+    await programs.saveTree(draft)
+    const programBefore = await db.programs.get(draft.id)
+    const dayBefore = await db.programDays.get(draft.days[0].id)
+    await wait(5)
+
+    // The store normalises "" to absent, so type-then-clear leaves the draft unchanged.
+    const store = useProgramDraftStore
+    store.getState().reset()
+    expect(await store.getState().load(draft.id)).toBe(true)
+    store.getState().setNotes('x')
+    store.getState().setDayNotes(draft.days[0].id, 'y')
+    store.getState().setNotes('')
+    store.getState().setDayNotes(draft.days[0].id, '')
+    await programs.saveTree(store.getState().draft!)
+    store.getState().reset()
+
+    expect(await db.programs.get(draft.id)).toEqual(programBefore)
+    expect(await db.programDays.get(draft.days[0].id)).toEqual(dayBefore)
+  })
+
+  it('saveTree on a soft-deleted program rejects with "Program not found" and writes nothing', async () => {
+    const draft = pplDraft()
+    await programs.saveTree(draft)
+    await programs.softDeleteCascade(draft.id)
+    const programRows = await db.programs.toArray()
+    const dayRows = await db.programDays.toArray()
+    const exerciseRows = await db.programExercises.toArray()
+    const syncRows = await db.syncState.toArray()
+    await wait(5)
+
+    const edited: ProgramDraft = { ...draft, name: 'Zombie', days: [{ id: newId(), name: 'New', exercises: [exercise('z')] }] }
+    await expect(programs.saveTree(edited)).rejects.toThrow('Program not found')
+
+    expect(await db.programs.toArray()).toEqual(programRows)
+    expect(await db.programDays.toArray()).toEqual(dayRows)
+    expect(await db.programExercises.toArray()).toEqual(exerciseRows)
+    expect(await db.syncState.toArray()).toEqual(syncRows)
   })
 
   it('marks every written row dirty in syncState', async () => {

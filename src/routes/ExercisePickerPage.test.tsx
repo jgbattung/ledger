@@ -7,12 +7,24 @@ import { renderEditor, seedProgram } from './editorTestUtils'
 
 type User = ReturnType<typeof userEvent.setup>
 
+/**
+ * The picker renders the whole catalog, and accessible-name queries over every
+ * row dominate jsdom time. Narrow the list with one paste (not per-key typing)
+ * and wait for the deferred query to settle on a known row.
+ */
+async function narrowTo(user: User, query: string) {
+  await user.click(screen.getByLabelText('Search exercises'))
+  await user.paste(query)
+  await screen.findByRole('button', { name: /^Incline Barbell Bench Press/ })
+}
+
 /** Opens the picker for the first day of a seeded program through the editor link. */
 async function openPicker(user: User) {
   const id = await seedProgram('PPL', [{ name: 'Push', ids: ['barbell-bench-press'] }])
   const router = renderEditor(`/programs/${id}`)
   await user.click(await screen.findByRole('link', { name: 'Add exercises' }))
   await screen.findByRole('heading', { name: 'Add to Push' })
+  await narrowTo(user, 'Bench Press')
   return router
 }
 
@@ -66,7 +78,8 @@ describe('ExercisePickerPage', () => {
   it('an exercise already in the day is disabled with a hint', async () => {
     const user = userEvent.setup()
     await openPicker(user)
-    await user.type(screen.getByLabelText('Search exercises'), 'Barbell Bench Press')
+    await user.clear(screen.getByLabelText('Search exercises'))
+    await narrowTo(user, 'Barbell Bench Press')
     const existing = await screen.findByRole('button', { name: /^Barbell Bench Press/ })
     expect(existing).toBeDisabled()
     expect(existing).toHaveTextContent('Already in Push')

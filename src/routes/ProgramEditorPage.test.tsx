@@ -3,7 +3,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { resetDb } from '@/db/test-utils'
 import { programs } from '@/db/repos'
-import { useProgramDraftStore } from '@/stores/programDraftStore'
+import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
 import { renderEditor, seedProgram } from './editorTestUtils'
 
 describe('ProgramEditorPage - shell', () => {
@@ -84,6 +84,20 @@ describe('ProgramEditorPage - shell', () => {
     renderEditor(`/programs/${id}`)
     await screen.findByRole('button', { name: 'Save' })
     expect(screen.queryByRole('button', { name: 'Activate' })).not.toBeInTheDocument()
+  })
+
+  it('a failed save shows an inline error, keeps the draft dirty and stays put', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', [{ name: 'Push', ids: ['pull-up'] }])
+    const router = renderEditor(`/programs/${id}`)
+    await user.type(await screen.findByLabelText('Day notes'), 'Heavy')
+    // Another tab deletes the program behind the editor's back.
+    await programs.softDeleteCascade(id)
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent("Couldn't save. Try again.")
+    expect(router.state.location.pathname).toBe(`/programs/${id}`)
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(true)
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
 
   it('an unknown id redirects to /workout', async () => {

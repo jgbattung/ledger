@@ -2,7 +2,7 @@ import { db } from '@/db/ledger'
 import { now } from '@/db/ids'
 import { createRepo } from '@/db/repos/base'
 import { markDirty } from '@/db/repos/syncState'
-import type { Program } from '@/db/types'
+import type { Program, ProgramDay, ProgramExercise } from '@/db/types'
 
 const baseRepo = createRepo<Program>(db.programs, 'programs')
 
@@ -30,4 +30,9 @@ export const programs = {
       await markDirty('programs', id)
     })
   },
+}
+
+export type ProgramTree = {
+  program: Program
+  days: { day: ProgramDay; exercises: ProgramExercise[] }[]
 }

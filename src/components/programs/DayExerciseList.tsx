@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
-import { Moon, X } from 'lucide-react'
+import { Moon, Plus, X } from 'lucide-react'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { getExerciseById } from '@/exercises/catalog'
 import { exerciseName, isRestDay } from '@/programs/model'
 import type { DraftDay } from '@/programs/model'
 
 const ADD_LINK =
-  'flex min-h-touch-min items-center rounded-md text-[15px] font-medium text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+  'flex min-h-touch-min items-center gap-1 rounded-md text-[15px] font-medium text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
 
 function NoTargets() {
   return (
@@ -43,6 +43,7 @@ export function DayExerciseList({
             A day with no exercises is a rest day. Add exercises to turn it into a workout day.
           </p>
           <Link to={addHref} className={ADD_LINK}>
+            <Plus className="size-4" aria-hidden="true" />
             Add exercises
           </Link>
         </div>
@@ -58,10 +59,11 @@ export function DayExerciseList({
           {count} {count === 1 ? 'exercise' : 'exercises'}
         </h2>
         <Link to={addHref} className={ADD_LINK}>
+          <Plus className="size-4" aria-hidden="true" />
           Add exercises
         </Link>
       </div>
-      <ul className="divide-y divide-border">
+      <ul className="divide-y divide-border border-b border-border">
         {day.exercises.map((exercise) => {
           const name = exerciseName(exercise.exerciseRef)
           const catalog =

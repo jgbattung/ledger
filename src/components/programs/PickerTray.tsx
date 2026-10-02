@@ -48,7 +48,7 @@ export function PickerTray({
               <Dumbbell className="size-4 text-muted-foreground" />
             </span>
           )}
-          <span className="max-w-24 truncate">{exercise.name}</span>
+          <span className="max-w-16 truncate">{exercise.name}</span>
           <button
             type="button"
             aria-label={`Remove ${exercise.name} from selection`}

@@ -9,7 +9,7 @@
     "lint": "oxlint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --project=mobile-chrome --project=desktop-chrome --project=offline-chrome",
     "test:visual": "playwright test --project=visual-chrome",
     "test:e2e:ui": "playwright test --ui",
     "preview": "vite preview",

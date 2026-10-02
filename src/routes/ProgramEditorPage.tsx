@@ -3,6 +3,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { SlidersHorizontal } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
 import { DayTabs, dayPanelId, dayTabId } from '@/components/programs/DayTabs'
+import { DayActions } from '@/components/programs/DayActions'
+import { DayExerciseList } from '@/components/programs/DayExerciseList'
 import { DayNotes } from '@/components/programs/DayNotes'
 import { TextFieldSheet } from '@/components/ui/text-field-sheet'
 import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
@@ -53,6 +55,7 @@ export function ProgramEditorPage() {
   if (!draft || !routeMatches) return <div className="min-h-full" aria-busy="true" />
 
   const day = draft.days.find((d) => d.id === selectedDayId) ?? draft.days[0]
+  const basePath = programId ? `/programs/${programId}` : '/programs/new'
   const showActivate = !draft.isActive && !draft.isArchived
 
   const goBack = () => {
@@ -98,15 +101,27 @@ export function ProgramEditorPage() {
         />
 
         <div
+          key={day.id}
           role="tabpanel"
           id={dayPanelId(day.id)}
           aria-labelledby={dayTabId(day.id)}
           className="pb-6"
         >
+          <DayActions
+            day={day}
+            isOnlyDay={draft.days.length === 1}
+            onRename={(name) => store().renameDay(day.id, name)}
+            onChangeToRest={() => store().changeDayToRest(day.id)}
+            onRemove={() => store().removeDay(day.id)}
+          />
           <DayNotes
-            key={day.id}
             value={day.notes ?? ''}
             onChange={(value) => store().setDayNotes(day.id, value)}
+          />
+          <DayExerciseList
+            day={day}
+            addHref={`${basePath}/exercises?day=${day.id}`}
+            onRemove={(exerciseId) => store().removeExercise(day.id, exerciseId)}
           />
         </div>
       </div>

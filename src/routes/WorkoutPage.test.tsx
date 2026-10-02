@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
 import { programs } from '@/db/repos'
-import { emptyDraft } from '@/programs/model'
+import { emptyDraft, programTreeToDraft } from '@/programs/model'
 import { WorkoutPage } from './WorkoutPage'
 
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
@@ -116,5 +116,42 @@ describe('WorkoutPage', () => {
     renderPage()
     await screen.findByRole('link', { name: /Current/ })
     expect(screen.queryByRole('button', { name: /Archived/ })).not.toBeInTheDocument()
+  })
+
+  it('orders the library by most recently updated', async () => {
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+    const days = [{ name: 'D', ids: ['pull-up'] }]
+    const a = await seed('Alpha', days)
+    await wait(5)
+    await seed('Bravo', days)
+    await wait(5)
+    await seed('Charlie', days)
+    await wait(5)
+    const draft = programTreeToDraft((await programs.loadTree(a))!)
+    draft.notes = 'touched'
+    await programs.saveTree(draft)
+    renderPage()
+    await screen.findByRole('link', { name: /Alpha/ })
+    const order = screen
+      .getAllByRole('link', { name: /workout/ })
+      .map((link) => /Alpha|Bravo|Charlie/.exec(link.textContent ?? '')?.[0])
+    expect(order).toEqual(['Alpha', 'Charlie', 'Bravo'])
+  })
+
+  it('reads "1 workout" for a single non-rest day', async () => {
+    await seed('Solo', [
+      { name: 'Only', ids: ['pull-up'] },
+      { name: 'Rest', ids: [] },
+    ])
+    renderPage()
+    const header = await screen.findByRole('link', { name: /Solo/ })
+    expect(within(header).getByText('1 workout')).toBeInTheDocument()
+  })
+
+  it('an archived-only program still shows the empty state and the Archived disclosure', async () => {
+    await seed('Old plan', [{ name: 'A', ids: ['pull-up'] }], { archive: true })
+    renderPage()
+    expect(await screen.findByRole('link', { name: 'Create your first program' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Archived · 1/ })).toBeInTheDocument()
   })
 })

@@ -34,4 +34,25 @@ describe('ExerciseListItem', () => {
     expect(container.querySelector('svg')).not.toBeNull()
     expect(getByText('Test Exercise')).toBeInTheDocument()
   })
+
+  it('renders a trailing slot after the text', () => {
+    const { getByRole } = render(
+      <ExerciseListItem exercise={makeExercise()} trailing={<button type="button">Remove</button>} />,
+    )
+    expect(getByRole('button', { name: 'Remove' })).toBeInTheDocument()
+  })
+
+  it('applies muted styling to the name and thumbnail', () => {
+    const { getByText, container } = render(<ExerciseListItem exercise={makeExercise()} muted />)
+    expect(getByText('Test Exercise')).toHaveClass('text-muted-foreground')
+    expect(container.querySelector('img')).toHaveClass('grayscale')
+  })
+
+  it('shows a custom subtitle in place of the meta line', () => {
+    const { getByText, queryByText } = render(
+      <ExerciseListItem exercise={makeExercise()} subtitle="Already in Push" />,
+    )
+    expect(getByText('Already in Push')).toBeInTheDocument()
+    expect(queryByText(/Chest/)).toBeNull()
+  })
 })

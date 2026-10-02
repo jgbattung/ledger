@@ -121,4 +121,14 @@ function SheetTitle({ className, ...props }: React.ComponentProps<typeof DialogP
   )
 }
 
-export { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetClose }
+function SheetDescription({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Description>) {
+  return (
+    <DialogPrimitive.Description
+      data-slot="sheet-description"
+      className={cn('text-sm text-muted-foreground', className)}
+      {...props}
+    />
+  )
+}
+
+export { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose }

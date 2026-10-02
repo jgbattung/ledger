@@ -1,4 +1,16 @@
 /**
+ * The "Soon" pill shared by SoonRow and drawer rows that are approved but
+ * unbuilt. Muted text on the muted surface - never dimmed below the 4.5:1 floor.
+ */
+export function SoonPill() {
+  return (
+    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+      Soon
+    </span>
+  )
+}
+
+/**
  * The shared contract for an approved-but-unbuilt row, used by both the
  * quick-action sheet and the More menu.
  *
@@ -16,9 +28,7 @@ export function SoonRow({ label }: { label: string }) {
       className="flex min-h-touch-primary w-full items-center justify-between gap-4 py-3 text-left"
     >
       <span className="text-base text-muted-foreground">{label}</span>
-      <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-        Soon
-      </span>
+      <SoonPill />
     </button>
   )
 }

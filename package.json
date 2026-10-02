@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:visual": "playwright test --project=visual-chrome",
     "test:e2e:ui": "playwright test --ui",
     "preview": "vite preview",
     "curate": "node scripts/curation/curate.ts"

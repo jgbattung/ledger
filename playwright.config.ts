@@ -26,17 +26,27 @@ export default defineConfig({
     {
       name: 'mobile-chrome',
       use: { ...galaxyS23Ultra },
-      testIgnore: 'offline.spec.ts',
+      testIgnore: ['offline.spec.ts', 'program-builder.visual.spec.ts'],
+      grepInvert: /@visual/,
     },
     {
       name: 'desktop-chrome',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: 'offline.spec.ts',
+      testIgnore: ['offline.spec.ts', 'program-builder.visual.spec.ts'],
+      grepInvert: /@visual/,
     },
     {
       name: 'offline-chrome',
       use: { ...galaxyS23Ultra, baseURL: 'http://localhost:4173' },
       testMatch: 'offline.spec.ts',
+      grepInvert: /@visual/,
+    },
+    {
+      // LG-020 screenshot gate: opt-in only (npm run test:visual), never in CI.
+      name: 'visual-chrome',
+      use: { ...galaxyS23Ultra },
+      testMatch: 'program-builder.visual.spec.ts',
+      grep: /@visual/,
     },
   ],
   webServer: [

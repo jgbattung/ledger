@@ -121,6 +121,54 @@ describe('ProgramEditorPage - settings drawer', () => {
     expect(await screen.findByRole('button', { name: 'Activate' })).toBeInTheDocument()
   })
 
+  async function renameViaSettings(user: ReturnType<typeof userEvent.setup>, name: string) {
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: /^Name/ }))
+    const field = await screen.findByLabelText('Name')
+    await user.clear(field)
+    await user.type(field, name + '{Enter}')
+    await screen.findByRole('heading', { name })
+  }
+
+  it('Archive of a dirty inactive program saves the edit first and skips both dialogs', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    await renameViaSettings(user, 'Renamed')
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    const tree = await programs.loadTree(id)
+    expect(tree?.program.name).toBe('Renamed')
+    expect(tree?.program.isArchived).toBe(true)
+  })
+
+  it('Delete of a dirty program leaves without a Discard changes dialog', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    await renameViaSettings(user, 'Renamed')
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Delete program' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Delete Renamed?' })
+    await user.click(within(confirm).getByRole('button', { name: 'Delete program' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect(screen.queryByRole('dialog', { name: 'Discard changes?' })).not.toBeInTheDocument()
+    expect((await programs.listLive()).map((p) => p.id)).not.toContain(id)
+  })
+
+  it('Archive of an inactive program has no Archive confirm', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect(screen.queryByRole('dialog', { name: 'Archive PPL?' })).not.toBeInTheDocument()
+    expect(await programs.get(id)).toMatchObject({ isArchived: true })
+  })
+
   it('Delete removes the program from listLive and leaves a finished workout intact', async () => {
     const user = userEvent.setup()
     const id = await seedProgram('PPL', ONE_DAY, { activate: true })

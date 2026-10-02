@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useBlocker, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { SlidersHorizontal } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
 import { DayTabs } from '@/components/programs/DayTabs'
@@ -7,6 +7,8 @@ import { dayPanelId, dayTabId } from '@/components/programs/dayIds'
 import { DayActions } from '@/components/programs/DayActions'
 import { DayExerciseList } from '@/components/programs/DayExerciseList'
 import { DayNotes } from '@/components/programs/DayNotes'
+import { ProgramSettingsSheet } from '@/components/programs/ProgramSettingsSheet'
+import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { TextFieldSheet } from '@/components/ui/text-field-sheet'
 import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
 import { cn } from '@/lib/utils'
@@ -32,6 +34,18 @@ export function ProgramEditorPage() {
 
   const [busy, setBusy] = useState(false)
   const [saveError, setSaveError] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  // Leaving the editor with unsaved edits asks first. Navigating to the picker
+  // (a child of the editor path) is never blocked. Leaving clean also drops the
+  // draft so the next visit starts fresh.
+  const basePath = programId ? `/programs/${programId}` : '/programs/new'
+  const blocker = useBlocker(({ nextLocation }) => {
+    const inside = nextLocation.pathname.startsWith(basePath)
+    const dirtyNow = selectIsDirty(store())
+    if (!inside && !dirtyNow) store().reset()
+    return dirtyNow && !inside
+  })
 
   // Keep a draft that already matches this route (the return from the picker);
   // otherwise start a new one or load the saved program. Unknown ids bounce.
@@ -56,7 +70,6 @@ export function ProgramEditorPage() {
   if (!draft || !routeMatches) return <div className="min-h-full" aria-busy="true" />
 
   const day = draft.days.find((d) => d.id === selectedDayId) ?? draft.days[0]
-  const basePath = programId ? `/programs/${programId}` : '/programs/new'
   const showActivate = !draft.isActive && !draft.isArchived
 
   const goBack = () => {
@@ -88,6 +101,7 @@ export function ProgramEditorPage() {
           <button
             type="button"
             aria-label="Program settings"
+            onClick={() => setSettingsOpen(true)}
             className="flex size-touch-min shrink-0 items-center justify-end rounded-md text-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <SlidersHorizontal className="size-5" aria-hidden="true" />
@@ -159,6 +173,29 @@ export function ProgramEditorPage() {
           ) : null}
         </div>
       </footer>
+
+      <ProgramSettingsSheet
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        draft={draft}
+        onLeave={() => navigate('/workout', { replace: true })}
+      />
+
+      <ConfirmSheet
+        open={blocker.state === 'blocked'}
+        onOpenChange={(open) => {
+          if (!open && blocker.state === 'blocked') blocker.reset()
+        }}
+        tone="destructive"
+        title="Discard changes?"
+        description="You have unsaved changes. Leaving now throws them away."
+        confirmLabel="Discard"
+        cancelLabel="Keep editing"
+        onConfirm={() => {
+          store().reset()
+          if (blocker.state === 'blocked') blocker.proceed()
+        }}
+      />
 
       <TextFieldSheet
         open={namePromptOpen}

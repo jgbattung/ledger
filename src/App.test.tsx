@@ -158,7 +158,7 @@ describe('Program routes', () => {
     await act(async () => {
       await Promise.resolve()
     })
-    expect(screen.getByRole('heading', { level: 1, name: 'Program' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'New program' })).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Primary' })).toBeNull()
   })
 })

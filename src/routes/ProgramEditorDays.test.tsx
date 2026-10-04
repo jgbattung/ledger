@@ -125,6 +125,23 @@ describe('ProgramEditorPage - day actions and exercises', () => {
     expect(screen.getByText('1 exercise')).toBeInTheDocument()
   })
 
+  it('arrow keys switch the visible day panel and keep focus on the tab', async () => {
+    const user = userEvent.setup()
+    await open()
+    screen.getByRole('tab', { name: 'Push' }).focus()
+    await user.keyboard('{ArrowRight}')
+    const rest = screen.getByRole('tab', { name: 'Rest' })
+    expect(rest).toHaveAttribute('aria-selected', 'true')
+    expect(rest).toHaveFocus()
+    expect(screen.getByRole('tabpanel')).toHaveAttribute('aria-labelledby', rest.id)
+    expect(screen.getByText('Rest day')).toBeInTheDocument()
+    await user.keyboard('{ArrowRight}')
+    const push = screen.getByRole('tab', { name: 'Push' })
+    expect(push).toHaveFocus()
+    expect(screen.getByText('2 exercises')).toBeInTheDocument()
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(false)
+  })
+
   it('Add exercises links to the picker with the day id', async () => {
     await open()
     const link = screen.getByRole('link', { name: 'Add exercises' })

@@ -355,17 +355,59 @@ describe('ProgramEditorPage - settings drawer failures', () => {
     expect(archive).not.toHaveBeenCalled()
   })
 
+  it('a failed Archive of the active program through its confirm keeps it active', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    vi.spyOn(programs, 'archive').mockRejectedValueOnce(new Error('x'))
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Archive PPL?' })
+    await user.click(within(confirm).getByRole('button', { name: 'Archive program' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    await expectFailureKept(router, id, "Couldn't archive. Try again.", false)
+    expect(await programs.get(id)).toMatchObject({ isActive: true, isArchived: false })
+  })
+
+  it('a successful lifecycle action clears an earlier save error', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    renderEditor(`/programs/${id}`)
+    await user.type(await screen.findByLabelText('Day notes'), 'x')
+    vi.spyOn(programs, 'saveTree').mockRejectedValueOnce(new Error('x'))
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent("Couldn't save. Try again.")
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Deactivate program' }))
+    // Wait for the drawer to close: while open, Radix aria-hides the footer alert.
+    expect(await screen.findByRole('button', { name: 'Activate' })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.queryByRole('alert', { hidden: true })).not.toBeInTheDocument()
+    expect((await programs.get(id))?.isActive).toBe(false)
+  })
+
   it('a new attempt clears the previous error', async () => {
     const user = userEvent.setup()
     const id = await seedProgram('PPL', ONE_DAY)
-    renderEditor(`/programs/${id}`)
+    const router = renderEditor(`/programs/${id}`)
     let sheet = await openSettings(user)
-    vi.spyOn(programs, 'archive').mockRejectedValueOnce(new Error('x'))
+    // The retry is held pending so the editor stays mounted: a successful archive
+    // navigates away, which would hide the alert whether or not it was cleared.
+    let release!: () => void
+    vi.spyOn(programs, 'archive')
+      .mockRejectedValueOnce(new Error('x'))
+      .mockImplementationOnce(() => new Promise<void>((resolve) => (release = resolve)))
     await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
     await screen.findByRole('alert')
     sheet = await openSettings(user)
     await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
-    await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
+    // hidden: true because the open drawer aria-hides the footer alert.
+    await waitFor(() =>
+      expect(screen.queryByRole('alert', { hidden: true })).not.toBeInTheDocument(),
+    )
+    expect(router.state.location.pathname).toBe(`/programs/${id}`)
+    release()
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
   })
 })
 

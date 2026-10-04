@@ -33,6 +33,7 @@ export function ProgramEditorPage() {
   const dirty = useProgramDraftStore(selectIsDirty)
 
   const [busy, setBusy] = useState(false)
+  const [lifecyclePending, setLifecyclePending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
@@ -150,7 +151,7 @@ export function ProgramEditorPage() {
         <div className={cn('grid gap-2.5', showActivate ? 'grid-cols-[1fr_1.25fr]' : 'grid-cols-1')}>
           <button
             type="button"
-            disabled={busy || (!dirty && !draft.isNew)}
+            disabled={busy || lifecyclePending || (!dirty && !draft.isNew)}
             onClick={() => void finish(false)}
             className={cn(
               FOOTER_BUTTON,
@@ -164,7 +165,7 @@ export function ProgramEditorPage() {
           {showActivate ? (
             <button
               type="button"
-              disabled={busy}
+              disabled={busy || lifecyclePending}
               onClick={() => void finish(true)}
               className={cn(FOOTER_BUTTON, 'bg-primary text-primary-foreground hover:bg-primary/90')}
             >
@@ -180,6 +181,7 @@ export function ProgramEditorPage() {
         draft={draft}
         onLeave={() => navigate('/workout', { replace: true })}
         onError={setError}
+        onPendingChange={setLifecyclePending}
       />
 
       <ConfirmSheet

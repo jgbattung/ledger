@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
@@ -477,5 +477,131 @@ describe('ProgramEditorPage - unsaved-changes guard', () => {
     await user.click(screen.getByRole('button', { name: 'Back' }))
     await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+})
+
+describe('ProgramEditorPage - settings drawer single-flight', () => {
+  beforeEach(async () => {
+    await resetDb()
+    useProgramDraftStore.getState().reset()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  /** Holds a repo call open until `settle` is called. */
+  function hold() {
+    let resolve!: () => void
+    let reject!: (e: Error) => void
+    const promise = new Promise<void>((res, rej) => {
+      resolve = res
+      reject = rej
+    })
+    return { promise, resolve, reject }
+  }
+
+  it('a double tap on Deactivate calls the repo once and locks the rows', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    renderEditor(`/programs/${id}`)
+    await user.type(await screen.findByLabelText('Day notes'), 'x')
+    const sheet = await openSettings(user)
+    expect(screen.getByRole('button', { name: 'Save', hidden: true })).toBeEnabled()
+    const gate = hold()
+    const spy = vi.spyOn(programs, 'deactivate').mockImplementation(() => gate.promise)
+    const row = within(sheet).getByRole('button', { name: 'Deactivate program' })
+    // Both clicks land inside one act(): React has not re-rendered the disabled row yet.
+    act(() => {
+      row.click()
+      row.click()
+    })
+    expect(spy).toHaveBeenCalledTimes(1)
+    for (const name of ['Deactivate program', 'Archive program', 'Delete program']) {
+      expect(within(sheet).getByRole('button', { name })).toBeDisabled()
+    }
+    expect(within(sheet).getByRole('button', { name: 'Archive program' })).not.toHaveTextContent(
+      'Soon',
+    )
+    expect(screen.getByRole('button', { name: 'Save', hidden: true })).toBeDisabled()
+    gate.resolve()
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+  })
+
+  it('a double tap on a direct Archive calls the repo once', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    const gate = hold()
+    const spy = vi.spyOn(programs, 'archive').mockImplementation(() => gate.promise)
+    const row = within(sheet).getByRole('button', { name: 'Archive program' })
+    act(() => {
+      row.click()
+      row.click()
+    })
+    expect(spy).toHaveBeenCalledTimes(1)
+    gate.resolve()
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('a double tap on Restore calls the repo once', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('Old', ONE_DAY, { archive: true })
+    renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    const gate = hold()
+    const spy = vi.spyOn(programs, 'unarchive').mockImplementation(() => gate.promise)
+    const row = within(sheet).getByRole('button', { name: 'Restore program' })
+    act(() => {
+      row.click()
+      row.click()
+    })
+    expect(spy).toHaveBeenCalledTimes(1)
+    gate.resolve()
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+  })
+
+  it('Delete runs once and the footer stays locked while it is pending', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    await user.type(await screen.findByLabelText('Day notes'), 'x')
+    const sheet = await openSettings(user)
+    const gate = hold()
+    const spy = vi.spyOn(programs, 'softDeleteCascade').mockImplementation(() => gate.promise)
+    await user.click(within(sheet).getByRole('button', { name: 'Delete program' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Delete PPL?' })
+    await user.dblClick(within(confirm).getByRole('button', { name: 'Delete program' }))
+    expect(spy).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Activate' })).toBeDisabled()
+    gate.resolve()
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('after a failure the rows and footer unlock and a retry calls the repo again', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    renderEditor(`/programs/${id}`)
+    let sheet = await openSettings(user)
+    const gate = hold()
+    const spy = vi
+      .spyOn(programs, 'deactivate')
+      .mockImplementationOnce(() => gate.promise)
+      .mockResolvedValueOnce(undefined)
+    await user.click(within(sheet).getByRole('button', { name: 'Deactivate program' }))
+    expect(within(sheet).getByRole('button', { name: 'Deactivate program' })).toBeDisabled()
+    gate.reject(new Error('x'))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(await screen.findByRole('alert')).toHaveTextContent("Couldn't deactivate. Try again.")
+    sheet = await openSettings(user)
+    const row = within(sheet).getByRole('button', { name: 'Deactivate program' })
+    expect(row).toBeEnabled()
+    await user.click(row)
+    expect(spy).toHaveBeenCalledTimes(2)
   })
 })

@@ -1,4 +1,4 @@
-import { useState, type ComponentType, type ReactNode } from 'react'
+import { useRef, useState, type ComponentType, type ReactNode } from 'react'
 import {
   Archive,
   ArchiveRestore,
@@ -29,6 +29,7 @@ function Row({
   value,
   onClick,
   soon,
+  disabled,
   danger,
 }: {
   icon: Icon
@@ -36,12 +37,14 @@ function Row({
   value?: ReactNode
   onClick?: () => void
   soon?: boolean
+  /** Temporarily unavailable (an action is in flight): no Soon pill or muted label. */
+  disabled?: boolean
   danger?: boolean
 }) {
   return (
     <button
       type="button"
-      disabled={soon}
+      disabled={soon || disabled}
       onClick={onClick}
       className="flex min-h-12 w-full items-center gap-3 border-t border-border px-4 text-left text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
     >
@@ -50,7 +53,11 @@ function Row({
         aria-hidden="true"
       />
       <span
-        className={cn('min-w-0 flex-1', soon && 'text-muted-foreground', danger && 'text-destructive')}
+        className={cn(
+          'min-w-0 flex-1',
+          danger && 'text-destructive',
+          (soon || disabled) && 'text-muted-foreground',
+        )}
       >
         {label}
       </span>
@@ -78,6 +85,7 @@ export function ProgramSettingsSheet({
   draft,
   onLeave,
   onError,
+  onPendingChange,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -86,8 +94,13 @@ export function ProgramSettingsSheet({
   onLeave: () => void
   /** Reports a failed lifecycle action (message) or clears the error (null). */
   onError: (message: string | null) => void
+  /** Reports whether a lifecycle action is in flight, so the editor footer can lock. */
+  onPendingChange: (pending: boolean) => void
 }) {
   const [panel, setPanel] = useState<Panel>(null)
+  const [pending, setPending] = useState(false)
+  // A ref guards re-entry synchronously: two taps can land before React re-renders.
+  const inFlight = useRef(false)
   const dirty = useProgramDraftStore(selectIsDirty)
   const store = useProgramDraftStore.getState
   const saved = !draft.isNew
@@ -98,32 +111,73 @@ export function ProgramSettingsSheet({
     setPanel(next)
   }
 
-  const archive = async () => {
-    // Pending edits are saved first so archiving never silently drops them.
-    onError(null)
-    try {
-      if (dirty) await store().commit()
-      await programs.archive(draft.id)
-    } catch {
-      onError("Couldn't archive. Try again.")
-      onOpenChange(false)
-      return
-    }
-    store().reset()
-    onLeave()
+  const settle = () => {
+    inFlight.current = false
+    setPending(false)
+    onPendingChange(false)
   }
 
-  const remove = async () => {
+  /**
+   * Single-flight runner for lifecycle actions; `action` throws on failure.
+   * Navigating actions (archive, delete) leave the editor on success, the rest
+   * close the drawer.
+   */
+  const run = async (action: () => Promise<void>, failureMessage: string, navigates: boolean) => {
+    if (inFlight.current) return
+    inFlight.current = true
+    setPending(true)
+    onPendingChange(true)
     onError(null)
     try {
-      await programs.softDeleteCascade(draft.id)
+      await action()
     } catch {
-      onError("Couldn't delete. Try again.")
+      onError(failureMessage)
+      onOpenChange(false)
+      settle()
       return
     }
-    store().reset()
-    onLeave()
+    if (navigates) {
+      store().reset()
+      onLeave()
+      return
+    }
+    onOpenChange(false)
+    settle()
   }
+
+  const archive = () =>
+    run(
+      async () => {
+        // Pending edits are saved first so archiving never silently drops them.
+        if (dirty) await store().commit()
+        await programs.archive(draft.id)
+      },
+      "Couldn't archive. Try again.",
+      true,
+    )
+
+  const remove = () =>
+    run(() => programs.softDeleteCascade(draft.id), "Couldn't delete. Try again.", true)
+
+  const deactivate = () =>
+    run(
+      async () => {
+        await programs.deactivate(draft.id)
+        store().applyPersistedFlags({ isActive: false })
+      },
+      "Couldn't deactivate. Try again.",
+      false,
+    )
+
+  const restore = () =>
+    run(
+      async () => {
+        await programs.unarchive(draft.id)
+        store().applyPersistedFlags({ isArchived: false })
+      },
+      "Couldn't restore. Try again.",
+      false,
+    )
 
   const deleteCopy = `${draft.isActive ? "It's your active program, so it'll be deactivated. " : ''}Workouts you've already logged from it stay in your history.`
 
@@ -148,42 +202,23 @@ export function ProgramSettingsSheet({
             <Row
               icon={CirclePause}
               label="Deactivate program"
-              onClick={async () => {
-                onError(null)
-                try {
-                  await programs.deactivate(draft.id)
-                } catch {
-                  onError("Couldn't deactivate. Try again.")
-                  onOpenChange(false)
-                  return
-                }
-                store().applyPersistedFlags({ isActive: false })
-                onOpenChange(false)
-              }}
+              disabled={pending}
+              onClick={() => void deactivate()}
             />
           ) : null}
           {saved && draft.isArchived ? (
             <Row
               icon={ArchiveRestore}
               label="Restore program"
-              onClick={async () => {
-                onError(null)
-                try {
-                  await programs.unarchive(draft.id)
-                } catch {
-                  onError("Couldn't restore. Try again.")
-                  onOpenChange(false)
-                  return
-                }
-                store().applyPersistedFlags({ isArchived: false })
-                onOpenChange(false)
-              }}
+              disabled={pending}
+              onClick={() => void restore()}
             />
           ) : null}
           {saved && !draft.isArchived ? (
             <Row
               icon={Archive}
               label="Archive program"
+              disabled={pending}
               onClick={() => {
                 if (draft.isActive) openPanel('archive')
                 else void archive()
@@ -191,7 +226,13 @@ export function ProgramSettingsSheet({
             />
           ) : null}
           {saved ? (
-            <Row icon={Trash2} label="Delete program" danger onClick={() => openPanel('delete')} />
+            <Row
+              icon={Trash2}
+              label="Delete program"
+              danger
+              disabled={pending}
+              onClick={() => openPanel('delete')}
+            />
           ) : null}
         </SheetContent>
       </Sheet>

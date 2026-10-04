@@ -107,3 +107,22 @@ test('a dirty editor guards system back with Discard changes', async ({ page }) 
   await page.getByRole('dialog', { name: 'Discard changes?' }).getByRole('button', { name: 'Discard' }).click();
   await expect(page.getByRole('heading', { name: 'Workout', exact: true })).toBeVisible();
 });
+
+test('returning from the picker scrolls the selected far-right day tab into view', async ({ page }) => {
+  await page.goto('/programs/new');
+  await page.getByRole('button', { name: 'Close' }).click();
+  const addDay = page.getByRole('button', { name: 'Day', exact: true });
+  for (let i = 2; i <= 30; i++) await addDay.click();
+  const last = page.getByRole('tab', { name: 'Day 30' });
+  await expect(last).toHaveAttribute('aria-selected', 'true');
+
+  // The editor remounts on return, so a fresh tablist must scroll itself to the selection.
+  await page.getByRole('link', { name: 'Add exercises' }).click();
+  await expect(page.getByRole('heading', { name: 'Add to Day 30' })).toBeVisible();
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+
+  await expect(last).toHaveAttribute('aria-selected', 'true');
+  await expect(last).toBeInViewport();
+  // Proves the row overflows, so the check above is not vacuous.
+  await expect(page.getByRole('tab', { name: 'Day 1', exact: true })).not.toBeInViewport();
+});

@@ -192,6 +192,81 @@ describe('ProgramEditorPage - settings drawer', () => {
     expect(await programs.listLive()).toHaveLength(0)
     expect(await workouts.get(workout.id)).toEqual(workout)
   })
+
+  it('Delete of an inactive program does not mention deactivation', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Delete program' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Delete PPL?' })
+    expect(within(confirm).queryByText(/active program/)).not.toBeInTheDocument()
+    expect(within(confirm).queryByText(/deactivated/)).not.toBeInTheDocument()
+    expect(within(confirm).getByText(/stay in your history/)).toBeInTheDocument()
+  })
+
+  async function setNotesViaSettings(user: ReturnType<typeof userEvent.setup>, notes: string) {
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: /^Notes/ }))
+    const dialog = await screen.findByRole('dialog', { name: 'Program notes' })
+    const field = within(dialog).getByLabelText('Notes')
+    await user.clear(field)
+    if (notes) await user.type(field, notes)
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: 'Program notes' })).not.toBeInTheDocument(),
+    )
+  }
+
+  it('Notes edits show in the row preview and persist on Save', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    await setNotesViaSettings(user, '6-week block')
+    const sheet = await openSettings(user)
+    expect(within(sheet).getByRole('button', { name: /^Notes/ })).toHaveTextContent('6-week block')
+    await user.keyboard('{Escape}')
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect((await programs.get(id))?.notes).toBe('6-week block')
+  })
+
+  it('clearing notes back to empty leaves the draft clean', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    renderEditor(`/programs/${id}`)
+    await setNotesViaSettings(user, 'temp')
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    await setNotesViaSettings(user, '')
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+  })
+
+  it('Keep it on the Delete confirm leaves the program live and the editor open', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Delete program' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Delete PPL?' })
+    await user.click(within(confirm).getByRole('button', { name: 'Keep it' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(router.state.location.pathname).toBe(`/programs/${id}`)
+    expect(await programs.get(id)).toMatchObject({ isActive: true, isArchived: false })
+    expect((await programs.listLive()).map((p) => p.id)).toEqual([id])
+  })
+
+  it('Keep it on the Archive confirm leaves the active program untouched', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Archive PPL?' })
+    await user.click(within(confirm).getByRole('button', { name: 'Keep it' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(router.state.location.pathname).toBe(`/programs/${id}`)
+    expect(await programs.get(id)).toMatchObject({ isActive: true, isArchived: false })
+  })
 })
 
 describe('ProgramEditorPage - unsaved-changes guard', () => {

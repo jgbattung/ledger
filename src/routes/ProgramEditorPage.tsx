@@ -33,7 +33,7 @@ export function ProgramEditorPage() {
   const dirty = useProgramDraftStore(selectIsDirty)
 
   const [busy, setBusy] = useState(false)
-  const [saveError, setSaveError] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   // Leaving the editor with unsaved edits asks first. Navigating to the picker
@@ -79,13 +79,13 @@ export function ProgramEditorPage() {
 
   const finish = async (activate: boolean) => {
     setBusy(true)
-    setSaveError(false)
+    setError(null)
     try {
       await store().commit({ activate })
       store().reset()
       navigate('/workout', { replace: true })
     } catch {
-      setSaveError(true)
+      setError("Couldn't save. Try again.")
       setBusy(false)
     }
   }
@@ -142,9 +142,9 @@ export function ProgramEditorPage() {
       </div>
 
       <footer className="sticky bottom-0 border-t border-border bg-background px-4 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
-        {saveError ? (
+        {error ? (
           <p role="alert" className="pb-2 text-sm text-destructive">
-            Couldn&apos;t save. Try again.
+            {error}
           </p>
         ) : null}
         <div className={cn('grid gap-2.5', showActivate ? 'grid-cols-[1fr_1.25fr]' : 'grid-cols-1')}>
@@ -179,6 +179,7 @@ export function ProgramEditorPage() {
         onOpenChange={setSettingsOpen}
         draft={draft}
         onLeave={() => navigate('/workout', { replace: true })}
+        onError={setError}
       />
 
       <ConfirmSheet

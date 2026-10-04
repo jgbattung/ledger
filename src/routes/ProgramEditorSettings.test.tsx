@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
 import { programs, workouts } from '@/db/repos'
-import { useProgramDraftStore } from '@/stores/programDraftStore'
+import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
 import { ProgramEditorPage } from './ProgramEditorPage'
 import { ExercisePickerPage } from './ExercisePickerPage'
 import { renderEditor, seedProgram } from './editorTestUtils'
@@ -266,6 +266,106 @@ describe('ProgramEditorPage - settings drawer', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(router.state.location.pathname).toBe(`/programs/${id}`)
     expect(await programs.get(id)).toMatchObject({ isActive: true, isArchived: false })
+  })
+})
+
+describe('ProgramEditorPage - settings drawer failures', () => {
+  const unhandled = vi.fn()
+
+  beforeEach(async () => {
+    await resetDb()
+    useProgramDraftStore.getState().reset()
+    unhandled.mockClear()
+    process.on('unhandledRejection', unhandled)
+  })
+
+  afterEach(() => {
+    process.off('unhandledRejection', unhandled)
+    vi.restoreAllMocks()
+  })
+
+  async function expectFailureKept(
+    router: ReturnType<typeof renderEditor>,
+    id: string,
+    message: string,
+    dirtyBefore: boolean,
+  ) {
+    expect(await screen.findByRole('alert')).toHaveTextContent(message)
+    expect(router.state.location.pathname).toBe(`/programs/${id}`)
+    expect(useProgramDraftStore.getState().draft?.id).toBe(id)
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(dirtyBefore)
+    await new Promise((r) => setTimeout(r, 0))
+    expect(unhandled).not.toHaveBeenCalled()
+  }
+
+  it('a failed Deactivate shows the alert and leaves the draft as it was', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    vi.spyOn(programs, 'deactivate').mockRejectedValueOnce(new Error('x'))
+    await user.click(within(sheet).getByRole('button', { name: 'Deactivate program' }))
+    await expectFailureKept(router, id, "Couldn't deactivate. Try again.", false)
+    expect(useProgramDraftStore.getState().draft?.isActive).toBe(true)
+  })
+
+  it('a failed Restore shows the alert and leaves the draft as it was', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('Old', ONE_DAY, { archive: true })
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    vi.spyOn(programs, 'unarchive').mockRejectedValueOnce(new Error('x'))
+    await user.click(within(sheet).getByRole('button', { name: 'Restore program' }))
+    await expectFailureKept(router, id, "Couldn't restore. Try again.", false)
+    expect(useProgramDraftStore.getState().draft?.isArchived).toBe(true)
+  })
+
+  it('a failed Archive shows the alert and does not navigate', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    vi.spyOn(programs, 'archive').mockRejectedValueOnce(new Error('x'))
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    await expectFailureKept(router, id, "Couldn't archive. Try again.", false)
+  })
+
+  it('a failed Delete shows the alert and does not navigate', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    const sheet = await openSettings(user)
+    vi.spyOn(programs, 'softDeleteCascade').mockRejectedValueOnce(new Error('x'))
+    await user.click(within(sheet).getByRole('button', { name: 'Delete program' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Delete PPL?' })
+    await user.click(within(confirm).getByRole('button', { name: 'Delete program' }))
+    await expectFailureKept(router, id, "Couldn't delete. Try again.", false)
+  })
+
+  it('a dirty Archive whose commit fails reports it and never archives', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    const router = renderEditor(`/programs/${id}`)
+    await user.type(await screen.findByLabelText('Day notes'), 'x')
+    const sheet = await openSettings(user)
+    const archive = vi.spyOn(programs, 'archive')
+    vi.spyOn(programs, 'saveTree').mockRejectedValueOnce(new Error('x'))
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    await expectFailureKept(router, id, "Couldn't archive. Try again.", true)
+    expect(archive).not.toHaveBeenCalled()
+  })
+
+  it('a new attempt clears the previous error', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY)
+    renderEditor(`/programs/${id}`)
+    let sheet = await openSettings(user)
+    vi.spyOn(programs, 'archive').mockRejectedValueOnce(new Error('x'))
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    await screen.findByRole('alert')
+    sheet = await openSettings(user)
+    await user.click(within(sheet).getByRole('button', { name: 'Archive program' }))
+    await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
   })
 })
 

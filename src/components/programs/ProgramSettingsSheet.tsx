@@ -77,12 +77,15 @@ export function ProgramSettingsSheet({
   onOpenChange,
   draft,
   onLeave,
+  onError,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   draft: ProgramDraft
   /** Called after archive/delete: the editor has nothing left to show. */
   onLeave: () => void
+  /** Reports a failed lifecycle action (message) or clears the error (null). */
+  onError: (message: string | null) => void
 }) {
   const [panel, setPanel] = useState<Panel>(null)
   const dirty = useProgramDraftStore(selectIsDirty)
@@ -97,14 +100,27 @@ export function ProgramSettingsSheet({
 
   const archive = async () => {
     // Pending edits are saved first so archiving never silently drops them.
-    if (dirty) await store().commit()
-    await programs.archive(draft.id)
+    onError(null)
+    try {
+      if (dirty) await store().commit()
+      await programs.archive(draft.id)
+    } catch {
+      onError("Couldn't archive. Try again.")
+      onOpenChange(false)
+      return
+    }
     store().reset()
     onLeave()
   }
 
   const remove = async () => {
-    await programs.softDeleteCascade(draft.id)
+    onError(null)
+    try {
+      await programs.softDeleteCascade(draft.id)
+    } catch {
+      onError("Couldn't delete. Try again.")
+      return
+    }
     store().reset()
     onLeave()
   }
@@ -133,7 +149,14 @@ export function ProgramSettingsSheet({
               icon={CirclePause}
               label="Deactivate program"
               onClick={async () => {
-                await programs.deactivate(draft.id)
+                onError(null)
+                try {
+                  await programs.deactivate(draft.id)
+                } catch {
+                  onError("Couldn't deactivate. Try again.")
+                  onOpenChange(false)
+                  return
+                }
                 store().applyPersistedFlags({ isActive: false })
                 onOpenChange(false)
               }}
@@ -144,7 +167,14 @@ export function ProgramSettingsSheet({
               icon={ArchiveRestore}
               label="Restore program"
               onClick={async () => {
-                await programs.unarchive(draft.id)
+                onError(null)
+                try {
+                  await programs.unarchive(draft.id)
+                } catch {
+                  onError("Couldn't restore. Try again.")
+                  onOpenChange(false)
+                  return
+                }
                 store().applyPersistedFlags({ isArchived: false })
                 onOpenChange(false)
               }}

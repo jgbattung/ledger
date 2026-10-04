@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { resetDb } from '@/db/test-utils'
-import { useProgramDraftStore } from '@/stores/programDraftStore'
+import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
 import { renderEditor, seedProgram } from './editorTestUtils'
 
 const TWO_DAYS = [
@@ -52,6 +52,30 @@ describe('ProgramEditorPage - day actions and exercises', () => {
     await user.click(within(sheet).getByRole('button', { name: 'Change to Rest' }))
     expect(await screen.findByText('Rest day')).toBeInTheDocument()
     expect(screen.queryByText('2 exercises')).not.toBeInTheDocument()
+  })
+
+  it('Cancel on the Change to Rest confirm keeps the exercises', async () => {
+    const user = userEvent.setup()
+    await open()
+    await user.click(screen.getByRole('button', { name: 'Change to Rest' }))
+    const sheet = await screen.findByRole('dialog')
+    await user.click(within(sheet).getByRole('button', { name: 'Cancel' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(screen.getByText('2 exercises')).toBeInTheDocument()
+    expect(screen.queryByText('Rest day')).not.toBeInTheDocument()
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(false)
+  })
+
+  it('Keep it on the Remove confirm keeps the day and its exercises', async () => {
+    const user = userEvent.setup()
+    await open()
+    await user.click(screen.getByRole('button', { name: 'Remove' }))
+    const sheet = await screen.findByRole('dialog')
+    await user.click(within(sheet).getByRole('button', { name: 'Keep it' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(screen.getByRole('tab', { name: 'Push' })).toBeInTheDocument()
+    expect(screen.getByText('2 exercises')).toBeInTheDocument()
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(false)
   })
 
   it('on a rest day only Rename, Duplicate and Remove show', async () => {

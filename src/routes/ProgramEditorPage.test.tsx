@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { screen, waitFor, within } from '@testing-library/react'
+import { cleanup, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { resetDb } from '@/db/test-utils'
 import { programs } from '@/db/repos'
@@ -98,6 +98,46 @@ describe('ProgramEditorPage - shell', () => {
     expect(router.state.location.pathname).toBe(`/programs/${id}`)
     expect(selectIsDirty(useProgramDraftStore.getState())).toBe(true)
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+  })
+
+  it('a stale draft from another program is replaced by the routed program', async () => {
+    const a = await seedProgram('Alpha', [{ name: 'A1', ids: ['pull-up'] }])
+    const b = await seedProgram('Bravo', [{ name: 'B1', ids: ['pull-up'] }])
+    await useProgramDraftStore.getState().load(a)
+    useProgramDraftStore.getState().setName('Alpha edited')
+    renderEditor(`/programs/${b}`)
+    expect(await screen.findByRole('heading', { name: 'Bravo' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'B1' })).toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: 'A1' })).not.toBeInTheDocument()
+    expect(useProgramDraftStore.getState().draft?.id).toBe(b)
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(false)
+  })
+
+  it('a stale saved-program draft does not leak into /programs/new', async () => {
+    const a = await seedProgram('Alpha', [{ name: 'A1', ids: ['pull-up'] }])
+    await useProgramDraftStore.getState().load(a)
+    renderEditor('/programs/new')
+    const user = userEvent.setup()
+    expect(await screen.findByLabelText('Program name')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Close' }))
+    expect(screen.getByRole('heading', { name: 'New program' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Day 1' })).toBeInTheDocument()
+    expect(useProgramDraftStore.getState().draft?.isNew).toBe(true)
+  })
+
+  it('day notes typed in the editor survive Save and a fresh load', async () => {
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', [{ name: 'Push', ids: ['pull-up'] }])
+    const router = renderEditor(`/programs/${id}`)
+    await user.type(await screen.findByLabelText('Day notes'), 'Heavy week')
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    const tree = await programs.loadTree(id)
+    expect(tree?.days[0].day.notes).toBe('Heavy week')
+    cleanup()
+    renderEditor(`/programs/${id}`)
+    expect(await screen.findByLabelText('Day notes')).toHaveValue('Heavy week')
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
   })
 
   it('an unknown id redirects to /workout', async () => {

@@ -151,6 +151,20 @@ describe('ChromelessShell', () => {
   })
 })
 
+describe('Program routes', () => {
+  it('renders /programs/new without the bottom nav', async () => {
+    window.history.pushState({}, '', '/programs/new')
+    render(<App />)
+    await act(async () => {
+      await Promise.resolve()
+    })
+    // The name prompt is open on a new program, so the page behind it is aria-hidden.
+    expect(await screen.findByText('Name your program')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'New program', hidden: true })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Primary', hidden: true })).toBeNull()
+  })
+})
+
 afterEach(() => {
   vi.restoreAllMocks()
 })

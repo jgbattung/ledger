@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react'
 import { Dumbbell } from 'lucide-react'
 import { exerciseImageUrl } from '@/exercises/catalog'
 import { formatFilterValue } from '@/exercises/filtering'
 import type { Exercise } from '@/exercises/types'
+import { cn } from '@/lib/utils'
 
 /** Fixed row height used for both the layout (`min-h-touch-primary` + this
  * padding) and the `content-visibility` perf hint below - keep the value in
@@ -10,14 +12,29 @@ const ROW_HEIGHT_PX = 72
 
 /** Static display row for one exercise (LG-005). No link/onClick - LG-006
  * wraps rows in navigation. `content-visibility: auto` keeps the full
- * 873-row list smooth on mobile without a virtualization dependency. */
-export function ExerciseListItem({ exercise }: { exercise: Exercise }) {
+ * 873-row list smooth on mobile without a virtualization dependency.
+ *
+ * `trailing` renders after the text column (e.g. a remove button or a
+ * selection check); `muted` greys the name and thumbnail for unavailable rows.
+ * `subtitle` replaces the muscle/equipment meta line when given. */
+export function ExerciseListItem({
+  exercise,
+  trailing,
+  muted = false,
+  subtitle,
+}: {
+  exercise: Exercise
+  trailing?: ReactNode
+  muted?: boolean
+  subtitle?: ReactNode
+}) {
   const meta = [
     exercise.primaryMuscles[0] ? formatFilterValue(exercise.primaryMuscles[0]) : null,
     exercise.equipment ? formatFilterValue(exercise.equipment) : null,
   ]
     .filter((part): part is string => Boolean(part))
     .join(' · ')
+  const secondLine = subtitle ?? meta
 
   return (
     <div
@@ -30,7 +47,7 @@ export function ExerciseListItem({ exercise }: { exercise: Exercise }) {
           alt=""
           loading="lazy"
           decoding="async"
-          className="size-12 shrink-0 rounded-md bg-muted object-cover"
+          className={cn('size-12 shrink-0 rounded-md bg-muted object-cover', muted && 'grayscale')}
         />
       ) : (
         <div
@@ -40,10 +57,13 @@ export function ExerciseListItem({ exercise }: { exercise: Exercise }) {
           <Dumbbell className="size-5 text-muted-foreground" />
         </div>
       )}
-      <div className="min-w-0">
-        <p className="truncate text-base">{exercise.name}</p>
-        {meta ? <p className="mt-0.5 truncate text-sm text-muted-foreground">{meta}</p> : null}
+      <div className="min-w-0 flex-1">
+        <p className={cn('truncate text-base', muted && 'text-muted-foreground')}>{exercise.name}</p>
+        {secondLine ? (
+          <p className="mt-0.5 truncate text-sm text-muted-foreground">{secondLine}</p>
+        ) : null}
       </div>
+      {trailing}
     </div>
   )
 }

@@ -1,12 +1,13 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { SoonRow } from '@/components/SoonRow'
+import { MenuLinkRow } from '@/components/MenuLinkRow'
 
 /**
  * The FAB's quick-action launcher (`.gsd/user-flows.md` §1). Wraps the existing
  * bottom-sheet primitive - no new dependency, no second sheet pattern.
  *
- * Every action is disabled in LG-049: none of the five destinations exists yet.
- * The rows ship in final approved order now so a later story enables its own row
+ * "Start new program" is live since LG-020; the other four stay disabled until
+ * their destinations exist. The rows ship in final approved order now so a later story enables its own row
  * in a one-line diff and never re-sorts the menu.
  */
 const QUICK_ACTIONS = [
@@ -33,7 +34,11 @@ export function QuickActionSheet({
         <ul className="divide-y divide-border overflow-y-auto border-t border-border px-4 pb-2">
           {QUICK_ACTIONS.map((label) => (
             <li key={label}>
-              <SoonRow label={label} />
+              {label === 'Start new program' ? (
+                <MenuLinkRow to="/programs/new" label={label} onClick={() => onOpenChange(false)} />
+              ) : (
+                <SoonRow label={label} />
+              )}
             </li>
           ))}
         </ul>

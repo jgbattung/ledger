@@ -106,3 +106,13 @@ describe('safe-area inset opt-in', () => {
     expect(read(file)).toContain('env(safe-area-inset-bottom)')
   })
 })
+
+describe('--destructive-tint-foreground token (LG-020)', () => {
+  const css = readFileSync(path.join(root, 'src/index.css'), 'utf-8')
+
+  it('is defined for both themes and exposed to Tailwind', () => {
+    expect(css).toMatch(/:root\s*\{[^}]*--destructive-tint-foreground:/s)
+    expect(css).toMatch(/\.dark\s*\{[^}]*--destructive-tint-foreground:\s*oklch\(0\.76 0\.17 25\)/s)
+    expect(css).toMatch(/--color-destructive-tint-foreground:\s*var\(--destructive-tint-foreground\)/)
+  })
+})

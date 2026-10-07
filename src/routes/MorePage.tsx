@@ -1,5 +1,4 @@
-import { NavLink } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { MenuLinkRow } from '@/components/MenuLinkRow'
 import { SoonRow } from '@/components/SoonRow'
 
 /**
@@ -11,18 +10,6 @@ import { SoonRow } from '@/components/SoonRow'
  * `/more/settings` and `/more/library` are nested paths but NOT nested UI -
  * there is deliberately no `<Outlet />` on this screen.
  */
-function MenuLinkRow({ to, label }: { to: string; label: string }) {
-  return (
-    <NavLink
-      to={to}
-      className="flex min-h-touch-primary items-center justify-between gap-4 py-3 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-    >
-      <span className="text-base">{label}</span>
-      <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden="true" />
-    </NavLink>
-  )
-}
-
 export function MorePage() {
   return (
     <div className="pt-6">

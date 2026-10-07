@@ -66,7 +66,8 @@ export type ProgramDay = BaseRecord & {
   programId: string
   orderIndex: number
   name: string
-  isRestDay: boolean
+  /** @deprecated derived via isRestDay(); never written (Q8) */
+  isRestDay?: boolean
   notes?: string
 }
 
@@ -74,10 +75,11 @@ export type ProgramExercise = BaseRecord & {
   programDayId: string
   orderIndex: number
   exerciseRef: ExerciseRef
-  workingSets: number
-  repMin: number
-  repMax: number
-  rirTarget: number
+  /** Targets stay blank until set in LG-052's drawer (Q9). */
+  workingSets?: number
+  repMin?: number
+  repMax?: number
+  rirTarget?: number
   restSeconds?: number
   warmupSetCount?: number
   notes?: string

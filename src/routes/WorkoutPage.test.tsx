@@ -12,14 +12,18 @@ const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
 async function seed(
   name: string,
   days: { name: string; ids: string[] }[],
-  opts: { activate?: boolean; archive?: boolean } = {},
+  opts: { activate?: boolean; archive?: boolean; targets?: boolean } = {},
 ) {
   const draft = emptyDraft()
   draft.name = name
   draft.days = days.map((day) => ({
     id: crypto.randomUUID(),
     name: day.name,
-    exercises: day.ids.map((id) => ({ id: crypto.randomUUID(), exerciseRef: ref(id) })),
+    exercises: day.ids.map((id) => ({
+      id: crypto.randomUUID(),
+      exerciseRef: ref(id),
+      ...(opts.targets === false ? {} : { workingSets: 3, repMin: 8, repMax: 12 }),
+    })),
   }))
   const id = await programs.saveTree(draft, { activate: opts.activate })
   if (opts.archive) await programs.archive(id)

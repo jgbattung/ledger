@@ -14,7 +14,8 @@ type TextFieldSheetProps = {
   onSubmit: (value: string) => void
 }
 
-const FIELD =
+/** Shared input styling for fields inside sheets. */
+export const FIELD_CLASS =
   'w-full rounded-md border border-transparent bg-muted px-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50'
 
 /** Single text input in a bottom sheet (program name, notes, day rename). */
@@ -95,7 +96,7 @@ function TextFieldForm({
             value={value}
             rows={4}
             onChange={(event) => setValue(event.target.value)}
-            className={cn(FIELD, 'min-h-touch-min resize-none py-3')}
+            className={cn(FIELD_CLASS, 'min-h-touch-min resize-none py-3')}
           />
         ) : (
           <input
@@ -103,7 +104,7 @@ function TextFieldForm({
             type="text"
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            className={cn(FIELD, 'min-h-touch-min')}
+            className={cn(FIELD_CLASS, 'min-h-touch-min')}
           />
         )}
       </label>

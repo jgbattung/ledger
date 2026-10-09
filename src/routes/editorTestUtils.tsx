@@ -2,6 +2,7 @@ import { render } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { programs } from '@/db/repos'
 import { emptyDraft } from '@/programs/model'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { ProgramEditorPage } from './ProgramEditorPage'
 import { ExercisePickerPage } from './ExercisePickerPage'
 
@@ -43,6 +44,10 @@ export function renderEditor(path: string) {
     ],
     { initialEntries: [path] },
   )
-  render(<RouterProvider router={router} />)
+  render(
+    <SettingsProvider>
+      <RouterProvider router={router} />
+    </SettingsProvider>,
+  )
   return router
 }

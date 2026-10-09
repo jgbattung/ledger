@@ -1,12 +1,8 @@
 import { Minus, Plus } from 'lucide-react'
+import { formatSeconds } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
-/** Formats a total-seconds value as `m:ss` (180 -> "3:00"). */
-export function formatSeconds(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = totalSeconds % 60
-  return `${minutes}:${String(seconds).padStart(2, '0')}`
-}
+export { formatSeconds }
 
 type StepperProps = {
   value: number

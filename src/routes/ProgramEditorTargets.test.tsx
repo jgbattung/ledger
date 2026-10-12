@@ -142,6 +142,38 @@ describe('ProgramEditorPage - exercise targets', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
+  it('saving after the gate jump edits the jumped-to day and leaves day 1 alone', async () => {
+    const user = userEvent.setup()
+    const days = [
+      { name: 'Push', ids: ['barbell-bench-press'] },
+      { name: 'Pull', ids: ['pull-up'] },
+    ]
+    const { id, router } = await open(days)
+    await configure(user, 'Barbell Bench Press', '3', '6', '8')
+
+    await user.click(screen.getByRole('button', { name: 'Activate' }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByRole('heading', { name: 'Pull-Up' })).toBeInTheDocument()
+    await user.type(within(dialog).getByRole('textbox', { name: 'Sets' }), '5')
+    await user.type(within(dialog).getByRole('textbox', { name: 'Rep min' }), '10')
+    await user.type(within(dialog).getByRole('textbox', { name: 'Rep max' }), '12')
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+    // Day 2 (the selected day) shows the new summary.
+    expect(screen.getByText('5 × 10–12 · RIR 0')).toBeInTheDocument()
+    expect(screen.queryByText('No targets yet')).not.toBeInTheDocument()
+
+    // Day 1 still has its own values.
+    await user.click(screen.getByRole('tab', { name: 'Push' }))
+    expect(screen.getByText('3 × 6–8 · RIR 0')).toBeInTheDocument()
+    expect(screen.queryByText('5 × 10–12 · RIR 0')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Activate' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect((await programs.get(id))?.isActive).toBe(true)
+  })
+
   it('after completing the flagged exercise, Activate succeeds and goes to /workout', async () => {
     const user = userEvent.setup()
     const { id, router } = await open()

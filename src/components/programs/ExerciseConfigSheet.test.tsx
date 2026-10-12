@@ -186,4 +186,73 @@ describe('ExerciseConfigSheet', () => {
     await setup(blank, 'Set sets and reps to activate this program.')
     expect(screen.getByText('Set sets and reps to activate this program.')).toBeInTheDocument()
   })
+
+  it('clears the min/max error once max is corrected and then saves', async () => {
+    const { user, onSave } = await setup()
+    await user.type(field('Rep min'), '10')
+    await user.type(field('Rep max'), '8')
+    await save(user)
+    expect(screen.getByText("Min can't be more than max.")).toBeInTheDocument()
+    expect(onSave).not.toHaveBeenCalled()
+
+    await user.clear(field('Rep max'))
+    await user.type(field('Rep max'), '12')
+    await save(user)
+
+    expect(screen.queryByText("Min can't be more than max.")).not.toBeInTheDocument()
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ repMin: 10, repMax: 12 }))
+  })
+
+  // Limits from the spec: sets 1-20, reps 1-100, RIR 0-5, rest 0:15-10:00, warm-ups 0-5.
+  it.each([
+    ['Sets', '1', { workingSets: 1 }],
+    ['Sets', '20', { workingSets: 20 }],
+    ['Rep min', '1', { repMin: 1, repMax: 1 }],
+    ['Rep min', '100', { repMin: 100, repMax: 100 }],
+    ['RIR', '0', { rirTarget: 0 }],
+    ['RIR', '5', { rirTarget: 5 }],
+    ['Warm-ups', '0', { warmupSetCount: 0 }],
+    ['Warm-ups', '5', { warmupSetCount: 5 }],
+    ['Rest', '15', { restSeconds: 15 }],
+    ['Rest', '1000', { restSeconds: 600 }],
+  ])('accepts %s = %s at the boundary', async (name, value, expected) => {
+    const { user, onSave } = await setup()
+    await user.type(field(name), value)
+    await save(user)
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining(expected))
+  })
+
+  it.each([
+    ['Sets', '21', 'Enter 1 to 20.'],
+    ['Rep min', '0', 'Enter 1 to 100.'],
+    ['Rep min', '101', 'Enter 1 to 100.'],
+    ['RIR', '6', 'Enter 0 to 5.'],
+    ['Warm-ups', '6', 'Enter 0 to 5.'],
+    ['Rest', '14', 'Enter 0:15 to 10:00.'],
+    ['Rest', '1001', 'Enter 0:15 to 10:00.'],
+  ])('rejects %s = %s with its exact message', async (name, value, message) => {
+    const { user, onSave } = await setup()
+    await user.type(field(name), value)
+    await save(user)
+    expect(screen.getByText(message)).toBeInTheDocument()
+    expect(field(name)).toHaveAttribute('aria-invalid', 'true')
+    expect(onSave).not.toHaveBeenCalled()
+  })
+
+  it('links an invalid field to its error text for screen readers', async () => {
+    const { user } = await setup()
+    await user.type(field('Sets'), '21')
+    await save(user)
+    expect(field('Sets')).toHaveAttribute('aria-invalid', 'true')
+    expect(field('Sets')).toHaveAccessibleDescription('Enter 1 to 20.')
+
+    await user.type(field('Rep min'), '10')
+    await user.type(field('Rep max'), '8')
+    await save(user)
+    expect(field('Rep min')).toHaveAccessibleDescription("Min can't be more than max.")
+    expect(field('Rep max')).toHaveAccessibleDescription("Min can't be more than max.")
+    // A valid field carries no stale description.
+    expect(field('RIR')).not.toHaveAttribute('aria-invalid')
+    expect(field('RIR')).not.toHaveAttribute('aria-describedby')
+  })
 })

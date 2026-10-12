@@ -3,6 +3,7 @@ import { cleanup, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { resetDb } from '@/db/test-utils'
 import { programs } from '@/db/repos'
+import { firstIncompleteExercise, programTreeToDraft } from '@/programs/model'
 import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
 import { renderEditor, seedProgram } from './editorTestUtils'
 
@@ -182,5 +183,29 @@ describe('ProgramEditorPage - exercise targets', () => {
     await user.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
     expect((await programs.get(id))?.isActive).toBe(false)
+  })
+
+  it('saving an active program with a gap keeps it active (handled in LG-022)', async () => {
+    // Characterization: Save is never gated, so an already-active program can
+    // end up with an exercise missing targets. Accepted for LG-052; LG-022
+    // owns what happens when a workout starts from such a day.
+    const user = userEvent.setup()
+    const id = await seedProgram('PPL', ONE_DAY, { activate: true })
+    const router = renderEditor(`/programs/${id}`)
+    await screen.findByRole('tablist')
+
+    await user.click(screen.getByRole('button', { name: 'Configure Pull-Up' }))
+    const dialog = await screen.findByRole('dialog')
+    await user.clear(within(dialog).getByRole('textbox', { name: 'Sets' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(screen.getAllByText('No targets yet')).toHaveLength(1)
+
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+
+    expect((await programs.get(id))?.isActive).toBe(true)
+    const tree = await programs.loadTree(id)
+    expect(firstIncompleteExercise(programTreeToDraft(tree!))).not.toBeNull()
   })
 })

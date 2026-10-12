@@ -255,4 +255,49 @@ describe('ExerciseConfigSheet', () => {
     expect(field('RIR')).not.toHaveAttribute('aria-invalid')
     expect(field('RIR')).not.toHaveAttribute('aria-describedby')
   })
+
+  it('shows rest as m:ss while typing, backspaces one digit and clears to the placeholder', async () => {
+    const { user } = await setup()
+    const rest = field('Rest')
+    await user.click(rest)
+    await user.keyboard('2')
+    expect(rest).toHaveValue('0:02')
+    await user.keyboard('3')
+    expect(rest).toHaveValue('0:23')
+    await user.keyboard('0')
+    expect(rest).toHaveValue('2:30')
+
+    await user.keyboard('{Backspace}')
+    expect(rest).toHaveValue('0:23')
+
+    await user.clear(rest)
+    expect(rest).toHaveValue('')
+    expect(rest).toHaveAttribute('placeholder', '3:00')
+  })
+
+  it('Enter moves to the next field in order without saving', async () => {
+    const { user, onSave } = await setup()
+    const order = [
+      field('Sets'),
+      field('Rep min'),
+      field('Rep max'),
+      field('RIR'),
+      field('Rest'),
+      field('Warm-ups'),
+      field('Notes'),
+    ]
+    expect(order[0]).toHaveFocus()
+    for (let i = 0; i < order.length - 1; i++) {
+      await user.keyboard('{Enter}')
+      expect(order[i + 1]).toHaveFocus()
+    }
+    expect(onSave).not.toHaveBeenCalled()
+  })
+
+  it('Enter inside Notes inserts a newline and does not submit', async () => {
+    const { user, onSave } = await setup()
+    await user.type(field('Notes'), 'a{Enter}b')
+    expect(field('Notes')).toHaveValue('a\nb')
+    expect(onSave).not.toHaveBeenCalled()
+  })
 })

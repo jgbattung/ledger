@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { newId } from '@/db/ids'
 import { programs } from '@/db/repos'
 import { emptyDraft, nextDayName, programTreeToDraft } from '@/programs/model'
-import type { DraftDay, DraftExercise, ProgramDraft } from '@/programs/model'
+import type { DraftDay, DraftExercise, ExerciseTargets, ProgramDraft } from '@/programs/model'
 import type { ExerciseRef } from '@/db/types'
 
 /**
@@ -31,6 +31,7 @@ type ProgramDraftState = {
   selectDay: (dayId: string) => void
   addExercises: (dayId: string, refs: ExerciseRef[]) => void
   removeExercise: (dayId: string, exerciseId: string) => void
+  updateExercise: (dayId: string, exerciseId: string, targets: ExerciseTargets) => void
   closeNamePrompt: () => void
   commit: (opts?: { activate?: boolean }) => Promise<void>
   applyPersistedFlags: (patch: Partial<PersistedFlags>) => void
@@ -143,6 +144,30 @@ export const useProgramDraftStore = create<ProgramDraftState>((set, get) => ({
       draft: mapDay(draft, dayId, (day) => ({
         ...day,
         exercises: day.exercises.filter((e) => e.id !== exerciseId),
+      })),
+    })),
+
+  // Absent values stay undefined (never null or ""), in canonical key order,
+  // so clearing a field and re-saving the original values reads clean.
+  updateExercise: (dayId, exerciseId, targets) =>
+    set(({ draft }) => ({
+      draft: mapDay(draft, dayId, (day) => ({
+        ...day,
+        exercises: day.exercises.map((e) =>
+          e.id === exerciseId
+            ? {
+                id: e.id,
+                exerciseRef: e.exerciseRef,
+                workingSets: targets.workingSets ?? undefined,
+                repMin: targets.repMin ?? undefined,
+                repMax: targets.repMax ?? undefined,
+                rirTarget: targets.rirTarget ?? undefined,
+                restSeconds: targets.restSeconds ?? undefined,
+                warmupSetCount: targets.warmupSetCount ?? undefined,
+                notes: targets.notes || undefined,
+              }
+            : e,
+        ),
       })),
     })),
 

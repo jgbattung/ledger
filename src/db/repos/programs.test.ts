@@ -16,8 +16,10 @@ import type { Program } from '@/db/types'
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-function exercise(exerciseId: string): DraftExercise {
-  return { id: newId(), exerciseRef: ref(exerciseId) }
+const COMPLETE = { workingSets: 3, repMin: 8, repMax: 12 }
+
+function exercise(exerciseId: string, targets: Partial<DraftExercise> = COMPLETE): DraftExercise {
+  return { id: newId(), exerciseRef: ref(exerciseId), ...targets }
 }
 
 function pplDraft(): ProgramDraft {
@@ -85,6 +87,7 @@ describe('programs repo', () => {
 
   it('saveTree creates a 4-day tree and loadTree round-trips it', async () => {
     const draft = pplDraft()
+    draft.days[0].exercises[0] = exercise('a', {})
     await programs.saveTree(draft)
 
     const tree = await programs.loadTree(draft.id)
@@ -96,6 +99,7 @@ describe('programs repo', () => {
     expect(tree?.days[0].exercises.map((e) => e.exerciseRef.exerciseId)).toEqual(['a', 'b'])
     expect(tree?.days[0].exercises[0].repMin).toBeUndefined()
     expect(tree?.days[0].exercises[0].workingSets).toBeUndefined()
+    expect(tree?.days[0].exercises[1]).toMatchObject(COMPLETE)
     expect(tree?.days.every((d) => d.day.isRestDay === undefined)).toBe(true)
 
     const draftBack = programTreeToDraft(tree!)
@@ -232,6 +236,48 @@ describe('programs repo', () => {
     await programs.saveTree(draft)
     await programs.archive(draft.id)
     await expect(programs.saveTree(draft, { activate: true })).rejects.toThrow()
+  })
+
+  it('saveTree with activate rejects a draft with missing targets and changes nothing active', async () => {
+    const other = await insertProgram('Other', { isActive: true })
+    const draft = pplDraft()
+    draft.days[1].exercises[0] = exercise('c', { workingSets: 3, repMin: 8 })
+
+    await expect(programs.saveTree(draft, { activate: true })).rejects.toThrow(
+      'Programs with missing targets cannot be activated',
+    )
+    expect(await programs.get(draft.id)).toBeUndefined()
+    expect((await programs.get(other.id))?.isActive).toBe(true)
+
+    await programs.saveTree(draft)
+    expect((await programs.get(draft.id))?.isActive).toBe(false)
+    expect((await programs.get(other.id))?.isActive).toBe(true)
+  })
+
+  it('setActive rejects a program with missing targets and accepts a complete one', async () => {
+    const draft = pplDraft()
+    draft.days[0].exercises[1] = exercise('b', {})
+    await programs.saveTree(draft)
+
+    await expect(programs.setActive(draft.id)).rejects.toThrow(
+      'Programs with missing targets cannot be activated',
+    )
+    expect((await programs.get(draft.id))?.isActive).toBe(false)
+
+    draft.days[0].exercises[1] = { ...draft.days[0].exercises[1], ...COMPLETE }
+    await programs.saveTree(draft)
+    await programs.setActive(draft.id)
+    expect((await programs.get(draft.id))?.isActive).toBe(true)
+  })
+
+  it('setActive ignores soft-deleted incomplete exercises', async () => {
+    const draft = pplDraft()
+    draft.days[0].exercises.push(exercise('z', {}))
+    await programs.saveTree(draft)
+    draft.days[0].exercises.pop()
+    await programs.saveTree(draft)
+    await programs.setActive(draft.id)
+    expect((await programs.get(draft.id))?.isActive).toBe(true)
   })
 
   it('setActive on an archived program throws', async () => {

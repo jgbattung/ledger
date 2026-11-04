@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Moon, Plus, X } from 'lucide-react'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { getExerciseById } from '@/exercises/catalog'
-import { exerciseName, isRestDay } from '@/programs/model'
+import { exerciseName, formatTargets, isRestDay } from '@/programs/model'
 import type { DraftDay } from '@/programs/model'
 
 const ADD_LINK =
@@ -19,17 +19,21 @@ function NoTargets() {
 
 /**
  * Exercise section of the selected day: the count header with "Add exercises",
- * one row per exercise (44px remove), or the rest-day card for an empty day.
- * Rows are not tappable until the targets drawer lands (LG-052).
+ * one row per exercise, or the rest-day card for an empty day. Each row is a
+ * full-width button that opens the targets drawer (`onConfigure`), with the
+ * 44px remove button beside it (a sibling, never nested). The subtitle is the
+ * target summary, or the "No targets yet" marker while sets or reps are missing.
  */
 export function DayExerciseList({
   day,
   addHref,
   onRemove,
+  onConfigure,
 }: {
   day: DraftDay
   addHref: string
   onRemove: (exerciseId: string) => void
+  onConfigure: (exerciseId: string) => void
 }) {
   if (isRestDay(day)) {
     return (
@@ -68,31 +72,35 @@ export function DayExerciseList({
           const name = exerciseName(exercise.exerciseRef)
           const catalog =
             exercise.exerciseRef.source === 'db' ? getExerciseById(exercise.exerciseRef.exerciseId) : undefined
-          const remove = (
-            <button
-              type="button"
-              aria-label={`Remove ${name}`}
-              onClick={() => onRemove(exercise.id)}
-              className="-mr-3 flex size-touch-min shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-              <X className="size-5" aria-hidden="true" />
-            </button>
-          )
+          const summary = formatTargets(exercise)
+          const subtitle = summary ? <span className="tabular-nums">{summary}</span> : <NoTargets />
           return (
-            <li key={exercise.id}>
-              {catalog ? (
-                <ExerciseListItem exercise={catalog} trailing={remove} subtitle={<NoTargets />} />
-              ) : (
-                <div className="flex min-h-touch-primary items-center gap-3 py-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-base">{name}</p>
-                    <p className="mt-0.5 text-sm text-muted-foreground">
-                      <NoTargets />
-                    </p>
+            <li key={exercise.id} className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-label={`Configure ${name}`}
+                onClick={() => onConfigure(exercise.id)}
+                className="min-w-0 flex-1 rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
+              >
+                {catalog ? (
+                  <ExerciseListItem exercise={catalog} subtitle={subtitle} />
+                ) : (
+                  <div className="flex min-h-touch-primary items-center py-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-base">{name}</p>
+                      <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
+                    </div>
                   </div>
-                  {remove}
-                </div>
-              )}
+                )}
+              </button>
+              <button
+                type="button"
+                aria-label={`Remove ${name}`}
+                onClick={() => onRemove(exercise.id)}
+                className="-mr-3 flex size-touch-min shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                <X className="size-5" aria-hidden="true" />
+              </button>
             </li>
           )
         })}

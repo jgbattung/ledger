@@ -4,8 +4,11 @@ import { createRepo } from '@/db/repos/base'
 import { programDays } from '@/db/repos/programDays'
 import { programExercises } from '@/db/repos/programExercises'
 import { markDirty } from '@/db/repos/syncState'
+import { firstIncompleteExercise, hasRequiredTargets } from '@/programs/model'
 import type { ProgramDraft } from '@/programs/model'
 import type { BaseRecord, Program, ProgramDay, ProgramExercise } from '@/db/types'
+
+const MISSING_TARGETS = 'Programs with missing targets cannot be activated'
 
 const baseRepo = createRepo<Program>(db.programs, 'programs')
 
@@ -61,16 +64,30 @@ export const programs = {
   ...baseRepo,
 
   async setActive(id: string): Promise<void> {
-    await db.transaction('rw', db.programs, db.syncState, async () => {
-      const target = await db.programs.get(id)
-      if (!target || target.deletedAt != null) throw new Error('Program not found')
-      if (target.isArchived) throw new Error('Archived programs cannot be activated')
+    await db.transaction(
+      'rw',
+      [db.programs, db.programDays, db.programExercises, db.syncState],
+      async () => {
+        const target = await db.programs.get(id)
+        if (!target || target.deletedAt != null) throw new Error('Program not found')
+        if (target.isArchived) throw new Error('Archived programs cannot be activated')
 
-      const timestamp = now()
-      await deactivateOthers(id, timestamp)
-      await db.programs.update(id, { isActive: true, updatedAt: timestamp })
-      await markDirty('programs', id)
-    })
+        const days = await db.programDays.where('programId').equals(id).toArray()
+        const dayIds = days.filter((day) => day.deletedAt == null).map((day) => day.id)
+        const exercises =
+          dayIds.length > 0
+            ? await db.programExercises.where('programDayId').anyOf(dayIds).toArray()
+            : []
+        if (!exercises.filter((e) => e.deletedAt == null).every(hasRequiredTargets)) {
+          throw new Error(MISSING_TARGETS)
+        }
+
+        const timestamp = now()
+        await deactivateOthers(id, timestamp)
+        await db.programs.update(id, { isActive: true, updatedAt: timestamp })
+        await markDirty('programs', id)
+      },
+    )
   },
 
   async deactivate(id: string): Promise<void> {
@@ -125,6 +142,7 @@ export const programs = {
         if (opts.activate && (draft.isArchived || existingProgram?.isArchived)) {
           throw new Error('Archived programs cannot be activated')
         }
+        if (opts.activate && firstIncompleteExercise(draft)) throw new Error(MISSING_TARGETS)
 
         // Program row. Flags on an existing row change only via the
         // lifecycle methods or `activate`, never from a possibly stale draft.

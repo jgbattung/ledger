@@ -7,9 +7,11 @@ import { dayPanelId, dayTabId } from '@/components/programs/dayIds'
 import { DayActions } from '@/components/programs/DayActions'
 import { DayExerciseList } from '@/components/programs/DayExerciseList'
 import { DayNotes } from '@/components/programs/DayNotes'
+import { ExerciseConfigSheet } from '@/components/programs/ExerciseConfigSheet'
 import { ProgramSettingsSheet } from '@/components/programs/ProgramSettingsSheet'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { TextFieldSheet } from '@/components/ui/text-field-sheet'
+import { firstIncompleteExercise } from '@/programs/model'
 import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
 import { cn } from '@/lib/utils'
 
@@ -36,6 +38,11 @@ export function ProgramEditorPage() {
   const [lifecyclePending, setLifecyclePending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  // The exercise id is kept after the sheet closes so its content survives the
+  // exit animation; `configOpen` is what actually shows it.
+  const [configId, setConfigId] = useState<string | null>(null)
+  const [configOpen, setConfigOpen] = useState(false)
+  const [configNotice, setConfigNotice] = useState(false)
 
   // Leaving the editor with unsaved edits asks first. Navigating to the picker
   // (a child of the editor path) is never blocked. Leaving clean also drops the
@@ -78,7 +85,23 @@ export function ProgramEditorPage() {
     else navigate('/workout', { replace: true })
   }
 
+  const openConfig = (exerciseId: string, notice: boolean) => {
+    setConfigNotice(notice)
+    setConfigId(exerciseId)
+    setConfigOpen(true)
+  }
+
   const finish = async (activate: boolean) => {
+    // Activation needs sets and reps on every exercise: jump to the first gap
+    // and open its drawer instead of committing. Save never checks.
+    if (activate) {
+      const gap = firstIncompleteExercise(draft)
+      if (gap) {
+        store().selectDay(gap.dayId)
+        openConfig(gap.exerciseId, true)
+        return
+      }
+    }
     setBusy(true)
     setError(null)
     try {
@@ -138,6 +161,7 @@ export function ProgramEditorPage() {
             day={day}
             addHref={`${basePath}/exercises?day=${day.id}`}
             onRemove={(exerciseId) => store().removeExercise(day.id, exerciseId)}
+            onConfigure={(exerciseId) => openConfig(exerciseId, false)}
           />
         </div>
       </div>
@@ -182,6 +206,17 @@ export function ProgramEditorPage() {
         onLeave={() => navigate('/workout', { replace: true })}
         onError={setError}
         onPendingChange={setLifecyclePending}
+      />
+
+      <ExerciseConfigSheet
+        open={configOpen}
+        onOpenChange={setConfigOpen}
+        exercise={day.exercises.find((e) => e.id === configId) ?? null}
+        dayName={day.name}
+        notice={configNotice ? 'Set sets and reps to activate this program.' : undefined}
+        onSave={(targets) => {
+          if (configId) store().updateExercise(day.id, configId, targets)
+        }}
       />
 
       <ConfirmSheet

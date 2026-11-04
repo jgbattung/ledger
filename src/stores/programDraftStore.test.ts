@@ -120,4 +120,62 @@ describe('programDraftStore', () => {
     expect(draft().isActive).toBe(false)
     expect(dirty()).toBe(false)
   })
+
+  describe('updateExercise', () => {
+    const all = {
+      workingSets: 4,
+      repMin: 6,
+      repMax: 10,
+      rirTarget: 2,
+      restSeconds: 150,
+      warmupSetCount: 1,
+      notes: 'Pause at the bottom',
+    }
+
+    function seedOne() {
+      store().startNew()
+      store().addExercises(draft().days[0].id, [ref('bench-press')])
+      return { dayId: draft().days[0].id, exerciseId: draft().days[0].exercises[0].id }
+    }
+
+    it('makes the draft dirty and round-trips all 7 fields through Dexie', async () => {
+      const { dayId, exerciseId } = seedOne()
+      await store().commit()
+      expect(dirty()).toBe(false)
+
+      store().updateExercise(dayId, exerciseId, all)
+      expect(dirty()).toBe(true)
+      await store().commit()
+      expect(dirty()).toBe(false)
+
+      const tree = await programs.loadTree(draft().id)
+      expect(tree!.days[0].exercises[0]).toMatchObject(all)
+    })
+
+    it('reads clean when the original values are set back', async () => {
+      const { dayId, exerciseId } = seedOne()
+      store().updateExercise(dayId, exerciseId, all)
+      await store().commit()
+
+      store().updateExercise(dayId, exerciseId, {})
+      expect(dirty()).toBe(true)
+      store().updateExercise(dayId, exerciseId, all)
+      expect(dirty()).toBe(false)
+    })
+
+    it('stores empty notes as absent', () => {
+      const { dayId, exerciseId } = seedOne()
+      store().updateExercise(dayId, exerciseId, { workingSets: 3, notes: '' })
+      expect(draft().days[0].exercises[0].notes).toBeUndefined()
+      expect(draft().days[0].exercises[0].workingSets).toBe(3)
+    })
+
+    it('leaves the draft unchanged for unknown day or exercise ids', () => {
+      const { dayId, exerciseId } = seedOne()
+      const before = JSON.stringify(draft())
+      store().updateExercise('nope', exerciseId, all)
+      store().updateExercise(dayId, 'nope', all)
+      expect(JSON.stringify(draft())).toBe(before)
+    })
+  })
 })

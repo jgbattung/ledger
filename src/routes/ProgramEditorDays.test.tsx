@@ -10,8 +10,8 @@ const TWO_DAYS = [
   { name: 'Rest', ids: [] },
 ]
 
-async function open(days = TWO_DAYS) {
-  const id = await seedProgram('PPL', days)
+async function open(days = TWO_DAYS, opts: { targets?: boolean } = {}) {
+  const id = await seedProgram('PPL', days, opts)
   renderEditor(`/programs/${id}`)
   await screen.findByRole('tablist')
   return id
@@ -119,7 +119,7 @@ describe('ProgramEditorPage - day actions and exercises', () => {
 
   it('removing an exercise updates the count and shows the no-targets hint', async () => {
     const user = userEvent.setup()
-    await open()
+    await open(TWO_DAYS, { targets: false })
     expect(screen.getAllByText('No targets yet')).toHaveLength(2)
     await user.click(screen.getByRole('button', { name: 'Remove Pull-Up' }))
     expect(screen.getByText('1 exercise')).toBeInTheDocument()

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { addExercises, renameDay } from './program-builder-helpers';
+import { addExercises, configureExercise, renameDay } from './program-builder-helpers';
 
 test('program builder: create, save, reload, edit, activate, archive, restore, delete', async ({
   page,
@@ -47,6 +47,12 @@ test('program builder: create, save, reload, edit, activate, archive, restore, d
   await page.getByRole('tab', { name: 'Pull' }).click();
   await page.getByRole('button', { name: 'Remove Barbell Curl' }).click();
   await expect(page.getByText('1 exercise')).toBeVisible();
+  // Activation needs sets and reps on every exercise.
+  await configureExercise(page, 'Pull-Up', { sets: '4', min: '6', max: '10' });
+  await page.getByRole('tab', { name: 'Push' }).click();
+  await configureExercise(page, 'Barbell Bench Press', { sets: '3', min: '8', max: '12' });
+  await configureExercise(page, 'Incline Barbell Bench Press', { sets: '3', min: '8', max: '12' });
+  await configureExercise(page, 'Decline Barbell Bench Press', { sets: '3', min: '8', max: '12' });
   await page.getByRole('button', { name: 'Activate' }).click();
   await expect(page.getByRole('heading', { name: 'Active Program' })).toBeVisible();
   const toggle = page.getByRole('button', { name: 'Collapse Push Pull Legs' });
@@ -125,4 +131,64 @@ test('returning from the picker scrolls the selected far-right day tab into view
   await expect(last).toBeInViewport();
   // Proves the row overflows, so the check above is not vacuous.
   await expect(page.getByRole('tab', { name: 'Day 1', exact: true })).not.toBeInViewport();
+});
+
+test('Activate with a blank exercise opens its drawer with the notice', async ({ page }) => {
+  await page.goto('/programs/new');
+  await page.getByLabel('Program name').fill('Gate');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await addExercises(page, 'pull', [/^Pull-Up/]);
+  await expect(page.getByText('No targets yet')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Activate' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Pull-Up' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('Set sets and reps to activate this program.')).toBeVisible();
+  await expect(page).toHaveURL(/\/programs\//);
+
+  // Mobile: with the keypad open (viewport shrunk) Save must stay reachable.
+  if (test.info().project.name === 'mobile-chrome') {
+    await page.setViewportSize({ width: 384, height: 420 });
+    await dialog.getByRole('textbox', { name: 'Rep max' }).focus();
+    await expect(dialog.getByRole('button', { name: 'Save', exact: true })).toBeInViewport();
+  }
+
+  await dialog.getByRole('textbox', { name: 'Sets', exact: true }).fill('3');
+  await dialog.getByRole('textbox', { name: 'Rep min' }).fill('8');
+  await dialog.getByRole('textbox', { name: 'Rep max' }).fill('12');
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await page.getByRole('button', { name: 'Activate' }).click();
+  await expect(page.getByRole('heading', { name: 'Active Program' })).toBeVisible();
+});
+
+test('exercise targets survive a reload', async ({ page }) => {
+  await page.goto('/programs/new');
+  await page.getByLabel('Program name').fill('Round trip');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await addExercises(page, 'pull', [/^Pull-Up/]);
+
+  await page.getByRole('button', { name: 'Configure Pull-Up', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Pull-Up' });
+  await dialog.getByRole('textbox', { name: 'Sets', exact: true }).fill('4');
+  await dialog.getByRole('textbox', { name: 'Rep min' }).fill('6');
+  await dialog.getByRole('textbox', { name: 'Rep max' }).fill('10');
+  await dialog.getByRole('textbox', { name: 'RIR' }).fill('2');
+  await dialog.getByRole('textbox', { name: 'Rest', exact: true }).fill('230');
+  await dialog.getByRole('textbox', { name: 'Warm-ups' }).fill('1');
+  await dialog.getByRole('textbox', { name: 'Notes' }).fill('Full hang');
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByText('4 × 6–10 · RIR 2 · rest 2:30')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Workout Library' })).toBeVisible();
+  await page.reload();
+  await page.getByRole('link', { name: /Round trip/ }).click();
+  await expect(page.getByText('4 × 6–10 · RIR 2 · rest 2:30')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Configure Pull-Up', exact: true }).click();
+  const reopened = page.getByRole('dialog', { name: 'Pull-Up' });
+  await expect(reopened.getByRole('textbox', { name: 'Sets', exact: true })).toHaveValue('4');
+  await expect(reopened.getByRole('textbox', { name: 'Rest', exact: true })).toHaveValue('2:30');
+  await expect(reopened.getByRole('textbox', { name: 'Warm-ups' })).toHaveValue('1');
+  await expect(reopened.getByRole('textbox', { name: 'Notes' })).toHaveValue('Full hang');
 });

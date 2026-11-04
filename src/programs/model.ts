@@ -1,5 +1,6 @@
 import { newId } from '@/db/ids'
 import { getExerciseById } from '@/exercises/catalog'
+import { formatSeconds } from '@/lib/format'
 import type { ExerciseRef } from '@/db/types'
 import type { ProgramTree } from '@/db/repos/programs'
 
@@ -19,6 +20,11 @@ export type DraftExercise = {
   warmupSetCount?: number
   notes?: string
 }
+
+export type ExerciseTargets = Pick<
+  DraftExercise,
+  'workingSets' | 'repMin' | 'repMax' | 'rirTarget' | 'restSeconds' | 'warmupSetCount' | 'notes'
+>
 
 export type DraftDay = {
   id: string
@@ -100,4 +106,52 @@ export function programTreeToDraft(tree: ProgramTree): ProgramDraft {
 export function exerciseName(ref: ExerciseRef): string {
   if (ref.source === 'db') return getExerciseById(ref.exerciseId)?.name ?? 'Custom exercise'
   return 'Custom exercise'
+}
+
+/** An exercise is activatable once sets and both rep bounds are set (LG-052). */
+export function hasRequiredTargets(e: {
+  workingSets?: number
+  repMin?: number
+  repMax?: number
+}): boolean {
+  return e.workingSets !== undefined && e.repMin !== undefined && e.repMax !== undefined
+}
+
+/** First exercise (day order, then exercise order) missing required targets. */
+export function firstIncompleteExercise(draft: {
+  days: DraftDay[]
+}): { dayId: string; exerciseId: string } | null {
+  for (const day of draft.days) {
+    for (const exercise of day.exercises) {
+      if (!hasRequiredTargets(exercise)) return { dayId: day.id, exerciseId: exercise.id }
+    }
+  }
+  return null
+}
+
+/** Row summary such as "3 × 8–12 · RIR 0 · rest 2:30"; null while incomplete. */
+export function formatTargets(e: ExerciseTargets): string | null {
+  if (!hasRequiredTargets(e)) return null
+  const reps = e.repMin === e.repMax ? `${e.repMin}` : `${e.repMin}–${e.repMax}`
+  let out = `${e.workingSets} × ${reps} · RIR ${e.rirTarget ?? 0}`
+  if (e.restSeconds !== undefined) out += ` · rest ${formatSeconds(e.restSeconds)}`
+  return out
+}
+
+/**
+ * Timer-style rest entry: digits fill `mm ss` from the right, last 4 digits
+ * kept ("230" -> 2:30 -> 150, "90" -> 0:90 -> 90).
+ */
+export function restDigitsToSeconds(digits: string): number | undefined {
+  const kept = digits.replace(/\D/g, '').slice(-4)
+  if (kept === '') return undefined
+  const padded = kept.padStart(4, '0')
+  return Number(padded.slice(0, 2)) * 60 + Number(padded.slice(2))
+}
+
+/** Inverse of `restDigitsToSeconds` for seeding the field (150 -> "230"). */
+export function secondsToRestDigits(seconds: number | undefined): string {
+  if (seconds === undefined) return ''
+  const digits = String(Math.floor(seconds / 60) * 100 + (seconds % 60))
+  return digits
 }

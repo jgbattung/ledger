@@ -6,9 +6,14 @@ import {
   countWorkouts,
   emptyDraft,
   exerciseName,
+  firstIncompleteExercise,
+  formatTargets,
+  hasRequiredTargets,
   isRestDay,
   nextDayName,
   programTreeToDraft,
+  restDigitsToSeconds,
+  secondsToRestDigits,
 } from '@/programs/model'
 
 const base = { createdAt: 1, updatedAt: 1, deletedAt: null }
@@ -80,5 +85,72 @@ describe('programs model', () => {
     expect(exerciseName({ source: 'db', exerciseId: known.id })).toBe(known.name)
     expect(exerciseName({ source: 'db', exerciseId: 'nope' })).toBe('Custom exercise')
     expect(exerciseName({ source: 'custom', exerciseId: 'x' })).toBe('Custom exercise')
+  })
+
+  it('hasRequiredTargets needs sets, min and max', () => {
+    expect(hasRequiredTargets({ workingSets: 3, repMin: 8, repMax: 12 })).toBe(true)
+    expect(hasRequiredTargets({ repMin: 8, repMax: 12 })).toBe(false)
+    expect(hasRequiredTargets({ workingSets: 3, repMax: 12 })).toBe(false)
+    expect(hasRequiredTargets({ workingSets: 3, repMin: 8 })).toBe(false)
+  })
+
+  describe('firstIncompleteExercise', () => {
+    const ref = { source: 'db', exerciseId: 'x' } as const
+    const done = { workingSets: 3, repMin: 8, repMax: 12 }
+    const ex = (id: string, full: boolean) => ({ id, exerciseRef: ref, ...(full ? done : {}) })
+
+    it('returns the first gap in day then exercise order, skipping rest days', () => {
+      const draft = {
+        days: [
+          { id: 'd1', name: 'Day 1', exercises: [ex('a', true)] },
+          { id: 'd2', name: 'Day 2', exercises: [] },
+          { id: 'd3', name: 'Day 3', exercises: [ex('b', true), ex('c', false), ex('d', false)] },
+        ],
+      }
+      expect(firstIncompleteExercise(draft)).toEqual({ dayId: 'd3', exerciseId: 'c' })
+    })
+
+    it('returns null when complete or when every day is a rest day', () => {
+      expect(
+        firstIncompleteExercise({ days: [{ id: 'd1', name: 'D', exercises: [ex('a', true)] }] }),
+      ).toBeNull()
+      expect(
+        firstIncompleteExercise({
+          days: [
+            { id: 'd1', name: 'D1', exercises: [] },
+            { id: 'd2', name: 'D2', exercises: [] },
+          ],
+        }),
+      ).toBeNull()
+    })
+  })
+
+  it('formatTargets summarises complete targets and is null otherwise', () => {
+    expect(formatTargets({ workingSets: 3, repMin: 8, repMax: 12 })).toBe('3 × 8–12 · RIR 0')
+    expect(formatTargets({ workingSets: 4, repMin: 8, repMax: 8, rirTarget: 2 })).toBe(
+      '4 × 8 · RIR 2',
+    )
+    expect(formatTargets({ workingSets: 3, repMin: 8, repMax: 12, restSeconds: 150 })).toBe(
+      '3 × 8–12 · RIR 0 · rest 2:30',
+    )
+    expect(formatTargets({ workingSets: 3, repMin: 8 })).toBeNull()
+  })
+
+  it('restDigitsToSeconds reads digits as mm ss from the right', () => {
+    expect(restDigitsToSeconds('')).toBeUndefined()
+    expect(restDigitsToSeconds('abc')).toBeUndefined()
+    expect(restDigitsToSeconds('230')).toBe(150)
+    expect(restDigitsToSeconds('90')).toBe(90)
+    expect(restDigitsToSeconds('1000')).toBe(600)
+    expect(restDigitsToSeconds('2:30')).toBe(150)
+    expect(restDigitsToSeconds('123456')).toBe(2096)
+  })
+
+  it('secondsToRestDigits round-trips', () => {
+    expect(secondsToRestDigits(undefined)).toBe('')
+    expect(secondsToRestDigits(150)).toBe('230')
+    expect(restDigitsToSeconds(secondsToRestDigits(150))).toBe(150)
+    expect(secondsToRestDigits(600)).toBe('1000')
+    expect(secondsToRestDigits(0)).toBe('0')
   })
 })

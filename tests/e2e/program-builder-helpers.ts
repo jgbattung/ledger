@@ -22,3 +22,20 @@ export async function addExercises(page: Page, search: string, names: RegExp[]) 
   await page.getByRole('button', { name: `Add ${names.length} ${noun}` }).click();
   await expect(page.getByRole('tablist', { name: 'Days' })).toBeVisible();
 }
+
+/** Opens an exercise's config drawer, fills the targets and saves. */
+export async function configureExercise(
+  page: Page,
+  name: string,
+  targets: { sets: string; min: string; max: string; rest?: string },
+) {
+  await page.getByRole('button', { name: `Configure ${name}`, exact: true }).click();
+  const dialog = page.getByRole('dialog', { name });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('textbox', { name: 'Sets', exact: true }).fill(targets.sets);
+  await dialog.getByRole('textbox', { name: 'Rep min' }).fill(targets.min);
+  await dialog.getByRole('textbox', { name: 'Rep max' }).fill(targets.max);
+  if (targets.rest) await dialog.getByRole('textbox', { name: 'Rest', exact: true }).fill(targets.rest);
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(dialog).toBeHidden();
+}

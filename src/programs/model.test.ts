@@ -9,8 +9,11 @@ import {
   firstIncompleteExercise,
   formatTargets,
   hasRequiredTargets,
+  dayAfter,
   isRestDay,
   nextDayName,
+  normalizePass,
+  passState,
   programTreeToDraft,
   restDigitsToSeconds,
   secondsToRestDigits,
@@ -152,5 +155,94 @@ describe('programs model', () => {
     expect(restDigitsToSeconds(secondsToRestDigits(150))).toBe(150)
     expect(secondsToRestDigits(600)).toBe('1000')
     expect(secondsToRestDigits(0)).toBe('0')
+  })
+})
+
+describe('pass helpers (LG-021)', () => {
+  const ids = ['push', 'rest', 'pull']
+  const days = ids.map((id) => ({ id }))
+
+  it('passState handles an empty list', () => {
+    expect(passState([], ['x'])).toEqual({ states: [], nextIndex: -1, doneCount: 0 })
+  })
+
+  it('passState with nothing done puts next on day 0', () => {
+    expect(passState(days, undefined)).toEqual({
+      states: ['next', 'upcoming', 'upcoming'],
+      nextIndex: 0,
+      doneCount: 0,
+    })
+  })
+
+  it('passState supports out-of-order done days', () => {
+    const six = ['a', 'b', 'c', 'd'].map((id) => ({ id }))
+    expect(passState(six, ['a', 'c', 'd'])).toEqual({
+      states: ['done', 'next', 'done', 'done'],
+      nextIndex: 1,
+      doneCount: 3,
+    })
+    expect(passState(days, ['pull']).states).toEqual(['next', 'upcoming', 'done'])
+  })
+
+  it('passState ignores stale ids', () => {
+    const result = passState(days, ['gone', 'push'])
+    expect(result.doneCount).toBe(1)
+    expect(result.nextIndex).toBe(1)
+  })
+
+  it('passState guards a full set by starting over', () => {
+    expect(passState(days, ids)).toEqual({
+      states: ['next', 'upcoming', 'upcoming'],
+      nextIndex: 0,
+      doneCount: 3,
+    })
+  })
+
+  it('passState works for a one-day program', () => {
+    expect(passState([{ id: 'a' }], [])).toEqual({ states: ['next'], nextIndex: 0, doneCount: 0 })
+  })
+
+  it('normalizePass keeps only known ids in day order, without duplicates', () => {
+    expect(normalizePass(ids, ['pull', 'ghost', 'push', 'pull'])).toEqual({
+      completedDayIds: ['push', 'pull'],
+      currentDayIndex: 1,
+      passCompleted: false,
+    })
+  })
+
+  it('normalizePass resets on a full set', () => {
+    expect(normalizePass(ids, ['pull', 'rest', 'push'])).toEqual({
+      completedDayIds: [],
+      currentDayIndex: 0,
+      passCompleted: true,
+    })
+    expect(normalizePass(['a'], ['a']).passCompleted).toBe(true)
+  })
+
+  it('normalizePass returns an empty result for no days', () => {
+    expect(normalizePass([], ['a'])).toEqual({
+      completedDayIds: [],
+      currentDayIndex: 0,
+      passCompleted: false,
+    })
+  })
+
+  it('dayAfter moves forward and wraps', () => {
+    expect(dayAfter(ids, [], 0)).toBe(1)
+    expect(dayAfter(ids, ['push'], 2)).toBe(1)
+  })
+
+  it('dayAfter skips done days', () => {
+    expect(dayAfter(ids, ['pull'], 0)).toBe(1)
+    expect(dayAfter(['a', 'b', 'c', 'd'], ['b', 'c'], 0)).toBe(3)
+    expect(dayAfter(['a', 'b', 'c', 'd'], ['a', 'b'], 3)).toBe(2)
+  })
+
+  it('dayAfter returns 0 when completing would finish the pass', () => {
+    expect(dayAfter(ids, ['push', 'pull'], 1)).toBe(0)
+  })
+
+  it('dayAfter on a one-day program returns the same day', () => {
+    expect(dayAfter(['a'], [], 0)).toBe(0)
   })
 })

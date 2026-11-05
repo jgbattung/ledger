@@ -13,6 +13,8 @@ type CheckboxProps = {
   description?: string
   /** Heavier ink border on the unchecked box (the up-next rest day). */
   emphasis?: boolean
+  /** Ignores taps while a save runs. Stays focusable, so `aria-disabled`, not `disabled`. */
+  disabled?: boolean
   className?: string
 }
 
@@ -22,10 +24,12 @@ function Box({
   checked,
   emphasis,
   large,
+  disabled,
 }: {
   checked: boolean
   emphasis?: boolean
   large?: boolean
+  disabled?: boolean
 }) {
   return (
     <span
@@ -35,9 +39,11 @@ function Box({
         large ? 'size-7 border-2' : 'size-6',
         checked
           ? 'border-transparent bg-muted text-muted-foreground'
-          : emphasis || large
-            ? 'border-foreground'
-            : 'border-muted-foreground',
+          : disabled
+            ? 'border-dashed border-muted-foreground'
+            : emphasis || large
+              ? 'border-foreground'
+              : 'border-muted-foreground',
       )}
     >
       <Check
@@ -63,9 +69,13 @@ export function Checkbox({
   size,
   description,
   emphasis,
+  disabled,
   className,
 }: CheckboxProps) {
   const descriptionId = useId()
+  const handleClick = () => {
+    if (!disabled) onCheckedChange()
+  }
 
   if (size === 'row') {
     return (
@@ -74,14 +84,16 @@ export function Checkbox({
         role="checkbox"
         aria-checked={checked}
         aria-label={label}
-        onClick={onCheckedChange}
+        aria-disabled={disabled || undefined}
+        onClick={handleClick}
         className={cn(
           'flex size-touch-min shrink-0 items-center justify-center rounded-md',
           FOCUS,
+          disabled && 'cursor-default',
           className,
         )}
       >
-        <Box checked={checked} emphasis={emphasis} />
+        <Box checked={checked} emphasis={emphasis} disabled={disabled} />
       </button>
     )
   }
@@ -93,14 +105,16 @@ export function Checkbox({
       aria-checked={checked}
       aria-label={label}
       aria-describedby={description ? descriptionId : undefined}
-      onClick={onCheckedChange}
+      aria-disabled={disabled || undefined}
+      onClick={handleClick}
       className={cn(
         'flex min-h-touch-primary w-full items-center gap-3.5 rounded-md text-left',
         FOCUS,
+        disabled && 'cursor-default',
         className,
       )}
     >
-      <Box checked={checked} large />
+      <Box checked={checked} large disabled={disabled} />
       <span className="min-w-0 flex-1">
         <span className="block text-base font-medium">{label}</span>
         {description ? (

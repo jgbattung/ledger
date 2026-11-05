@@ -38,9 +38,11 @@ function plural(count: number, noun: string) {
 export function UpNextCard({
   tree,
   onCompleteRestDay,
+  saving,
 }: {
   tree: ProgramTree
   onCompleteRestDay: (dayId: string) => void
+  saving?: boolean
 }) {
   const { name, days } = programTreeToDraft(tree)
   const completed = tree.program.completedDayIds ?? []
@@ -109,6 +111,7 @@ export function UpNextCard({
             size="block"
             checked={false}
             label="Mark rest day done"
+            disabled={saving}
             description={`Moves you on to ${afterName}`}
             onCheckedChange={() => onCompleteRestDay(day.id)}
           />

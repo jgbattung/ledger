@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown, ChevronUp, ListChecks, Plus } from 'lucide-react'
 import { programs, type ProgramTree } from '@/db/repos'
@@ -39,6 +39,22 @@ export function WorkoutPage() {
   const reload = useCallback(async () => {
     setTrees(await programs.listTrees())
   }, [])
+
+  // A second tap before the reload lands would act on stale state.
+  const [saving, setSaving] = useState(false)
+  const savingRef = useRef(false)
+  const save = async (write: () => Promise<unknown>) => {
+    if (savingRef.current) return
+    savingRef.current = true
+    setSaving(true)
+    try {
+      await write()
+      await reload()
+    } finally {
+      savingRef.current = false
+      setSaving(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -91,10 +107,11 @@ export function WorkoutPage() {
                   defaultExpanded
                   progress={{
                     completedDayIds: active.program.completedDayIds ?? [],
+                    saving,
                     onCompleteDay: (dayId) =>
-                      void programs.completeDay(active.program.id, dayId).then(reload),
+                      void save(() => programs.completeDay(active.program.id, dayId)),
                     onUncompleteDay: (dayId) =>
-                      void programs.uncompleteDay(active.program.id, dayId).then(reload),
+                      void save(() => programs.uncompleteDay(active.program.id, dayId)),
                   }}
                 />
               ) : (

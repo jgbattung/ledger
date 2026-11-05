@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
@@ -42,6 +42,10 @@ function renderPage() {
 describe('DashboardPage', () => {
   beforeEach(async () => {
     await resetDb()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('shows the empty state with a link to the Workout tab when nothing is active', async () => {
@@ -117,6 +121,30 @@ describe('DashboardPage', () => {
     await user.click(await screen.findByRole('checkbox', { name: 'Mark rest day done' }))
     expect(await screen.findByRole('heading', { name: 'Push B' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Day 4 of 5: 3 done' })).toBeInTheDocument()
+  })
+
+  it('ignores a second tap while the rest tick is saving', async () => {
+    const user = userEvent.setup()
+    const id = await seed(SIX, { activate: true })
+    await complete(id, 'Push A', 'Pull A')
+    renderPage()
+    const real = programs.completeDay.bind(programs)
+    let release!: () => void
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    const spy = vi.spyOn(programs, 'completeDay').mockImplementationOnce(async (...args) => {
+      await gate
+      return real(...args)
+    })
+
+    const box = await screen.findByRole('checkbox', { name: 'Mark rest day done' })
+    await user.click(box)
+    await waitFor(() => expect(box).toHaveAttribute('aria-disabled', 'true'))
+    await user.click(box)
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    release()
+    expect(await screen.findByRole('heading', { name: 'Push B' })).toBeInTheDocument()
+    expect(spy).toHaveBeenCalledTimes(1)
   })
 
   it('pass bar segments carry the done, next, upcoming and dashed-rest styles', async () => {

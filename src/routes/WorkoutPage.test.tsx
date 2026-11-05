@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
@@ -59,6 +59,10 @@ function renderPage() {
 describe('WorkoutPage', () => {
   beforeEach(async () => {
     await resetDb()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('shows the empty state with a button to /programs/new', async () => {
@@ -146,6 +150,34 @@ describe('WorkoutPage', () => {
     expect(screen.getByText('3 workouts · 1 of 4 done')).toBeInTheDocument()
     await user.click(screen.getByRole('checkbox', { name: 'Mark Rest not done' }))
     expect(await screen.findByText('3 workouts · 0 of 4 done')).toBeInTheDocument()
+  })
+
+  it('ignores taps while a save is running, then accepts the untick', async () => {
+    const user = userEvent.setup()
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    renderPage()
+    const real = programs.completeDay.bind(programs)
+    let release!: () => void
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    const spy = vi
+      .spyOn(programs, 'completeDay')
+      .mockImplementationOnce(async (...args) => {
+        await gate
+        return real(...args)
+      })
+
+    const box = await screen.findByRole('checkbox', { name: 'Mark Rest done' })
+    await user.click(box)
+    await waitFor(() => expect(box).toHaveAttribute('aria-disabled', 'true'))
+    await user.click(box)
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    release()
+    const done = await screen.findByRole('checkbox', { name: 'Mark Rest not done' })
+    await waitFor(() => expect(done).not.toHaveAttribute('aria-disabled'))
+    await user.click(done)
+    expect(await screen.findByText('3 workouts · 0 of 4 done')).toBeInTheDocument()
+    expect((await programs.loadTree(id))!.program.completedDayIds).toEqual([])
   })
 
   it('unticking a done workout day asks first, and cancelling keeps it done', async () => {

@@ -17,6 +17,8 @@ export type ProgramProgress = {
   completedDayIds: string[]
   onCompleteDay: (dayId: string) => void
   onUncompleteDay: (dayId: string) => void
+  /** A progress save and reload is running: checkboxes ignore taps. */
+  saving?: boolean
 }
 
 /**
@@ -92,6 +94,7 @@ export function ProgramCard({
                     size="row"
                     checked={done}
                     emphasis={next}
+                    disabled={progress.saving}
                     label={`Mark ${day.name} ${done ? 'not done' : 'done'}`}
                     onCheckedChange={() => {
                       if (!done) progress.onCompleteDay(day.id)

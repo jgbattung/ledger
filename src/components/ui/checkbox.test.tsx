@@ -13,6 +13,19 @@ describe('Checkbox', () => {
     expect(onCheckedChange).toHaveBeenCalledTimes(1)
   })
 
+  it('ignores taps while disabled but stays focusable', async () => {
+    const onCheckedChange = vi.fn()
+    render(
+      <Checkbox size="row" checked={false} disabled label="Mark Rest done" onCheckedChange={onCheckedChange} />,
+    )
+    const box = screen.getByRole('checkbox', { name: 'Mark Rest done' })
+    expect(box).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.click(box)
+    await userEvent.keyboard(' ')
+    expect(box).toHaveFocus()
+    expect(onCheckedChange).not.toHaveBeenCalled()
+  })
+
   it('reflects checked state', () => {
     render(<Checkbox size="row" checked label="Mark Rest not done" onCheckedChange={() => {}} />)
     expect(screen.getByRole('checkbox', { name: 'Mark Rest not done' })).toHaveAttribute(

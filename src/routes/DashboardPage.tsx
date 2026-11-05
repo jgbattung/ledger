@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { programs, type ProgramTree } from '@/db/repos'
 import { UpNextCard } from '@/components/programs/UpNextCard'
@@ -40,6 +40,22 @@ export function DashboardPage() {
     setTrees(await programs.listTrees())
   }, [])
 
+  // A second tap before the reload lands would act on stale state.
+  const [saving, setSaving] = useState(false)
+  const savingRef = useRef(false)
+  const save = async (write: () => Promise<unknown>) => {
+    if (savingRef.current) return
+    savingRef.current = true
+    setSaving(true)
+    try {
+      await write()
+      await reload()
+    } finally {
+      savingRef.current = false
+      setSaving(false)
+    }
+  }
+
   const active = trees?.find((tree) => tree.program.isActive && !tree.program.isArchived)
   const nextIndex = active
     ? passState(
@@ -58,8 +74,9 @@ export function DashboardPage() {
       ) : (
         <UpNextCard
           tree={active}
+          saving={saving}
           onCompleteRestDay={(dayId) =>
-            void programs.completeDay(active.program.id, dayId).then(reload)
+            void save(() => programs.completeDay(active.program.id, dayId))
           }
         />
       )}

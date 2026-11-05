@@ -526,4 +526,38 @@ describe('programs rotation (LG-021)', () => {
     await programs.completeDay(draft.id, draft.days[0].id)
     expect(await state(draft.id)).toEqual({ done: [], index: 0 })
   })
+
+  it('saveTree drops the tick of a done rest day that gains exercises', async () => {
+    const draft = await saveProgram(['Push', 'Rest', 'Pull'], ['Rest'])
+    const [push, rest, pull] = draft.days
+    await programs.completeDay(draft.id, push.id)
+    await programs.completeDay(draft.id, rest.id)
+    expect(await state(draft.id)).toEqual({ done: [push.id, rest.id], index: 2 })
+    await programs.saveTree({
+      ...draft,
+      isNew: false,
+      days: [push, { ...rest, exercises: [exercise('z')] }, pull],
+    })
+    expect(await state(draft.id)).toEqual({ done: [push.id], index: 1 })
+  })
+
+  it('saveTree keeps the tick of a done workout day that becomes a rest day', async () => {
+    const draft = await saveProgram(['Push', 'Pull', 'Legs'])
+    const [push, pull, legs] = draft.days
+    await programs.completeDay(draft.id, push.id)
+    await programs.saveTree({ ...draft, isNew: false, days: [{ ...push, exercises: [] }, pull, legs] })
+    expect(await state(draft.id)).toEqual({ done: [push.id], index: 1 })
+  })
+
+  it('saveTree keeps the tick of a done workout day whose exercises are edited', async () => {
+    const draft = await saveProgram(['Push', 'Pull'])
+    const [push, pull] = draft.days
+    await programs.completeDay(draft.id, push.id)
+    await programs.saveTree({
+      ...draft,
+      isNew: false,
+      days: [{ ...push, exercises: [exercise('swap')] }, pull],
+    })
+    expect(await state(draft.id)).toEqual({ done: [push.id], index: 1 })
+  })
 })

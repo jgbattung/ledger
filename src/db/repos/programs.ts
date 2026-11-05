@@ -301,11 +301,26 @@ export const programs = {
 
         // Progress follows the day list: removed days drop out, reordering
         // moves the pointer, and removing the last undone day ends the pass.
+        // A done rest day that gains exercises loses its tick: a workout tick
+        // always means a logged workout. The reverse keeps the tick.
         const savedProgram = await db.programs.get(draft.id)
         if (savedProgram) {
+          const daysWithExercises = new Set(
+            existingExercises.filter((ex) => ex.deletedAt == null).map((ex) => ex.programDayId),
+          )
+          const becameWorkout = new Set(
+            draft.days
+              .filter(
+                (day) =>
+                  existingDayById.has(day.id) &&
+                  !daysWithExercises.has(day.id) &&
+                  day.exercises.length > 0,
+              )
+              .map((day) => day.id),
+          )
           const pass = normalizePass(
             draft.days.map((day) => day.id),
-            savedProgram.completedDayIds ?? [],
+            (savedProgram.completedDayIds ?? []).filter((id) => !becameWorkout.has(id)),
           )
           if (pass.passCompleted) {
             // LG-024: increment currentCycleIndex here.

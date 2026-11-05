@@ -4,7 +4,7 @@ import { createRepo } from '@/db/repos/base'
 import { programDays } from '@/db/repos/programDays'
 import { programExercises } from '@/db/repos/programExercises'
 import { markDirty } from '@/db/repos/syncState'
-import { firstIncompleteExercise, hasRequiredTargets } from '@/programs/model'
+import { firstIncompleteExercise, hasRequiredTargets, normalizePass } from '@/programs/model'
 import type { ProgramDraft } from '@/programs/model'
 import type { BaseRecord, Program, ProgramDay, ProgramExercise } from '@/db/types'
 
@@ -56,6 +56,39 @@ async function patchLiveProgram(id: string, patch: Partial<Program>): Promise<vo
 }
 
 /**
+ * Applies `change` to a program's completed-day list inside one transaction.
+ * No-ops (no write, no markDirty) when the list would not change.
+ */
+async function changePass(
+  id: string,
+  dayId: string,
+  change: (completed: string[]) => string[] | null,
+): Promise<void> {
+  await db.transaction('rw', [db.programs, db.programDays, db.syncState], async () => {
+    const program = await db.programs.get(id)
+    if (!program || program.deletedAt != null) throw new Error('Program not found')
+    const days = (await db.programDays.where('programId').equals(id).toArray())
+      .filter((day) => day.deletedAt == null)
+      .sort((a, b) => a.orderIndex - b.orderIndex)
+    const dayIds = days.map((day) => day.id)
+    if (!dayIds.includes(dayId)) throw new Error('Day not found')
+
+    const next = change(program.completedDayIds ?? [])
+    if (!next) return
+    const pass = normalizePass(dayIds, next)
+    if (pass.passCompleted) {
+      // LG-024: increment currentCycleIndex here.
+    }
+    await db.programs.update(id, {
+      completedDayIds: pass.completedDayIds,
+      currentDayIndex: pass.currentDayIndex,
+      updatedAt: now(),
+    })
+    await markDirty('programs', id)
+  })
+}
+
+/**
  * Adds the single-active-program rule and the program-tree operations on top
  * of the base repo. Program operations never open a transaction that includes
  * workouts, workoutExercises or sets: logged history is never written here.
@@ -100,6 +133,20 @@ export const programs = {
 
   async unarchive(id: string): Promise<void> {
     await patchLiveProgram(id, { isArchived: false })
+  },
+
+  /** Marks a day done in the current pass. Idempotent; finishing the pass starts a new one. */
+  async completeDay(id: string, dayId: string): Promise<void> {
+    await changePass(id, dayId, (completed) =>
+      completed.includes(dayId) ? null : [...completed, dayId],
+    )
+  },
+
+  /** Unticks a day in the current pass. Idempotent. */
+  async uncompleteDay(id: string, dayId: string): Promise<void> {
+    await changePass(id, dayId, (completed) =>
+      completed.includes(dayId) ? completed.filter((d) => d !== dayId) : null,
+    )
   },
 
   async listLive(): Promise<Program[]> {
@@ -157,6 +204,7 @@ export const programs = {
             isActive: false,
             isArchived: false,
             currentDayIndex: 0,
+            completedDayIds: [],
             currentCycleIndex: 0,
           })
           await markDirty('programs', draft.id)

@@ -354,3 +354,131 @@ describe('programs repo', () => {
     expect(await sets.get(set.id)).toEqual(set)
   })
 })
+
+describe('programs rotation (LG-021)', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  async function saveProgram(dayNames: string[], restNames: string[] = []) {
+    const draft: ProgramDraft = {
+      id: newId(),
+      isNew: true,
+      name: 'Rotation',
+      isActive: false,
+      isArchived: false,
+      days: dayNames.map((name) => ({
+        id: newId(),
+        name,
+        exercises: restNames.includes(name) ? [] : [exercise('a')],
+      })),
+    }
+    await programs.saveTree(draft)
+    return draft
+  }
+
+  const state = async (id: string) => {
+    const program = (await programs.get(id))!
+    return { done: program.completedDayIds, index: program.currentDayIndex }
+  }
+
+  it('new programs start with an empty pass', async () => {
+    const draft = await saveProgram(['A'])
+    expect(await state(draft.id)).toEqual({ done: [], index: 0 })
+  })
+
+  it('PROG-1: an 8-day program wraps to Day 1 after Day 8', async () => {
+    const draft = await saveProgram(['1', '2', '3', '4', '5', '6', '7', '8'])
+    const ids = draft.days.map((d) => d.id)
+    for (const [i, dayId] of ids.slice(0, 7).entries()) {
+      await programs.completeDay(draft.id, dayId)
+      expect((await state(draft.id)).index).toBe(i + 1)
+    }
+    await programs.completeDay(draft.id, ids[7])
+    expect(await state(draft.id)).toEqual({ done: [], index: 0 })
+  })
+
+  it('Push, Rest, Pull: training Pull while Rest is next swaps rather than skips', async () => {
+    const draft = await saveProgram(['Push', 'Rest', 'Pull'], ['Rest'])
+    const [push, rest, pull] = draft.days.map((d) => d.id)
+    await programs.completeDay(draft.id, push)
+    expect((await state(draft.id)).index).toBe(1)
+    await programs.completeDay(draft.id, pull)
+    expect(await state(draft.id)).toEqual({ done: [push, pull], index: 1 })
+    await programs.completeDay(draft.id, rest)
+    expect(await state(draft.id)).toEqual({ done: [], index: 0 })
+  })
+
+  it('manual jump: unticking Day 1 makes it up next again', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    const [d1, d2] = draft.days.map((d) => d.id)
+    await programs.completeDay(draft.id, d1)
+    await programs.completeDay(draft.id, d2)
+    expect((await state(draft.id)).index).toBe(2)
+    await programs.uncompleteDay(draft.id, d1)
+    expect(await state(draft.id)).toEqual({ done: [d2], index: 0 })
+  })
+
+  it('completeDay and uncompleteDay are idempotent and skip markDirty on no-ops', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    const [d1] = draft.days.map((d) => d.id)
+    await programs.uncompleteDay(draft.id, d1)
+    await programs.completeDay(draft.id, d1)
+    const after = await programs.get(draft.id)
+    await db.syncState.clear()
+    await wait(5)
+    await programs.completeDay(draft.id, d1)
+    expect((await programs.get(draft.id))?.updatedAt).toBe(after!.updatedAt)
+    expect(await db.syncState.toArray()).toEqual([])
+
+    await programs.uncompleteDay(draft.id, d1)
+    expect(await db.syncState.get(['programs', draft.id])).toBeDefined()
+    await db.syncState.clear()
+    const afterUntick = await programs.get(draft.id)
+    await wait(5)
+    await programs.uncompleteDay(draft.id, d1)
+    expect((await programs.get(draft.id))?.updatedAt).toBe(afterUntick!.updatedAt)
+    expect(await db.syncState.toArray()).toEqual([])
+  })
+
+  it('a real write marks the program dirty and bumps updatedAt', async () => {
+    const draft = await saveProgram(['1', '2'])
+    const before = await programs.get(draft.id)
+    await db.syncState.clear()
+    await wait(5)
+    await programs.completeDay(draft.id, draft.days[0].id)
+    expect(await db.syncState.get(['programs', draft.id])).toBeDefined()
+    expect((await programs.get(draft.id))!.updatedAt).toBeGreaterThan(before!.updatedAt)
+  })
+
+  it('rejects a missing program and days that are foreign or soft-deleted', async () => {
+    const draft = await saveProgram(['1', '2'])
+    const other = await saveProgram(['x'])
+    await expect(programs.completeDay('nope', draft.days[0].id)).rejects.toThrow('Program not found')
+    await expect(programs.completeDay(draft.id, other.days[0].id)).rejects.toThrow('Day not found')
+    await expect(programs.uncompleteDay(draft.id, other.days[0].id)).rejects.toThrow('Day not found')
+
+    await db.programDays.update(draft.days[1].id, { deletedAt: 5 })
+    await expect(programs.completeDay(draft.id, draft.days[1].id)).rejects.toThrow('Day not found')
+
+    await programs.softDeleteCascade(other.id)
+    await expect(programs.completeDay(other.id, other.days[0].id)).rejects.toThrow('Program not found')
+  })
+
+  it('setActive, deactivate and re-setActive keep the pass (Decision 2)', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    const [d1] = draft.days.map((d) => d.id)
+    await programs.setActive(draft.id)
+    await programs.completeDay(draft.id, d1)
+    await programs.deactivate(draft.id)
+    expect(await state(draft.id)).toEqual({ done: [d1], index: 1 })
+    await programs.setActive(draft.id)
+    expect(await state(draft.id)).toEqual({ done: [d1], index: 1 })
+  })
+
+  it('works on a program of any length, including one day', async () => {
+    const draft = await saveProgram(['Solo'])
+    await programs.completeDay(draft.id, draft.days[0].id)
+    expect(await state(draft.id)).toEqual({ done: [], index: 0 })
+  })
+})

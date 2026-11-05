@@ -560,4 +560,23 @@ describe('programs rotation (LG-021)', () => {
     })
     expect(await state(draft.id)).toEqual({ done: [push.id], index: 1 })
   })
+
+  it('concurrent completeDay calls for the same day record it once', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    const [d1] = draft.days
+    await db.syncState.clear()
+    await Promise.all([
+      programs.completeDay(draft.id, d1.id),
+      programs.completeDay(draft.id, d1.id),
+    ])
+    expect(await state(draft.id)).toEqual({ done: [d1.id], index: 1 })
+    expect(await db.syncState.toArray()).toHaveLength(1)
+  })
+
+  it('a program whose only day is rest: ticking it ends the pass and resets (UX note)', async () => {
+    const draft = await saveProgram(['Rest'], ['Rest'])
+    await programs.setActive(draft.id)
+    await programs.completeDay(draft.id, draft.days[0].id)
+    expect(await state(draft.id)).toEqual({ done: [], index: 0 })
+  })
 })

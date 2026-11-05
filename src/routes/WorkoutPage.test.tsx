@@ -176,6 +176,27 @@ describe('WorkoutPage', () => {
     expect(within(items[0]).getByText('Up next')).toBeInTheDocument()
   })
 
+  it('ticking reloads without resetting the archived group or expanded cards', async () => {
+    const user = userEvent.setup()
+    await seed('Old plan', [{ name: 'A', ids: ['pull-up'] }], { archive: true })
+    await seed('Library one', PPL)
+    await seed('Push Pull Legs', PPL, { activate: true })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Archived · 1/ }))
+    await user.click(screen.getByRole('button', { name: 'Expand Library one' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Mark Rest done' }))
+
+    expect(await screen.findByText('3 workouts · 1 of 4 done')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Archived · 1/ })).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('link', { name: /Old plan/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Collapse Library one' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Collapse Push Pull Legs' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+  })
+
   it('library cards have no checkboxes or progress subtitle', async () => {
     await seed('Active one', PPL, { activate: true })
     await seed('Library one', PPL)

@@ -119,6 +119,48 @@ describe('DashboardPage', () => {
     expect(screen.getByRole('img', { name: 'Day 4 of 5: 3 done' })).toBeInTheDocument()
   })
 
+  it('pass bar segments carry the done, next, upcoming and dashed-rest styles', async () => {
+    const id = await seed(SIX, { activate: true })
+    await complete(id, 'Push A', 'Push B')
+    renderPage()
+    const bar = await screen.findByRole('img', { name: 'Day 2 of 5: 2 done' })
+    const segments = Array.from(bar.firstElementChild!.children)
+    expect(segments).toHaveLength(5)
+    // Push A done, Pull A next, Rest upcoming (dashed), Push B done, Pull B upcoming.
+    expect(segments[0]).toHaveClass('bg-foreground/35')
+    expect(segments[1]).toHaveClass('bg-foreground')
+    expect(segments[2]).toHaveClass('border-dashed', 'bg-transparent', 'border-muted-foreground/60')
+    expect(segments[3]).toHaveClass('bg-foreground/35')
+    expect(segments[4]).toHaveClass('bg-foreground/15')
+    for (const segment of segments) expect(segment.className).not.toMatch(/\bprimary\b/)
+
+    const labels = Array.from(bar.children[1].children)
+    expect(labels.map((label) => label.textContent)).toEqual(SIX.map((day) => day.name))
+    expect(labels[1]).toHaveClass('font-semibold', 'text-foreground')
+  })
+
+  it('a rest day up next is drawn dashed in solid ink', async () => {
+    const id = await seed(SIX, { activate: true })
+    await complete(id, 'Push A', 'Pull A')
+    renderPage()
+    const bar = await screen.findByRole('img', { name: 'Day 3 of 5: 2 done' })
+    expect(bar.firstElementChild!.children[2]).toHaveClass('border-dashed', 'border-foreground')
+  })
+
+  it('a rest-only program resets on tick and the card stays on the same day (UX note)', async () => {
+    const user = userEvent.setup()
+    await seed([{ name: 'Rest', ids: [] }], { activate: true })
+    renderPage()
+    expect(await screen.findByText('Then Rest')).toBeInTheDocument()
+    await user.click(screen.getByRole('checkbox', { name: 'Mark rest day done' }))
+    expect(await screen.findByRole('heading', { name: 'Rest' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Day 1 of 1: 0 done' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Mark rest day done' })).toHaveAttribute(
+      'aria-checked',
+      'false',
+    )
+  })
+
   it('ticking the last undone rest day wraps to Day 1', async () => {
     const user = userEvent.setup()
     const id = await seed(

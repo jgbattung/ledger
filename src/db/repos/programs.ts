@@ -298,6 +298,30 @@ export const programs = {
           await db.programDays.update(day.id, { deletedAt: timestamp, updatedAt: timestamp })
           await markDirty('programDays', day.id)
         }
+
+        // Progress follows the day list: removed days drop out, reordering
+        // moves the pointer, and removing the last undone day ends the pass.
+        const savedProgram = await db.programs.get(draft.id)
+        if (savedProgram) {
+          const pass = normalizePass(
+            draft.days.map((day) => day.id),
+            savedProgram.completedDayIds ?? [],
+          )
+          if (pass.passCompleted) {
+            // LG-024: increment currentCycleIndex here.
+          }
+          if (
+            !sameValue(savedProgram.completedDayIds ?? [], pass.completedDayIds) ||
+            savedProgram.currentDayIndex !== pass.currentDayIndex
+          ) {
+            await db.programs.update(draft.id, {
+              completedDayIds: pass.completedDayIds,
+              currentDayIndex: pass.currentDayIndex,
+              updatedAt: timestamp,
+            })
+            await markDirty('programs', draft.id)
+          }
+        }
       },
     )
     return draft.id

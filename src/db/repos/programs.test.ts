@@ -476,6 +476,51 @@ describe('programs rotation (LG-021)', () => {
     expect(await state(draft.id)).toEqual({ done: [d1], index: 1 })
   })
 
+  it('saveTree drops a removed done day from the pass', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    const [d1, d2, d3] = draft.days
+    await programs.completeDay(draft.id, d1.id)
+    await programs.completeDay(draft.id, d2.id)
+    await programs.saveTree({ ...draft, isNew: false, days: [d2, d3] })
+    expect(await state(draft.id)).toEqual({ done: [d2.id], index: 1 })
+  })
+
+  it('saveTree reordering moves currentDayIndex', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    const [d1, d2, d3] = draft.days
+    await programs.completeDay(draft.id, d1.id)
+    expect((await state(draft.id)).index).toBe(1)
+    await programs.saveTree({ ...draft, isNew: false, days: [d2, d3, d1] })
+    expect(await state(draft.id)).toEqual({ done: [d1.id], index: 0 })
+  })
+
+  it('saveTree removing the only undone day resets the pass', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    const [d1, d2] = draft.days
+    await programs.completeDay(draft.id, d1.id)
+    await programs.completeDay(draft.id, d2.id)
+    await programs.saveTree({ ...draft, isNew: false, days: [d1, d2] })
+    expect(await state(draft.id)).toEqual({ done: [], index: 0 })
+  })
+
+  it('saveTree with unchanged days, name and notes writes nothing extra', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    await programs.completeDay(draft.id, draft.days[0].id)
+    const before = await programs.get(draft.id)
+    await db.syncState.clear()
+    await wait(5)
+    await programs.saveTree({ ...draft, isNew: false })
+    expect(await programs.get(draft.id)).toEqual(before)
+    expect(await db.syncState.toArray()).toEqual([])
+  })
+
+  it('saveTree with activate does not touch the pass', async () => {
+    const draft = await saveProgram(['1', '2', '3'])
+    await programs.completeDay(draft.id, draft.days[0].id)
+    await programs.saveTree({ ...draft, isNew: false }, { activate: true })
+    expect(await state(draft.id)).toEqual({ done: [draft.days[0].id], index: 1 })
+  })
+
   it('works on a program of any length, including one day', async () => {
     const draft = await saveProgram(['Solo'])
     await programs.completeDay(draft.id, draft.days[0].id)

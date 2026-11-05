@@ -57,6 +57,8 @@ test('rotation: build Push / Rest / Pull, tick and untick Rest, Dashboard follow
 
   // The pass survives a reload.
   await page.getByRole('checkbox', { name: 'Mark Rest done' }).click();
+  // Wait for the write to land (the card reloads from Dexie) before reloading.
+  await expect(page.getByText('2 workouts · 1 of 3 done')).toBeVisible();
   await page.reload();
   await expect(page.getByText('2 workouts · 1 of 3 done')).toBeVisible();
 });
@@ -82,6 +84,34 @@ test('rotation: ticking the last undone rest day on the Dashboard wraps the pass
   await expect(page.getByRole('heading', { name: 'Push', exact: true })).toBeVisible();
   await expect(page.getByRole('img', { name: 'Day 1 of 3: 0 done' })).toBeVisible();
 
+});
+
+test('rotation: removing a done day in the editor updates the pass on the Workout tab', async ({
+  page,
+}) => {
+  await seedActiveProgram(page, {
+    name: 'Seeded',
+    days: [
+      { name: 'Push', exercises: ['barbell-bench-press'] },
+      { name: 'Rest', exercises: [] },
+      { name: 'Pull', exercises: ['pull-up'] },
+    ],
+    doneDays: ['Push', 'Rest'],
+  });
+  await expect(page.getByText('2 workouts · 2 of 3 done')).toBeVisible();
+
+  await page.getByRole('link', { name: /Seeded/ }).click();
+  await page.getByRole('tab', { name: 'Push' }).click();
+  await page.getByRole('button', { name: 'Remove', exact: true }).click();
+  await page.getByRole('button', { name: 'Remove day' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+
+  await expect(page.getByText('1 workout · 1 of 2 done')).toBeVisible();
+  await expect(page.getByRole('listitem').filter({ hasText: 'Pull' })).toContainText('Up next');
+  await expect(page.getByRole('checkbox', { name: 'Mark Rest not done' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
 });
 
 test('rotation: a done workout day unticks only after confirming', async ({ page }) => {

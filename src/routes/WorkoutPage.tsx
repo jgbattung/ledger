@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown, ChevronUp, ListChecks, Plus } from 'lucide-react'
 import { programs, type ProgramTree } from '@/db/repos'
@@ -35,6 +35,10 @@ function EmptyState() {
 export function WorkoutPage() {
   const [trees, setTrees] = useState<ProgramTree[] | null>(null)
   const [archivedOpen, setArchivedOpen] = useState(false)
+
+  const reload = useCallback(async () => {
+    setTrees(await programs.listTrees())
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -81,7 +85,18 @@ export function WorkoutPage() {
             <>
               <SectionTitle>Active Program</SectionTitle>
               {active ? (
-                <ProgramCard tree={active} defaultExpanded />
+                <ProgramCard
+                  key={active.program.id}
+                  tree={active}
+                  defaultExpanded
+                  progress={{
+                    completedDayIds: active.program.completedDayIds ?? [],
+                    onCompleteDay: (dayId) =>
+                      void programs.completeDay(active.program.id, dayId).then(reload),
+                    onUncompleteDay: (dayId) =>
+                      void programs.uncompleteDay(active.program.id, dayId).then(reload),
+                  }}
+                />
               ) : (
                 <p className="text-sm text-muted-foreground">Open a program and tap Activate.</p>
               )}

@@ -180,6 +180,34 @@ describe('WorkoutPage', () => {
     expect((await programs.loadTree(id))!.program.completedDayIds).toEqual([])
   })
 
+  it('a done workout day does not open the confirm sheet while a save is running', async () => {
+    const user = userEvent.setup()
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    await completeByName(id, 'Push')
+    renderPage()
+    const real = programs.completeDay.bind(programs)
+    let release!: () => void
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    vi.spyOn(programs, 'completeDay').mockImplementationOnce(async (...args) => {
+      await gate
+      return real(...args)
+    })
+    const untick = vi.spyOn(programs, 'uncompleteDay')
+
+    await user.click(await screen.findByRole('checkbox', { name: 'Mark Rest done' }))
+    const push = screen.getByRole('checkbox', { name: 'Mark Push not done' })
+    await waitFor(() => expect(push).toHaveAttribute('aria-disabled', 'true'))
+    await user.click(push)
+    expect(screen.queryByText('Mark Push not done?')).not.toBeInTheDocument()
+    expect(untick).not.toHaveBeenCalled()
+
+    release()
+    expect(await screen.findByText('3 workouts · 2 of 4 done')).toBeInTheDocument()
+    await waitFor(() => expect(push).not.toHaveAttribute('aria-disabled'))
+    await user.click(push)
+    expect(await screen.findByText('Mark Push not done?')).toBeInTheDocument()
+  })
+
   it('unticking a done workout day asks first, and cancelling keeps it done', async () => {
     const user = userEvent.setup()
     const id = await seed('Push Pull Legs', PPL, { activate: true })

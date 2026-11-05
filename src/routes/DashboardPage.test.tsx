@@ -147,6 +147,30 @@ describe('DashboardPage', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
+  it('after a rest tick the next rest day gets an enabled checkbox', async () => {
+    const user = userEvent.setup()
+    const id = await seed(
+      [
+        { name: 'Push', ids: ['barbell-bench-press'] },
+        { name: 'Rest 1', ids: [] },
+        { name: 'Rest 2', ids: [] },
+        { name: 'Pull', ids: ['pull-up'] },
+      ],
+      { activate: true },
+    )
+    await complete(id, 'Push')
+    renderPage()
+    await user.click(await screen.findByRole('checkbox', { name: 'Mark rest day done' }))
+
+    expect(await screen.findByRole('heading', { name: 'Rest 2' })).toBeInTheDocument()
+    const box = screen.getByRole('checkbox', { name: 'Mark rest day done' })
+    await waitFor(() => expect(box).not.toHaveAttribute('aria-disabled'))
+    expect(box).toHaveAttribute('aria-checked', 'false')
+    await user.click(box)
+    expect(await screen.findByRole('heading', { name: 'Pull' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Day 4 of 4: 3 done' })).toBeInTheDocument()
+  })
+
   it('pass bar segments expose their done, next, upcoming and rest state', async () => {
     const id = await seed(SIX, { activate: true })
     await complete(id, 'Push A', 'Push B')

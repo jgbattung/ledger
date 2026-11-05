@@ -122,3 +122,32 @@ test('rotation: a done workout day unticks only after confirming', async ({ page
   await expect(page.getByText('5 workouts · 0 of 6 done')).toBeVisible();
   await expect(page.getByRole('checkbox', { name: 'Mark Push A not done' })).toHaveCount(0);
 });
+
+test('rotation: a double tap on a rest checkbox lands one tick that matches storage', async ({
+  page,
+}) => {
+  await seedActiveProgram(page, {
+    name: 'Seeded',
+    days: [
+      { name: 'Push', exercises: ['barbell-bench-press'] },
+      { name: 'Rest', exercises: [] },
+      { name: 'Pull', exercises: ['pull-up'] },
+    ],
+  });
+  await expect(page.getByText('2 workouts · 0 of 3 done')).toBeVisible();
+
+  // The second tap lands while the first save runs and is ignored.
+  await page.getByRole('checkbox', { name: 'Mark Rest done' }).dblclick();
+  await expect(page.getByText('2 workouts · 1 of 3 done')).toBeVisible();
+  const done = page.getByRole('checkbox', { name: 'Mark Rest not done' });
+  await expect(done).toHaveAttribute('aria-checked', 'true');
+  await expect(done).not.toHaveAttribute('aria-disabled', 'true');
+
+  // What the page shows is what was stored.
+  await page.reload();
+  await expect(page.getByText('2 workouts · 1 of 3 done')).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'Mark Rest not done' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+});

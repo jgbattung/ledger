@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { programs, type ProgramTree } from '@/db/repos'
+import { UpNextCard } from '@/components/programs/UpNextCard'
 import { buttonVariants } from '@/components/ui/button'
 import { passState } from '@/programs/model'
 import { cn } from '@/lib/utils'
@@ -35,6 +36,10 @@ export function DashboardPage() {
     }
   }, [])
 
+  const reload = useCallback(async () => {
+    setTrees(await programs.listTrees())
+  }, [])
+
   const active = trees?.find((tree) => tree.program.isActive && !tree.program.isArchived)
   const nextIndex = active
     ? passState(
@@ -50,7 +55,14 @@ export function DashboardPage() {
         <div className="mt-6 h-40 animate-pulse rounded-lg bg-muted" aria-hidden="true" />
       ) : !active || nextIndex === -1 ? (
         <NoActiveProgram />
-      ) : null}
+      ) : (
+        <UpNextCard
+          tree={active}
+          onCompleteRestDay={(dayId) =>
+            void programs.completeDay(active.program.id, dayId).then(reload)
+          }
+        />
+      )}
     </div>
   )
 }

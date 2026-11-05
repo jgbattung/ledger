@@ -147,7 +147,7 @@ describe('DashboardPage', () => {
     expect(spy).toHaveBeenCalledTimes(1)
   })
 
-  it('pass bar segments carry the done, next, upcoming and dashed-rest styles', async () => {
+  it('pass bar segments expose their done, next, upcoming and rest state', async () => {
     const id = await seed(SIX, { activate: true })
     await complete(id, 'Push A', 'Push B')
     renderPage()
@@ -155,16 +155,32 @@ describe('DashboardPage', () => {
     const segments = Array.from(bar.firstElementChild!.children)
     expect(segments).toHaveLength(5)
     // Push A done, Pull A next, Rest upcoming (dashed), Push B done, Pull B upcoming.
-    expect(segments[0]).toHaveClass('bg-foreground/35')
-    expect(segments[1]).toHaveClass('bg-foreground')
-    expect(segments[2]).toHaveClass('border-dashed', 'bg-transparent', 'border-muted-foreground/60')
-    expect(segments[3]).toHaveClass('bg-foreground/35')
-    expect(segments[4]).toHaveClass('bg-foreground/15')
+    expect(segments.map((segment) => segment.getAttribute('data-state'))).toEqual([
+      'done',
+      'next',
+      'upcoming',
+      'done',
+      'upcoming',
+    ])
+    expect(segments.map((segment) => segment.getAttribute('data-rest'))).toEqual([
+      null,
+      null,
+      'true',
+      null,
+      null,
+    ])
+    // The one remaining class-level check: the pass bar never uses the brand accent.
     for (const segment of segments) expect(segment.className).not.toMatch(/\bprimary\b/)
 
     const labels = Array.from(bar.children[1].children)
     expect(labels.map((label) => label.textContent)).toEqual(SIX.map((day) => day.name))
-    expect(labels[1]).toHaveClass('font-semibold', 'text-foreground')
+    expect(labels.map((label) => label.getAttribute('data-state'))).toEqual([
+      'done',
+      'next',
+      'upcoming',
+      'done',
+      'upcoming',
+    ])
   })
 
   it('a rest day up next is drawn dashed in solid ink', async () => {
@@ -172,7 +188,8 @@ describe('DashboardPage', () => {
     await complete(id, 'Push A', 'Pull A')
     renderPage()
     const bar = await screen.findByRole('img', { name: 'Day 3 of 5: 2 done' })
-    expect(bar.firstElementChild!.children[2]).toHaveClass('border-dashed', 'border-foreground')
+    expect(bar.firstElementChild!.children[2]).toHaveAttribute('data-state', 'next')
+    expect(bar.firstElementChild!.children[2]).toHaveAttribute('data-rest', 'true')
   })
 
   it('a rest-only program resets on tick and the card stays on the same day (UX note)', async () => {

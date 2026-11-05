@@ -81,6 +81,8 @@ export function UpNextCard({
           {days.map((d, i) => (
             <span
               key={d.id}
+              data-state={states[i]}
+              data-rest={isRestDay(d) ? 'true' : undefined}
               className={cn(
                 'h-1.5 rounded-full',
                 isRestDay(d)
@@ -94,6 +96,7 @@ export function UpNextCard({
           {days.map((d, i) => (
             <span
               key={d.id}
+              data-state={states[i]}
               className={cn(
                 'truncate text-[11px] text-muted-foreground',
                 states[i] === 'next' && 'font-semibold text-foreground',

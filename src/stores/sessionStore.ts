@@ -224,7 +224,15 @@ export const useSessionStore = create<SessionState>((set, get) => {
     },
 
     focusExercise(workoutExerciseId) {
-      set({ focusedExerciseId: workoutExerciseId })
+      // The pad belongs to a set on screen: leaving its exercise closes it.
+      const pad = get().pad
+      const keep =
+        pad &&
+        get().exercises.some(
+          (entry) =>
+            entry.exercise.id === workoutExerciseId && entry.sets.some((row) => row.id === pad.setId),
+        )
+      set({ focusedExerciseId: workoutExerciseId, pad: keep ? pad : null, openSwipeSetId: null })
     },
 
     openPad(setId, field) {

@@ -100,3 +100,78 @@ test('discard leaves the day unticked and returns to the Workout tab', async ({ 
   expect(workouts.map((w) => w.status)).toEqual(['discarded']);
   await expect(page.getByRole('checkbox', { name: 'Mark Push A not done' })).toHaveCount(0);
 });
+
+test('log a set with the number pad, including partials and RIR, and it survives a reload', async ({
+  page,
+}) => {
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page).toHaveURL(/\/session$/);
+
+  const pad = page.getByRole('group', { name: 'Number pad' });
+  const key = (name: string) => pad.getByRole('button', { name, exact: true });
+
+  // Weight 62.5.
+  await page.getByRole('button', { name: 'Set 1 weight in kilograms' }).click();
+  await expect(pad).toBeVisible();
+  await key('6').click();
+  await key('2').click();
+  await key('Decimal point').click();
+  await key('5').click();
+  await expect(page.getByRole('button', { name: 'Set 1 weight in kilograms' })).toHaveText('62.5');
+
+  // Reps 8 with 2 partials and RIR 1, via Next.
+  await key('Next').click();
+  await key('8').click();
+  await key('Partial reps').click();
+  await key('2').click();
+  await pad.getByRole('button', { name: 'RIR 1', exact: true }).click();
+  const reps = page.getByRole('button', { name: 'Set 1 reps, RIR 1' });
+  await expect(reps).toHaveText(/8\s*\|\s*2/);
+
+  // Geometry: the pad takes at most 2/5 of the viewport and the active cell sits above it.
+  const viewport = page.viewportSize()!;
+  const padBox = (await pad.boundingBox())!;
+  expect(padBox.height).toBeLessThanOrEqual(viewport.height * 0.4 + 1);
+  expect(padBox.y + padBox.height).toBeLessThanOrEqual(viewport.height + 1);
+  const cellBox = (await reps.boundingBox())!;
+  expect(cellBox.y + cellBox.height).toBeLessThanOrEqual(padBox.y);
+
+  // Next moves to set 2's weight; hide closes the pad.
+  await key('Next').click();
+  await expect(page.getByRole('button', { name: 'Set 2 weight in kilograms' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  );
+  await page.getByRole('button', { name: 'Hide keypad' }).click();
+  await expect(pad).toBeHidden();
+
+  // Check the set, reload, and everything is still there.
+  await page.getByRole('checkbox', { name: 'Mark set 1 done' }).click();
+  await expect(page.getByRole('checkbox', { name: 'Mark set 1 not done' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Set 1 weight in kilograms' })).toHaveText('62.5');
+  await expect(page.getByRole('button', { name: 'Set 1 reps, RIR 1' })).toHaveText(/8\s*\|\s*2/);
+  await expect(page.getByRole('checkbox', { name: 'Mark set 1 not done' })).toBeVisible();
+});
+
+test('RIR 6+ is a distinct value and an empty reps cell shows the target range', async ({
+  page,
+}) => {
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page.getByRole('button', { name: 'Set 1 reps' })).toHaveText('8–12');
+
+  await page.getByRole('button', { name: 'Set 1 reps' }).click();
+  const pad = page.getByRole('group', { name: 'Number pad' });
+  await pad.getByRole('button', { name: '9', exact: true }).click();
+  await pad.getByRole('button', { name: 'RIR 6 or more' }).click();
+  await page.getByRole('button', { name: 'Hide keypad' }).click();
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Set 1 reps, RIR 6+' })).toBeVisible();
+});

@@ -109,6 +109,23 @@ export function dayAfter(
   return 0
 }
 
+/**
+ * The first workout (non-rest) day at or after the pass's up-next day,
+ * wrapping. Null when the program has no workout day.
+ */
+export function nextWorkoutDay<T extends { id: string; exercises: unknown[] }>(
+  days: T[],
+  completedDayIds: readonly string[] | undefined,
+): T | null {
+  const { nextIndex } = passState(days, completedDayIds)
+  if (nextIndex === -1) return null
+  for (let step = 0; step < days.length; step++) {
+    const day = days[(nextIndex + step) % days.length]
+    if (!isRestDay(day)) return day
+  }
+  return null
+}
+
 export function nextDayName(days: unknown[]): string {
   return `Day ${days.length + 1}`
 }

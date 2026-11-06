@@ -174,7 +174,8 @@ describe('Workout routes', () => {
     })
     expect(screen.queryByRole('navigation', { name: 'Primary', hidden: true })).toBeNull()
     expect(screen.queryByText('Name your program')).toBeNull()
-    expect(await screen.findByRole('heading', { level: 1, name: 'Day' })).toBeInTheDocument()
+    // No such program: the Day page's own empty state, proving the route matched it.
+    expect(await screen.findByText("This day can't be started")).toBeInTheDocument()
   })
 
   it('redirects /session to /workout when nothing is in progress', async () => {

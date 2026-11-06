@@ -58,6 +58,8 @@ export type Program = BaseRecord & {
   isActive: boolean
   isArchived: boolean
   currentDayIndex: number
+  /** ids of days done in the current pass (LG-021). Absent = none. */
+  completedDayIds?: string[]
   cycles?: CycleConfig[]
   currentCycleIndex: number
 }

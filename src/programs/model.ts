@@ -55,6 +55,60 @@ export function countWorkouts(days: { exercises: unknown[] }[]): number {
   return days.filter((day) => !isRestDay(day)).length
 }
 
+export type DayPassState = 'done' | 'next' | 'upcoming'
+
+/** Per-day state for the current pass. Ids not in `days` are ignored. */
+export function passState(
+  days: { id: string }[],
+  completedDayIds: readonly string[] | undefined,
+): { states: DayPassState[]; nextIndex: number; doneCount: number } {
+  if (days.length === 0) return { states: [], nextIndex: -1, doneCount: 0 }
+  const completed = new Set(completedDayIds ?? [])
+  const done = days.map((day) => completed.has(day.id))
+  const doneCount = done.filter(Boolean).length
+  // A full set should never be persisted (see `normalizePass`); guard anyway.
+  const nextIndex = doneCount === days.length ? 0 : done.indexOf(false)
+  const full = doneCount === days.length
+  const states = days.map((_, i): DayPassState => {
+    if (i === nextIndex) return 'next'
+    return !full && done[i] ? 'done' : 'upcoming'
+  })
+  return { states, nextIndex, doneCount }
+}
+
+/** Canonical persisted form after any change. */
+export function normalizePass(
+  dayIds: string[],
+  completedDayIds: readonly string[],
+): { completedDayIds: string[]; currentDayIndex: number; passCompleted: boolean } {
+  if (dayIds.length === 0) return { completedDayIds: [], currentDayIndex: 0, passCompleted: false }
+  const completed = new Set(completedDayIds)
+  const kept = dayIds.filter((id) => completed.has(id))
+  if (kept.length === dayIds.length) {
+    return { completedDayIds: [], currentDayIndex: 0, passCompleted: true }
+  }
+  return {
+    completedDayIds: kept,
+    currentDayIndex: dayIds.findIndex((id) => !completed.has(id)),
+    passCompleted: false,
+  }
+}
+
+/** The undone day the user lands on after `fromIndex` is done (wraps; new pass -> 0). */
+export function dayAfter(
+  dayIds: string[],
+  completedDayIds: readonly string[],
+  fromIndex: number,
+): number {
+  const completed = new Set(completedDayIds)
+  if (dayIds[fromIndex] !== undefined) completed.add(dayIds[fromIndex])
+  for (let step = 1; step <= dayIds.length; step++) {
+    const index = (fromIndex + step) % dayIds.length
+    if (!completed.has(dayIds[index])) return index
+  }
+  return 0
+}
+
 export function nextDayName(days: unknown[]): string {
   return `Day ${days.length + 1}`
 }

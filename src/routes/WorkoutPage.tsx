@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown, ChevronUp, ListChecks, Plus } from 'lucide-react'
 import { programs, type ProgramTree } from '@/db/repos'
@@ -35,6 +35,26 @@ function EmptyState() {
 export function WorkoutPage() {
   const [trees, setTrees] = useState<ProgramTree[] | null>(null)
   const [archivedOpen, setArchivedOpen] = useState(false)
+
+  const reload = useCallback(async () => {
+    setTrees(await programs.listTrees())
+  }, [])
+
+  // A second tap before the reload lands would act on stale state.
+  const [saving, setSaving] = useState(false)
+  const savingRef = useRef(false)
+  const save = async (write: () => Promise<unknown>) => {
+    if (savingRef.current) return
+    savingRef.current = true
+    setSaving(true)
+    try {
+      await write()
+      await reload()
+    } finally {
+      savingRef.current = false
+      setSaving(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -81,7 +101,19 @@ export function WorkoutPage() {
             <>
               <SectionTitle>Active Program</SectionTitle>
               {active ? (
-                <ProgramCard tree={active} defaultExpanded />
+                <ProgramCard
+                  key={active.program.id}
+                  tree={active}
+                  defaultExpanded
+                  progress={{
+                    completedDayIds: active.program.completedDayIds ?? [],
+                    saving,
+                    onCompleteDay: (dayId) =>
+                      void save(() => programs.completeDay(active.program.id, dayId)),
+                    onUncompleteDay: (dayId) =>
+                      void save(() => programs.uncompleteDay(active.program.id, dayId)),
+                  }}
+                />
               ) : (
                 <p className="text-sm text-muted-foreground">Open a program and tap Activate.</p>
               )}

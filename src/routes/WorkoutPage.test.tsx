@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
@@ -37,6 +37,17 @@ const PPL = [
   { name: 'Rest', ids: [] },
 ]
 
+async function completeByName(programId: string, dayName: string) {
+  const tree = (await programs.loadTree(programId))!
+  const day = tree.days.find((entry) => entry.day.name === dayName)!
+  await programs.completeDay(programId, day.day.id)
+}
+
+async function activeRows() {
+  const toggle = await screen.findByRole('button', { name: /^Collapse / })
+  return document.getElementById(toggle.getAttribute('aria-controls')!)!
+}
+
 function renderPage() {
   return render(
     <MemoryRouter>
@@ -48,6 +59,10 @@ function renderPage() {
 describe('WorkoutPage', () => {
   beforeEach(async () => {
     await resetDb()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('shows the empty state with a button to /programs/new', async () => {
@@ -67,7 +82,7 @@ describe('WorkoutPage', () => {
 
     const header = await screen.findByRole('link', { name: /Push Pull Legs/ })
     expect(header).toHaveAttribute('href', expect.stringMatching(/^\/programs\/.+/))
-    expect(within(header).getByText('3 workouts')).toBeInTheDocument()
+    expect(within(header).getByText('3 workouts · 0 of 4 done')).toBeInTheDocument()
 
     const activeToggle = screen.getByRole('button', { name: 'Collapse Push Pull Legs' })
     expect(activeToggle).toHaveAttribute('aria-expanded', 'true')
@@ -85,15 +100,171 @@ describe('WorkoutPage', () => {
     expect(libRows).not.toBeVisible()
   })
 
-  it('day rows contain no links or buttons', async () => {
-    await seed('Push Pull Legs', PPL, { activate: true })
+  it('day rows contain no links; the only controls are checkboxes on rest and done days', async () => {
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    await completeByName(id, 'Pull')
     renderPage()
     const toggle = await screen.findByRole('button', { name: 'Collapse Push Pull Legs' })
     const rows = document.getElementById(toggle.getAttribute('aria-controls')!)!
     expect(within(rows).queryAllByRole('link')).toHaveLength(0)
     expect(within(rows).queryAllByRole('button')).toHaveLength(0)
+    expect(
+      within(rows)
+        .getAllByRole('checkbox')
+        .map((box) => box.getAttribute('aria-label')),
+    ).toEqual(['Mark Pull not done', 'Mark Rest done'])
     expect(within(rows).getByText('Rest')).toBeInTheDocument()
     expect(within(rows).getByText('Pull-Up')).toBeInTheDocument()
+  })
+
+  it('workout days that are not done have no control', async () => {
+    await seed('Push Pull Legs', PPL, { activate: true })
+    renderPage()
+    const rows = await activeRows()
+    const items = within(rows).getAllByRole('listitem')
+    expect(within(items[0]).queryAllByRole('checkbox')).toHaveLength(0)
+    expect(within(items[3]).getByRole('checkbox', { name: 'Mark Rest done' })).toBeInTheDocument()
+  })
+
+  it('shows the done count and marks the up-next row with the pill', async () => {
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    await completeByName(id, 'Push')
+    renderPage()
+    const rows = await activeRows()
+    expect(screen.getByText('3 workouts · 1 of 4 done')).toBeInTheDocument()
+    const items = within(rows).getAllByRole('listitem')
+    expect(screen.getAllByText('Up next')).toHaveLength(1)
+    expect(within(items[1]).getByText('Up next')).toBeInTheDocument()
+    expect(within(items[0]).queryByText('Up next')).not.toBeInTheDocument()
+  })
+
+  it('ticking a rest day marks it done immediately and advances the count', async () => {
+    const user = userEvent.setup()
+    await seed('Push Pull Legs', PPL, { activate: true })
+    renderPage()
+    await user.click(await screen.findByRole('checkbox', { name: 'Mark Rest done' }))
+    expect(await screen.findByRole('checkbox', { name: 'Mark Rest not done' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    )
+    expect(screen.getByText('3 workouts · 1 of 4 done')).toBeInTheDocument()
+    await user.click(screen.getByRole('checkbox', { name: 'Mark Rest not done' }))
+    expect(await screen.findByText('3 workouts · 0 of 4 done')).toBeInTheDocument()
+  })
+
+  it('ignores taps while a save is running, then accepts the untick', async () => {
+    const user = userEvent.setup()
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    renderPage()
+    const real = programs.completeDay.bind(programs)
+    let release!: () => void
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    const spy = vi
+      .spyOn(programs, 'completeDay')
+      .mockImplementationOnce(async (...args) => {
+        await gate
+        return real(...args)
+      })
+
+    const box = await screen.findByRole('checkbox', { name: 'Mark Rest done' })
+    await user.click(box)
+    await waitFor(() => expect(box).toHaveAttribute('aria-disabled', 'true'))
+    await user.click(box)
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    release()
+    const done = await screen.findByRole('checkbox', { name: 'Mark Rest not done' })
+    await waitFor(() => expect(done).not.toHaveAttribute('aria-disabled'))
+    await user.click(done)
+    expect(await screen.findByText('3 workouts · 0 of 4 done')).toBeInTheDocument()
+    expect((await programs.loadTree(id))!.program.completedDayIds).toEqual([])
+  })
+
+  it('a done workout day does not open the confirm sheet while a save is running', async () => {
+    const user = userEvent.setup()
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    await completeByName(id, 'Push')
+    renderPage()
+    const real = programs.completeDay.bind(programs)
+    let release!: () => void
+    const gate = new Promise<void>((resolve) => (release = resolve))
+    vi.spyOn(programs, 'completeDay').mockImplementationOnce(async (...args) => {
+      await gate
+      return real(...args)
+    })
+    const untick = vi.spyOn(programs, 'uncompleteDay')
+
+    await user.click(await screen.findByRole('checkbox', { name: 'Mark Rest done' }))
+    const push = screen.getByRole('checkbox', { name: 'Mark Push not done' })
+    await waitFor(() => expect(push).toHaveAttribute('aria-disabled', 'true'))
+    await user.click(push)
+    expect(screen.queryByText('Mark Push not done?')).not.toBeInTheDocument()
+    expect(untick).not.toHaveBeenCalled()
+
+    release()
+    expect(await screen.findByText('3 workouts · 2 of 4 done')).toBeInTheDocument()
+    await waitFor(() => expect(push).not.toHaveAttribute('aria-disabled'))
+    await user.click(push)
+    expect(await screen.findByText('Mark Push not done?')).toBeInTheDocument()
+  })
+
+  it('unticking a done workout day asks first, and cancelling keeps it done', async () => {
+    const user = userEvent.setup()
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    await completeByName(id, 'Push')
+    renderPage()
+    await user.click(await screen.findByRole('checkbox', { name: 'Mark Push not done' }))
+    expect(await screen.findByText('Mark Push not done?')).toBeInTheDocument()
+    expect(
+      screen.getByText('It moves back into this pass. Logging its workout ticks it again.'),
+    ).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Keep it done' }))
+    expect(screen.queryByText('Mark Push not done?')).not.toBeInTheDocument()
+    expect(screen.getByText('3 workouts · 1 of 4 done')).toBeInTheDocument()
+  })
+
+  it('confirming the untick moves the day back into the pass', async () => {
+    const user = userEvent.setup()
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    await completeByName(id, 'Push')
+    renderPage()
+    await user.click(await screen.findByRole('checkbox', { name: 'Mark Push not done' }))
+    await user.click(await screen.findByRole('button', { name: 'Mark not done' }))
+    expect(await screen.findByText('3 workouts · 0 of 4 done')).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Mark Push not done' })).not.toBeInTheDocument()
+    const items = within(await activeRows()).getAllByRole('listitem')
+    expect(within(items[0]).getByText('Up next')).toBeInTheDocument()
+  })
+
+  it('ticking reloads without resetting the archived group or expanded cards', async () => {
+    const user = userEvent.setup()
+    await seed('Old plan', [{ name: 'A', ids: ['pull-up'] }], { archive: true })
+    await seed('Library one', PPL)
+    await seed('Push Pull Legs', PPL, { activate: true })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Archived · 1/ }))
+    await user.click(screen.getByRole('button', { name: 'Expand Library one' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Mark Rest done' }))
+
+    expect(await screen.findByText('3 workouts · 1 of 4 done')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Archived · 1/ })).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('link', { name: /Old plan/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Collapse Library one' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Collapse Push Pull Legs' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+  })
+
+  it('library cards have no checkboxes or progress subtitle', async () => {
+    await seed('Active one', PPL, { activate: true })
+    await seed('Library one', PPL)
+    renderPage()
+    const toggle = await screen.findByRole('button', { name: 'Expand Library one' })
+    const rows = document.getElementById(toggle.getAttribute('aria-controls')!)!
+    expect(within(rows).queryAllByRole('checkbox', { hidden: true })).toHaveLength(0)
+    expect(screen.getAllByText(/of 4 done/)).toHaveLength(1)
   })
 
   it('shows a hint when programs exist but none is active', async () => {

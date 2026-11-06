@@ -165,6 +165,26 @@ describe('Program routes', () => {
   })
 })
 
+describe('Workout routes', () => {
+  it('renders /programs/:id/days/:id as the Day page, not the editor', async () => {
+    window.history.pushState({}, '', '/programs/p1/days/d1')
+    render(<App />)
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(screen.queryByRole('navigation', { name: 'Primary', hidden: true })).toBeNull()
+    expect(screen.queryByText('Name your program')).toBeNull()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Day' })).toBeInTheDocument()
+  })
+
+  it('redirects /session to /workout when nothing is in progress', async () => {
+    window.history.pushState({}, '', '/session')
+    render(<App />)
+    expect(await screen.findByRole('heading', { level: 1, name: 'Workout' })).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/workout')
+  })
+})
+
 afterEach(() => {
   vi.restoreAllMocks()
 })

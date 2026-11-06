@@ -10,8 +10,11 @@ import { cn } from '@/lib/utils'
 import { useSessionStore } from '@/stores/sessionStore'
 import type { SessionExercise } from '@/stores/sessionStore'
 
+// The button is a 44px tap target; the visible 36px pill is its inner span (design-system 10: 44px minimum).
 const CHIP =
-  'flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+  'group flex h-touch-min shrink-0 items-center rounded-full text-sm font-medium outline-none'
+const PILL =
+  'flex h-9 items-center gap-1.5 rounded-full border px-3 group-focus-visible:ring-[3px] group-focus-visible:ring-ring/50'
 
 /** "Set 2 of 3 · 8–10 reps · RIR 1" from the snapshot; "All sets done" once every set is checked. */
 function subtitle({ exercise, sets }: SessionExercise): string {
@@ -51,7 +54,7 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
         <p className="mt-0.5 text-sm text-muted-foreground tabular-nums">{subtitle(entry)}</p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto px-4 pt-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-2 overflow-x-auto px-4 pt-1 pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
           aria-disabled={!canSwap}
@@ -59,34 +62,42 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
             if (canSwap) navigate(`/session/swap/${exercise.id}`)
             else setSwapHint((value) => !value)
           }}
-          className={cn(CHIP, 'border-border', !canSwap && 'border-dashed text-muted-foreground')}
+          className={CHIP}
         >
-          <ArrowLeftRight className="size-4" aria-hidden="true" />
-          Swap
+          <span className={cn(PILL, 'border-border', !canSwap && 'border-dashed text-muted-foreground')}>
+            <ArrowLeftRight className="size-4" aria-hidden="true" />
+            Swap
+          </span>
         </button>
         <button
           type="button"
           onClick={() => setTargetsOpen(true)}
-          className={cn(CHIP, 'border-border')}
+          className={CHIP}
         >
-          <Target className="size-4" aria-hidden="true" />
-          Targets
+          <span className={cn(PILL, 'border-border')}>
+            <Target className="size-4" aria-hidden="true" />
+            Targets
+          </span>
         </button>
         <button
           type="button"
           disabled
-          className={cn(CHIP, 'border-dashed border-muted-foreground text-muted-foreground')}
+          className={CHIP}
         >
-          <Flame className="size-4" aria-hidden="true" />
-          Warm Up
+          <span className={cn(PILL, 'border-dashed border-muted-foreground text-muted-foreground')}>
+            <Flame className="size-4" aria-hidden="true" />
+            Warm Up
+          </span>
         </button>
         <button
           type="button"
           disabled
-          className={cn(CHIP, 'border-dashed border-muted-foreground text-muted-foreground')}
+          className={CHIP}
         >
-          <Info className="size-4" aria-hidden="true" />
-          Info
+          <span className={cn(PILL, 'border-dashed border-muted-foreground text-muted-foreground')}>
+            <Info className="size-4" aria-hidden="true" />
+            Info
+          </span>
         </button>
       </div>
       {swapHint && !canSwap ? (

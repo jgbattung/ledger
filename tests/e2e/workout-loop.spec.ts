@@ -175,3 +175,41 @@ test('RIR 6+ is a distinct value and an empty reps cell shows the target range',
   await page.reload();
   await expect(page.getByRole('button', { name: 'Set 1 reps, RIR 6+' })).toBeVisible();
 });
+
+test('swipe a set row left, tap the minus, and the rows renumber', async ({ page }) => {
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page.getByRole('row', { name: /^Set \d$/ })).toHaveCount(3);
+
+  const row = page.getByRole('row', { name: 'Set 2' });
+  const surface = row.locator('[style*="translateX"]');
+  await expect(surface).toHaveCSS('touch-action', 'pan-y');
+  const box = (await surface.boundingBox())!;
+  const y = box.y + box.height / 2;
+  const startX = box.x + box.width - 90;
+
+  await page.mouse.move(startX, y);
+  await page.mouse.down();
+  await page.mouse.move(startX - 30, y, { steps: 4 });
+  await page.mouse.move(startX - 70, y, { steps: 4 });
+  await page.mouse.up();
+
+  // Held open 52px, with the minus on the right edge.
+  await expect(surface).toHaveCSS('transform', 'matrix(1, 0, 0, 1, -52, 0)');
+  await row.getByRole('button', { name: 'Remove set 2' }).click();
+
+  await expect(page.getByRole('row', { name: /^Set \d$/ })).toHaveCount(2);
+  await expect(page.getByRole('row', { name: 'Set 3' })).toHaveCount(0);
+  const sets = await readStore<Row>(page, 'sets');
+  expect(sets.filter((s) => s.deletedAt != null)).toHaveLength(1);
+});
+
+test('a set row can be removed from the keyboard with Delete', async ({ page }) => {
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await page.getByRole('row', { name: 'Set 3' }).focus();
+  await page.keyboard.press('Delete');
+  await expect(page.getByRole('row', { name: /^Set \d$/ })).toHaveCount(2);
+});

@@ -32,6 +32,7 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
   const [targetsOpen, setTargetsOpen] = useState(false)
   const [swapHint, setSwapHint] = useState(false)
   const pad = useSessionStore((state) => state.pad)
+  const openSwipeSetId = useSessionStore((state) => state.openSwipeSetId)
   const previous = useSessionStore((state) => state.previousByExercise[entry.exercise.id])
   const { exercise, sets } = entry
 
@@ -102,6 +103,9 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
         onOpenPad={(setId, field) => useSessionStore.getState().openPad(setId, field)}
         onToggle={(setId) => useSessionStore.getState().toggleComplete(setId)}
         onAddSet={() => void useSessionStore.getState().addSet(exercise.id)}
+        openSwipeSetId={openSwipeSetId}
+        onSwipeOpenChange={(setId) => useSessionStore.getState().setSwipeOpen(setId)}
+        onRemove={(setId) => useSessionStore.getState().removeSet(setId)}
       />
 
       <ExerciseNoteCard

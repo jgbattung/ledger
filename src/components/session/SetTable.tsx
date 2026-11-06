@@ -13,6 +13,9 @@ export function SetTable({
   onOpenPad,
   onToggle,
   onAddSet,
+  openSwipeSetId,
+  onSwipeOpenChange,
+  onRemove,
 }: {
   sets: SetRecord[]
   previous: SetRecord[]
@@ -21,6 +24,9 @@ export function SetTable({
   onOpenPad: (setId: string, field: PadField) => void
   onToggle: (setId: string) => void
   onAddSet: () => void
+  openSwipeSetId: string | null
+  onSwipeOpenChange: (setId: string | null) => void
+  onRemove: (setId: string) => void
 }) {
   const placeholder = repPlaceholder(snapshot)
   return (
@@ -52,6 +58,9 @@ export function SetTable({
             pad={pad?.setId === set.id ? pad.entry : null}
             onOpenPad={(field) => onOpenPad(set.id, field)}
             onToggle={() => onToggle(set.id)}
+            swipeOpen={openSwipeSetId === set.id}
+            onSwipeOpenChange={(open) => onSwipeOpenChange(open ? set.id : null)}
+            onRemove={() => onRemove(set.id)}
           />
         ))}
       </div>

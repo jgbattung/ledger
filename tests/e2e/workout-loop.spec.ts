@@ -213,3 +213,60 @@ test('a set row can be removed from the keyboard with Delete', async ({ page }) 
   await page.keyboard.press('Delete');
   await expect(page.getByRole('row', { name: /^Set \d$/ })).toHaveCount(2);
 });
+
+test('LOG-10: swap bench to DB press keeping targets, finish, and swappedFrom is recorded', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Swap' }).click();
+  await expect(page).toHaveURL(/\/session\/swap\//);
+  await page.getByRole('searchbox').fill('dumbbell bench press');
+  // Exercises already in the workout are disabled.
+  await page.getByRole('searchbox').fill('barbell bench press');
+  await expect(page.getByRole('button', { name: /^Barbell Bench Press/ }).first()).toBeDisabled();
+  await page.getByRole('searchbox').fill('dumbbell bench press');
+  await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click();
+  const sheet = page.getByRole('dialog', { name: /Swap to Dumbbell Bench Press/ });
+  await sheet.getByRole('button', { name: /Keep targets/ }).click();
+
+  await expect(page).toHaveURL(/\/session$/);
+  await expect(page.getByRole('heading', { level: 2, name: 'Dumbbell Bench Press' })).toBeVisible();
+  await expect(page.getByText('Swapped from Barbell Bench Press')).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Set \d reps$/ })).toHaveText(['8–12', '8–12', '8–12']);
+
+  // Log and finish.
+  await fillAllSets(page, { reps: 10, weight: 30 });
+  for (const exercise of ['Dumbbell Bench Press', 'Cable Lateral Raise']) {
+    await page.getByRole('button', { name: exercise }).first().click();
+    for (const n of [1, 2, 3]) {
+      await page.getByRole('checkbox', { name: `Mark set ${n} done` }).click();
+    }
+  }
+  await page.getByRole('button', { name: 'Finish workout' }).click();
+  await expect(page).toHaveURL(/\/$/);
+
+  const exercises = await readStore<{
+    exerciseRef: { exerciseId: string };
+    swappedFrom?: { exerciseId: string };
+  }>(page, 'workoutExercises');
+  const swapped = exercises.find((e) => e.exerciseRef.exerciseId === 'dumbbell-bench-press');
+  expect(swapped?.swappedFrom?.exerciseId).toBe('barbell-bench-press');
+});
+
+test('Swap is refused with an explanation once a set is checked', async ({ page }) => {
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page).toHaveURL(/\/session$/);
+  await fillAllSets(page, { reps: 8 });
+  await page.getByRole('checkbox', { name: 'Mark set 1 done' }).click();
+  // aria-disabled (not disabled) so the tap can explain itself; Playwright treats it as not actionable.
+  await page.getByRole('button', { name: 'Swap' }).click({ force: true });
+  await expect(page.getByRole('status')).toContainText('only available before any set');
+  await expect(page).toHaveURL(/\/session$/);
+});

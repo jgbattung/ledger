@@ -1,6 +1,6 @@
 import { Delete } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { RIR_FILL } from '@/components/session/SetRow'
+import { RIR_FILL } from '@/components/session/styles'
 import { cn } from '@/lib/utils'
 import { useSessionStore } from '@/stores/sessionStore'
 import type { PadKey } from '@/workouts/model'

@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
-import { ROW_GRID, SetRow } from '@/components/session/SetRow'
+import { SetRow } from '@/components/session/SetRow'
+import { ROW_GRID } from '@/components/session/styles'
 import { repPlaceholder } from '@/workouts/model'
 import type { Set as SetRecord, TargetsSnapshot } from '@/db/types'
 import type { PadEntry, PadField } from '@/workouts/model'

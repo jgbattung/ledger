@@ -1,22 +1,10 @@
 import { useRef, useState } from 'react'
 import { Check, Minus } from 'lucide-react'
+import { RIR_FILL, ROW_GRID } from '@/components/session/styles'
 import { cn } from '@/lib/utils'
 import { formatPrevious, rirLabel } from '@/workouts/model'
 import type { PadEntry, PadField } from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
-
-/** Full class names so Tailwind can see them (design-system 10c). */
-export const RIR_FILL = [
-  'bg-rir-0',
-  'bg-rir-1',
-  'bg-rir-2',
-  'bg-rir-3',
-  'bg-rir-4',
-  'bg-rir-5',
-  'bg-rir-6',
-] as const
-
-export const ROW_GRID = 'grid grid-cols-[32px_minmax(0,1fr)_64px_64px_44px] items-center gap-x-1.5'
 
 /** The muted `|` between full and partial reps (design-system 10d). */
 export function PartialDivider() {
@@ -249,7 +237,7 @@ export function SetRow({
                 <span
                   aria-hidden="true"
                   className={cn(
-                    'absolute -top-[7px] -right-[7px] flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-none font-semibold text-rir-ink ring-2 ring-background',
+                    'absolute -top-2 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-none font-semibold text-rir-ink ring-2 ring-background',
                     RIR_FILL[set.rirIsPlus ? 6 : Math.min(6, Math.max(0, set.rir))],
                   )}
                 >

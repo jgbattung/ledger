@@ -57,6 +57,8 @@ type SessionState = {
   setExerciseNote: (workoutExerciseId: string, notes: string) => void
   setWorkoutNote: (notes: string) => void
   flushNotes: () => Promise<void>
+  /** Starts every pending write right now (pagehide / tab hidden). Does not wait. */
+  flushPending: () => void
   finish: () => Promise<void>
   discard: () => Promise<void>
   reset: () => void
@@ -71,6 +73,46 @@ const noteTimers = new Map<string, ReturnType<typeof setTimeout>>()
 const pendingNotes = new Map<string, string>()
 
 const WORKOUT_NOTE_KEY = 'workout'
+
+/**
+ * Debounced notes are mirrored to localStorage synchronously. A reload can
+ * cancel an in-flight IndexedDB write (the connection is force-closed), so the
+ * journal is replayed on the next hydrate and dropped once the write lands.
+ */
+const NOTE_JOURNAL_KEY = 'ledger.pendingNotes'
+type NoteJournal = { workoutId: string; notes: Record<string, string> }
+
+function readNoteJournal(): NoteJournal | null {
+  try {
+    const raw = localStorage.getItem(NOTE_JOURNAL_KEY)
+    return raw ? (JSON.parse(raw) as NoteJournal) : null
+  } catch {
+    return null
+  }
+}
+
+function writeNoteJournal(journal: NoteJournal | null) {
+  try {
+    if (journal && Object.keys(journal.notes).length > 0) {
+      localStorage.setItem(NOTE_JOURNAL_KEY, JSON.stringify(journal))
+    } else localStorage.removeItem(NOTE_JOURNAL_KEY)
+  } catch {
+    // Storage can be blocked: the write-through path still runs.
+  }
+}
+
+function journalNote(workoutId: string, key: string, value: string) {
+  const current = readNoteJournal()
+  const notes = current?.workoutId === workoutId ? current.notes : {}
+  writeNoteJournal({ workoutId, notes: { ...notes, [key]: value } })
+}
+
+function unjournalNote(key: string, value: string) {
+  const current = readNoteJournal()
+  if (!current || current.notes[key] !== value) return
+  const { [key]: _done, ...rest } = current.notes
+  writeNoteJournal({ workoutId: current.workoutId, notes: rest })
+}
 
 const initial = {
   workout: null,
@@ -140,6 +182,18 @@ export const useSessionStore = create<SessionState>((set, get) => {
     return previous
   }
 
+  /** Applies notes a reload kept from reaching IndexedDB, then clears the journal. */
+  async function replayNoteJournal(workoutId: string | undefined) {
+    const journal = readNoteJournal()
+    if (!journal) return
+    writeNoteJournal(null)
+    if (!workoutId || journal.workoutId !== workoutId) return
+    for (const [key, value] of Object.entries(journal.notes)) {
+      if (key === WORKOUT_NOTE_KEY) await workouts.setNotes(workoutId, value)
+      else await workoutExercises.setNotes(key, value)
+    }
+  }
+
   /** Re-reads the in-progress workout from Dexie, keeping focus where possible. */
   async function refresh() {
     const workout = await workouts.getInProgress()
@@ -171,11 +225,15 @@ export const useSessionStore = create<SessionState>((set, get) => {
   const writeNote = (key: string, notes: string) => {
     void enqueue(() =>
       key === WORKOUT_NOTE_KEY ? workouts.setNotes(get().workout!.id, notes) : workoutExercises.setNotes(key, notes),
-    )
+    ).then(() => {
+      if (!pendingNotes.has(key)) unjournalNote(key, notes)
+    })
   }
 
   const scheduleNote = (key: string, notes: string) => {
     pendingNotes.set(key, notes)
+    const workoutId = get().workout?.id
+    if (workoutId) journalNote(workoutId, key, notes)
     clearTimeout(noteTimers.get(key))
     noteTimers.set(
       key,
@@ -198,6 +256,30 @@ export const useSessionStore = create<SessionState>((set, get) => {
     await queue
   }
 
+  /**
+   * The page may be gone in milliseconds: hand pending set patches and
+   * debounced notes to IndexedDB immediately instead of waiting for the queue
+   * or the 400ms debounce. Coalesced patches taken here make their queued
+   * tasks no-ops; IndexedDB keeps same-store transactions in creation order.
+   */
+  const flushPending = () => {
+    for (const [setId, patch] of [...pendingPatches.entries()]) {
+      pendingPatches.delete(setId)
+      void sets.patch(setId, patch).catch(() => {})
+    }
+    for (const [key, value] of [...pendingNotes.entries()]) {
+      clearTimeout(noteTimers.get(key))
+      noteTimers.delete(key)
+      pendingNotes.delete(key)
+      const workout = get().workout
+      if (key === WORKOUT_NOTE_KEY) {
+        if (workout) void workouts.setNotes(workout.id, value).catch(() => {})
+      } else {
+        void workoutExercises.setNotes(key, value).catch(() => {})
+      }
+    }
+  }
+
   return {
     ...initial,
 
@@ -209,6 +291,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
           set({ hydrated: true })
           return
         }
+        await replayNoteJournal(workout?.id)
         await refresh()
       })().finally(() => {
         inflightHydrate = null
@@ -219,6 +302,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
     async start(programId, dayId) {
       const id = await workouts.startFromProgramDay(programId, dayId)
       clearNoteState()
+      writeNoteJournal(null)
       set({ ...initial })
       await refresh()
       return id
@@ -371,6 +455,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
     },
 
     flushNotes,
+    flushPending,
 
     async finish() {
       const workout = get().workout
@@ -379,6 +464,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
       await queue
       await workouts.finish(workout.id)
       clearNoteState()
+      writeNoteJournal(null)
       set({ ...initial, hydrated: true })
     },
 
@@ -388,12 +474,23 @@ export const useSessionStore = create<SessionState>((set, get) => {
       clearNoteState()
       await queue
       await workouts.discard(workout.id)
+      writeNoteJournal(null)
       set({ ...initial, hydrated: true })
     },
 
     reset() {
       clearNoteState()
+      writeNoteJournal(null)
       set({ ...initial })
     },
   }
 })
+
+// Persist the last edit if the app is closed, reloaded or backgrounded right after a tap.
+if (typeof window !== 'undefined') {
+  const flush = () => useSessionStore.getState().flushPending()
+  window.addEventListener('pagehide', flush)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flush()
+  })
+}

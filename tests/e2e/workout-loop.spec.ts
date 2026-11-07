@@ -303,3 +303,21 @@ test('switching exercises still lands on the end state under reduced motion', as
   await page.getByRole('button', { name: 'Barbell Bench Press' }).click();
   await expect(page.getByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeVisible();
 });
+
+test('an edit made right before a reload is not lost (pagehide flush)', async ({ page }) => {
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page).toHaveURL(/\/session$/);
+
+  const pad = page.getByRole('group', { name: 'Number pad' });
+  await page.getByRole('button', { name: 'Set 1 reps' }).click();
+  await pad.getByRole('button', { name: '9', exact: true }).click();
+  await page.getByRole('button', { name: 'Hide keypad' }).click();
+  await page.getByRole('textbox', { name: 'Exercise note' }).fill('typed just before reload');
+
+  // No waiting for the 400ms note debounce or the write queue.
+  await page.reload();
+  await expect(page.getByRole('textbox', { name: 'Exercise note' })).toHaveValue('typed just before reload');
+  await expect(page.getByRole('button', { name: /^Set 1 reps/ })).toHaveText(/9/);
+});

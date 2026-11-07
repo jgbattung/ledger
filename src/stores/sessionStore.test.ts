@@ -269,4 +269,82 @@ describe('sessionStore', () => {
       expect(store().focusedExerciseId).toBe(bench.exercise.id)
     })
   })
+
+  describe('flush on pagehide and visibilitychange', () => {
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+    async function editThenLeave(leave: () => void) {
+      await startPush()
+      const bench = store().exercises[0]
+      const first = bench.sets[0].id
+      store().openPad(first, 'reps')
+      store().padKey('9')
+      store().setExerciseNote(bench.exercise.id, 'last words')
+      store().setWorkoutNote('session')
+      leave()
+      // Far less than the 400ms note debounce, and no flushNotes() call.
+      await wait(80)
+      expect((await db.sets.get(first))?.reps).toBe(9)
+      expect((await db.workoutExercises.get(bench.exercise.id))?.notes).toBe('last words')
+      expect((await db.workouts.get(store().workout!.id))?.notes).toBe('session')
+    }
+
+    it('persists the last edit and pending notes on pagehide', async () => {
+      await editThenLeave(() => window.dispatchEvent(new Event('pagehide')))
+    })
+
+    it('persists them when the tab becomes hidden', async () => {
+      const original = Object.getOwnPropertyDescriptor(document, 'visibilityState')
+      Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' })
+      try {
+        await editThenLeave(() => document.dispatchEvent(new Event('visibilitychange')))
+      } finally {
+        if (original) Object.defineProperty(document, 'visibilityState', original)
+        else delete (document as unknown as Record<string, unknown>).visibilityState
+      }
+    })
+
+    it('does nothing harmful when there is nothing pending', async () => {
+      await startPush()
+      expect(() => store().flushPending()).not.toThrow()
+    })
+  })
+
+  describe('note journal (reload safety)', () => {
+    const KEY = 'ledger.pendingNotes'
+
+    it('mirrors a pending note to localStorage and drops it once saved', async () => {
+      await startPush()
+      const bench = store().exercises[0].exercise.id
+      store().setExerciseNote(bench, 'draft')
+      expect(JSON.parse(localStorage.getItem(KEY)!).notes[bench]).toBe('draft')
+      await store().flushNotes()
+      await new Promise((resolve) => setTimeout(resolve, 20))
+      expect(localStorage.getItem(KEY)).toBeNull()
+    })
+
+    it('replays a journalled note on the next hydrate when the write never landed', async () => {
+      await startPush()
+      const workoutId = store().workout!.id
+      const bench = store().exercises[0].exercise.id
+      localStorage.setItem(KEY, JSON.stringify({ workoutId, notes: { [bench]: 'rescued', workout: 'also' } }))
+      store().reset()
+      localStorage.setItem(KEY, JSON.stringify({ workoutId, notes: { [bench]: 'rescued', workout: 'also' } }))
+      await store().hydrate()
+      expect(store().exercises[0].exercise.notes).toBe('rescued')
+      expect(store().workout?.notes).toBe('also')
+      expect((await db.workoutExercises.get(bench))?.notes).toBe('rescued')
+      expect(localStorage.getItem(KEY)).toBeNull()
+    })
+
+    it('ignores a journal that belongs to another workout', async () => {
+      await startPush()
+      const bench = store().exercises[0].exercise.id
+      store().reset()
+      localStorage.setItem(KEY, JSON.stringify({ workoutId: 'someone-else', notes: { [bench]: 'x' } }))
+      await store().hydrate()
+      expect(store().exercises[0].exercise.notes).toBeUndefined()
+      expect(localStorage.getItem(KEY)).toBeNull()
+    })
+  })
 })

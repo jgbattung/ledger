@@ -289,4 +289,17 @@ test('checking the last set of an exercise moves focus to the next exercise', as
     'aria-current',
     'true',
   );
+  // End state only (the glide is 200ms): the indicator sits under the second tile, 62px along.
+  await expect(page.getByTestId('strip-indicator')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 62, 0)');
+});
+
+test('switching exercises still lands on the end state under reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await page.getByRole('button', { name: 'Cable Lateral Raise' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Cable Lateral Raise' })).toBeVisible();
+  await page.getByRole('button', { name: 'Barbell Bench Press' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeVisible();
 });

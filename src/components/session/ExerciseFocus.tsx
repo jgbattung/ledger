@@ -18,7 +18,8 @@ const PILL =
 
 /** "Set 2 of 3 · 8–10 reps · RIR 1" from the snapshot; "All sets done" once every set is checked. */
 function subtitle({ exercise, sets }: SessionExercise): string {
-  if (sets.length > 0 && sets.every((set) => set.completedAt != null)) return 'All sets done'
+  if (sets.length === 0) return 'No sets'
+  if (sets.every((set) => set.completedAt != null)) return 'All sets done'
   const current = sets.findIndex((set) => set.completedAt == null) + 1
   const snapshot = exercise.targetsSnapshot
   const parts = [`Set ${current} of ${sets.length}`]

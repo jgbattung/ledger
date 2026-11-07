@@ -188,4 +188,12 @@ describe('SetRow checked dimming (AC21)', () => {
     await setup()
     expect(dimmed(rows()[0])).toHaveLength(0)
   })
+
+  it('the header reads "No sets" once every set has been removed', async () => {
+    await setup()
+    expect(screen.getByText(/^Set 1 of 3/)).toBeInTheDocument()
+    for (const row of store().exercises[0].sets) act(() => store().removeSet(row.id))
+    expect(screen.getByText('No sets')).toBeInTheDocument()
+    expect(screen.queryByText(/Set 0 of 0/)).toBeNull()
+  })
 })

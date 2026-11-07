@@ -151,3 +151,41 @@ describe('SetRow swipe-to-remove', () => {
     expect(surface).toBeInTheDocument()
   })
 })
+
+describe('SetRow checked dimming (AC21)', () => {
+  beforeEach(async () => {
+    await resetDb()
+    store().reset()
+  })
+
+  const dimmed = (row: HTMLElement) => Array.from(row.querySelectorAll('.opacity-50'))
+
+  it('a checked row dims everything but the check, and editing a cell restores full strength', async () => {
+    await setup()
+    const first = store().exercises[0].sets[0]
+    act(() => {
+      store().openPad(first.id, 'reps')
+      store().padKey('8')
+      store().closePad()
+      store().toggleComplete(first.id)
+    })
+    const row = rows()[0]
+    expect(dimmed(row).length).toBeGreaterThanOrEqual(3)
+    const check = within(row).getByRole('checkbox', { name: 'Mark set 1 not done' })
+    expect(dimmed(row).some((element) => element.contains(check))).toBe(false)
+
+    // Tapping a checked row's cell edits it in place at full strength.
+    await userEvent.click(within(row).getByRole('button', { name: 'Set 1 weight in kilograms' }))
+    expect(store().pad?.setId).toBe(first.id)
+    expect(dimmed(rows()[0])).toHaveLength(0)
+    expect(store().exercises[0].sets[0].completedAt).toBeTypeOf('number')
+
+    act(() => store().closePad())
+    expect(dimmed(rows()[0]).length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('an unchecked row is never dimmed', async () => {
+    await setup()
+    expect(dimmed(rows()[0])).toHaveLength(0)
+  })
+})

@@ -21,8 +21,8 @@
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   /* Exercise switch on the Ongoing Workout (design-system 10l). */
-  --duration-slide: 220ms;
-  --duration-glide: 200ms;
+  --duration-slide: 320ms;
+  --duration-glide: 300ms;
   --duration-pop: 150ms;
   --slide-distance: 32px;
 

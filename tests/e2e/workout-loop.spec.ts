@@ -289,7 +289,7 @@ test('checking the last set of an exercise moves focus to the next exercise', as
     'aria-current',
     'true',
   );
-  // End state only (the glide is 200ms): the indicator sits under the second tile, 62px along.
+  // End state only (the glide is 300ms): the indicator sits under the second tile, 62px along.
   await expect(page.getByTestId('strip-indicator')).toHaveCSS('transform', 'matrix(1, 0, 0, 1, 62, 0)');
 });
 

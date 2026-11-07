@@ -17,7 +17,7 @@ export function ExerciseStrip({
   return (
     <nav
       aria-label="Exercises"
-      className="flex shrink-0 gap-1.5 overflow-x-auto px-4 pt-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="flex shrink-0 gap-1.5 overflow-x-auto px-4 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {exercises.map(({ exercise, sets }) => {
         const focused = exercise.id === focusedId

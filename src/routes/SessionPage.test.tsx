@@ -241,4 +241,55 @@ describe('SessionPage', () => {
     await user.click(await screen.findByRole('button', { name: 'Swap' }))
     expect(await screen.findByRole('status')).toHaveTextContent(/only available before any set/)
   })
+
+  describe('exercise switch motion', () => {
+    const slideWrapper = () =>
+      screen.getByRole('heading', { level: 2 }).closest('[class*="exercise-enter"], [style*="exercise-slide"]')
+
+    it('does not slide on first render', async () => {
+      await startPush()
+      renderSession()
+      await screen.findByRole('heading', { level: 2, name: 'Barbell Bench Press' })
+      expect(document.querySelector('.exercise-enter')).toBeNull()
+    })
+
+    it('slides in from the right for a later exercise and from the left for an earlier one', async () => {
+      await startPush()
+      const user = userEvent.setup()
+      renderSession()
+      await user.click(await screen.findByRole('button', { name: 'Pull-Up' }))
+      expect(slideWrapper()).toHaveClass('exercise-enter')
+      expect(slideWrapper()?.getAttribute('style')).toContain('calc(1 *')
+      await user.click(screen.getByRole('button', { name: 'Barbell Bench Press' }))
+      expect(slideWrapper()?.getAttribute('style')).toContain('calc(-1 *')
+    })
+
+    it('auto-advance wrapping to an earlier exercise slides from the left', async () => {
+      await startPush()
+      renderSession()
+      const [bench, pull] = store().exercises
+      act(() => store().focusExercise(pull.exercise.id))
+      for (const set of pull.sets) {
+        logReps(set.id, '8')
+        act(() => store().toggleComplete(set.id))
+      }
+      expect(await screen.findByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeInTheDocument()
+      expect(slideWrapper()?.getAttribute('style')).toContain('calc(-1 *')
+      expect(bench.exercise.id).toBe(store().focusedExerciseId)
+    })
+
+    it('the strip indicator moves to the focused tile and never blocks input', async () => {
+      await startPush()
+      const user = userEvent.setup()
+      renderSession()
+      const indicator = await screen.findByTestId('strip-indicator')
+      expect(indicator.style.transform).toContain('calc(0 *')
+      await user.click(screen.getByRole('button', { name: 'Pull-Up' }))
+      expect(indicator.style.transform).toContain('calc(1 *')
+      // A rapid second switch retargets immediately.
+      await user.click(screen.getByRole('button', { name: 'Barbell Bench Press' }))
+      await user.click(screen.getByRole('button', { name: 'Pull-Up' }))
+      expect(screen.getByRole('heading', { level: 2, name: 'Pull-Up' })).toBeInTheDocument()
+    })
+  })
 })

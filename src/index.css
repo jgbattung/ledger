@@ -20,6 +20,11 @@
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Exercise switch on the Ongoing Workout (design-system 10l). */
+  --duration-slide: 220ms;
+  --duration-glide: 200ms;
+  --duration-pop: 150ms;
+  --slide-distance: 32px;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.21 0.02 250);
@@ -165,7 +170,43 @@
   }
 }
 
+/* Exercise switch (design-system 10l): transform and opacity only. */
+@keyframes exercise-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--exercise-slide-from, 0px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.exercise-enter {
+  animation: exercise-in var(--duration-slide) var(--ease-out) both;
+}
+
+.pop-in {
+  animation: pop-in var(--duration-pop) var(--ease-out) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .exercise-enter,
+  .pop-in {
+    animation: none;
+  }
+
   *,
   *::before,
   *::after {

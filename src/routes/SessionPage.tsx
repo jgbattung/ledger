@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Navigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { ExerciseFocus } from '@/components/session/ExerciseFocus'
@@ -25,6 +25,16 @@ export function SessionPage() {
   const pad = useSessionStore((state) => state.pad)
   const openSwipeSetId = useSessionStore((state) => state.openSwipeSetId)
   const goBack = useGoBack()
+  // Which way the content slides: the strip order decides (later = from the right).
+  const focusIndex = exercises.findIndex((entry) => entry.exercise.id === focusedId)
+  const [slide, setSlide] = useState({ id: focusedId, index: focusIndex, dir: 0 })
+  if (slide.id !== focusedId) {
+    setSlide({
+      id: focusedId,
+      index: focusIndex,
+      dir: slide.id === null || focusIndex < 0 ? 0 : focusIndex > slide.index ? 1 : -1,
+    })
+  }
   const scrollRef = useRef<HTMLDivElement>(null)
   // Where to land once the store clears: set before finishing or discarding so
   // the redirect below does not win with its default.
@@ -95,7 +105,7 @@ export function SessionPage() {
       />
       <div
         ref={scrollRef}
-        className="min-h-0 flex-1 overflow-y-auto pb-4"
+        className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto pb-4"
         onPointerDownCapture={(event) => {
           // Tapping anywhere but the revealed remove button closes a swiped row.
           if (openSwipeSetId && !(event.target as HTMLElement).closest('[data-swipe-row="open"] button')) {
@@ -103,7 +113,19 @@ export function SessionPage() {
           }
         }}
       >
-        {focused ? <ExerciseFocus key={focused.exercise.id} entry={focused} /> : null}
+        {focused ? (
+          // Remounting per exercise restarts the slide on the newest target, so a rapid
+          // second switch retargets cleanly instead of queueing (design-system 10l).
+          <div
+            key={focused.exercise.id}
+            className={slide.dir !== 0 ? 'exercise-enter' : undefined}
+            style={
+              { '--exercise-slide-from': `calc(${slide.dir} * var(--slide-distance))` } as CSSProperties
+            }
+          >
+            <ExerciseFocus entry={focused} />
+          </div>
+        ) : null}
       </div>
       <NumberPad />
       {allDone && !pad ? <FinishBar onFinish={requestFinish} /> : null}

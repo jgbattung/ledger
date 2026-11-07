@@ -100,13 +100,19 @@ describe('WorkoutPage', () => {
     expect(libRows).not.toBeVisible()
   })
 
-  it('day rows contain no links; the only controls are checkboxes on rest and done days', async () => {
+  it('workout day rows link to the Day page; the only buttons are checkboxes on rest and done days', async () => {
     const id = await seed('Push Pull Legs', PPL, { activate: true })
     await completeByName(id, 'Pull')
     renderPage()
     const toggle = await screen.findByRole('button', { name: 'Collapse Push Pull Legs' })
     const rows = document.getElementById(toggle.getAttribute('aria-controls')!)!
-    expect(within(rows).queryAllByRole('link')).toHaveLength(0)
+    const tree = (await programs.loadTree(id))!
+    const hrefs = within(rows)
+      .getAllByRole('link')
+      .map((link) => link.getAttribute('href'))
+    expect(hrefs).toEqual(
+      tree.days.filter((entry) => entry.exercises.length > 0).map((entry) => `/programs/${id}/days/${entry.day.id}`),
+    )
     expect(within(rows).queryAllByRole('button')).toHaveLength(0)
     expect(
       within(rows)
@@ -115,6 +121,51 @@ describe('WorkoutPage', () => {
     ).toEqual(['Mark Pull not done', 'Mark Rest done'])
     expect(within(rows).getByText('Rest')).toBeInTheDocument()
     expect(within(rows).getByText('Pull-Up')).toBeInTheDocument()
+  })
+
+  it('rest rows and archived program rows do not open the Day page', async () => {
+    await seed('Push Pull Legs', PPL, { activate: true })
+    await seed('Old', PPL, { archive: true })
+    renderPage()
+    const rows = await activeRows()
+    const restItem = within(rows).getAllByRole('listitem')[3]
+    expect(within(restItem).queryByRole('link')).toBeNull()
+    const user = userEvent.setup()
+    await user.click(await screen.findByRole('button', { name: /Archived/ }))
+    const archivedToggle = await screen.findByRole('button', { name: 'Expand Old' })
+    await user.click(archivedToggle)
+    const archivedRows = document.getElementById(archivedToggle.getAttribute('aria-controls')!)!
+    expect(within(archivedRows).queryAllByRole('link')).toHaveLength(0)
+  })
+
+  it('library card day rows link to the Day page without checkboxes', async () => {
+    await seed('Push Pull Legs', PPL, { activate: true })
+    const libraryId = await seed('Library', PPL)
+    renderPage()
+    const toggle = await screen.findByRole('button', { name: 'Expand Library' })
+    await userEvent.setup().click(toggle)
+    const rows = document.getElementById(toggle.getAttribute('aria-controls')!)!
+    expect(within(rows).queryAllByRole('checkbox')).toHaveLength(0)
+    const tree = (await programs.loadTree(libraryId))!
+    expect(
+      within(rows)
+        .getAllByRole('link')
+        .map((link) => link.getAttribute('href')),
+    ).toEqual(
+      tree.days.filter((entry) => entry.exercises.length > 0).map((entry) => `/programs/${libraryId}/days/${entry.day.id}`),
+    )
+  })
+
+  it('ticking a checkbox does not navigate (the row link is a sibling)', async () => {
+    const id = await seed('Push Pull Legs', PPL, { activate: true })
+    await completeByName(id, 'Pull')
+    renderPage()
+    const rows = await activeRows()
+    const user = userEvent.setup()
+    await user.click(within(rows).getByRole('checkbox', { name: 'Mark Rest done' }))
+    await waitFor(async () =>
+      expect((await programs.get(id))?.completedDayIds?.length).toBe(2),
+    )
   })
 
   it('workout days that are not done have no control', async () => {

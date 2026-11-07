@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -32,17 +30,21 @@ function plural(count: number, noun: string) {
 /**
  * Dashboard card for the active program's up-next day: the day name as the
  * hero, a segmented pass bar (design-system 9c) and either a one-line exercise
- * summary or, on a rest day, a full-row checkbox. LG-022 replaces the
- * "View in Workout" footer with Start Workout.
+ * summary or, on a rest day, a full-row checkbox. A workout day ends in a
+ * one-tap, ink-filled Start workout (the FAB owns this screen's only accent).
  */
 export function UpNextCard({
   tree,
   onCompleteRestDay,
+  onStart,
   saving,
+  starting,
 }: {
   tree: ProgramTree
   onCompleteRestDay: (dayId: string) => void
+  onStart: (dayId: string) => void
   saving?: boolean
+  starting?: boolean
 }) {
   const { name, days } = programTreeToDraft(tree)
   const completed = tree.program.completedDayIds ?? []
@@ -121,16 +123,19 @@ export function UpNextCard({
         </div>
       ) : (
         <>
-          <p className="line-clamp-2 px-3.5 pb-3.5 text-sm text-muted-foreground">
+          <p className="line-clamp-2 px-3.5 pb-3 text-sm text-muted-foreground">
             {day.exercises.map((exercise) => exerciseName(exercise.exerciseRef)).join(', ')}
           </p>
-          <Link
-            to="/workout"
-            className="flex h-12 items-center justify-between border-t border-border px-3.5 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
-          >
-            View in Workout
-            <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-          </Link>
+          <div className="px-3.5 pb-3.5">
+            <button
+              type="button"
+              disabled={starting}
+              onClick={() => onStart(day.id)}
+              className="flex h-touch-primary w-full items-center justify-center rounded-lg bg-foreground text-base font-medium text-background outline-none transition-colors hover:bg-foreground/90 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none"
+            >
+              Start workout
+            </button>
+          </div>
         </>
       )}
     </section>

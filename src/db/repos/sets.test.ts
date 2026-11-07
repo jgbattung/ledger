@@ -61,3 +61,66 @@ describe('sets repo - kg weight persistence (§3.13)', () => {
     })
   })
 })
+
+describe('sets repo - logging operations', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  async function seed(count: number) {
+    const rows = []
+    for (let index = 0; index < count; index += 1) {
+      rows.push(
+        await sets.create({
+          workoutExerciseId: 'we-1',
+          orderIndex: index,
+          type: 'working',
+          weight: 0,
+          reps: 0,
+          rir: 0,
+          rirIsPlus: false,
+        }),
+      )
+    }
+    return rows
+  }
+
+  it('add uses last orderIndex + 1, never the row count', async () => {
+    const [, second] = await seed(3)
+    const fourth = await sets.add('we-1')
+    expect(fourth.orderIndex).toBe(3)
+    await sets.softDelete(second.id)
+    const fifth = await sets.add('we-1')
+    expect(fifth.orderIndex).toBe(4)
+    expect((await sets.listByWorkoutExercise('we-1')).map((s) => s.orderIndex)).toEqual([0, 2, 3, 4])
+  })
+
+  it('add starts at 0 for an exercise with no sets and copies weight and RIR', async () => {
+    expect((await sets.add('empty')).orderIndex).toBe(0)
+    const [first] = await seed(1)
+    await sets.patch(first.id, { weight: 62.5, reps: 8, partialReps: 2, rir: 6, rirIsPlus: true })
+    const added = await sets.add('we-1')
+    expect(added).toMatchObject({ weight: 62.5, reps: 0, rir: 6, rirIsPlus: true, type: 'working' })
+    expect(added.partialReps).toBeUndefined()
+    expect(added.completedAt).toBeUndefined()
+  })
+
+  it('patch writes only the given logged fields and round-trips 6+', async () => {
+    const [first] = await seed(1)
+    await sets.patch(first.id, { reps: 9, rir: 6, rirIsPlus: true })
+    const stored = await sets.get(first.id)
+    expect(stored).toMatchObject({ reps: 9, weight: 0, rir: 6, rirIsPlus: true })
+    await sets.patch(first.id, { partialReps: undefined })
+    expect((await sets.get(first.id))?.partialReps).toBeUndefined()
+  })
+
+  it('setCompleted needs reps, stamps and clears completedAt', async () => {
+    const [first] = await seed(1)
+    await expect(sets.setCompleted(first.id, true)).rejects.toThrow('at least 1 rep')
+    await sets.patch(first.id, { reps: 5 })
+    await sets.setCompleted(first.id, true)
+    expect((await sets.get(first.id))?.completedAt).toBeTypeOf('number')
+    await sets.setCompleted(first.id, false)
+    expect((await sets.get(first.id))?.completedAt).toBeUndefined()
+  })
+})

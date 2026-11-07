@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { programs, type ProgramTree } from '@/db/repos'
+import { Link, useNavigate } from 'react-router-dom'
+import { programs, WorkoutInProgressError, type ProgramTree } from '@/db/repos'
+import { InProgressCard } from '@/components/programs/InProgressCard'
 import { UpNextCard } from '@/components/programs/UpNextCard'
 import { buttonVariants } from '@/components/ui/button'
 import { passState } from '@/programs/model'
 import { cn } from '@/lib/utils'
+import { useSessionStore } from '@/stores/sessionStore'
+import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 
 function NoActiveProgram() {
   return (
@@ -25,6 +28,21 @@ function NoActiveProgram() {
 
 export function DashboardPage() {
   const [trees, setTrees] = useState<ProgramTree[] | null>(null)
+  const [starting, setStarting] = useState(false)
+  const navigate = useNavigate()
+  const { workout } = useInProgressWorkout()
+
+  const startDay = async (programId: string, dayId: string) => {
+    if (starting) return
+    setStarting(true)
+    try {
+      await useSessionStore.getState().start(programId, dayId)
+      navigate('/session')
+    } catch (error) {
+      if (error instanceof WorkoutInProgressError) navigate('/session')
+      else setStarting(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -67,7 +85,9 @@ export function DashboardPage() {
   return (
     <div className="pt-6">
       <h1 className="text-2xl font-semibold">Dashboard</h1>
-      {trees === null ? (
+      {workout ? (
+        <InProgressCard />
+      ) : trees === null ? (
         <div className="mt-6 h-40 animate-pulse rounded-lg bg-muted" aria-hidden="true" />
       ) : !active || nextIndex === -1 ? (
         <NoActiveProgram />
@@ -75,6 +95,8 @@ export function DashboardPage() {
         <UpNextCard
           tree={active}
           saving={saving}
+          starting={starting}
+          onStart={(dayId) => void startDay(active.program.id, dayId)}
           onCompleteRestDay={(dayId) =>
             void save(() => programs.completeDay(active.program.id, dayId))
           }

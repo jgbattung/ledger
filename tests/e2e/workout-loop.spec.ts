@@ -270,3 +270,23 @@ test('Swap is refused with an explanation once a set is checked', async ({ page 
   await expect(page.getByRole('status')).toContainText('only available before any set');
   await expect(page).toHaveURL(/\/session$/);
 });
+
+test('checking the last set of an exercise moves focus to the next exercise', async ({ page }) => {
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page).toHaveURL(/\/session$/);
+  await fillAllSets(page, { reps: 8 });
+
+  const bench = page.getByRole('heading', { level: 2, name: 'Barbell Bench Press' });
+  await page.getByRole('checkbox', { name: 'Mark set 1 done' }).click();
+  await page.getByRole('checkbox', { name: 'Mark set 2 done' }).click();
+  await expect(bench).toBeVisible();
+
+  await page.getByRole('checkbox', { name: 'Mark set 3 done' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Cable Lateral Raise' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Cable Lateral Raise' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  );
+});

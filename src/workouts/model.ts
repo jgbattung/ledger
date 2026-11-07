@@ -58,6 +58,25 @@ export function canCheck(set: { reps: number }): boolean {
   return set.reps >= 1
 }
 
+/**
+ * Which exercise to focus after a set is checked. Only when the current
+ * exercise has no unchecked set left: the next exercise that still has one,
+ * else (wrapping) the first earlier one that does. Null means stay put,
+ * including when every exercise is complete.
+ */
+export function nextIncompleteExercise(
+  exercises: { id: string; sets: { completedAt?: number }[] }[],
+  currentId: string,
+): string | null {
+  const index = exercises.findIndex((entry) => entry.id === currentId)
+  if (index < 0) return null
+  const incomplete = (entry: { sets: { completedAt?: number }[] }) =>
+    entry.sets.some((set) => set.completedAt == null)
+  if (incomplete(exercises[index])) return null
+  const order = [...exercises.slice(index + 1), ...exercises.slice(0, index)]
+  return order.find(incomplete)?.id ?? null
+}
+
 export type PadField = 'weight' | 'reps'
 export type PadMode = 'F' | 'P'
 export type Cursor = { setId: string; field: PadField }

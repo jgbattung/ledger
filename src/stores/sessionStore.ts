@@ -8,6 +8,7 @@ import {
   applyPadKey,
   canCheck,
   nextCursor,
+  nextIncompleteExercise,
   padEntryFor,
   padEntryValues,
   type PadEntry,
@@ -310,6 +311,12 @@ export const useSessionStore = create<SessionState>((set, get) => {
       mapSets(setId, (row) => ({ ...row, completedAt: Date.now() }))
       void enqueue(() => sets.setCompleted(setId, true))
       useRestTimerStore.getState().onSetCompleted(found.entry.exercise.id)
+      // Checking the last set of an exercise moves on to the next one to do.
+      const target = nextIncompleteExercise(
+        get().exercises.map((entry) => ({ id: entry.exercise.id, sets: entry.sets })),
+        found.entry.exercise.id,
+      )
+      if (target) set({ focusedExerciseId: target, pad: null, openSwipeSetId: null })
     },
 
     async addSet(workoutExerciseId) {

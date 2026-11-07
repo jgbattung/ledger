@@ -6,6 +6,7 @@ import {
   formatPrevious,
   formatReps,
   nextCursor,
+  nextIncompleteExercise,
   padEntryFor,
   padEntryValues,
   repPlaceholder,
@@ -183,5 +184,36 @@ describe('applyPadKey', () => {
   it('padEntryFor seeds from the set and starts fresh in F mode', () => {
     const entry = padEntryFor({ weight: 62.5, reps: 8, partialReps: 2 }, 'reps')
     expect(entry).toMatchObject({ weight: '62.5', reps: '8', partial: '2', mode: 'F', fresh: true })
+  })
+})
+
+describe('nextIncompleteExercise', () => {
+  const done = { completedAt: 1 }
+  const todo = {}
+  const ex = (id: string, ...sets: { completedAt?: number }[]) => ({ id, sets })
+
+  it('stays put while the current exercise still has an unchecked set', () => {
+    expect(nextIncompleteExercise([ex('a', done, todo), ex('b', todo)], 'a')).toBeNull()
+  })
+
+  it('moves to the next exercise that still has an unchecked set', () => {
+    expect(nextIncompleteExercise([ex('a', done), ex('b', done), ex('c', todo)], 'a')).toBe('c')
+    expect(nextIncompleteExercise([ex('a', done), ex('b', todo), ex('c', todo)], 'a')).toBe('b')
+  })
+
+  it('wraps to the first incomplete exercise when every later one is done', () => {
+    expect(nextIncompleteExercise([ex('a', todo), ex('b', done), ex('c', done)], 'c')).toBe('a')
+    expect(
+      nextIncompleteExercise([ex('a', done), ex('b', todo), ex('c', done)], 'c'),
+    ).toBe('b')
+  })
+
+  it('stays put when every exercise is complete', () => {
+    expect(nextIncompleteExercise([ex('a', done), ex('b', done)], 'b')).toBeNull()
+    expect(nextIncompleteExercise([ex('a', done)], 'a')).toBeNull()
+  })
+
+  it('ignores an unknown id', () => {
+    expect(nextIncompleteExercise([ex('a', todo)], 'zzz')).toBeNull()
   })
 })

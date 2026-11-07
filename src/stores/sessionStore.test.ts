@@ -230,4 +230,43 @@ describe('sessionStore', () => {
     const previous = store().previousByExercise[store().exercises[0].exercise.id]
     expect(previous[0]).toMatchObject({ weight: 60, reps: 8 })
   })
+
+  describe('auto-advance on the last set', () => {
+    function logAndCheck(setId: string) {
+      store().openPad(setId, 'reps')
+      store().padKey('8')
+      store().toggleComplete(setId)
+    }
+
+    it('does not advance when a non-final set is checked, or when a set is unchecked', async () => {
+      await startPush()
+      const [bench] = store().exercises
+      logAndCheck(bench.sets[0].id)
+      expect(store().focusedExerciseId).toBe(bench.exercise.id)
+      store().toggleComplete(bench.sets[0].id)
+      expect(store().focusedExerciseId).toBe(bench.exercise.id)
+    })
+
+    it('moves focus to the next exercise and closes the pad on the last set', async () => {
+      await startPush()
+      const [bench, fly] = store().exercises
+      bench.sets.slice(0, -1).forEach((row) => logAndCheck(row.id))
+      store().openPad(bench.sets[bench.sets.length - 1].id, 'reps')
+      store().padKey('8')
+      expect(store().pad).not.toBeNull()
+      store().toggleComplete(bench.sets[bench.sets.length - 1].id)
+      expect(store().focusedExerciseId).toBe(fly.exercise.id)
+      expect(store().pad).toBeNull()
+    })
+
+    it('wraps to the first incomplete exercise and stays put when all are done', async () => {
+      await startPush()
+      const [bench, fly] = store().exercises
+      store().focusExercise(fly.exercise.id)
+      fly.sets.forEach((row) => logAndCheck(row.id))
+      expect(store().focusedExerciseId).toBe(bench.exercise.id)
+      bench.sets.forEach((row) => logAndCheck(row.id))
+      expect(store().focusedExerciseId).toBe(bench.exercise.id)
+    })
+  })
 })

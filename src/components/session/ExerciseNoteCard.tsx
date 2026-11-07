@@ -1,5 +1,7 @@
 import { useId } from 'react'
 import { Pin } from 'lucide-react'
+import { FIELD_CLASS } from '@/components/ui/text-field-sheet'
+import { cn } from '@/lib/utils'
 
 /**
  * Notes for one exercise (LOG-9): the program's note read-only above an
@@ -32,7 +34,7 @@ export function ExerciseNoteCard({
         rows={2}
         placeholder="Add a note for today…"
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 block w-full resize-none rounded-md bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className={cn(FIELD_CLASS, 'mt-2 block resize-none py-2.5')}
       />
     </div>
   )

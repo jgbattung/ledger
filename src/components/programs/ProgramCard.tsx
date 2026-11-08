@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronRight, ChevronUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
@@ -76,12 +76,50 @@ export function ProgramCard({
           const state = pass?.states[index]
           const done = state === 'done'
           const next = state === 'next'
+          const openable = !rest && !tree.program.isArchived
+          const body = (
+            <>
+              <div className="min-w-0 flex-1">
+                <p
+                  className={cn(
+                    'text-[15px]',
+                    done || (rest && !next) ? 'text-muted-foreground' : 'font-medium',
+                    next && 'font-semibold',
+                  )}
+                >
+                  {day.name}
+                  {next ? (
+                    <span className="ml-2 inline-block rounded-full bg-foreground px-2 py-px align-[1px] text-xs font-medium text-background">
+                      Up next
+                    </span>
+                  ) : null}
+                </p>
+                {rest ? null : (
+                  <p className="line-clamp-2 text-[13px] text-muted-foreground">
+                    {day.exercises
+                      .map((exercise) => exerciseName(exercise.exerciseRef))
+                      .join(', ')}
+                  </p>
+                )}
+              </div>
+              {openable ? (
+                <ChevronRight
+                  className="size-4 shrink-0 text-muted-foreground"
+                  aria-hidden="true"
+                />
+              ) : null}
+            </>
+          )
+          const spacing = cn(
+            'flex min-w-0 flex-1 items-center gap-2 pt-2.5 pb-3 pr-3.5',
+            progress ? 'pl-0.5' : 'pl-3.5',
+          )
           return (
             <li
               key={day.id}
               className={cn(
                 'relative flex min-h-14 border-t border-border',
-                progress ? 'pr-3.5 pl-1' : 'px-3.5 pt-2.5 pb-3',
+                progress && 'pl-1',
                 next && 'bg-foreground/[0.04]',
               )}
             >
@@ -106,27 +144,19 @@ export function ProgramCard({
                   <span aria-hidden="true" className="size-touch-min shrink-0" />
                 )
               ) : null}
-              <div className={cn('min-w-0 flex-1', progress && 'pt-2.5 pb-3 pl-0.5')}>
-                <p
+              {openable ? (
+                <Link
+                  to={`/programs/${id}/days/${day.id}`}
                   className={cn(
-                    'text-[15px]',
-                    done || (rest && !next) ? 'text-muted-foreground' : 'font-medium',
-                    next && 'font-semibold',
+                    spacing,
+                    'outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50',
                   )}
                 >
-                  {day.name}
-                  {next ? (
-                    <span className="ml-2 inline-block rounded-full bg-foreground px-2 py-px align-[1px] text-xs font-medium text-background">
-                      Up next
-                    </span>
-                  ) : null}
-                </p>
-                {rest ? null : (
-                  <p className="line-clamp-2 text-[13px] text-muted-foreground">
-                    {day.exercises.map((exercise) => exerciseName(exercise.exerciseRef)).join(', ')}
-                  </p>
-                )}
-              </div>
+                  {body}
+                </Link>
+              ) : (
+                <div className={spacing}>{body}</div>
+              )}
             </li>
           )
         })}

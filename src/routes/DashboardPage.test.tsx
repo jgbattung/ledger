@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { useSessionStore } from '@/stores/sessionStore'
 import { resetDb } from '@/db/test-utils'
 import { programs } from '@/db/repos'
 import { emptyDraft } from '@/programs/model'
@@ -42,6 +43,7 @@ function renderPage() {
 describe('DashboardPage', () => {
   beforeEach(async () => {
     await resetDb()
+    useSessionStore.getState().reset()
   })
 
   afterEach(() => {
@@ -88,7 +90,7 @@ describe('DashboardPage', () => {
     expect(screen.getByText('2 exercises · 6 working sets')).toBeInTheDocument()
     expect(screen.getByText('Pull-Up, Bent Over Barbell Row')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Day 2 of 5: 1 done' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'View in Workout' })).toHaveAttribute('href', '/workout')
+    expect(screen.getByRole('button', { name: 'Start workout' })).toBeInTheDocument()
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
   })
 
@@ -246,5 +248,55 @@ describe('DashboardPage', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Mark rest day done' }))
     expect(await screen.findByRole('heading', { name: 'Push' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Day 1 of 3: 0 done' })).toBeInTheDocument()
+  })
+})
+
+function Where() {
+  return <p data-testid="where">{useLocation().pathname}</p>
+}
+
+const SIX = [
+  { name: 'Push A', ids: ['barbell-bench-press', 'cable-lateral-raise'] },
+  { name: 'Pull A', ids: ['pull-up', 'bent-over-barbell-row'] },
+]
+
+describe('DashboardPage - Start and Resume (LG-022)', () => {
+  beforeEach(async () => {
+    await resetDb()
+    useSessionStore.getState().reset()
+  })
+
+  function renderRouted() {
+    return render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/session" element={<Where />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+  }
+
+  it('Start workout starts the up-next day and opens the session', async () => {
+    const id = await seed(SIX, { activate: true })
+    const user = userEvent.setup()
+    renderRouted()
+    await user.click(await screen.findByRole('button', { name: 'Start workout' }))
+    expect(await screen.findByTestId('where')).toHaveTextContent('/session')
+    const workout = await useSessionStore.getState().workout
+    expect(workout).toMatchObject({ name: 'Push A', programId: id })
+  })
+
+  it('swaps the up-next card for a Resume card while a workout is in progress', async () => {
+    const id = await seed(SIX, { activate: true })
+    const tree = (await programs.loadTree(id))!
+    await useSessionStore.getState().start(id, tree.days[0].day.id)
+    const user = userEvent.setup()
+    renderRouted()
+    expect(await screen.findByText(/In progress · started/)).toBeInTheDocument()
+    expect(screen.getByText('0 of 6 sets done')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Start workout' })).toBeNull()
+    await user.click(screen.getByRole('link', { name: 'Resume workout' }))
+    expect(await screen.findByTestId('where')).toHaveTextContent('/session')
   })
 })

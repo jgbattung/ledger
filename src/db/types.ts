@@ -96,6 +96,19 @@ export type Workout = BaseRecord & {
   status: WorkoutStatus
   notes?: string
   cycleIndexAtTime?: number
+  /** Program name at start time (snapshot; history never reads live program rows). */
+  programName?: string
+}
+
+/** Program targets copied onto a workout exercise at start (LOG-5). */
+export type TargetsSnapshot = {
+  workingSets?: number
+  repMin?: number
+  repMax?: number
+  rirTarget?: number
+  restSeconds?: number
+  warmupSetCount?: number
+  notes?: string
 }
 
 export type WorkoutExercise = BaseRecord & {
@@ -103,7 +116,7 @@ export type WorkoutExercise = BaseRecord & {
   orderIndex: number
   exerciseRef: ExerciseRef
   notes?: string
-  targetsSnapshot?: unknown
+  targetsSnapshot?: TargetsSnapshot
   swappedFrom?: ExerciseRef
 }
 

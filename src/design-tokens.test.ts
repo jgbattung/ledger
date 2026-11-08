@@ -116,3 +116,15 @@ describe('--destructive-tint-foreground token (LG-020)', () => {
     expect(css).toMatch(/--color-destructive-tint-foreground:\s*var\(--destructive-tint-foreground\)/)
   })
 })
+
+/** The RIR scale (design-system 10c) must stay defined for both themes. */
+describe('--rir scale tokens', () => {
+  const css = readFileSync(path.join(root, 'src/index.css'), 'utf-8')
+
+  it('defines --rir-0..6 and --rir-ink once per theme and exposes them to Tailwind', () => {
+    for (const name of [0, 1, 2, 3, 4, 5, 6, 'ink']) {
+      expect(css.match(new RegExp(`--rir-${name}:`, 'g'))).toHaveLength(2)
+      expect(css).toContain(`--color-rir-${name}: var(--rir-${name})`)
+    }
+  })
+})

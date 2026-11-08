@@ -20,6 +20,11 @@
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Exercise switch on the Ongoing Workout (design-system 10l). */
+  --duration-slide: 320ms;
+  --duration-glide: 300ms;
+  --duration-pop: 150ms;
+  --slide-distance: 32px;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.21 0.02 250);
@@ -47,6 +52,16 @@
   --border: oklch(0.922 0.005 250);
   --input: oklch(0.922 0.005 250);
   --ring: oklch(0.54 0.13 241.7);
+
+  /* RIR scale (design-system 10c): red at 0 through violet at 6+. */
+  --rir-0: oklch(0.74 0.14 25);
+  --rir-1: oklch(0.74 0.14 55);
+  --rir-2: oklch(0.74 0.14 85);
+  --rir-3: oklch(0.74 0.14 130);
+  --rir-4: oklch(0.74 0.14 170);
+  --rir-5: oklch(0.74 0.14 230);
+  --rir-6: oklch(0.74 0.14 285);
+  --rir-ink: oklch(0.2 0.02 250);
 }
 
 .dark {
@@ -76,6 +91,15 @@
   --border: oklch(0.3 0.02 250);
   --input: oklch(0.3 0.02 250);
   --ring: oklch(0.66 0.13 241.7);
+
+  --rir-0: oklch(0.7 0.13 25);
+  --rir-1: oklch(0.7 0.13 55);
+  --rir-2: oklch(0.7 0.13 85);
+  --rir-3: oklch(0.7 0.13 130);
+  --rir-4: oklch(0.7 0.13 170);
+  --rir-5: oklch(0.7 0.13 230);
+  --rir-6: oklch(0.7 0.13 285);
+  --rir-ink: oklch(0.17 0.015 250);
 }
 
 @theme inline {
@@ -107,6 +131,14 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-rir-0: var(--rir-0);
+  --color-rir-1: var(--rir-1);
+  --color-rir-2: var(--rir-2);
+  --color-rir-3: var(--rir-3);
+  --color-rir-4: var(--rir-4);
+  --color-rir-5: var(--rir-5);
+  --color-rir-6: var(--rir-6);
+  --color-rir-ink: var(--rir-ink);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -138,7 +170,43 @@
   }
 }
 
+/* Exercise switch (design-system 10l): transform and opacity only. */
+@keyframes exercise-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--exercise-slide-from, 0px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.exercise-enter {
+  animation: exercise-in var(--duration-slide) var(--ease-out) both;
+}
+
+.pop-in {
+  animation: pop-in var(--duration-pop) var(--ease-out) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .exercise-enter,
+  .pop-in {
+    animation: none;
+  }
+
   *,
   *::before,
   *::after {

@@ -26,19 +26,19 @@ export default defineConfig({
     {
       name: 'mobile-chrome',
       use: { ...galaxyS23Ultra },
-      testIgnore: ['offline.spec.ts', '*.visual.spec.ts'],
+      testIgnore: ['offline.spec.ts', '*.offline.spec.ts', '*.visual.spec.ts'],
       grepInvert: /@visual/,
     },
     {
       name: 'desktop-chrome',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: ['offline.spec.ts', '*.visual.spec.ts'],
+      testIgnore: ['offline.spec.ts', '*.offline.spec.ts', '*.visual.spec.ts'],
       grepInvert: /@visual/,
     },
     {
       name: 'offline-chrome',
       use: { ...galaxyS23Ultra, baseURL: 'http://localhost:4173' },
-      testMatch: 'offline.spec.ts',
+      testMatch: ['offline.spec.ts', '*.offline.spec.ts'],
       grepInvert: /@visual/,
     },
     {

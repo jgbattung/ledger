@@ -16,6 +16,9 @@ import { LibraryPage } from '@/routes/LibraryPage'
 import { SettingsPage } from '@/routes/SettingsPage'
 import { ProgramEditorPage } from '@/routes/ProgramEditorPage'
 import { ExercisePickerPage } from '@/routes/ExercisePickerPage'
+import { DayPage } from '@/routes/DayPage'
+import { SessionPage } from '@/routes/SessionPage'
+import { SwapPickerPage } from '@/routes/SwapPickerPage'
 
 function createAppRouter() {
   return createBrowserRouter(
@@ -34,12 +37,15 @@ function createAppRouter() {
           <Route path="more/settings" element={<SettingsPage />} />
           <Route path="more/library" element={<LibraryPage />} />
         </Route>
-        {/* Full-screen takeovers (LG-010, LG-020) mount here. */}
+        {/* Full-screen takeovers (LG-020 editor, LG-022 Day page, LG-010 Ongoing Workout) mount here. */}
         <Route element={<ChromelessShell />}>
           <Route path="programs/new" element={<ProgramEditorPage />} />
           <Route path="programs/new/exercises" element={<ExercisePickerPage />} />
           <Route path="programs/:programId" element={<ProgramEditorPage />} />
           <Route path="programs/:programId/exercises" element={<ExercisePickerPage />} />
+          <Route path="programs/:programId/days/:dayId" element={<DayPage />} />
+          <Route path="session" element={<SessionPage />} />
+          <Route path="session/swap/:workoutExerciseId" element={<SwapPickerPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </>,

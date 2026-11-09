@@ -240,6 +240,23 @@ describe('SessionPage', () => {
     expect(store().workout).not.toBeNull()
   })
 
+  it('the top bar duration is ink while running and muted while paused, with no other change', async () => {
+    await startPush()
+    const user = userEvent.setup()
+    renderSession()
+    const running = await screen.findByLabelText('Workout duration')
+    expect(running).toHaveClass('text-foreground')
+    expect(running).not.toHaveClass('text-muted-foreground')
+
+    await user.click(screen.getByRole('button', { name: 'Workout menu' }))
+    await user.click(await screen.findByRole('button', { name: 'Pause timer' }))
+    const paused = screen.getByLabelText('Workout duration, paused')
+    expect(paused).toHaveClass('text-muted-foreground')
+    expect(paused).not.toHaveClass('text-foreground')
+    // The state lives in the label only: no "Paused" word on screen.
+    expect(screen.queryByText(/paused/i)).toBeNull()
+  })
+
   it('the menu offers a workout note that persists', async () => {
     await startPush()
     const user = userEvent.setup()

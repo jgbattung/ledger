@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router-dom'
 import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
@@ -70,6 +70,42 @@ describe('WorkoutBar', () => {
     expect(await screen.findByText('Discard this workout?')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Keep workout' }))
     expect(store().workout).not.toBeNull()
+  })
+
+  it('counts a checked set in "N of M sets"', async () => {
+    await startWorkout()
+    renderBar()
+    const link = await screen.findByRole('link', { name: 'Open workout, Push A' })
+    const total = store().exercises.flatMap((entry) => entry.sets).length
+    expect(link).toHaveTextContent(`0 of ${total} sets`)
+
+    const first = store().exercises[0].sets[0]
+    act(() => {
+      store().openPad(first.id, 'reps')
+      store().padKey('8')
+      store().closePad()
+      store().toggleComplete(first.id)
+    })
+    expect(link).toHaveTextContent(`1 of ${total} sets`)
+  })
+
+  it('Pause and Stop never navigate; a confirmed Stop leaves you on the current tab', async () => {
+    await startWorkout()
+    const router = createMemoryRouter([{ path: '*', element: <WorkoutBar /> }], {
+      initialEntries: ['/workout'],
+    })
+    render(<RouterProvider router={router} />)
+    const user = userEvent.setup()
+
+    await user.click(await screen.findByRole('button', { name: 'Pause workout timer' }))
+    await user.click(screen.getByRole('button', { name: 'Resume workout timer' }))
+    expect(router.state.location.pathname).toBe('/workout')
+
+    await user.click(screen.getByRole('button', { name: 'Discard workout' }))
+    const confirm = await screen.findByRole('dialog', { name: 'Discard this workout?' })
+    await user.click(within(confirm).getByRole('button', { name: 'Discard workout' }))
+    await waitFor(() => expect(store().workout).toBeNull())
+    expect(router.state.location.pathname).toBe('/workout')
   })
 
   it('confirming discards the workout and hides the bar', async () => {

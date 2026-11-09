@@ -191,8 +191,56 @@ for (const scheme of SCHEMES) {
       await page.getByRole('button', { name: 'Start workout' }).click();
       await expect(page).toHaveURL(/\/session$/);
       await page.getByRole('button', { name: 'Back' }).click();
-      await expect(page.getByRole('link', { name: 'Resume workout' })).toBeVisible();
-      await shot(page, '14-dashboard-resume', scheme);
+      await expect(page.getByRole('link', { name: /^Open workout/ })).toBeVisible();
+      await shot(page, '14-dashboard-ongoing', scheme);
+    });
+
+    // LG-011: the floating in-progress bar, pause, stop confirm and the session menu.
+    test(`@visual in-progress bar and pause (${scheme})`, async ({ page }) => {
+      test.setTimeout(90_000);
+      await seedActiveProgram(page, { doneDays: ['Push A', 'Pull A'] });
+      await startFromDashboard(page);
+      await page.getByRole('button', { name: 'Back' }).click();
+      const bar = page.getByRole('link', { name: /^Open workout/ });
+      await expect(bar).toBeVisible();
+
+      await shot(page, '15-bar-running-dashboard', scheme);
+      await page.getByRole('link', { name: 'Workout', exact: true }).click();
+      await shot(page, '16-bar-running-workout-tab', scheme);
+
+      await page.getByRole('button', { name: 'Pause workout timer' }).click();
+      await expect(page.getByRole('button', { name: 'Resume workout timer' })).toBeVisible();
+      await shot(page, '17-bar-paused', scheme);
+
+      await page.getByRole('button', { name: 'Discard workout' }).click();
+      await expect(page.getByRole('dialog', { name: 'Discard this workout?' })).toBeVisible();
+      await shot(page, '18-stop-confirm', scheme);
+      await page.getByRole('button', { name: 'Keep workout' }).click();
+
+      await bar.click();
+      await expect(page).toHaveURL(/\/session$/);
+      await shot(page, '19-session-topbar-paused', scheme);
+      await page.getByRole('button', { name: 'Workout menu' }).click();
+      await expect(page.getByRole('button', { name: 'Resume timer' })).toBeVisible();
+      await shot(page, '20-session-menu-resume', scheme);
+    });
+
+    test(`@visual in-progress bar with a long name (${scheme})`, async ({ page }) => {
+      await seedActiveProgram(page, {
+        days: [
+          {
+            name: 'Upper body hypertrophy with a very long name that cannot fit one line',
+            exercises: ['barbell-bench-press', 'cable-lateral-raise'],
+          },
+        ],
+      });
+      await page.goto('/');
+      await page.getByRole('button', { name: 'Start workout' }).click();
+      await expect(page).toHaveURL(/\/session$/);
+      await page.getByRole('button', { name: 'Back' }).click();
+      await page.getByRole('link', { name: 'More', exact: true }).click();
+      await expect(page.getByRole('link', { name: /^Open workout/ })).toBeVisible();
+      await shot(page, '21-bar-long-name', scheme);
     });
   });
 }

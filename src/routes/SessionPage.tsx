@@ -97,7 +97,7 @@ export function SessionPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <WorkoutTopBar startedAt={workout.startedAt} onBack={goBack} onMenu={() => setMenuOpen(true)} />
+      <WorkoutTopBar workout={workout} onBack={goBack} onMenu={() => setMenuOpen(true)} />
       <ExerciseStrip
         exercises={exercises}
         focusedId={focused?.exercise.id ?? null}

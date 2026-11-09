@@ -242,6 +242,36 @@ for (const scheme of SCHEMES) {
       await expect(page.getByRole('link', { name: /^Open workout/ })).toBeVisible();
       await shot(page, '21-bar-long-name', scheme);
     });
+
+    test(`@visual in-progress bar with a wrapped meta line (${scheme})`, async ({ page }) => {
+      // Four exercises of three sets ("0 of 12 sets") on a 260px viewport: line 2 wraps.
+      await seedActiveProgram(page, {
+        days: [
+          {
+            name: 'Push A',
+            exercises: ['barbell-bench-press', 'cable-lateral-raise', 'incline-dumbbell-press', 'face-pull'],
+          },
+        ],
+      });
+      await page.goto('/');
+      await page.getByRole('button', { name: 'Start workout' }).click();
+      await expect(page).toHaveURL(/\/session$/);
+      await page.getByRole('button', { name: 'Back' }).click();
+      await page.setViewportSize({ width: 260, height: 653 });
+      await expect(page.getByRole('link', { name: /^Open workout/ })).toContainText('0 of 12 sets');
+      await shot(page, '22-bar-wrapped-meta', scheme);
+    });
+
+    test(`@visual in-progress bar above a gesture safe-area inset (${scheme})`, async ({ page }) => {
+      await seedActiveProgram(page);
+      await startFromDashboard(page);
+      await page.getByRole('button', { name: 'Back' }).click();
+      await expect(page.getByRole('link', { name: /^Open workout/ })).toBeVisible();
+      const cdp = await page.context().newCDPSession(page);
+      await cdp.send('Emulation.setSafeAreaInsetsOverride' as never, { insets: { bottom: 34 } } as never);
+      await expect(page.getByRole('navigation', { name: 'Primary' })).toHaveCSS('padding-bottom', '34px');
+      await shot(page, '23-bar-safe-area-inset', scheme);
+    });
   });
 }
 

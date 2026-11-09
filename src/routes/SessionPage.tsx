@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { ExerciseFocus } from '@/components/session/ExerciseFocus'
 import { ExerciseStrip } from '@/components/session/ExerciseStrip'
@@ -9,6 +9,7 @@ import { WorkoutMenuSheet } from '@/components/session/WorkoutMenuSheet'
 import { WorkoutNoteSheet } from '@/components/session/WorkoutNoteSheet'
 import { WorkoutTopBar } from '@/components/session/WorkoutTopBar'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
+import { getLastTab } from '@/lib/lastTab'
 import { useGoBack } from '@/lib/useGoBack'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
@@ -25,6 +26,7 @@ export function SessionPage() {
   const pad = useSessionStore((state) => state.pad)
   const openSwipeSetId = useSessionStore((state) => state.openSwipeSetId)
   const goBack = useGoBack()
+  const navigate = useNavigate()
   // Which way the content slides: the strip order decides (later = from the right).
   const focusIndex = exercises.findIndex((entry) => entry.exercise.id === focusedId)
   const [slide, setSlide] = useState({ id: focusedId, index: focusIndex, dir: 0 })
@@ -139,6 +141,16 @@ export function SessionPage() {
         onNote={() => {
           setMenuOpen(false)
           setNoteOpen(true)
+        }}
+        paused={workout.pausedAt != null}
+        onTogglePause={() => {
+          setMenuOpen(false)
+          if (workout.pausedAt != null) useSessionStore.getState().resume()
+          else useSessionStore.getState().pause()
+        }}
+        onMinimize={() => {
+          setMenuOpen(false)
+          navigate(getLastTab())
         }}
         onDiscard={() => {
           setMenuOpen(false)

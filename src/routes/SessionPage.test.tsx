@@ -5,6 +5,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { db } from '@/db/ledger'
 import { programs, workouts } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
+import { setLastTab } from '@/lib/lastTab'
 import { useSessionStore } from '@/stores/sessionStore'
 import { SessionPage } from '@/routes/SessionPage'
 import { seedProgram } from '@/routes/editorTestUtils'
@@ -219,12 +220,31 @@ describe('SessionPage', () => {
     expect((await programs.get(programId))?.completedDayIds ?? []).not.toContain(pushId)
   })
 
-  it('the menu offers a disabled Minimize and a workout note that persists', async () => {
+  it('the menu pauses and resumes the clock, and Minimize returns to the last tab', async () => {
+    await startPush()
+    const user = userEvent.setup()
+    const router = renderSession()
+    await user.click(await screen.findByRole('button', { name: 'Workout menu' }))
+    await user.click(await screen.findByRole('button', { name: 'Pause timer' }))
+    expect(store().workout?.pausedAt).not.toBeNull()
+    expect(screen.getByLabelText('Workout duration, paused')).toBeInTheDocument()
+
+    await user.click(await screen.findByRole('button', { name: 'Workout menu' }))
+    await user.click(await screen.findByRole('button', { name: 'Resume timer' }))
+    expect(store().workout?.pausedAt).toBeNull()
+
+    setLastTab('/workout')
+    await user.click(await screen.findByRole('button', { name: 'Workout menu' }))
+    await user.click(await screen.findByRole('button', { name: /Minimize/ }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/workout'))
+    expect(store().workout).not.toBeNull()
+  })
+
+  it('the menu offers a workout note that persists', async () => {
     await startPush()
     const user = userEvent.setup()
     renderSession()
     await user.click(await screen.findByRole('button', { name: 'Workout menu' }))
-    expect(await screen.findByRole('button', { name: /Minimize/ })).toBeDisabled()
     await user.click(screen.getByRole('button', { name: 'Workout note' }))
     await user.type(await screen.findByRole('textbox', { name: 'Workout note' }), 'Great')
     await act(() => store().flushNotes())

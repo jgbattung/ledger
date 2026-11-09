@@ -311,4 +311,44 @@ describe('DashboardPage - Start and Resume (LG-022)', () => {
     expect(card).toHaveTextContent('Push A')
     expect(screen.queryByRole('button', { name: 'Start workout' })).toBeNull()
   })
+
+  describe('exercise summary clamp', () => {
+    const LONG = [
+      {
+        name: 'Push A',
+        ids: [
+          'barbell-bench-press',
+          'cable-lateral-raise',
+          'incline-dumbbell-press',
+          'face-pull',
+          'pull-up',
+          'bent-over-barbell-row',
+        ],
+      },
+    ]
+
+    // jsdom has no layout, so assert the structure that keeps the clamp box two lines tall.
+    const expectUnpaddedClamp = () => {
+      const summary = screen.getByText(/Barbell Bench Press, /)
+      expect(summary).toHaveClass('line-clamp-2')
+      expect(summary.className).not.toMatch(/(p|px|py|pt|pb)-/)
+      return summary.parentElement!
+    }
+
+    it('pads a wrapper, not the clamped paragraph, in the normal mode', async () => {
+      await seed(LONG, { activate: true })
+      renderRouted()
+      await screen.findByRole('button', { name: 'Start workout' })
+      expect(expectUnpaddedClamp()).toHaveClass('px-3.5', 'pb-3')
+    })
+
+    it('pads a wrapper, not the clamped paragraph, in the ongoing mode', async () => {
+      const id = await seed(LONG, { activate: true })
+      const tree = (await programs.loadTree(id))!
+      await useSessionStore.getState().start(id, tree.days[0].day.id)
+      renderRouted()
+      await screen.findByRole('region', { name: 'Ongoing' })
+      expect(expectUnpaddedClamp()).toHaveClass('px-3.5', 'pb-3.5')
+    })
+  })
 })

@@ -225,6 +225,38 @@ for (const scheme of SCHEMES) {
       await shot(page, '20-session-menu-resume', scheme);
     });
 
+    test(`@visual dashboard summary clamps to two lines (${scheme})`, async ({ page }) => {
+      await seedActiveProgram(page, {
+        days: [
+          {
+            name: 'Push A',
+            exercises: [
+              'barbell-bench-press',
+              'cable-lateral-raise',
+              'incline-dumbbell-press',
+              'face-pull',
+              'pull-up',
+              'bent-over-barbell-row',
+            ],
+          },
+        ],
+      });
+      await page.goto('/');
+      const summary = page.getByText(/^Barbell Bench Press, /);
+      // The clamp box is exactly two lines: no padding inside it, so no third line shows.
+      const clampedLines = () =>
+        summary.evaluate((el) => el.clientHeight / parseFloat(getComputedStyle(el).lineHeight));
+      expect(Math.round((await clampedLines()) * 10) / 10).toBe(2);
+      await shot(page, '24-up-next-summary-clamp', scheme);
+
+      await page.getByRole('button', { name: 'Start workout' }).click();
+      await expect(page).toHaveURL(/\/session$/);
+      await page.getByRole('button', { name: 'Back' }).click();
+      await expect(page.getByRole('region', { name: 'Ongoing' })).toBeVisible();
+      expect(Math.round((await clampedLines()) * 10) / 10).toBe(2);
+      await shot(page, '25-ongoing-summary-clamp', scheme);
+    });
+
     test(`@visual in-progress bar with a long name (${scheme})`, async ({ page }) => {
       await seedActiveProgram(page, {
         days: [

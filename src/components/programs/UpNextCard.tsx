@@ -139,14 +139,12 @@ export function UpNextCard({
         </div>
       ) : (
         <>
-          <p
-            className={cn(
-              'line-clamp-2 px-3.5 text-sm text-muted-foreground',
-              ongoing ? 'pb-3.5' : 'pb-3',
-            )}
-          >
-            {day.exercises.map((exercise) => exerciseName(exercise.exerciseRef)).join(', ')}
-          </p>
+          {/* Padding lives on the wrapper: padding inside the clamp box would show a partial third line. */}
+          <div className={cn('px-3.5', ongoing ? 'pb-3.5' : 'pb-3')}>
+            <p className="line-clamp-2 text-sm text-muted-foreground">
+              {day.exercises.map((exercise) => exerciseName(exercise.exerciseRef)).join(', ')}
+            </p>
+          </div>
           {ongoing ? null : (
             <div className="px-3.5 pb-3.5">
               <button

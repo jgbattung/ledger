@@ -53,7 +53,7 @@ test('start from a Workout tab day row, check every set, finish, and the day is 
   );
 });
 
-test('Dashboard Start opens the workout; Back keeps it running and Resume returns', async ({
+test('Dashboard Start opens the workout; Back keeps it running and the bar returns', async ({
   page,
 }) => {
   await seedActiveProgram(page);
@@ -63,13 +63,14 @@ test('Dashboard Start opens the workout; Back keeps it running and Resume return
 
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText(/In progress · started/)).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Ongoing' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Start workout' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Open workout, Push A' })).toBeVisible();
 
-  // It survives a reload.
+  // It survives a reload; the bar is the way back in.
   await page.reload();
-  await expect(page.getByText(/In progress · started/)).toBeVisible();
-  await page.getByRole('link', { name: 'Resume workout' }).click();
+  await expect(page.getByRole('region', { name: 'Ongoing' })).toBeVisible();
+  await page.getByRole('link', { name: 'Open workout, Push A' }).click();
   await expect(page).toHaveURL(/\/session$/);
   await expect(page.getByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeVisible();
 });
@@ -80,7 +81,7 @@ test('the Day page shows Resume while a workout is running', async ({ page }) =>
   await page.getByRole('button', { name: 'Start workout' }).click();
   await page.getByRole('button', { name: 'Back' }).click();
   await page.getByRole('link', { name: 'Workout', exact: true }).click();
-  await page.getByRole('link', { name: /Push A/ }).click();
+  await page.getByRole('main').getByRole('link', { name: /Push A/ }).click();
   await expect(page.getByRole('button', { name: 'Resume workout' })).toBeVisible();
   await page.getByRole('button', { name: 'Resume workout' }).click();
   await expect(page).toHaveURL(/\/session$/);

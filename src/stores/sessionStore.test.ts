@@ -270,6 +270,88 @@ describe('sessionStore', () => {
     })
   })
 
+  describe('pause and resume', () => {
+    const persisted = async () => {
+      await store().flushNotes()
+      return db.workouts.get(store().workout!.id)
+    }
+
+    it('pause persists pausedAt and survives a re-hydrate', async () => {
+      await startPush()
+      store().pause()
+      const at = store().workout!.pausedAt!
+      expect(at).toBeGreaterThan(0)
+      expect((await persisted())?.pausedAt).toBe(at)
+      store().reset()
+      await store().hydrate()
+      expect(store().workout?.pausedAt).toBe(at)
+    })
+
+    it('pausing twice keeps the first timestamp', async () => {
+      await startPush()
+      store().pause()
+      const at = store().workout!.pausedAt
+      store().pause()
+      expect(store().workout?.pausedAt).toBe(at)
+    })
+
+    it('resume banks the closed pause and persists it', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(100_000)
+      await startPush()
+      store().pause()
+      vi.setSystemTime(107_000)
+      store().resume()
+      expect(store().workout).toMatchObject({ pausedAt: null, pausedMs: 7_000 })
+      expect(await persisted()).toMatchObject({ pausedAt: null, pausedMs: 7_000 })
+    })
+
+    it('checking a set while paused resumes the clock', async () => {
+      await startPush()
+      const [bench] = store().exercises
+      store().pause()
+      store().openPad(bench.sets[0].id, 'reps')
+      store().padKey('8')
+      store().toggleComplete(bench.sets[0].id)
+      expect(store().workout?.pausedAt).toBeNull()
+      expect((await persisted())?.pausedAt).toBeNull()
+    })
+
+    it('unchecking while paused does not resume', async () => {
+      await startPush()
+      const [bench] = store().exercises
+      store().openPad(bench.sets[0].id, 'reps')
+      store().padKey('8')
+      store().toggleComplete(bench.sets[0].id)
+      store().pause()
+      store().toggleComplete(bench.sets[0].id)
+      expect(store().workout?.pausedAt).not.toBeNull()
+    })
+
+    it('opening the pad on an empty set while paused does not resume', async () => {
+      await startPush()
+      const [bench] = store().exercises
+      store().pause()
+      store().toggleComplete(bench.sets[0].id)
+      expect(store().workout?.pausedAt).not.toBeNull()
+    })
+
+    it('finish while paused records the folded pausedMs', async () => {
+      await startPush()
+      const id = store().workout!.id
+      const startedAt = store().workout!.startedAt
+      store().pause()
+      await store().flushNotes()
+      await db.workouts.update(id, { pausedAt: startedAt - 30_000 })
+      store().reset()
+      await store().hydrate()
+      await store().finish()
+      const row = await db.workouts.get(id)
+      expect(row?.pausedAt).toBeNull()
+      expect(row?.pausedMs).toBeGreaterThanOrEqual(30_000)
+    })
+  })
+
   describe('flush on pagehide and visibilitychange', () => {
     const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

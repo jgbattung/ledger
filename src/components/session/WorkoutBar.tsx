@@ -49,7 +49,7 @@ export function WorkoutBar() {
         <Link
           to="/session"
           aria-label={`Open workout, ${workout.name}`}
-          className="flex min-h-touch-primary min-w-0 flex-1 flex-col justify-center rounded-md py-2 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="flex min-w-0 flex-1 flex-col justify-center self-stretch rounded-md py-2 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
           <span className="truncate text-sm font-semibold">{workout.name}</span>
           <span className="text-xs leading-snug text-muted-foreground tabular-nums">

@@ -59,7 +59,8 @@ export function WorkoutBar() {
             >
               {formatClock(workoutElapsedMs(workout, now))}
             </span>
-            {` · ${done} of ${allSets.length} sets`}
+            {' · '}
+            <span className="whitespace-nowrap">{`${done} of ${allSets.length} sets`}</span>
           </span>
         </Link>
         <button

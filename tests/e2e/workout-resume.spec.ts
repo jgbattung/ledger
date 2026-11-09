@@ -262,6 +262,13 @@ test('a wrapped meta line keeps its leading and the bar grows upward, clear of t
   expect(metrics.lineHeight).toBeCloseTo(metrics.fontSize * 1.375, 1); // leading-snug
   expect(Math.round(metrics.height / metrics.lineHeight)).toBeGreaterThanOrEqual(2);
 
+  // "N of M sets" stays on one line, below the clock: "sets" is never orphaned.
+  const count = meta.getByText('0 of 12 sets');
+  const countBox = (await count.boundingBox())!;
+  const clockBox = (await page.getByLabel(/^Workout duration/).first().boundingBox())!;
+  expect(Math.round(countBox.height)).toBeLessThanOrEqual(Math.ceil(metrics.lineHeight));
+  expect(countBox.y).toBeGreaterThanOrEqual(clockBox.y + clockBox.height - 1);
+
   const wrapped = await layout(page);
   expect(wrapped.box.height).toBeGreaterThan(oneLine.box.height);
   // Same bottom edge: the extra height went up, never down into the FAB.

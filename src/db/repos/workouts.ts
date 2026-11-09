@@ -192,6 +192,10 @@ export const workouts = {
           status: 'finished',
           finishedAt: timestamp,
           updatedAt: timestamp,
+          ...(row.pausedAt != null && {
+            pausedMs: (row.pausedMs ?? 0) + Math.max(0, timestamp - row.pausedAt),
+            pausedAt: null,
+          }),
         })
         await markDirty('workouts', id)
         return row
@@ -206,6 +210,34 @@ export const workouts = {
         if (message !== 'Program not found' && message !== 'Day not found') throw error
       }
     }
+  },
+
+  /** Freezes the workout clock at `at`. No write unless in progress and running. */
+  async pause(id: string, at: number): Promise<void> {
+    await db.transaction('rw', db.workouts, db.syncState, async () => {
+      const row = await db.workouts.get(id)
+      if (!row || row.deletedAt != null || row.status !== 'in_progress' || row.pausedAt != null) {
+        return
+      }
+      await db.workouts.update(id, { pausedAt: at, updatedAt: now() })
+      await markDirty('workouts', id)
+    })
+  },
+
+  /** Unfreezes the clock at `at`, banking the closed pause. No write unless paused. */
+  async resume(id: string, at: number): Promise<void> {
+    await db.transaction('rw', db.workouts, db.syncState, async () => {
+      const row = await db.workouts.get(id)
+      if (!row || row.deletedAt != null || row.status !== 'in_progress' || row.pausedAt == null) {
+        return
+      }
+      await db.workouts.update(id, {
+        pausedMs: (row.pausedMs ?? 0) + Math.max(0, at - row.pausedAt),
+        pausedAt: null,
+        updatedAt: now(),
+      })
+      await markDirty('workouts', id)
+    })
   },
 
   /** Abandons the workout. Never ticks the program day. */

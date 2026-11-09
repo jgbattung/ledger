@@ -226,3 +226,61 @@ describe('workouts finish, discard, previous', () => {
     expect(await workouts.previousSets(ref('squat'), current)).toEqual([])
   })
 })
+
+describe('workouts pause and resume', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  async function start() {
+    const { programId, pushId } = await seedProgram()
+    return workouts.startFromProgramDay(programId, pushId)
+  }
+
+  it('pause then resume accumulates pausedMs and clears pausedAt', async () => {
+    const id = await start()
+    await workouts.pause(id, 1_000)
+    expect((await workouts.get(id))?.pausedAt).toBe(1_000)
+    await workouts.resume(id, 4_000)
+    await workouts.pause(id, 10_000)
+    await workouts.resume(id, 12_000)
+    const row = await workouts.get(id)
+    expect(row?.pausedAt).toBeNull()
+    expect(row?.pausedMs).toBe(5_000)
+  })
+
+  it('a second pause or resume is a no-op', async () => {
+    const id = await start()
+    await workouts.resume(id, 500)
+    expect((await workouts.get(id))?.pausedMs).toBeUndefined()
+    await workouts.pause(id, 1_000)
+    await workouts.pause(id, 9_000)
+    expect((await workouts.get(id))?.pausedAt).toBe(1_000)
+    await workouts.resume(id, 2_000)
+    await workouts.resume(id, 9_000)
+    expect((await workouts.get(id))?.pausedMs).toBe(1_000)
+  })
+
+  it('pause does nothing on a finished or discarded workout', async () => {
+    const finished = await start()
+    await workouts.finish(finished)
+    await workouts.pause(finished, 1_000)
+    expect((await workouts.get(finished))?.pausedAt ?? null).toBeNull()
+
+    const discarded = await start()
+    await workouts.discard(discarded)
+    await workouts.pause(discarded, 1_000)
+    expect((await workouts.get(discarded))?.pausedAt ?? null).toBeNull()
+  })
+
+  it('finish while paused folds the open pause into pausedMs', async () => {
+    const id = await start()
+    const startedAt = (await workouts.get(id))!.startedAt
+    await workouts.pause(id, startedAt - 60_000)
+    await workouts.finish(id)
+    const row = await workouts.get(id)
+    expect(row?.status).toBe('finished')
+    expect(row?.pausedAt).toBeNull()
+    expect(row?.pausedMs).toBeGreaterThanOrEqual(60_000)
+  })
+})

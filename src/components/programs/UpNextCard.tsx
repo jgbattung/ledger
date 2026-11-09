@@ -32,6 +32,10 @@ function plural(count: number, noun: string) {
  * hero, a segmented pass bar (design-system 9c) and either a one-line exercise
  * summary or, on a rest day, a full-row checkbox. A workout day ends in a
  * one-tap, ink-filled Start workout (the FAB owns this screen's only accent).
+ *
+ * While a workout is in progress (`ongoing`) the card has no Start button: the
+ * floating bar is the way back in. If the running workout belongs to a day of
+ * this program, that day becomes the hero under an "Ongoing" eyebrow.
  */
 export function UpNextCard({
   tree,
@@ -39,16 +43,28 @@ export function UpNextCard({
   onStart,
   saving,
   starting,
+  ongoing,
+  ongoingDayId,
 }: {
   tree: ProgramTree
   onCompleteRestDay: (dayId: string) => void
   onStart: (dayId: string) => void
   saving?: boolean
   starting?: boolean
+  ongoing?: boolean
+  ongoingDayId?: string | null
 }) {
   const { name, days } = programTreeToDraft(tree)
   const completed = tree.program.completedDayIds ?? []
-  const { states, nextIndex, doneCount } = passState(days, completed)
+  const pass = passState(days, completed)
+  const { doneCount } = pass
+  const ongoingIndex = ongoing && ongoingDayId ? days.findIndex((d) => d.id === ongoingDayId) : -1
+  const showingOngoing = ongoingIndex !== -1
+  const nextIndex = showingOngoing ? ongoingIndex : pass.nextIndex
+  // The hero day is always the one drawn as `next` in the pass bar.
+  const states = showingOngoing
+    ? pass.states.map((state, i) => (i === ongoingIndex ? 'next' : state === 'next' ? 'upcoming' : state))
+    : pass.states
   const day = days[nextIndex]
   const rest = isRestDay(day)
   const afterName = days[dayAfter(days.map((d) => d.id), completed, nextIndex)].name
@@ -57,12 +73,12 @@ export function UpNextCard({
 
   return (
     <section
-      aria-label="Up next"
+      aria-label={showingOngoing ? 'Ongoing' : 'Up next'}
       className="mt-6 overflow-hidden rounded-lg border border-border bg-card"
     >
       <div className="px-3.5 pt-3.5">
         <p className="flex items-baseline gap-1.5 text-xs font-medium text-muted-foreground">
-          <span>Up next</span>
+          <span>{showingOngoing ? 'Ongoing' : 'Up next'}</span>
           <span aria-hidden="true">·</span>
           <span className="truncate">{name}</span>
         </p>
@@ -123,19 +139,26 @@ export function UpNextCard({
         </div>
       ) : (
         <>
-          <p className="line-clamp-2 px-3.5 pb-3 text-sm text-muted-foreground">
+          <p
+            className={cn(
+              'line-clamp-2 px-3.5 text-sm text-muted-foreground',
+              ongoing ? 'pb-3.5' : 'pb-3',
+            )}
+          >
             {day.exercises.map((exercise) => exerciseName(exercise.exerciseRef)).join(', ')}
           </p>
-          <div className="px-3.5 pb-3.5">
-            <button
-              type="button"
-              disabled={starting}
-              onClick={() => onStart(day.id)}
-              className="flex h-touch-primary w-full items-center justify-center rounded-lg bg-foreground text-base font-medium text-background outline-none transition-colors hover:bg-foreground/90 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none"
-            >
-              Start workout
-            </button>
-          </div>
+          {ongoing ? null : (
+            <div className="px-3.5 pb-3.5">
+              <button
+                type="button"
+                disabled={starting}
+                onClick={() => onStart(day.id)}
+                className="flex h-touch-primary w-full items-center justify-center rounded-lg bg-foreground text-base font-medium text-background outline-none transition-colors hover:bg-foreground/90 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none"
+              >
+                Start workout
+              </button>
+            </div>
+          )}
         </>
       )}
     </section>

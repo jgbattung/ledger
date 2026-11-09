@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { programs, WorkoutInProgressError, type ProgramTree } from '@/db/repos'
-import { InProgressCard } from '@/components/programs/InProgressCard'
 import { UpNextCard } from '@/components/programs/UpNextCard'
 import { buttonVariants } from '@/components/ui/button'
 import { passState } from '@/programs/model'
@@ -85,9 +84,7 @@ export function DashboardPage() {
   return (
     <div className="pt-6">
       <h1 className="text-2xl font-semibold">Dashboard</h1>
-      {workout ? (
-        <InProgressCard />
-      ) : trees === null ? (
+      {trees === null ? (
         <div className="mt-6 h-40 animate-pulse rounded-lg bg-muted" aria-hidden="true" />
       ) : !active || nextIndex === -1 ? (
         <NoActiveProgram />
@@ -96,6 +93,8 @@ export function DashboardPage() {
           tree={active}
           saving={saving}
           starting={starting}
+          ongoing={workout != null}
+          ongoingDayId={workout?.programDayId ?? null}
           onStart={(dayId) => void startDay(active.program.id, dayId)}
           onCompleteRestDay={(dayId) =>
             void save(() => programs.completeDay(active.program.id, dayId))

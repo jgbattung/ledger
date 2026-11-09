@@ -287,16 +287,28 @@ describe('DashboardPage - Start and Resume (LG-022)', () => {
     expect(workout).toMatchObject({ name: 'Push A', programId: id })
   })
 
-  it('swaps the up-next card for a Resume card while a workout is in progress', async () => {
+  it('shows the running day as Ongoing with no Start button while a workout is in progress', async () => {
     const id = await seed(SIX, { activate: true })
     const tree = (await programs.loadTree(id))!
-    await useSessionStore.getState().start(id, tree.days[0].day.id)
-    const user = userEvent.setup()
+    // Run a later day than the up-next one: the card follows the running workout.
+    await useSessionStore.getState().start(id, tree.days[1].day.id)
     renderRouted()
-    expect(await screen.findByText(/In progress · started/)).toBeInTheDocument()
-    expect(screen.getByText('0 of 6 sets done')).toBeInTheDocument()
+    const card = await screen.findByRole('region', { name: 'Ongoing' })
+    expect(card).toHaveTextContent('Ongoing')
+    expect(card).toHaveTextContent('Pull A')
+    expect(screen.queryByText('Up next')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Start workout' })).toBeNull()
-    await user.click(screen.getByRole('link', { name: 'Resume workout' }))
-    expect(await screen.findByTestId('where')).toHaveTextContent('/session')
+    expect(screen.queryByText(/In progress/)).toBeNull()
+  })
+
+  it('keeps the up-next day, with no Start, when the running workout is from another program', async () => {
+    const other = await seed([{ name: 'Other', ids: ['barbell-bench-press'] }], { name: 'Other' })
+    const otherTree = (await programs.loadTree(other))!
+    await seed(SIX, { activate: true })
+    await useSessionStore.getState().start(other, otherTree.days[0].day.id)
+    renderRouted()
+    const card = await screen.findByRole('region', { name: 'Up next' })
+    expect(card).toHaveTextContent('Push A')
+    expect(screen.queryByRole('button', { name: 'Start workout' })).toBeNull()
   })
 })

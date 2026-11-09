@@ -1,7 +1,6 @@
-import { Flag, StickyNote, Timer, Trash2 } from 'lucide-react'
+import { Flag, Pause, Play, StickyNote, Timer, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { SoonPill } from '@/components/SoonRow'
 import { cn } from '@/lib/utils'
 
 const ROW =
@@ -12,25 +11,21 @@ function MenuRow({
   label,
   onClick,
   destructive,
-  soon,
 }: {
   icon: ReactNode
   label: string
   onClick?: () => void
   destructive?: boolean
-  soon?: boolean
 }) {
   return (
     <li className="border-t border-border">
       <button
         type="button"
-        disabled={soon}
         onClick={onClick}
-        className={cn(ROW, destructive && 'text-destructive', soon && 'text-muted-foreground')}
+        className={cn(ROW, destructive && 'text-destructive')}
       >
         <span className={cn('shrink-0', !destructive && 'text-muted-foreground')}>{icon}</span>
         <span className="flex-1">{label}</span>
-        {soon ? <SoonPill /> : null}
       </button>
     </li>
   )
@@ -44,6 +39,9 @@ export function WorkoutMenuSheet({
   subtitle,
   onFinish,
   onNote,
+  paused,
+  onTogglePause,
+  onMinimize,
   onDiscard,
 }: {
   open: boolean
@@ -52,6 +50,9 @@ export function WorkoutMenuSheet({
   subtitle: string
   onFinish: () => void
   onNote: () => void
+  paused: boolean
+  onTogglePause: () => void
+  onMinimize: () => void
   onDiscard: () => void
 }) {
   return (
@@ -66,7 +67,12 @@ export function WorkoutMenuSheet({
         <ul className="overflow-y-auto">
           <MenuRow icon={<Flag className="size-4" />} label="Finish workout" onClick={onFinish} />
           <MenuRow icon={<StickyNote className="size-4" />} label="Workout note" onClick={onNote} />
-          <MenuRow icon={<Timer className="size-4" />} label="Minimize" soon />
+          <MenuRow
+            icon={paused ? <Play className="size-4" /> : <Pause className="size-4" />}
+            label={paused ? 'Resume timer' : 'Pause timer'}
+            onClick={onTogglePause}
+          />
+          <MenuRow icon={<Timer className="size-4" />} label="Minimize" onClick={onMinimize} />
           <MenuRow
             icon={<Trash2 className="size-4" />}
             label="Discard workout"

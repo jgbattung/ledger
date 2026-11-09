@@ -287,16 +287,68 @@ describe('DashboardPage - Start and Resume (LG-022)', () => {
     expect(workout).toMatchObject({ name: 'Push A', programId: id })
   })
 
-  it('swaps the up-next card for a Resume card while a workout is in progress', async () => {
+  it('shows the running day as Ongoing with no Start button while a workout is in progress', async () => {
     const id = await seed(SIX, { activate: true })
     const tree = (await programs.loadTree(id))!
-    await useSessionStore.getState().start(id, tree.days[0].day.id)
-    const user = userEvent.setup()
+    // Run a later day than the up-next one: the card follows the running workout.
+    await useSessionStore.getState().start(id, tree.days[1].day.id)
     renderRouted()
-    expect(await screen.findByText(/In progress · started/)).toBeInTheDocument()
-    expect(screen.getByText('0 of 6 sets done')).toBeInTheDocument()
+    const card = await screen.findByRole('region', { name: 'Ongoing' })
+    expect(card).toHaveTextContent('Ongoing')
+    expect(card).toHaveTextContent('Pull A')
+    expect(screen.queryByText('Up next')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Start workout' })).toBeNull()
-    await user.click(screen.getByRole('link', { name: 'Resume workout' }))
-    expect(await screen.findByTestId('where')).toHaveTextContent('/session')
+    expect(screen.queryByText(/In progress/)).toBeNull()
+  })
+
+  it('keeps the up-next day, with no Start, when the running workout is from another program', async () => {
+    const other = await seed([{ name: 'Other', ids: ['barbell-bench-press'] }], { name: 'Other' })
+    const otherTree = (await programs.loadTree(other))!
+    await seed(SIX, { activate: true })
+    await useSessionStore.getState().start(other, otherTree.days[0].day.id)
+    renderRouted()
+    const card = await screen.findByRole('region', { name: 'Up next' })
+    expect(card).toHaveTextContent('Push A')
+    expect(screen.queryByRole('button', { name: 'Start workout' })).toBeNull()
+  })
+
+  describe('exercise summary clamp', () => {
+    const LONG = [
+      {
+        name: 'Push A',
+        ids: [
+          'barbell-bench-press',
+          'cable-lateral-raise',
+          'incline-dumbbell-press',
+          'face-pull',
+          'pull-up',
+          'bent-over-barbell-row',
+        ],
+      },
+    ]
+
+    // jsdom has no layout, so assert the structure that keeps the clamp box two lines tall.
+    const expectUnpaddedClamp = () => {
+      const summary = screen.getByText(/Barbell Bench Press, /)
+      expect(summary).toHaveClass('line-clamp-2')
+      expect(summary.className).not.toMatch(/(p|px|py|pt|pb)-/)
+      return summary.parentElement!
+    }
+
+    it('pads a wrapper, not the clamped paragraph, in the normal mode', async () => {
+      await seed(LONG, { activate: true })
+      renderRouted()
+      await screen.findByRole('button', { name: 'Start workout' })
+      expect(expectUnpaddedClamp()).toHaveClass('px-3.5', 'pb-3')
+    })
+
+    it('pads a wrapper, not the clamped paragraph, in the ongoing mode', async () => {
+      const id = await seed(LONG, { activate: true })
+      const tree = (await programs.loadTree(id))!
+      await useSessionStore.getState().start(id, tree.days[0].day.id)
+      renderRouted()
+      await screen.findByRole('region', { name: 'Ongoing' })
+      expect(expectUnpaddedClamp()).toHaveClass('px-3.5', 'pb-3.5')
+    })
   })
 })

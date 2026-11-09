@@ -66,7 +66,7 @@ test('AC23: notes survive leaving before the debounce and a reload', async ({ pa
   await page.getByRole('button', { name: 'Back' }).click();
   await expect(page).toHaveURL(/\/$/);
   await page.reload();
-  await page.getByRole('link', { name: 'Resume workout' }).click();
+  await page.getByRole('link', { name: 'Open workout, Push A' }).click();
   await expect(page.getByRole('textbox', { name: 'Exercise note' })).toHaveValue('Elbows tucked');
 
   // Workout note from the menu sheet.

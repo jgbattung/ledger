@@ -3,7 +3,9 @@ import { EllipsisVertical } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
 import { formatClock, formatSeconds } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import type { Workout } from '@/db/types'
 import { useRestTimerStore } from '@/stores/restTimerStore'
+import { isPaused, workoutElapsedMs } from '@/workouts/model'
 
 /** Filled stopwatch (design-system 10j). The hand is cut out in the surface colour. */
 function Stopwatch({ className }: { className?: string }) {
@@ -25,27 +27,30 @@ function Stopwatch({ className }: { className?: string }) {
 }
 
 /**
- * Top bar of the Ongoing Workout (design-system 10j): flush Back, the muted
- * workout duration, the rest timer with a filled stopwatch, the menu button,
+ * Top bar of the Ongoing Workout (design-system 10j): flush Back, the workout
+ * duration (ink while running, muted while paused), the rest timer with a filled stopwatch, the menu button,
  * and a 4px rest-bar track that is always visible (empty while idle).
  */
 export function WorkoutTopBar({
-  startedAt,
+  workout,
   onBack,
   onMenu,
 }: {
-  startedAt: number
+  workout: Pick<Workout, 'startedAt' | 'pausedAt' | 'pausedMs'>
   onBack: () => void
   onMenu: () => void
 }) {
+  const paused = isPaused(workout)
   const [now, setNow] = useState(() => Date.now())
   const remaining = useRestTimerStore((state) => state.remainingSeconds)
   const total = useRestTimerStore((state) => state.totalSeconds)
 
   useEffect(() => {
+    if (paused) return
+    setNow(Date.now())
     const timer = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(timer)
-  }, [])
+  }, [paused])
 
   const idle = remaining <= 0
   const fill = total > 0 ? Math.min(100, Math.max(0, (remaining / total) * 100)) : 0
@@ -55,10 +60,13 @@ export function WorkoutTopBar({
       <div className="flex h-[52px] items-center px-4">
         <BackLink onBack={onBack} label="Back" />
         <span
-          aria-label="Workout duration"
-          className="-ml-3 text-[15px] text-muted-foreground tabular-nums"
+          aria-label={paused ? 'Workout duration, paused' : 'Workout duration'}
+          className={cn(
+            '-ml-3 text-[15px] tabular-nums',
+            paused ? 'text-muted-foreground' : 'text-foreground',
+          )}
         >
-          {formatClock(now - startedAt)}
+          {formatClock(workoutElapsedMs(workout, now))}
         </span>
         <span className="flex-1" />
         <span

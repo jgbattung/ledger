@@ -59,6 +59,10 @@ type SessionState = {
   flushNotes: () => Promise<void>
   /** Starts every pending write right now (pagehide / tab hidden). Does not wait. */
   flushPending: () => void
+  /** Freezes the workout clock. No-op when there is no workout or it is already paused. */
+  pause: () => void
+  /** Unfreezes the workout clock. No-op unless paused. */
+  resume: () => void
   finish: () => Promise<void>
   discard: () => Promise<void>
   reset: () => void
@@ -394,6 +398,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
       }
       mapSets(setId, (row) => ({ ...row, completedAt: Date.now() }))
       void enqueue(() => sets.setCompleted(setId, true))
+      // Checking a set is training: a paused workout clock starts again.
+      get().resume()
       useRestTimerStore.getState().onSetCompleted(found.entry.exercise.id)
       // Checking the last set of an exercise moves on to the next one to do.
       const target = nextIncompleteExercise(
@@ -401,6 +407,28 @@ export const useSessionStore = create<SessionState>((set, get) => {
         found.entry.exercise.id,
       )
       if (target) set({ focusedExerciseId: target, pad: null, openSwipeSetId: null })
+    },
+
+    pause() {
+      const workout = get().workout
+      if (!workout || workout.pausedAt != null) return
+      const at = Date.now()
+      set({ workout: { ...workout, pausedAt: at } })
+      void enqueue(() => workouts.pause(workout.id, at))
+    },
+
+    resume() {
+      const workout = get().workout
+      if (!workout || workout.pausedAt == null) return
+      const at = Date.now()
+      set({
+        workout: {
+          ...workout,
+          pausedAt: null,
+          pausedMs: (workout.pausedMs ?? 0) + Math.max(0, at - workout.pausedAt),
+        },
+      })
+      void enqueue(() => workouts.resume(workout.id, at))
     },
 
     async addSet(workoutExerciseId) {

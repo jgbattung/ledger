@@ -1,7 +1,24 @@
-import type { Set as SetRecord, TargetsSnapshot } from '@/db/types'
+import type { Set as SetRecord, TargetsSnapshot, Workout } from '@/db/types'
 
 /** Values every new or reset set starts from (RIR is always 0, never the target). */
 export const BLANK_SET = { weight: 0, reps: 0, rir: 0, rirIsPlus: false } as const
+
+type WorkoutTiming = Pick<Workout, 'startedAt' | 'pausedAt' | 'pausedMs' | 'finishedAt'>
+
+/** True while the workout clock is frozen. */
+export function isPaused(workout: Pick<Workout, 'pausedAt'>): boolean {
+  return workout.pausedAt != null
+}
+
+/**
+ * Active workout time in ms: wall time minus paused time. EVERY workout
+ * duration (session top bar, floating bar, and future history/summary
+ * screens) must use this instead of subtracting `startedAt` directly.
+ */
+export function workoutElapsedMs(workout: WorkoutTiming, now: number): number {
+  const end = workout.finishedAt ?? workout.pausedAt ?? now
+  return Math.max(0, end - workout.startedAt - (workout.pausedMs ?? 0))
+}
 
 type SnapshotSource = TargetsSnapshot
 

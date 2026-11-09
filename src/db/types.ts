@@ -98,6 +98,10 @@ export type Workout = BaseRecord & {
   cycleIndexAtTime?: number
   /** Program name at start time (snapshot; history never reads live program rows). */
   programName?: string
+  /** Epoch ms the current pause began; null or absent while the clock runs (LG-011). */
+  pausedAt?: number | null
+  /** Total ms of closed pauses; excluded from the workout's duration (LG-011). */
+  pausedMs?: number
 }
 
 /** Program targets copied onto a workout exercise at start (LOG-5). */

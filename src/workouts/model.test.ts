@@ -5,6 +5,7 @@ import {
   canCheck,
   formatPrevious,
   formatReps,
+  isPaused,
   nextCursor,
   nextIncompleteExercise,
   padEntryFor,
@@ -12,6 +13,7 @@ import {
   repPlaceholder,
   rirLabel,
   toTargetsSnapshot,
+  workoutElapsedMs,
   type PadEntry,
   type PadKey,
 } from '@/workouts/model'
@@ -215,5 +217,34 @@ describe('nextIncompleteExercise', () => {
 
   it('ignores an unknown id', () => {
     expect(nextIncompleteExercise([ex('a', todo)], 'zzz')).toBeNull()
+  })
+})
+
+describe('workoutElapsedMs', () => {
+  it('counts wall time while running', () => {
+    expect(workoutElapsedMs({ startedAt: 1_000 }, 6_000)).toBe(5_000)
+  })
+
+  it('freezes at pausedAt while paused', () => {
+    const paused = { startedAt: 1_000, pausedAt: 4_000 }
+    expect(workoutElapsedMs(paused, 4_000)).toBe(3_000)
+    expect(workoutElapsedMs(paused, 90_000)).toBe(3_000)
+    expect(isPaused(paused)).toBe(true)
+  })
+
+  it('excludes closed pauses after resume', () => {
+    const resumed = { startedAt: 1_000, pausedAt: null, pausedMs: 2_000 }
+    expect(workoutElapsedMs(resumed, 11_000)).toBe(8_000)
+    expect(isPaused(resumed)).toBe(false)
+  })
+
+  it('stops at finishedAt', () => {
+    const done = { startedAt: 1_000, pausedMs: 2_000, finishedAt: 10_000 }
+    expect(workoutElapsedMs(done, 999_999)).toBe(7_000)
+  })
+
+  it('is never negative', () => {
+    expect(workoutElapsedMs({ startedAt: 5_000, pausedMs: 9_000 }, 6_000)).toBe(0)
+    expect(workoutElapsedMs({ startedAt: 5_000 }, 1_000)).toBe(0)
   })
 })

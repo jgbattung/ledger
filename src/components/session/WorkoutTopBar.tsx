@@ -40,6 +40,7 @@ export function WorkoutTopBar({
   onBack: () => void
   onMenu: () => void
 }) {
+  const paused = isPaused(workout)
   const [now, setNow] = useState(() => Date.now())
   const remaining = useRestTimerStore((state) => state.remainingSeconds)
   const total = useRestTimerStore((state) => state.totalSeconds)
@@ -51,7 +52,6 @@ export function WorkoutTopBar({
     return () => clearInterval(timer)
   }, [paused])
 
-  const paused = isPaused(workout)
   const idle = remaining <= 0
   const fill = total > 0 ? Math.min(100, Math.max(0, (remaining / total) * 100)) : 0
 

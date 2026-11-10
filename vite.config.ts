@@ -7,6 +7,9 @@ import { APP_NAME } from './src/config/app.js'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Evaluated once per server start; seed mode uses it to wipe and reseed once
+  // per `npm run dev:seed:fresh` (src/db/seed/index.ts).
+  define: { __SEED_RUN_ID__: JSON.stringify(String(Date.now())) },
   plugins: [
     react(),
     tailwindcss(),

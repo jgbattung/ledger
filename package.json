@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:seed": "vite --mode seed --port 5174 --strictPort",
+    "dev:seed:fresh": "vite --mode seed-fresh --port 5174 --strictPort",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",

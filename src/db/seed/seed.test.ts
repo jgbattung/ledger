@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { differenceInCalendarDays, startOfDay } from 'date-fns'
 import { db } from '@/db/ledger'
 import { resetDb } from '@/db/test-utils'
-import { programs, workouts } from '@/db/repos'
+import { programs, settings, workouts } from '@/db/repos'
 import { getExerciseById } from '@/exercises/catalog'
 import { hasRequiredTargets } from '@/programs/model'
 import { buildHistory } from '@/db/seed/history'
@@ -30,6 +31,10 @@ async function programByName(name: string): Promise<Program> {
 beforeEach(async () => {
   await resetDb()
   localStorage.clear()
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 describe('rng', () => {
@@ -354,6 +359,217 @@ describe('ensureSeeded', () => {
     localStorage.setItem('ledger-rest-timer', '{"workoutId":"x"}')
     await ensureSeeded({ fresh: true, runId: 'run-1' })
     expect(localStorage.getItem('ledger-rest-timer')).toBeNull()
+  })
+
+  it('does not seed when only workouts exist (programs empty)', async () => {
+    await workouts.create({ name: 'Quick session', startedAt: ANCHOR, status: 'finished', finishedAt: ANCHOR + 60_000 })
+    await ensureSeeded({ fresh: false, runId: 'a' })
+    expect(await db.programs.count()).toBe(0)
+    expect(await db.workouts.count()).toBe(1)
+  })
+
+  it('does not seed when only soft-deleted programs exist', async () => {
+    const mine = await programs.create({
+      name: 'Mine',
+      isActive: false,
+      isArchived: false,
+      currentDayIndex: 0,
+      currentCycleIndex: 0,
+    })
+    await programs.softDelete(mine.id)
+    await ensureSeeded({ fresh: false, runId: 'a' })
+    expect(await db.programs.count()).toBe(1)
+    expect(await db.workouts.count()).toBe(0)
+  })
+
+  it('never records a run id in non-fresh mode', async () => {
+    await ensureSeeded({ fresh: false, runId: 'a' })
+    expect(localStorage.getItem('ledger-seed-run')).toBeNull()
+  })
+
+  it('keeps user changes on a fresh-mode reload with the same run id', async () => {
+    await ensureSeeded({ fresh: true, runId: 'run-1' })
+    await programs.create({
+      name: 'Mine',
+      isActive: false,
+      isArchived: false,
+      currentDayIndex: 0,
+      currentCycleIndex: 0,
+    })
+    const restTimer = '{"workoutId":"x"}'
+    localStorage.setItem('ledger-rest-timer', restTimer)
+
+    await ensureSeeded({ fresh: true, runId: 'run-1' })
+    expect((await db.programs.toArray()).map((p) => p.name)).toContain('Mine')
+    expect(await db.programs.count()).toBe(5)
+    expect(localStorage.getItem('ledger-rest-timer')).toBe(restTimer)
+  })
+
+  it('reseeds an emptied database even when the run id is already stored', async () => {
+    localStorage.setItem('ledger-seed-run', 'run-1')
+    await ensureSeeded({ fresh: true, runId: 'run-1' })
+    expect(await db.programs.count()).toBe(4)
+    expect(await db.workouts.count()).toBeGreaterThan(50)
+    expect(localStorage.getItem('ledger-seed-run')).toBe('run-1')
+  })
+
+  it('wipes user data, settings and the outbox on a new run id', async () => {
+    await ensureSeeded({ fresh: true, runId: 'run-1' })
+    await programs.create({
+      name: 'Mine',
+      isActive: false,
+      isArchived: false,
+      currentDayIndex: 0,
+      currentCycleIndex: 0,
+    })
+    await settings.getOrInit()
+    const outboxBefore = await db.syncState.count()
+
+    await ensureSeeded({ fresh: true, runId: 'run-2' })
+    const names = (await db.programs.toArray()).map((p) => p.name).sort()
+    expect(names).toEqual([ARCHIVED_NAME, DRAFT_NAME, FBEOD_NAME, PPL_NAME].sort())
+    expect(await db.settings.count()).toBe(0)
+    // Only the new seed's marks remain, so the outbox does not grow per restart.
+    expect(await db.syncState.count()).toBeLessThan(outboxBefore)
+  })
+
+  it('leaves the fresh seed in place when a later plain dev:seed boots', async () => {
+    await ensureSeeded({ fresh: true, runId: 'run-1' })
+    const ids = (await db.programs.toArray()).map((p) => p.id).sort()
+    await ensureSeeded({ fresh: false, runId: 'run-9' })
+    expect((await db.programs.toArray()).map((p) => p.id).sort()).toEqual(ids)
+    expect(localStorage.getItem('ledger-seed-run')).toBe('run-1')
+  })
+
+  it('does not record the run id when seeding fails, so the next load retries', async () => {
+    vi.spyOn(programs, 'setActive').mockRejectedValueOnce(new Error('boom'))
+    await expect(ensureSeeded({ fresh: true, runId: 'run-1' })).rejects.toThrow('boom')
+    expect(localStorage.getItem('ledger-seed-run')).toBeNull()
+    vi.restoreAllMocks()
+
+    await ensureSeeded({ fresh: true, runId: 'run-1' })
+    expect(await db.programs.count()).toBe(4)
+    expect((await db.programs.toArray()).filter((p) => p.isActive)).toHaveLength(1)
+    expect(localStorage.getItem('ledger-seed-run')).toBe('run-1')
+  })
+})
+
+describe('seedDatabase integrity', () => {
+  it('links every workout to a real program day of its program', async () => {
+    await seedDatabase(ANCHOR)
+    const days = new Map((await db.programDays.toArray()).map((day) => [day.id, day]))
+    const programsById = new Map((await db.programs.toArray()).map((p) => [p.id, p]))
+    for (const workout of await db.workouts.toArray()) {
+      const day = days.get(workout.programDayId!)
+      expect(day, workout.id).toBeDefined()
+      expect(day!.programId).toBe(workout.programId)
+      expect(day!.name).toBe(workout.name)
+      expect(programsById.get(workout.programId!)!.name).toBe(workout.programName)
+    }
+    const workoutIds = new Set((await db.workouts.toArray()).map((w) => w.id))
+    const exerciseIds = new Set((await db.workoutExercises.toArray()).map((e) => e.id))
+    for (const row of await db.workoutExercises.toArray()) expect(workoutIds.has(row.workoutId)).toBe(true)
+    for (const row of await db.sets.toArray()) expect(exerciseIds.has(row.workoutExerciseId)).toBe(true)
+  })
+
+  it('has no orphan syncState rows and one row per record', async () => {
+    await seedDatabase(ANCHOR)
+    const outbox = await db.syncState.toArray()
+    let records = 0
+    for (const table of new Set(outbox.map((row) => row.table))) {
+      const ids = new Set((await db.table(table).toArray()).map((row: { id: string }) => row.id))
+      records += ids.size
+      for (const row of outbox.filter((r) => r.table === table)) {
+        expect(ids.has(row.recordId), `${table}:${row.recordId}`).toBe(true)
+      }
+    }
+    expect(outbox).toHaveLength(records)
+    expect(outbox.every((row) => typeof row.dirtyAt === 'number')).toBe(true)
+  })
+
+  it('takes exercise meta lastUsed from the latest finished set, never the discarded workout', async () => {
+    await seedDatabase(ANCHOR)
+    const finished = new Set(
+      (await db.workouts.toArray()).filter((w) => w.status === 'finished').map((w) => w.id),
+    )
+    const exerciseOf = new Map(
+      (await db.workoutExercises.toArray())
+        .filter((row) => finished.has(row.workoutId))
+        .map((row) => [row.id, row.exerciseRef.exerciseId]),
+    )
+    const latest = new Map<string, { weight: number; reps: number; at: number }>()
+    for (const set of await db.sets.toArray()) {
+      const id = exerciseOf.get(set.workoutExerciseId)
+      if (!id) continue
+      const current = latest.get(id)
+      if (!current || set.completedAt! > current.at) {
+        latest.set(id, { weight: set.weight, reps: set.reps, at: set.completedAt! })
+      }
+    }
+    const meta = await db.exerciseMeta.toArray()
+    expect(new Set(meta.map((m) => m.exerciseId)).size).toBe(meta.length)
+    for (const row of meta) {
+      expect(row.lastUsed, row.exerciseId).toEqual({ ...latest.get(row.exerciseId)!, unit: 'kg' })
+    }
+    expect(meta.filter((m) => m.isFavorite).map((m) => m.exerciseId).sort()).toEqual(
+      ['barbell-bench-press', 'barbell-deadlift', 'barbell-squat', 'pull-up', 'romanian-deadlift'],
+    )
+  })
+
+  it('spaces bodyweight entries a calendar week apart, the last one yesterday morning', async () => {
+    await seedDatabase(ANCHOR)
+    const rows = (await db.bodyMetrics.toArray()).sort((a, b) => a.measuredAt - b.measuredAt)
+    const today = startOfDay(ANCHOR)
+    expect(differenceInCalendarDays(rows.at(-1)!.measuredAt, today)).toBe(-1)
+    expect(differenceInCalendarDays(rows[0].measuredAt, today)).toBe(-85)
+    for (let i = 1; i < rows.length; i++) {
+      expect(differenceInCalendarDays(rows[i].measuredAt, rows[i - 1].measuredAt)).toBe(7)
+    }
+    for (const row of rows) {
+      const at = new Date(row.measuredAt)
+      expect([at.getHours(), at.getMinutes()]).toEqual([7, 30])
+      expect(row.createdAt).toBe(row.measuredAt)
+    }
+  })
+
+  it('is deterministic end to end for a given anchor, apart from ids and write times', async () => {
+    const snapshot = async () => {
+      const strip = (value: unknown) =>
+        JSON.stringify(value, (key, v) =>
+          [
+            'id',
+            'workoutId',
+            'workoutExerciseId',
+            'programId',
+            'programDayId',
+            'createdAt',
+            'updatedAt',
+          ].includes(key)
+            ? undefined
+            : v,
+        )
+      const byTime = <T extends { createdAt: number }>(rows: T[]) =>
+        [...rows].sort((a, b) => a.createdAt - b.createdAt)
+      return strip({
+        workouts: byTime(await db.workouts.toArray()),
+        sets: byTime(await db.sets.toArray()).map((s) => [s.weight, s.reps, s.rir, s.completedAt]),
+        bodyMetrics: byTime(await db.bodyMetrics.toArray()),
+        exerciseMeta: (await db.exerciseMeta.toArray()).sort((a, b) =>
+          a.exerciseId.localeCompare(b.exerciseId),
+        ),
+      })
+    }
+    await seedDatabase(ANCHOR)
+    const first = await snapshot()
+    await resetDb()
+    await seedDatabase(ANCHOR)
+    expect(await snapshot()).toBe(first)
+  })
+
+  it('never calls Math.random while seeding', async () => {
+    const random = vi.spyOn(Math, 'random')
+    await seedDatabase(ANCHOR)
+    expect(random).not.toHaveBeenCalled()
   })
 })
 

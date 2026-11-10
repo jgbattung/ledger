@@ -11,6 +11,8 @@ import { WorkoutTopBar } from '@/components/session/WorkoutTopBar'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { getLastTab } from '@/lib/lastTab'
 import { useGoBack } from '@/lib/useGoBack'
+import { useSettings } from '@/settings/SettingsProvider'
+import { useRestTimerStore } from '@/stores/restTimerStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 
@@ -46,6 +48,12 @@ export function SessionPage() {
   const [noteOpen, setNoteOpen] = useState(false)
   const [confirmFinish, setConfirmFinish] = useState(false)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
+
+  // The rest timer store never reads Settings: hand it the default here.
+  const defaultRestSeconds = useSettings().settings?.defaultRestSeconds
+  useEffect(() => {
+    if (defaultRestSeconds != null) useRestTimerStore.getState().setDefaultSeconds(defaultRestSeconds)
+  }, [defaultRestSeconds])
 
   // Notes flush on unmount (they also debounce at 400ms in the store).
   useEffect(() => () => void useSessionStore.getState().flushNotes(), [])

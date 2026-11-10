@@ -17,7 +17,7 @@ test('start from a Workout tab day row, check every set, finish, and the day is 
 
   await expect(page).toHaveURL(/\/session$/);
   await expect(page.getByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeVisible();
-  await expect(page.getByRole('timer', { name: 'Rest timer' })).toContainText('0:00');
+  await expect(page.getByRole('button', { name: 'Rest timer, not running' })).toContainText('0:00');
 
   // Checking a set with 0 reps does not stamp it.
   await page.getByRole('checkbox', { name: 'Mark set 1 done' }).click();

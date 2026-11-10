@@ -73,7 +73,7 @@ describe('SessionPage', () => {
     expect(await screen.findByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument()
     expect(screen.getByLabelText('Workout duration')).toHaveTextContent(/^0:0\d:\d\d$/)
-    expect(screen.getByRole('timer', { name: 'Rest timer' })).toHaveTextContent('0:00')
+    expect(screen.getByRole('button', { name: 'Rest timer, not running' })).toHaveTextContent('0:00')
     expect(screen.getByRole('button', { name: 'Workout menu' })).toBeInTheDocument()
     expect(screen.getByText('Set 1 of 3 · 8–12 reps · RIR 0')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Swap' })).toBeInTheDocument()
@@ -148,7 +148,7 @@ describe('SessionPage', () => {
     await waitFor(() => expect(useRestTimerStore.getState().defaultSeconds).toBe(150))
     logReps(store().exercises[0].sets[0].id, '9')
     await user.click(screen.getByRole('checkbox', { name: 'Mark set 1 done' }))
-    expect(screen.getByRole('timer', { name: 'Rest timer' })).toHaveTextContent('2:30')
+    expect(screen.getByRole('button', { name: 'Rest timer, 2:30 left' })).toHaveTextContent('2:30')
   })
 
   it('shows partials as 8 | 2, the RIR badge and Previous from the last finished workout', async () => {

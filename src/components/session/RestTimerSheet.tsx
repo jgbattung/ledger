@@ -70,7 +70,7 @@ export function RestTimerSheet({
           ref={placeStrip}
           role="group"
           aria-label="Rest time presets"
-          className="relative -mx-4 mt-2 mb-1.5 flex gap-1.5 overflow-x-auto px-4 [mask-image:linear-gradient(to_right,transparent_0,#000_16px,#000_calc(100%-32px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="relative -mx-4 mt-2 mb-1.5 flex gap-1.5 overflow-x-auto px-4 [mask-image:linear-gradient(to_right,transparent_0,black_16px,black_calc(100%-32px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {PRESETS.map((seconds) => {
             const label = formatSeconds(seconds)

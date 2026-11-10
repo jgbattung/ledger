@@ -3,7 +3,7 @@ import { db } from '@/db/ledger'
 import { resetDb } from '@/db/test-utils'
 import { workouts } from '@/db/repos/workouts'
 import { useSessionStore } from '@/stores/sessionStore'
-import { useRestTimerStore } from '@/stores/restTimerStore'
+import { __resetRestTimerForTests, useRestTimerStore } from '@/stores/restTimerStore'
 import { seedProgram } from '@/workouts/test-fixtures'
 
 const store = () => useSessionStore.getState()
@@ -25,7 +25,7 @@ describe('sessionStore', () => {
 
   afterEach(() => {
     vi.useRealTimers()
-    useRestTimerStore.setState({ onSetCompleted: () => {} })
+    __resetRestTimerForTests()
   })
 
   it('starts empty and hydrates to no workout', async () => {
@@ -427,6 +427,59 @@ describe('sessionStore', () => {
       await store().hydrate()
       expect(store().exercises[0].exercise.notes).toBeUndefined()
       expect(localStorage.getItem(KEY)).toBeNull()
+    })
+  })
+  describe('rest timer lifecycle', () => {
+    const REST_KEY = 'ledger-rest-timer'
+    const rest = () => useRestTimerStore.getState()
+
+    async function startRest() {
+      await startPush()
+      rest().start(120)
+      expect(rest().endsAt).not.toBeNull()
+    }
+
+    it('finish clears the running rest timer', async () => {
+      await startRest()
+      await store().finish()
+      expect(rest().endsAt).toBeNull()
+      expect(localStorage.getItem(REST_KEY)).toBeNull()
+    })
+
+    it('discard clears the running rest timer', async () => {
+      await startRest()
+      await store().discard()
+      expect(rest().endsAt).toBeNull()
+      expect(localStorage.getItem(REST_KEY)).toBeNull()
+    })
+
+    it('reset clears the running rest timer', async () => {
+      await startRest()
+      store().reset()
+      expect(rest().endsAt).toBeNull()
+      expect(localStorage.getItem(REST_KEY)).toBeNull()
+    })
+
+    it('hydrating with no in-progress workout clears a stored timer', async () => {
+      localStorage.setItem(
+        REST_KEY,
+        JSON.stringify({ workoutId: 'gone', endsAt: Date.now() + 60_000, totalSeconds: 60 }),
+      )
+      __resetRestTimerForTests()
+      expect(rest().endsAt).not.toBeNull()
+      await store().hydrate()
+      expect(rest().endsAt).toBeNull()
+      expect(localStorage.getItem(REST_KEY)).toBeNull()
+    })
+
+    it('hydrating the same workout keeps the timer', async () => {
+      await startRest()
+      const keep = rest().endsAt
+      __resetRestTimerForTests() // reload: storage read at module load
+      useSessionStore.setState({ hydrated: false, hydratedWorkoutId: null })
+      await store().hydrate()
+      expect(rest().endsAt).toBe(keep)
+      expect(localStorage.getItem(REST_KEY)).not.toBeNull()
     })
   })
 })

@@ -80,6 +80,9 @@ function initialState() {
     : idleState
 }
 
+/** A browser-deferred end timeout firing later than this is a late fire: clear silently, no cues. */
+const MAX_CUE_LATENESS_MS = 2000
+
 let endHandle: ReturnType<typeof setTimeout> | undefined
 
 function cancelEnd() {
@@ -96,8 +99,10 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => {
       () => {
         endHandle = undefined
         if (get().endsAt !== scheduledFor) return
-        playRestChime()
-        vibrateRestEnd()
+        if (Date.now() - scheduledFor <= MAX_CUE_LATENESS_MS) {
+          playRestChime()
+          vibrateRestEnd()
+        }
         get().clear()
       },
       Math.max(0, scheduledFor - Date.now()),

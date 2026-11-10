@@ -169,6 +169,28 @@ describe('restTimerStore', () => {
       expect(play).toHaveBeenCalledTimes(1)
     })
 
+    it('clears silently when the timeout fires more than 2 s late', () => {
+      const play = vi.spyOn(chime, 'playRestChime')
+      const buzz = vi.spyOn(chime, 'vibrateRestEnd')
+      timer().start(30)
+      vi.spyOn(Date, 'now').mockReturnValue(T0 + 30_000 + 5000)
+      vi.runOnlyPendingTimers()
+      expect(timer().endsAt).toBeNull()
+      expect(play).not.toHaveBeenCalled()
+      expect(buzz).not.toHaveBeenCalled()
+    })
+
+    it('still chimes when the timeout fires 1 s late', () => {
+      const play = vi.spyOn(chime, 'playRestChime')
+      const buzz = vi.spyOn(chime, 'vibrateRestEnd')
+      timer().start(30)
+      vi.spyOn(Date, 'now').mockReturnValue(T0 + 30_000 + 1000)
+      vi.runOnlyPendingTimers()
+      expect(timer().endsAt).toBeNull()
+      expect(play).toHaveBeenCalledTimes(1)
+      expect(buzz).toHaveBeenCalledTimes(1)
+    })
+
     it('does not fire after a skip', () => {
       const play = vi.spyOn(chime, 'playRestChime')
       timer().start(30)

@@ -194,8 +194,10 @@ test('lifecycle: discarding from the bar clears a running rest', async ({ page }
     .getByRole('dialog', { name: 'Discard this workout?' })
     .getByRole('button', { name: 'Discard workout' })
     .click();
+  // The open confirm sheet hides the bar from the accessibility tree, so the count above can pass
+  // before discard() has run: poll the storage instead of reading it once.
   await expect(bar(page)).toHaveCount(0);
-  expect(await stored(page)).toBeNull();
+  await expect.poll(() => stored(page)).toBeNull();
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Start workout' }).click();
@@ -214,7 +216,7 @@ test('lifecycle: finishing from the menu clears a running rest', async ({ page }
   await page.getByRole('dialog').getByRole('button', { name: 'Finish workout' }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(bar(page)).toHaveCount(0);
-  expect(await stored(page)).toBeNull();
+  await expect.poll(() => stored(page)).toBeNull();
 
   await page.getByRole('button', { name: 'Start workout' }).click();
   await expect(page).toHaveURL(/\/session$/);

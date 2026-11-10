@@ -105,6 +105,43 @@ describe('useWorkoutWakeLock', () => {
     expect(sentinels[0].release).toHaveBeenCalledTimes(1)
   })
 
+  it('does not request while the page is hidden, then requests once visible', async () => {
+    const { request } = installWakeLock()
+    useSessionStore.setState({ workout: { id: 'w1' } as never })
+    setVisibility('hidden')
+    render(<Probe />)
+    await flush()
+    expect(request).not.toHaveBeenCalled()
+    setVisibility('visible')
+    await flush()
+    expect(request).toHaveBeenCalledTimes(1)
+  })
+
+  it('releases when the last holder unmounts', async () => {
+    const { sentinels } = installWakeLock()
+    useSessionStore.setState({ workout: { id: 'w1' } as never })
+    const view = render(<Probe />)
+    await flush()
+    view.unmount()
+    await flush()
+    expect(sentinels[0].release).toHaveBeenCalledTimes(1)
+  })
+
+  it('releases a lock that resolves after the workout has ended', async () => {
+    let resolveLock: (lock: unknown) => void = () => {}
+    const lock = { released: false, release: vi.fn(async () => {}), addEventListener: vi.fn() }
+    const request = vi.fn(() => new Promise((resolve) => (resolveLock = resolve)))
+    vi.stubGlobal('navigator', { ...navigator, wakeLock: { request } })
+    useSessionStore.setState({ workout: { id: 'w1' } as never })
+    render(<Probe />)
+    act(() => useSessionStore.setState({ workout: null }))
+    await flush()
+    resolveLock(lock)
+    await flush()
+    expect(lock.release).toHaveBeenCalledTimes(1)
+    expect(lock.addEventListener).not.toHaveBeenCalled()
+  })
+
   it('is a no-op when wakeLock is absent', async () => {
     useSessionStore.setState({ workout: { id: 'w1' } as never })
     expect('wakeLock' in navigator).toBe(false)

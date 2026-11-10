@@ -71,6 +71,73 @@ describe('restChime', () => {
     expect(resume).toHaveBeenCalledTimes(1)
   })
 
+  it('is a silent no-op when the AudioContext constructor throws', () => {
+    vi.stubGlobal(
+      'AudioContext',
+      class {
+        constructor() {
+          throw new Error('NotSupportedError')
+        }
+      },
+    )
+    expect(() => {
+      unlockAudio()
+      playRestChime()
+    }).not.toThrow()
+  })
+
+  it('shares one context between unlock and chime', () => {
+    let constructed = 0
+    const { oscillators } = installFakeAudio()
+    const Base = window.AudioContext
+    vi.stubGlobal(
+      'AudioContext',
+      class extends Base {
+        constructor() {
+          super()
+          constructed += 1
+        }
+      },
+    )
+    unlockAudio()
+    playRestChime()
+    playRestChime()
+    expect(constructed).toBe(1)
+    expect(oscillators).toHaveLength(4)
+  })
+
+  it('playRestChime resumes a suspended context, and a rejected resume stays silent', async () => {
+    const { resume } = installFakeAudio('suspended')
+    resume.mockImplementation(() => Promise.reject(new Error('not allowed')))
+    expect(() => playRestChime()).not.toThrow()
+    expect(resume).toHaveBeenCalledTimes(1)
+    // The rejection is caught: no unhandled rejection reaches the test runner.
+    await Promise.resolve()
+  })
+
+  it('ramps each tone from silence to a 0.25 peak and back', () => {
+    const gains: { setValueAtTime: ReturnType<typeof vi.fn>; linearRampToValueAtTime: ReturnType<typeof vi.fn> }[] = []
+    installFakeAudio()
+    const Base = window.AudioContext
+    vi.stubGlobal(
+      'AudioContext',
+      class extends Base {
+        createGain() {
+          const node = super.createGain()
+          gains.push(node.gain as never)
+          return node
+        }
+      },
+    )
+    playRestChime()
+    expect(gains).toHaveLength(2)
+    for (const gain of gains) {
+      expect(gain.setValueAtTime.mock.calls[0][0]).toBe(0)
+      const ramps = gain.linearRampToValueAtTime.mock.calls.map(([value]) => value)
+      expect(ramps).toEqual([0.25, 0])
+    }
+  })
+
   it('vibrates [200,100,200]', () => {
     const vibrate = vi.fn()
     vi.stubGlobal('navigator', { ...navigator, vibrate })

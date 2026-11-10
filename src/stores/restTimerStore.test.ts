@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { act, cleanup, renderHook } from '@testing-library/react'
 import * as chime from '@/lib/restChime'
 import {
   __resetRestTimerForTests,
   restRemainingSeconds,
+  useRestRemaining,
   useRestTimerStore,
 } from '@/stores/restTimerStore'
 import { useSessionStore } from '@/stores/sessionStore'
@@ -81,6 +83,49 @@ describe('restTimerStore', () => {
     expect(timer().endsAt).toBeNull()
   })
 
+  it('falls back to the default for an exercise not in the session', () => {
+    seedSession(120)
+    timer().setDefaultSeconds(90)
+    timer().onSetCompleted('missing')
+    expect(remaining()).toBe(90)
+  })
+
+  it('ignores a zero or negative rest', () => {
+    timer().start(0)
+    timer().setRemaining(-15)
+    expect(timer().endsAt).toBeNull()
+    expect(localStorage.getItem(KEY)).toBeNull()
+  })
+
+  it('unlocks audio inside start and setRemaining (the tap)', () => {
+    const unlock = vi.spyOn(chime, 'unlockAudio')
+    timer().start(60)
+    timer().setRemaining(30)
+    expect(unlock).toHaveBeenCalledTimes(2)
+  })
+
+  it('stores the workout id, absolute end time and total', () => {
+    timer().start(90)
+    expect(JSON.parse(localStorage.getItem(KEY)!)).toEqual({
+      workoutId: 'w1',
+      endsAt: T0 + 90_000,
+      totalSeconds: 90,
+    })
+  })
+
+  it('keeps working when localStorage throws', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('full', 'QuotaExceededError')
+    })
+    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError')
+    })
+    expect(() => timer().start(60)).not.toThrow()
+    expect(remaining()).toBe(60)
+    expect(() => timer().skip()).not.toThrow()
+    expect(timer().endsAt).toBeNull()
+  })
+
   it('setRemaining works from resting and from idle', () => {
     timer().setRemaining(45)
     expect(remaining()).toBe(45)
@@ -140,6 +185,13 @@ describe('restTimerStore', () => {
       expect(play).not.toHaveBeenCalled()
       vi.advanceTimersByTime(60_000)
       expect(play).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps a running rest when the page becomes visible before endsAt', () => {
+      timer().start(30)
+      vi.setSystemTime(T0 + 10_000)
+      document.dispatchEvent(new Event('visibilitychange'))
+      expect(timer().endsAt).toBe(T0 + 30_000)
     })
 
     it('clears silently when the page becomes visible after endsAt', () => {
@@ -205,5 +257,42 @@ describe('restTimerStore', () => {
       __resetRestTimerForTests()
       expect(timer().endsAt).toBeNull()
     })
+  })
+})
+
+describe('useRestRemaining', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(T0)
+    __resetRestTimerForTests()
+    seedSession()
+  })
+
+  afterEach(() => {
+    cleanup() // unmount before the store reset below, so it is not an unwrapped update
+    vi.useRealTimers()
+    __resetRestTimerForTests()
+    useSessionStore.setState({ workout: null, exercises: [] })
+  })
+
+  it('is idle with no rest', () => {
+    const { result } = renderHook(() => useRestRemaining())
+    expect(result.current).toEqual({ remaining: 0, total: 0, resting: false })
+  })
+
+  it('ticks from the wall clock while resting', () => {
+    const { result } = renderHook(() => useRestRemaining())
+    act(() => timer().start(90))
+    expect(result.current).toEqual({ remaining: 90, total: 90, resting: true })
+    act(() => vi.advanceTimersByTime(30_000))
+    expect(result.current).toEqual({ remaining: 60, total: 90, resting: true })
+  })
+
+  it('reads idle at 0:00 for a past endsAt that has not been cleared yet', () => {
+    // A frozen background tab: the end timeout has not run, but the clock has moved on.
+    useRestTimerStore.setState({ workoutId: 'w1', endsAt: T0 - 1000, totalSeconds: 60 })
+    const { result } = renderHook(() => useRestRemaining())
+    expect(result.current.remaining).toBe(0)
+    expect(result.current.resting).toBe(false)
   })
 })

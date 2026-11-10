@@ -19,6 +19,7 @@ describe('WorkoutTopBar rest timer', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     __resetRestTimerForTests()
     useSessionStore.setState({ workout: null })
   })
@@ -36,6 +37,22 @@ describe('WorkoutTopBar rest timer', () => {
     const button = screen.getByRole('button', { name: 'Rest timer, 1:45 left' })
     expect(button).toHaveTextContent('1:45')
     expect(button).toHaveClass('font-semibold')
+  })
+
+  it('drains the 4px track from full to empty, and it is empty when idle', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-11-10T10:00:00Z'))
+    const { container } = render(
+      <WorkoutTopBar workout={workout} onBack={vi.fn()} onMenu={vi.fn()} onRestTimer={vi.fn()} />,
+    )
+    const fill = () => container.querySelector<HTMLElement>('[aria-hidden="true"].h-1 > span')!
+    expect(fill().style.width).toBe('0%')
+    act(() => useRestTimerStore.getState().start(120))
+    expect(fill().style.width).toBe('100%')
+    act(() => vi.advanceTimersByTime(90_000)) // the hook's 1 s render tick
+    expect(fill().style.width).toBe('25%')
+    act(() => useRestTimerStore.getState().skip())
+    expect(fill().style.width).toBe('0%')
   })
 
   it('opens the sheet on click, idle or resting', async () => {

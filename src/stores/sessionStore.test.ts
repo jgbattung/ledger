@@ -460,6 +460,17 @@ describe('sessionStore', () => {
       expect(localStorage.getItem(REST_KEY)).toBeNull()
     })
 
+    it('pausing and resuming the workout clock leaves the rest running', async () => {
+      await startRest()
+      const endsAt = rest().endsAt
+      store().pause()
+      expect(store().workout?.pausedAt).toBeDefined()
+      expect(rest().endsAt).toBe(endsAt)
+      store().resume()
+      expect(rest().endsAt).toBe(endsAt)
+      expect(localStorage.getItem(REST_KEY)).not.toBeNull()
+    })
+
     it('hydrating with no in-progress workout clears a stored timer', async () => {
       localStorage.setItem(
         REST_KEY,

@@ -1,49 +1,32 @@
 import { useEffect, useState } from 'react'
 import { EllipsisVertical } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
+import { Stopwatch } from '@/components/session/Stopwatch'
 import { formatClock, formatSeconds } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Workout } from '@/db/types'
-import { useRestTimerStore } from '@/stores/restTimerStore'
+import { useRestRemaining } from '@/stores/restTimerStore'
 import { isPaused, workoutElapsedMs } from '@/workouts/model'
-
-/** Filled stopwatch (design-system 10j). The hand is cut out in the surface colour. */
-function Stopwatch({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={cn('size-4', className)}>
-      <rect x="9.5" y="2" width="5" height="2.5" rx="1" fill="currentColor" />
-      <rect x="11" y="4" width="2" height="3" fill="currentColor" />
-      <path d="m18 6.5 1.5-1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="12" cy="14" r="8" fill="currentColor" />
-      <path
-        d="M12 14V9.5"
-        stroke="var(--background)"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        fill="none"
-      />
-    </svg>
-  )
-}
 
 /**
  * Top bar of the Ongoing Workout (design-system 10j): flush Back, the workout
- * duration (ink while running, muted while paused), the rest timer with a filled stopwatch, the menu button,
- * and a 4px rest-bar track that is always visible (empty while idle).
+ * duration (ink while running, muted while paused), the rest timer button (opens the rest
+ * sheet) with a filled stopwatch, the menu button, and a 4px rest-bar track that is always visible (empty while idle).
  */
 export function WorkoutTopBar({
   workout,
   onBack,
   onMenu,
+  onRestTimer,
 }: {
   workout: Pick<Workout, 'startedAt' | 'pausedAt' | 'pausedMs'>
   onBack: () => void
   onMenu: () => void
+  onRestTimer: () => void
 }) {
   const paused = isPaused(workout)
   const [now, setNow] = useState(() => Date.now())
-  const remaining = useRestTimerStore((state) => state.remainingSeconds)
-  const total = useRestTimerStore((state) => state.totalSeconds)
+  const { remaining, total, resting } = useRestRemaining()
 
   useEffect(() => {
     if (paused) return
@@ -52,7 +35,7 @@ export function WorkoutTopBar({
     return () => clearInterval(timer)
   }, [paused])
 
-  const idle = remaining <= 0
+  const idle = !resting
   const fill = total > 0 ? Math.min(100, Math.max(0, (remaining / total) * 100)) : 0
 
   return (
@@ -69,17 +52,18 @@ export function WorkoutTopBar({
           {formatClock(workoutElapsedMs(workout, now))}
         </span>
         <span className="flex-1" />
-        <span
-          role="timer"
-          aria-label="Rest timer"
+        <button
+          type="button"
+          aria-label={idle ? 'Rest timer, not running' : `Rest timer, ${formatSeconds(remaining)} left`}
+          onClick={onRestTimer}
           className={cn(
-            'flex items-center gap-1 text-[15px] tabular-nums',
+            '-mx-2 flex min-h-touch-min items-center gap-1 rounded-md px-2 text-[15px] tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
             idle ? 'font-medium text-muted-foreground' : 'font-semibold',
           )}
         >
           <Stopwatch />
-          {formatSeconds(Math.max(0, remaining))}
-        </span>
+          {formatSeconds(remaining)}
+        </button>
         <button
           type="button"
           aria-label="Workout menu"

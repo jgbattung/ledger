@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Pause, Play, Square } from 'lucide-react'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
-import { formatClock } from '@/lib/format'
+import { formatClock, formatSeconds } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { useRestRemaining } from '@/stores/restTimerStore'
 import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 import { useSessionStore } from '@/stores/sessionStore'
 import { isPaused, workoutElapsedMs } from '@/workouts/model'
@@ -23,6 +24,7 @@ export function WorkoutBar() {
   const [now, setNow] = useState(() => Date.now())
   const [confirmDiscard, setConfirmDiscard] = useState(false)
   const paused = workout ? isPaused(workout) : false
+  const rest = useRestRemaining()
 
   useEffect(() => {
     if (!workout || paused) return
@@ -61,6 +63,17 @@ export function WorkoutBar() {
             </span>
             {' · '}
             <span className="whitespace-nowrap">{`${done} of ${allSets.length} sets`}</span>
+            {rest.resting ? (
+              <>
+                {' · '}
+                <span
+                  aria-label={`Rest ${formatSeconds(rest.remaining)} left`}
+                  className="whitespace-nowrap font-semibold text-foreground"
+                >
+                  {`Rest ${formatSeconds(rest.remaining)}`}
+                </span>
+              </>
+            ) : null}
           </span>
         </Link>
         <button
@@ -83,6 +96,16 @@ export function WorkoutBar() {
         >
           <Square className="size-4 fill-current" aria-hidden="true" />
         </button>
+        {rest.resting ? (
+          // The bar is fixed, so it already anchors this; the 10px inset keeps the track inside the rounded corners.
+          <span aria-hidden="true" className="absolute inset-x-2.5 bottom-0 h-0.5">
+            <span
+              data-testid="rest-track"
+              className="block h-full bg-foreground"
+              style={{ width: `${Math.min(100, (rest.remaining / rest.total) * 100)}%` }}
+            />
+          </span>
+        ) : null}
       </div>
       <ConfirmSheet
         open={confirmDiscard}

@@ -1,10 +1,11 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router-dom'
 import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
+import { __resetRestTimerForTests, useRestTimerStore } from '@/stores/restTimerStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { WorkoutBar } from '@/components/session/WorkoutBar'
 
@@ -28,6 +29,12 @@ describe('WorkoutBar', () => {
   beforeEach(async () => {
     await resetDb()
     store().reset()
+    __resetRestTimerForTests()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    __resetRestTimerForTests()
   })
 
   it('renders nothing without an in-progress workout', async () => {
@@ -116,5 +123,41 @@ describe('WorkoutBar', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Discard workout' }))
     await waitFor(() => expect(store().workout).toBeNull())
     expect(screen.queryByRole('link', { name: /Open workout/ })).toBeNull()
+  })
+  describe('rest countdown', () => {
+    it('has no rest segment or track when idle', async () => {
+      await startWorkout()
+      renderBar()
+      const link = await screen.findByRole('link', { name: 'Open workout, Push A' })
+      expect(link).not.toHaveTextContent(/Rest/)
+      expect(screen.queryByTestId('rest-track')).toBeNull()
+    })
+
+    it('appends "Rest m:ss" and a draining track while resting, and drops them at the end', async () => {
+      await startWorkout()
+      renderBar()
+      const link = await screen.findByRole('link', { name: 'Open workout, Push A' })
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-11-10T10:00:00Z'))
+      act(() => useRestTimerStore.getState().start(105))
+
+      const segment = await screen.findByLabelText('Rest 1:45 left')
+      expect(segment).toHaveTextContent('Rest 1:45')
+      expect(segment).toHaveClass('font-semibold', 'text-foreground', 'whitespace-nowrap')
+      expect(link).toHaveTextContent(/sets · Rest 1:45/)
+      expect(screen.getByTestId('rest-track')).toHaveStyle({ width: '100%' })
+      expect(screen.getByTestId('rest-track').parentElement).toHaveAttribute('aria-hidden', 'true')
+
+      // Time passes; the hook's 1 s render tick picks it up.
+      vi.setSystemTime(new Date('2026-11-10T10:00:45Z'))
+      await waitFor(() => expect(screen.getByLabelText('Rest 1:00 left')).toBeInTheDocument(), {
+        timeout: 3000,
+      })
+      expect(screen.getByTestId('rest-track').style.width).toBe(`${(60 / 105) * 100}%`)
+
+      act(() => useRestTimerStore.getState().skip())
+      expect(link).not.toHaveTextContent(/Rest/)
+      expect(screen.queryByTestId('rest-track')).toBeNull()
+    })
   })
 })

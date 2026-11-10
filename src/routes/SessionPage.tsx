@@ -5,12 +5,15 @@ import { ExerciseFocus } from '@/components/session/ExerciseFocus'
 import { ExerciseStrip } from '@/components/session/ExerciseStrip'
 import { FinishBar } from '@/components/session/FinishBar'
 import { NumberPad } from '@/components/session/NumberPad'
+import { RestTimerSheet } from '@/components/session/RestTimerSheet'
 import { WorkoutMenuSheet } from '@/components/session/WorkoutMenuSheet'
 import { WorkoutNoteSheet } from '@/components/session/WorkoutNoteSheet'
 import { WorkoutTopBar } from '@/components/session/WorkoutTopBar'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { getLastTab } from '@/lib/lastTab'
 import { useGoBack } from '@/lib/useGoBack'
+import { useSettings } from '@/settings/SettingsProvider'
+import { useRestTimerStore } from '@/stores/restTimerStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 
@@ -43,9 +46,16 @@ export function SessionPage() {
   const leaveTo = useRef<string | null>(null)
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const [restOpen, setRestOpen] = useState(false)
   const [noteOpen, setNoteOpen] = useState(false)
   const [confirmFinish, setConfirmFinish] = useState(false)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
+
+  // The rest timer store never reads Settings: hand it the default here.
+  const defaultRestSeconds = useSettings().settings?.defaultRestSeconds
+  useEffect(() => {
+    if (defaultRestSeconds != null) useRestTimerStore.getState().setDefaultSeconds(defaultRestSeconds)
+  }, [defaultRestSeconds])
 
   // Notes flush on unmount (they also debounce at 400ms in the store).
   useEffect(() => () => void useSessionStore.getState().flushNotes(), [])
@@ -99,7 +109,12 @@ export function SessionPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <WorkoutTopBar workout={workout} onBack={goBack} onMenu={() => setMenuOpen(true)} />
+      <WorkoutTopBar
+        workout={workout}
+        onBack={goBack}
+        onMenu={() => setMenuOpen(true)}
+        onRestTimer={() => setRestOpen(true)}
+      />
       <ExerciseStrip
         exercises={exercises}
         focusedId={focused?.exercise.id ?? null}
@@ -132,6 +147,7 @@ export function SessionPage() {
       <NumberPad />
       {allDone && !pad ? <FinishBar onFinish={requestFinish} /> : null}
 
+      <RestTimerSheet open={restOpen} onOpenChange={setRestOpen} />
       <WorkoutMenuSheet
         open={menuOpen}
         onOpenChange={setMenuOpen}

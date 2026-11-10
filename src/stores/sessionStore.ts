@@ -293,10 +293,12 @@ export const useSessionStore = create<SessionState>((set, get) => {
         const workout = await workouts.getInProgress()
         if (workout && get().hydratedWorkoutId === workout.id) {
           set({ hydrated: true })
-          return
+        } else {
+          await replayNoteJournal(workout?.id)
+          await refresh()
         }
-        await replayNoteJournal(workout?.id)
-        await refresh()
+        // A stored rest timer survives a reload only for the workout it belongs to.
+        useRestTimerStore.getState().reconcile(get().workout?.id ?? null)
       })().finally(() => {
         inflightHydrate = null
       })
@@ -493,6 +495,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
       await workouts.finish(workout.id)
       clearNoteState()
       writeNoteJournal(null)
+      useRestTimerStore.getState().clear()
       set({ ...initial, hydrated: true })
     },
 
@@ -503,12 +506,14 @@ export const useSessionStore = create<SessionState>((set, get) => {
       await queue
       await workouts.discard(workout.id)
       writeNoteJournal(null)
+      useRestTimerStore.getState().clear()
       set({ ...initial, hydrated: true })
     },
 
     reset() {
       clearNoteState()
       writeNoteJournal(null)
+      useRestTimerStore.getState().clear()
       set({ ...initial })
     },
   }

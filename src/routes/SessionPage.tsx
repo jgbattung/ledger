@@ -5,6 +5,7 @@ import { ExerciseFocus } from '@/components/session/ExerciseFocus'
 import { ExerciseStrip } from '@/components/session/ExerciseStrip'
 import { FinishBar } from '@/components/session/FinishBar'
 import { NumberPad } from '@/components/session/NumberPad'
+import { RestTimerSheet } from '@/components/session/RestTimerSheet'
 import { WorkoutMenuSheet } from '@/components/session/WorkoutMenuSheet'
 import { WorkoutNoteSheet } from '@/components/session/WorkoutNoteSheet'
 import { WorkoutTopBar } from '@/components/session/WorkoutTopBar'
@@ -45,6 +46,7 @@ export function SessionPage() {
   const leaveTo = useRef<string | null>(null)
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const [restOpen, setRestOpen] = useState(false)
   const [noteOpen, setNoteOpen] = useState(false)
   const [confirmFinish, setConfirmFinish] = useState(false)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
@@ -111,7 +113,7 @@ export function SessionPage() {
         workout={workout}
         onBack={goBack}
         onMenu={() => setMenuOpen(true)}
-        onRestTimer={() => {}}
+        onRestTimer={() => setRestOpen(true)}
       />
       <ExerciseStrip
         exercises={exercises}
@@ -145,6 +147,7 @@ export function SessionPage() {
       <NumberPad />
       {allDone && !pad ? <FinishBar onFinish={requestFinish} /> : null}
 
+      <RestTimerSheet open={restOpen} onOpenChange={setRestOpen} />
       <WorkoutMenuSheet
         open={menuOpen}
         onOpenChange={setMenuOpen}

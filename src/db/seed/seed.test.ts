@@ -580,3 +580,44 @@ describe('clearDatabase', () => {
     for (const table of db.tables) expect(await table.count(), table.name).toBe(0)
   })
 })
+
+describe('atomic seeding', () => {
+  it('rolls back every table when the seed fails partway, then seeds fully on retry', async () => {
+    vi.spyOn(programs, 'setActive').mockRejectedValueOnce(new Error('boom'))
+    await expect(ensureSeeded({ fresh: false, runId: 'a' })).rejects.toThrow('boom')
+    for (const table of db.tables) expect(await table.count(), table.name).toBe(0)
+
+    await ensureSeeded({ fresh: false, runId: 'a' })
+    expect(await db.programs.count()).toBe(4)
+    expect((await db.programs.toArray()).filter((p) => p.isActive)).toHaveLength(1)
+    expect(await db.workouts.count()).toBe(59)
+  })
+
+  it('rolls back seedDatabase itself when it fails after programs are written', async () => {
+    vi.spyOn(programs, 'completeDay').mockRejectedValueOnce(new Error('boom'))
+    await expect(seedDatabase(ANCHOR)).rejects.toThrow('boom')
+    for (const table of db.tables) expect(await table.count(), table.name).toBe(0)
+  })
+
+  it('seeds once when two non-fresh calls race on an empty database', async () => {
+    await Promise.all([
+      ensureSeeded({ fresh: false, runId: 'a' }),
+      ensureSeeded({ fresh: false, runId: 'a' }),
+    ])
+    expect(await db.programs.count()).toBe(4)
+    expect(await db.workouts.count()).toBe(59)
+  })
+
+  it('keeps the previous data and stores no run id when a fresh seed fails', async () => {
+    await ensureSeeded({ fresh: true, runId: 'run-1' })
+    const before = (await db.programs.toArray()).map((p) => p.id).sort()
+    const workoutCount = await db.workouts.count()
+
+    vi.spyOn(programs, 'setActive').mockRejectedValueOnce(new Error('boom'))
+    await expect(ensureSeeded({ fresh: true, runId: 'run-2' })).rejects.toThrow('boom')
+
+    expect((await db.programs.toArray()).map((p) => p.id).sort()).toEqual(before)
+    expect(await db.workouts.count()).toBe(workoutCount)
+    expect(localStorage.getItem('ledger-seed-run')).toBe('run-1')
+  })
+})

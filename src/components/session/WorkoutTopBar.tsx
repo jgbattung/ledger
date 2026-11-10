@@ -4,7 +4,7 @@ import { BackLink } from '@/components/BackLink'
 import { formatClock, formatSeconds } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Workout } from '@/db/types'
-import { useRestTimerStore } from '@/stores/restTimerStore'
+import { useRestRemaining } from '@/stores/restTimerStore'
 import { isPaused, workoutElapsedMs } from '@/workouts/model'
 
 /** Filled stopwatch (design-system 10j). The hand is cut out in the surface colour. */
@@ -42,8 +42,7 @@ export function WorkoutTopBar({
 }) {
   const paused = isPaused(workout)
   const [now, setNow] = useState(() => Date.now())
-  const remaining = useRestTimerStore((state) => state.remainingSeconds)
-  const total = useRestTimerStore((state) => state.totalSeconds)
+  const { remaining, total } = useRestRemaining()
 
   useEffect(() => {
     if (paused) return

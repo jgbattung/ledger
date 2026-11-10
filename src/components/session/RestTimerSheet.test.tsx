@@ -43,7 +43,7 @@ describe('RestTimerSheet', () => {
   it('has a hidden title and no -30 / +30 buttons', () => {
     renderSheet()
     expect(screen.getByRole('dialog', { name: 'Rest timer' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /^[-+−]s?30/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^[-+−]\s?30/ })).not.toBeInTheDocument()
   })
 
   it('shows muted 0:00 and a disabled Skip when idle', () => {

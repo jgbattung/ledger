@@ -222,3 +222,100 @@ test('lifecycle: finishing from the menu clears a running rest', async ({ page }
   await expect(page).toHaveURL(/\/session$/);
   await expect(restButton(page, 'not running')).toContainText('0:00');
 });
+
+test('lifecycle: discarding from the session menu clears a running rest', async ({ page }) => {
+  test.setTimeout(90_000);
+  await startWorkout(page, { benchRest: 120 });
+  await checkSet(page, 1);
+  expect(await stored(page)).not.toBeNull();
+
+  await page.getByRole('button', { name: 'Workout menu' }).click();
+  await page.getByRole('button', { name: 'Discard workout' }).click();
+  await page
+    .getByRole('dialog', { name: 'Discard this workout?' })
+    .getByRole('button', { name: 'Discard workout' })
+    .click();
+  await expect(page).toHaveURL(/\/workout$/);
+  await expect.poll(() => stored(page)).toBeNull();
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page).toHaveURL(/\/session$/);
+  await expect(restButton(page, 'not running')).toContainText('0:00');
+});
+
+test('End: at 0:00 the chime plays and the phone vibrates, once', async ({ page }) => {
+  test.setTimeout(90_000);
+  // Count the cues without silencing the real Web Audio path.
+  await page.addInitScript(() => {
+    const cues = { oscillators: 0, vibrations: [] as unknown[] };
+    (window as unknown as { __cues: typeof cues }).__cues = cues;
+    const create = AudioContext.prototype.createOscillator;
+    AudioContext.prototype.createOscillator = function (this: AudioContext) {
+      cues.oscillators += 1;
+      return create.call(this);
+    };
+    Object.defineProperty(navigator, 'vibrate', {
+      configurable: true,
+      value: (pattern: unknown) => {
+        cues.vibrations.push(pattern);
+        return true;
+      },
+    });
+  });
+  await startWorkout(page);
+  const sheet = await openSheet(page);
+  await sheet.getByRole('button', { name: 'Rest 0:15' }).click();
+  const cues = () => page.evaluate(() => (window as unknown as { __cues: unknown }).__cues);
+  expect(await cues()).toEqual({ oscillators: 0, vibrations: [] });
+
+  await page.clock.runFor(16_000);
+  await expect(sheet.getByRole('button', { name: 'Skip rest' })).toBeDisabled();
+  expect(await cues()).toEqual({ oscillators: 2, vibrations: [[200, 100, 200]] });
+  await page.clock.runFor(30_000);
+  expect(await cues()).toEqual({ oscillators: 2, vibrations: [[200, 100, 200]] });
+});
+
+test('wake lock: held while a workout is in progress across shells, released on finish', async ({ page }) => {
+  test.setTimeout(90_000);
+  // A recording Wake Lock stand-in: headless Chromium may refuse the real one.
+  await page.addInitScript(() => {
+    const log: string[] = [];
+    (window as unknown as { __wake: string[] }).__wake = log;
+    Object.defineProperty(navigator, 'wakeLock', {
+      configurable: true,
+      value: {
+        request: async (type: string) => {
+          log.push(`request:${type}`);
+          const target = new EventTarget();
+          const sentinel = Object.assign(target, {
+            released: false,
+            type,
+            release: async () => {
+              if (sentinel.released) return;
+              sentinel.released = true;
+              log.push('release');
+              target.dispatchEvent(new Event('release'));
+            },
+          });
+          return sentinel;
+        },
+      },
+    });
+  });
+  const wake = () => page.evaluate(() => (window as unknown as { __wake: string[] }).__wake);
+
+  await startWorkout(page);
+  await expect.poll(wake).toEqual(['request:screen']);
+  await minimize(page); // chromeless session -> tabbed shell keeps the same lock
+  await expect(bar(page)).toBeVisible();
+  expect(await wake()).toEqual(['request:screen']);
+
+  await bar(page).click();
+  await expect(page).toHaveURL(/\/session$/);
+  await page.getByRole('button', { name: 'Workout menu' }).click();
+  await page.getByRole('button', { name: 'Finish workout' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Finish workout' }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect.poll(wake).toEqual(['request:screen', 'release']);
+});

@@ -4,6 +4,7 @@ import { BottomNav } from '@/components/BottomNav'
 import { QuickActionSheet } from '@/components/QuickActionSheet'
 import { WorkoutBar } from '@/components/session/WorkoutBar'
 import { setLastTab } from '@/lib/lastTab'
+import { useWorkoutWakeLock } from '@/lib/useWorkoutWakeLock'
 import { cn } from '@/lib/utils'
 import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 
@@ -11,6 +12,7 @@ export function AppShell() {
   const [quickActionsOpen, setQuickActionsOpen] = useState(false)
   const { workout } = useInProgressWorkout()
   const { pathname, search } = useLocation()
+  useWorkoutWakeLock()
 
   useEffect(() => {
     setLastTab(pathname + search)
@@ -48,6 +50,7 @@ export function AppShell() {
  * changes no shell code.
  */
 export function ChromelessShell() {
+  useWorkoutWakeLock()
   return (
     <div className="flex h-svh flex-col bg-background text-foreground">
       <main className="flex-1 overflow-y-auto">

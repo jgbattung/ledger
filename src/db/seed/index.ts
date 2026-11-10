@@ -100,83 +100,86 @@ function buildExerciseMeta(history: SeedHistory): ExerciseMeta[] {
  * gate and pass logic run), then back-dated history, bodyweight and exercise
  * meta as raw rows with the same `syncState` dirty marks repo writes leave.
  * Settings are not written; `settings.getOrInit()` creates PRD defaults.
+ *
+ * All-or-nothing: everything runs inside one `rw` transaction over every
+ * table (the repo calls nest inside it), so a failure or a closed tab rolls
+ * back every seeded row. Keep the body Dexie-only: any other awaited promise
+ * would let the transaction commit early.
  */
-export async function seedDatabase(anchor: number = Date.now()): Promise<void> {
-  const drafts = buildSeedDrafts()
-  const byName = (name: string) => {
-    const found = drafts.find((draft) => draft.name === name)
-    if (!found) throw new Error(`Seed program missing: ${name}`)
-    return found
-  }
-  const ppl = byName(PPL_NAME)
-  const fbeod = byName(FBEOD_NAME)
-  const archived = byName(ARCHIVED_NAME)
-  const dayId = (name: string) => {
-    const found = ppl.days.find((day) => day.name === name)
-    if (!found) throw new Error(`Seed day missing: ${name}`)
-    return found.id
-  }
+export function seedDatabase(anchor: number = Date.now()): Promise<void> {
+  return db.transaction('rw', db.tables, async () => {
+    const drafts = buildSeedDrafts()
+    const byName = (name: string) => {
+      const found = drafts.find((draft) => draft.name === name)
+      if (!found) throw new Error(`Seed program missing: ${name}`)
+      return found
+    }
+    const ppl = byName(PPL_NAME)
+    const fbeod = byName(FBEOD_NAME)
+    const archived = byName(ARCHIVED_NAME)
+    const dayId = (name: string) => {
+      const found = ppl.days.find((day) => day.name === name)
+      if (!found) throw new Error(`Seed day missing: ${name}`)
+      return found.id
+    }
 
-  for (const draft of drafts) await programs.saveTree(draft)
-  await programs.archive(archived.id)
-  await programs.setActive(ppl.id)
-  await programs.completeDay(ppl.id, dayId(PUSH_DAY))
-  await programs.completeDay(ppl.id, dayId(PULL_DAY))
+    for (const draft of drafts) await programs.saveTree(draft)
+    await programs.archive(archived.id)
+    await programs.setActive(ppl.id)
+    await programs.completeDay(ppl.id, dayId(PUSH_DAY))
+    await programs.completeDay(ppl.id, dayId(PULL_DAY))
 
-  const pplTree = await programs.loadTree(ppl.id)
-  const fbeodTree = await programs.loadTree(fbeod.id)
-  if (!pplTree || !fbeodTree) throw new Error('Seed programs were not saved')
+    const pplTree = await programs.loadTree(ppl.id)
+    const fbeodTree = await programs.loadTree(fbeod.id)
+    if (!pplTree || !fbeodTree) throw new Error('Seed programs were not saved')
 
-  const rng = createRng()
-  const history = buildHistory({ trees: { ppl: pplTree, fbeod: fbeodTree }, anchor, rng })
-  const bodyMetrics = buildBodyMetrics(anchor, rng)
-  const exerciseMeta = buildExerciseMeta(history)
+    const rng = createRng()
+    const history = buildHistory({ trees: { ppl: pplTree, fbeod: fbeodTree }, anchor, rng })
+    const bodyMetrics = buildBodyMetrics(anchor, rng)
+    const exerciseMeta = buildExerciseMeta(history)
 
-  const dirtyAt = now()
-  const dirty = (table: string, rows: { id: string }[]): SyncStateRow[] =>
-    rows.map((row) => ({ table, recordId: row.id, dirtyAt }))
+    const dirtyAt = now()
+    const dirty = (table: string, rows: { id: string }[]): SyncStateRow[] =>
+      rows.map((row) => ({ table, recordId: row.id, dirtyAt }))
 
-  await db.transaction(
-    'rw',
-    [
-      db.workouts,
-      db.workoutExercises,
-      db.sets,
-      db.bodyMetrics,
-      db.exerciseMeta,
-      db.syncState,
-    ],
-    async () => {
-      await db.workouts.bulkPut(history.workouts)
-      await db.workoutExercises.bulkPut(history.workoutExercises)
-      await db.sets.bulkPut(history.sets)
-      await db.bodyMetrics.bulkPut(bodyMetrics)
-      await db.exerciseMeta.bulkPut(exerciseMeta)
-      await db.syncState.bulkPut([
-        ...dirty('workouts', history.workouts),
-        ...dirty('workoutExercises', history.workoutExercises),
-        ...dirty('sets', history.sets),
-        ...dirty('bodyMetrics', bodyMetrics),
-        ...dirty('exerciseMeta', exerciseMeta),
-      ])
-    },
-  )
+    await db.workouts.bulkPut(history.workouts)
+    await db.workoutExercises.bulkPut(history.workoutExercises)
+    await db.sets.bulkPut(history.sets)
+    await db.bodyMetrics.bulkPut(bodyMetrics)
+    await db.exerciseMeta.bulkPut(exerciseMeta)
+    await db.syncState.bulkPut([
+      ...dirty('workouts', history.workouts),
+      ...dirty('workoutExercises', history.workoutExercises),
+      ...dirty('sets', history.sets),
+      ...dirty('bodyMetrics', bodyMetrics),
+      ...dirty('exerciseMeta', exerciseMeta),
+    ])
+  })
 }
 
 /**
  * Called before first render in seed modes. `fresh` wipes and reseeds once
  * per dev-server start (tracked by `runId`); otherwise seeds only an empty
  * database, so data persists across reloads and server restarts.
+ *
+ * Both paths are all-or-nothing: the wipe or emptiness check and the seed
+ * share one transaction, so a failed seed leaves the previous data intact and
+ * a second tab's check waits for the first tab's seed and then sees data.
+ * The run id is stored only after the transaction commits.
  */
 export async function ensureSeeded(options: { fresh: boolean; runId: string }): Promise<void> {
   if (options.fresh && localStorage.getItem(SEED_RUN_KEY) !== options.runId) {
-    await clearDatabase()
+    await db.transaction('rw', db.tables, async () => {
+      await clearDatabase()
+      await seedDatabase()
+    })
     localStorage.removeItem(REST_TIMER_KEY)
-    await seedDatabase()
     localStorage.setItem(SEED_RUN_KEY, options.runId)
     return
   }
-  if ((await db.programs.count()) === 0 && (await db.workouts.count()) === 0) {
-    await seedDatabase()
-  }
+  await db.transaction('rw', db.tables, async () => {
+    if ((await db.programs.count()) === 0 && (await db.workouts.count()) === 0) {
+      await seedDatabase()
+    }
+  })
 }

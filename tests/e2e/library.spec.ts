@@ -30,6 +30,22 @@ test('LIB-2: typing "curl" filters the visible list live', async ({ page }) => {
   await expect(page.getByText(curlMatches[0].name, { exact: true })).toBeVisible();
 });
 
+test('LG-048: word order does not matter in search', async ({ page }) => {
+  await page.goto('/more/library');
+
+  await page.getByLabel('Search exercises').fill('bench close grip incline');
+
+  await expect(page.getByText('Incline Close Grip Bench Press', { exact: true })).toBeVisible();
+});
+
+test('LG-048: a one-letter typo still finds dumbbell presses', async ({ page }) => {
+  await page.goto('/more/library');
+
+  await page.getByLabel('Search exercises').fill('dumbell press');
+
+  await expect(page.getByText('Dumbbell Bench Press', { exact: true })).toBeVisible();
+});
+
 test('LIB-3: Muscle=Chest + Equipment=Barbell combine with AND', async ({ page }) => {
   await page.goto('/more/library');
 

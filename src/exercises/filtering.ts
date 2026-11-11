@@ -141,21 +141,34 @@ function scoreToken(q: string, { tokens, joined }: IndexedExercise): number {
   return 0
 }
 
+/** Search + facet filter. Every query word must match (AND, any order);
+ * with a query, results are ranked by summed match tier (ties keep catalog
+ * order), with no query they stay in catalog order. */
 export function filterExercises(query: string, filters: LibraryFilters): Exercise[] {
   const normalizedQuery = normalize(query)
   const queryTokens = normalizedQuery ? normalizedQuery.split(' ') : []
+  const matches: { exercise: Exercise; score: number }[] = []
 
-  return getSearchIndex()
-    .filter((entry) => {
-      const { exercise } = entry
-      if (!queryTokens.every((q) => scoreToken(q, entry) > 0)) return false
-      if (filters.muscle && !exercise.primaryMuscles.includes(filters.muscle as Muscle))
-        return false
-      if (filters.category && exercise.category !== filters.category) return false
-      if (filters.equipment && exercise.equipment !== filters.equipment) return false
-      return true
-    })
-    .map(({ exercise }) => exercise)
+  for (const entry of getSearchIndex()) {
+    const { exercise } = entry
+    if (filters.muscle && !exercise.primaryMuscles.includes(filters.muscle as Muscle)) continue
+    if (filters.category && exercise.category !== filters.category) continue
+    if (filters.equipment && exercise.equipment !== filters.equipment) continue
+
+    let score = 0
+    for (const q of queryTokens) {
+      const tier = scoreToken(q, entry)
+      if (tier === 0) {
+        score = -1
+        break
+      }
+      score += tier
+    }
+    if (score >= 0) matches.push({ exercise, score })
+  }
+
+  if (queryTokens.length > 0) matches.sort((a, b) => b.score - a.score)
+  return matches.map(({ exercise }) => exercise)
 }
 
 /** Display-only Title-case formatting for filter values. Never feed the

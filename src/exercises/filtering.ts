@@ -5,10 +5,10 @@
  * equipment) are derived from the bundled dataset at runtime so
  * re-curating `exercises.json` never desyncs the UI.
  *
- * Search (LG-047 baseline; LG-048 builds ranking/fuzziness on top): the
- * query is normalized (lowercase, hyphens/slashes -> space, collapse
- * whitespace) and matched as a substring against the canonical name and
- * every alias, normalized the same way.
+ * Search (LG-048): the query is normalized (lowercase, every run of
+ * non-alphanumeric characters -> one space) and split into words. Each word
+ * is matched against the pooled words of an exercise's canonical name and
+ * aliases (see the search index below); all words must match, in any order.
  */
 import { getAllExercises } from './catalog'
 import type { Exercise, Muscle } from './types'
@@ -52,37 +52,47 @@ export function getFilterOptions(): FilterOptions {
   return filterOptions
 }
 
-/** Lowercase, `[-/]` -> space, collapse whitespace, trim. Applied to both
- * the query and every candidate name/alias so hyphen/spacing variants
- * ("pull-up", "pull ups") match regardless of which side has the dash. */
+/** Lowercase, every run of non-alphanumeric characters -> one space, trim.
+ * Applied to both the query and every candidate name/alias so hyphen,
+ * punctuation and spacing variants ("pull-up", "pull ups", "press (seated)")
+ * compare equal regardless of which side has the separator. */
 export function normalize(value: string): string {
   return value
     .toLowerCase()
-    .replace(/[-/]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/[^a-z0-9]+/g, ' ')
     .trim()
 }
 
-type IndexedExercise = { exercise: Exercise; normalizedNames: string[] }
+type IndexedExercise = {
+  exercise: Exercise
+  /** Distinct words across the normalized name and all aliases (pooled). */
+  tokens: string[]
+  /** Each normalized name/alias with spaces removed ("pullups"). */
+  joined: string[]
+}
 
 let searchIndex: IndexedExercise[] | null = null
 
 function getSearchIndex(): IndexedExercise[] {
   if (!searchIndex) {
-    searchIndex = getAllExercises().map((exercise) => ({
-      exercise,
-      normalizedNames: [exercise.name, ...exercise.aliases].map(normalize),
-    }))
+    searchIndex = getAllExercises().map((exercise) => {
+      const names = [exercise.name, ...exercise.aliases].map(normalize)
+      return {
+        exercise,
+        tokens: [...new Set(names.flatMap((n) => n.split(' ')))],
+        joined: names.map((n) => n.replace(/ /g, '')),
+      }
+    })
   }
   return searchIndex
 }
 
 export function filterExercises(query: string, filters: LibraryFilters): Exercise[] {
-  const normalizedQuery = normalize(query)
+  const joinedQuery = normalize(query).replace(/ /g, '')
 
   return getSearchIndex()
-    .filter(({ exercise, normalizedNames }) => {
-      if (normalizedQuery && !normalizedNames.some((n) => n.includes(normalizedQuery))) return false
+    .filter(({ exercise, joined }) => {
+      if (joinedQuery && !joined.some((n) => n.includes(joinedQuery))) return false
       if (filters.muscle && !exercise.primaryMuscles.includes(filters.muscle as Muscle))
         return false
       if (filters.category && exercise.category !== filters.category) return false

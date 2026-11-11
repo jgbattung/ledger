@@ -41,6 +41,7 @@ describe('normalize', () => {
     expect(normalize('Pull-Ups')).toBe('pull ups')
     expect(normalize('3/4 Sit-Up')).toBe('3 4 sit up')
     expect(normalize('  Wide   Grip  Cable Row ')).toBe('wide grip cable row')
+    expect(normalize('Press (Seated)')).toBe('press seated')
   })
 })
 

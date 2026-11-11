@@ -160,11 +160,133 @@ describe('formatFilterValue', () => {
   })
 })
 
+describe('filterExercises - token search (LG-048)', () => {
+  const ids = (query: string) => filterExercises(query, noFilters).map((e) => e.id)
+  const words = (e: { name: string; aliases: string[] }) =>
+    new Set([e.name, ...e.aliases].flatMap((n) => normalize(n).split(' ')))
+
+  it('AC1: word order does not change the result', () => {
+    const a = filterExercises('incline close grip bench', noFilters)
+    const b = filterExercises('bench close grip incline', noFilters)
+    expect(a.map((e) => e.id)).toEqual(b.map((e) => e.id))
+    expect(a.some((e) => e.name === 'Incline Close Grip Bench Press')).toBe(true)
+  })
+
+  it('AC2: "pull ups", "pull-ups" and "pullups" all find Pull-Up', () => {
+    for (const q of ['pull ups', 'pull-ups', 'pullups']) {
+      expect(filterExercises(q, noFilters).some((e) => e.name === 'Pull-Up')).toBe(true)
+    }
+  })
+
+  it('AC3: a word that exists only in an alias still matches', () => {
+    const results = filterExercises('machine hamstring curl', noFilters)
+    const seatedLegCurl = results.find((e) => e.name === 'Seated Leg Curl')
+    expect(seatedLegCurl).toBeDefined()
+    expect(words({ name: seatedLegCurl!.name, aliases: [] }).has('hamstring')).toBe(false)
+  })
+
+  it('AC3: "rdl" resolves Romanian Deadlift through its alias', () => {
+    expect(filterExercises('rdl', noFilters).some((e) => e.name === 'Romanian Deadlift')).toBe(
+      true,
+    )
+  })
+
+  it('AC4: "cable row" narrows "cable" and every result matches both words', () => {
+    const cable = filterExercises('cable', noFilters)
+    const cableRow = filterExercises('cable row', noFilters)
+    expect(cableRow.length).toBeGreaterThan(0)
+    expect(cableRow.length).toBeLessThan(cable.length)
+    for (const e of cableRow) {
+      const w = [...words(e)]
+      expect(w.some((t) => t.includes('cable'))).toBe(true)
+      expect(w.some((t) => t.includes('row'))).toBe(true)
+    }
+  })
+
+  it('AC5: "dumbell press" finds dumbbell presses', () => {
+    const results = filterExercises('dumbell press', noFilters)
+    expect(results.length).toBeGreaterThan(0)
+    for (const e of results) {
+      const w = [...words(e)]
+      expect(w.some((t) => t.startsWith('dumbbell'))).toBe(true)
+      expect(w.some((t) => t.startsWith('press'))).toBe(true)
+    }
+  })
+
+  it('AC5: "benhc press" (adjacent swap) finds a Bench Press entry', () => {
+    expect(filterExercises('benhc press', noFilters).some((e) => e.name.includes('Bench Press'))).toBe(
+      true,
+    )
+  })
+
+  it('typo tolerance works while the word is still being typed', () => {
+    expect(
+      filterExercises('dumbel', noFilters).some((e) => e.name.toLowerCase().includes('dumbbell')),
+    ).toBe(true)
+  })
+
+  it('pools words across the name and aliases', () => {
+    const results = filterExercises('seated hamstring curl', noFilters)
+    expect(results.some((e) => e.name === 'Seated Leg Curl')).toBe(true)
+  })
+
+  it('folds simple plurals: "rows" and "curls" are non-empty and include the singular matches', () => {
+    for (const [plural, singular] of [
+      ['rows', 'row'],
+      ['curls', 'curl'],
+    ]) {
+      const results = ids(plural)
+      expect(results.length).toBeGreaterThan(0)
+      const exact = getAllExercises().filter((e) => words(e).has(singular))
+      expect(exact.length).toBeGreaterThan(0)
+      for (const e of exact) expect(results).toContain(e.id)
+    }
+  })
+
+  it('does not apply typo tolerance to short words (under 5 letters)', () => {
+    // "bak" would be one edit from "back" but is below the typo threshold.
+    for (const e of filterExercises('bak', noFilters)) {
+      expect([...words(e)].some((t) => t.includes('bak'))).toBe(true)
+    }
+  })
+
+  it('ranks exact-word matches ahead of substring and typo matches', () => {
+    const results = filterExercises('press', noFilters)
+    const hasExact = (e: { name: string; aliases: string[] }) => words(e).has('press')
+    const firstWeak = results.findIndex((e) => !hasExact(e))
+    expect(results.some(hasExact)).toBe(true)
+    expect(firstWeak).toBeGreaterThan(0)
+    expect(results.slice(firstWeak).some(hasExact)).toBe(false)
+  })
+
+  it('"bench press" ranks entries with both exact words first', () => {
+    const results = filterExercises('bench press', noFilters)
+    const both = (e: { name: string; aliases: string[] }) => {
+      const w = words(e)
+      return w.has('bench') && w.has('press')
+    }
+    const lastBoth = results.map(both).lastIndexOf(true)
+    expect(lastBoth).toBeGreaterThanOrEqual(0)
+    expect(results.slice(0, lastBoth + 1).every(both)).toBe(true)
+  })
+
+  it('a nonsense query returns nothing', () => {
+    expect(filterExercises('zzzzqq', noFilters)).toEqual([])
+  })
+
+  it('search stays AND-combined with facet filters', () => {
+    const results = filterExercises('curl', { ...noFilters, muscle: 'biceps' })
+    expect(results.length).toBeGreaterThan(0)
+    expect(results.every((e) => e.primaryMuscles.includes('biceps'))).toBe(true)
+  })
+})
+
 describe('perf (LIB-2 bound)', () => {
   it('filterExercises averages under 100ms per call over 100 calls', () => {
     const start = performance.now()
     for (let i = 0; i < 100; i++) {
       filterExercises('curl', { muscle: 'biceps', category: null, equipment: null })
+      filterExercises('dumbell pres incline', noFilters)
     }
     const elapsed = performance.now() - start
     expect(elapsed / 100).toBeLessThan(100)

@@ -60,11 +60,13 @@ describe('filterExercises - search', () => {
   it('matches mid-word substrings', () => {
     const results = filterExercises('arbell', noFilters)
     expect(results.length).toBeGreaterThan(0)
-    // Matches can come from the canonical name or any alias (e.g. "Bulgarian
-    // Split Squat" via its "One Leg Barbell Squat" alias) - the contract is
-    // name-or-aliases, not name-only.
+    // Every result carries the fragment in some word (or the space-free form)
+    // of its name or an alias - the substring tier. This also pins that the
+    // typo tier adds no result lacking the fragment for this query.
     expect(
-      results.every((e) => [e.name, ...e.aliases].some((n) => normalize(n).includes('arbell'))),
+      results.every((e) =>
+        [e.name, ...e.aliases].some((n) => normalize(n).replace(/ /g, '').includes('arbell')),
+      ),
     ).toBe(true)
   })
 
@@ -83,9 +85,9 @@ describe('filterExercises - search', () => {
     const squished = filterExercises('widegrip cable row', noFilters)
     expect(hyphenated.some((e) => e.name === 'Wide Grip Cable Row')).toBe(true)
     expect(spaced.some((e) => e.name === 'Wide Grip Cable Row')).toBe(true)
-    // "widegrip" (no separator) is not a substring match by design - only
-    // hyphen/slash/space variants normalize to the same token.
-    expect(squished.some((e) => e.name === 'Wide Grip Cable Row')).toBe(false)
+    // "widegrip" (no separator) matches through the substring tier against
+    // the space-free form of the name ("widegripcablerow").
+    expect(squished.some((e) => e.name === 'Wide Grip Cable Row')).toBe(true)
   })
 
   it('matches against aliases, not just the canonical name', () => {
@@ -129,14 +131,14 @@ describe('filterExercises - facets', () => {
   })
 
   it('combines search with facet filters', () => {
-    const expected = getAllExercises().filter(
-      (e) => normalize(e.name).includes('press') && e.equipment === 'barbell',
-    )
+    const searchOnly = filterExercises('press', noFilters)
     const results = filterExercises('press', { ...noFilters, equipment: 'barbell' })
-    expect(results.length).toBe(expected.length)
-    expect(
-      results.every((e) => normalize(e.name).includes('press') && e.equipment === 'barbell'),
-    ).toBe(true)
+    // The facet narrows the search result set without changing which
+    // exercises match the query, nor their relative ranking.
+    const expectedIds = searchOnly.filter((e) => e.equipment === 'barbell').map((e) => e.id)
+    expect(results.length).toBeGreaterThan(0)
+    expect(results.map((e) => e.id)).toEqual(expectedIds)
+    expect(results.every((e) => e.equipment === 'barbell')).toBe(true)
   })
 
   it('preserves dataset order', () => {

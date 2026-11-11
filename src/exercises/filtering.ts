@@ -87,12 +87,68 @@ function getSearchIndex(): IndexedExercise[] {
   return searchIndex
 }
 
+/** Optimal-string-alignment distance (insert, delete, substitute, adjacent
+ * swap). Returns 2 as soon as the distance is known to exceed 1, since the
+ * caller only distinguishes "at most 1" from "more". */
+function editDistanceWithinOne(a: string, b: string): number {
+  if (Math.abs(a.length - b.length) > 1) return 2
+  const rows: number[][] = []
+  for (let i = 0; i <= a.length; i++) {
+    rows.push(new Array<number>(b.length + 1).fill(0))
+    rows[i][0] = i
+  }
+  for (let j = 0; j <= b.length; j++) rows[0][j] = j
+  for (let i = 1; i <= a.length; i++) {
+    let rowMin = Infinity
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1
+      let d = Math.min(rows[i - 1][j] + 1, rows[i][j - 1] + 1, rows[i - 1][j - 1] + cost)
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        d = Math.min(d, rows[i - 2][j - 2] + 1)
+      }
+      rows[i][j] = d
+      if (d < rowMin) rowMin = d
+    }
+    if (rowMin > 1) return 2
+  }
+  return rows[a.length][b.length]
+}
+
+/** One-typo tolerance for a query word `q` against a name word `t`.
+ * Edit rule: 5+ letters, same first letter, at most one edit against a
+ * prefix of `t` (so a half-typed word still matches). Plural fold: 4+
+ * letters ending in "s" whose singular is exactly `t`. */
+function isTypoMatch(q: string, t: string): boolean {
+  if (q.length >= 4 && q.endsWith('s') && t === q.slice(0, -1)) return true
+  if (q.length < 5 || q[0] !== t[0]) return false
+  for (const len of [q.length - 1, q.length, q.length + 1]) {
+    const prefix = t.slice(0, Math.min(Math.max(len, 1), t.length))
+    if (editDistanceWithinOne(q, prefix) <= 1) return true
+  }
+  return false
+}
+
+/** Best match tier of one query word against one exercise: 4 exact, 3
+ * prefix, 2 substring (3+ letters, also against the space-free names),
+ * 1 typo, 0 none. Cheaper tiers run first and short-circuit. */
+function scoreToken(q: string, { tokens, joined }: IndexedExercise): number {
+  if (tokens.includes(q)) return 4
+  if (tokens.some((t) => t.startsWith(q))) return 3
+  if (q.length >= 3 && (tokens.some((t) => t.includes(q)) || joined.some((j) => j.includes(q)))) {
+    return 2
+  }
+  if (tokens.some((t) => isTypoMatch(q, t))) return 1
+  return 0
+}
+
 export function filterExercises(query: string, filters: LibraryFilters): Exercise[] {
-  const joinedQuery = normalize(query).replace(/ /g, '')
+  const normalizedQuery = normalize(query)
+  const queryTokens = normalizedQuery ? normalizedQuery.split(' ') : []
 
   return getSearchIndex()
-    .filter(({ exercise, joined }) => {
-      if (joinedQuery && !joined.some((n) => n.includes(joinedQuery))) return false
+    .filter((entry) => {
+      const { exercise } = entry
+      if (!queryTokens.every((q) => scoreToken(q, entry) > 0)) return false
       if (filters.muscle && !exercise.primaryMuscles.includes(filters.muscle as Muscle))
         return false
       if (filters.category && exercise.category !== filters.category) return false

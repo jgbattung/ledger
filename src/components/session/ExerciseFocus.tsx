@@ -4,6 +4,7 @@ import { ArrowLeftRight, Flame, Info, Target } from 'lucide-react'
 import { ExerciseNoteCard } from '@/components/session/ExerciseNoteCard'
 import { SetTable } from '@/components/session/SetTable'
 import { TargetsSheet } from '@/components/session/TargetsSheet'
+import { exercisePath } from '@/exercises/detail'
 import { exerciseName } from '@/programs/model'
 import { repPlaceholder } from '@/workouts/model'
 import { cn } from '@/lib/utils'
@@ -92,10 +93,10 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
         </button>
         <button
           type="button"
-          disabled
+          onClick={() => navigate(exercisePath(exercise.exerciseRef))}
           className={CHIP}
         >
-          <span className={cn(PILL, 'border-dashed border-muted-foreground text-muted-foreground')}>
+          <span className={cn(PILL, 'border-border')}>
             <Info className="size-4" aria-hidden="true" />
             Info
           </span>

@@ -41,6 +41,7 @@ export function renderEditor(path: string) {
       { path: '/programs/new/exercises', element: <ExercisePickerPage /> },
       { path: '/programs/:programId', element: <ProgramEditorPage /> },
       { path: '/programs/:programId/exercises', element: <ExercisePickerPage /> },
+      { path: '/exercises/:source/:exerciseId', element: <p>Exercise page</p> },
     ],
     { initialEntries: [path] },
   )

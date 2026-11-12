@@ -45,11 +45,13 @@ export function ProgramEditorPage() {
   const [configNotice, setConfigNotice] = useState(false)
 
   // Leaving the editor with unsaved edits asks first. Navigating to the picker
-  // (a child of the editor path) is never blocked. Leaving clean also drops the
+  // (a child of the editor path) or to an exercise's info page (LG-006, Back
+  // returns here) is never blocked. Leaving clean also drops the
   // draft so the next visit starts fresh.
   const basePath = programId ? `/programs/${programId}` : '/programs/new'
   const blocker = useBlocker(({ nextLocation }) => {
-    const inside = nextLocation.pathname.startsWith(basePath)
+    const inside =
+      nextLocation.pathname.startsWith(basePath) || nextLocation.pathname.startsWith('/exercises/')
     const dirtyNow = selectIsDirty(store())
     if (!inside && !dirtyNow) store().reset()
     return dirtyNow && !inside

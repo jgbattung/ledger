@@ -22,6 +22,7 @@ function renderSession() {
       { path: '/day', element: <p>Day page</p> },
       { path: '/session', element: <SessionPage /> },
       { path: '/session/swap/:workoutExerciseId', element: <p>Swap picker</p> },
+      { path: '/exercises/:source/:exerciseId', element: <p>Exercise page</p> },
     ],
     { initialEntries: ['/day', '/session'], initialIndex: 1 },
   )
@@ -78,7 +79,7 @@ describe('SessionPage', () => {
     expect(screen.getByText('Set 1 of 3 · 8–12 reps · RIR 0')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Swap' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Warm Up' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Info' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Info' })).toBeEnabled()
     const table = screen.getByRole('table', { name: 'Sets' })
     expect(within(table).getAllByRole('row')).toHaveLength(4)
     // Blank cells: target range placeholder for reps, an en dash for weight.
@@ -289,6 +290,17 @@ describe('SessionPage', () => {
     await user.type(await screen.findByRole('textbox', { name: 'Workout note' }), 'Great')
     await act(() => store().flushNotes())
     expect((await db.workouts.toArray())[0].notes).toBe('Great')
+  })
+
+  it('the Info chip opens the exercise page and Back returns to the session', async () => {
+    await startPush()
+    const user = userEvent.setup()
+    const router = renderSession()
+    await user.click(await screen.findByRole('button', { name: 'Info' }))
+    expect(await screen.findByText('Exercise page')).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/exercises/db/barbell-bench-press')
+    await act(() => router.navigate(-1))
+    expect(await screen.findByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeInTheDocument()
   })
 
   it('the Swap chip explains why when a set is checked', async () => {

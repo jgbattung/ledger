@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
 import { SettingsProvider } from '@/settings/SettingsProvider'
 import type { DraftExercise } from '@/programs/model'
@@ -16,16 +17,18 @@ async function setup(exercise: DraftExercise = blank, notice?: string) {
   const onSave = vi.fn()
   const onOpenChange = vi.fn()
   render(
-    <SettingsProvider>
-      <ExerciseConfigSheet
-        open
-        onOpenChange={onOpenChange}
-        exercise={exercise}
-        dayName="Push"
-        notice={notice}
-        onSave={onSave}
-      />
-    </SettingsProvider>,
+    <MemoryRouter>
+      <SettingsProvider>
+        <ExerciseConfigSheet
+          open
+          onOpenChange={onOpenChange}
+          exercise={exercise}
+          dayName="Push"
+          notice={notice}
+          onSave={onSave}
+        />
+      </SettingsProvider>
+    </MemoryRouter>,
   )
   const dialog = await screen.findByRole('dialog')
   // Placeholders come from Settings, which hydrates asynchronously.
@@ -40,6 +43,14 @@ const save = (user: ReturnType<typeof userEvent.setup>) =>
 describe('ExerciseConfigSheet', () => {
   beforeEach(async () => {
     await resetDb()
+  })
+
+  it('has an Exercise info link to the exercise page', async () => {
+    await setup()
+    expect(screen.getByRole('link', { name: 'Exercise info' })).toHaveAttribute(
+      'href',
+      '/exercises/db/barbell-bench-press',
+    )
   })
 
   it('shows the exercise and day names, and a blank exercise shows hints but no values', async () => {

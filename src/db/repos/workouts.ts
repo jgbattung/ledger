@@ -20,6 +20,8 @@ export type WorkoutSession = {
   exercises: { exercise: WorkoutExercise; sets: SetRecord[] }[]
 }
 
+export type ExerciseHistoryEntry = { workout: Workout; sets: SetRecord[] }
+
 const byOrder = <T extends { orderIndex: number }>(a: T, b: T) => a.orderIndex - b.orderIndex
 
 export const workouts = {
@@ -162,6 +164,38 @@ export const workouts = {
       }
     }
     return []
+  },
+
+  /**
+   * Every logged set of the exercise, grouped by finished workout, newest
+   * first (LIB-9). Checked sets only, all set types in order; an exercise
+   * that appears twice in one workout has its sets concatenated in exercise
+   * order. Workouts where it logged nothing are skipped.
+   */
+  async historyForExercise(exerciseRef: ExerciseRef): Promise<ExerciseHistoryEntry[]> {
+    const finished = (await db.workouts.where('status').equals('finished').toArray())
+      .filter((row) => row.deletedAt == null)
+      .sort((a, b) => (b.finishedAt ?? 0) - (a.finishedAt ?? 0))
+    const history: ExerciseHistoryEntry[] = []
+    for (const workout of finished) {
+      const matches = (await db.workoutExercises.where('workoutId').equals(workout.id).toArray())
+        .filter(
+          (row) =>
+            row.deletedAt == null &&
+            row.exerciseRef.source === exerciseRef.source &&
+            row.exerciseRef.exerciseId === exerciseRef.exerciseId,
+        )
+        .sort(byOrder)
+      const logged: SetRecord[] = []
+      for (const match of matches) {
+        const rows = (await db.sets.where('workoutExerciseId').equals(match.id).toArray())
+          .filter((set) => set.deletedAt == null && set.completedAt != null)
+          .sort(byOrder)
+        logged.push(...rows)
+      }
+      if (logged.length > 0) history.push({ workout, sets: logged })
+    }
+    return history
   },
 
   /**

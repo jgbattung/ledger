@@ -284,3 +284,102 @@ describe('workouts pause and resume', () => {
     expect(row?.pausedMs).toBeGreaterThanOrEqual(60_000)
   })
 })
+
+describe('workouts.historyForExercise', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  async function finishedWorkout(programId: string, dayId: string, reps: number, finishedAt: number) {
+    const id = await workouts.startFromProgramDay(programId, dayId)
+    await logAll(id, reps)
+    await workouts.finish(id)
+    await workouts.update(id, { finishedAt })
+    return id
+  }
+
+  it('returns finished workouts newest first with checked sets in order', async () => {
+    const { programId, pushId } = await seedProgram()
+    const older = await finishedWorkout(programId, pushId, 5, 1_000)
+    const newer = await finishedWorkout(programId, pushId, 8, 2_000)
+
+    const history = await workouts.historyForExercise(ref('bench'))
+    expect(history.map((entry) => entry.workout.id)).toEqual([newer, older])
+    expect(history[0].sets.map((set) => set.reps)).toEqual([8, 8, 8])
+    expect(history[1].sets.map((set) => set.reps)).toEqual([5, 5, 5])
+    expect(history[0].sets.map((set) => set.orderIndex)).toEqual([0, 1, 2])
+  })
+
+  it('excludes in-progress and discarded workouts', async () => {
+    const { programId, pushId } = await seedProgram()
+    const finished = await finishedWorkout(programId, pushId, 6, 1_000)
+    const discarded = await workouts.startFromProgramDay(programId, pushId)
+    await logAll(discarded, 12)
+    await workouts.discard(discarded)
+    const inProgress = await workouts.startFromProgramDay(programId, pushId)
+    await logAll(inProgress, 20)
+
+    const history = await workouts.historyForExercise(ref('bench'))
+    expect(history.map((entry) => entry.workout.id)).toEqual([finished])
+  })
+
+  it('excludes soft-deleted sets, unchecked sets and soft-deleted workouts', async () => {
+    const { programId, pushId } = await seedProgram()
+    const id = await finishedWorkout(programId, pushId, 8, 2_000)
+    const gone = await finishedWorkout(programId, pushId, 9, 3_000)
+    await workouts.softDelete(gone)
+    const session = await workouts.loadSession(id)
+    await sets.softDelete(session!.exercises[0].sets[0].id)
+
+    const history = await workouts.historyForExercise(ref('bench'))
+    expect(history).toHaveLength(1)
+    expect(history[0].sets).toHaveLength(2)
+  })
+
+  it('matches on source and exerciseId only', async () => {
+    const { programId, pushId } = await seedProgram()
+    await finishedWorkout(programId, pushId, 8, 1_000)
+
+    expect(await workouts.historyForExercise({ source: 'custom', exerciseId: 'bench' })).toEqual([])
+    expect(await workouts.historyForExercise(ref('fly'))).toHaveLength(1)
+  })
+
+  it('concatenates sets when the exercise appears twice in one workout', async () => {
+    const { programId, pushId } = await seedProgram([
+      exercise('bench', { workingSets: 1 }),
+      exercise('fly', { workingSets: 1 }),
+      exercise('bench', { workingSets: 2 }),
+    ])
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const session = await workouts.loadSession(id)
+    let reps = 1
+    for (const { sets: rows } of session!.exercises) {
+      for (const set of rows) {
+        await sets.patch(set.id, { weight: 60, reps: reps++ })
+        await sets.setCompleted(set.id, true)
+      }
+    }
+    await workouts.finish(id)
+
+    const history = await workouts.historyForExercise(ref('bench'))
+    expect(history).toHaveLength(1)
+    expect(history[0].sets.map((set) => set.reps)).toEqual([1, 3, 4])
+  })
+
+  it('skips workouts where the exercise logged nothing', async () => {
+    const { programId, pushId } = await seedProgram()
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const session = await workouts.loadSession(id)
+    const fly = session!.exercises[1].sets[0]
+    await sets.patch(fly.id, { weight: 20, reps: 12 })
+    await sets.setCompleted(fly.id, true)
+    await workouts.finish(id)
+
+    expect(await workouts.historyForExercise(ref('bench'))).toEqual([])
+    expect(await workouts.historyForExercise(ref('fly'))).toHaveLength(1)
+  })
+
+  it('returns an empty array for a never-logged exercise', async () => {
+    expect(await workouts.historyForExercise(ref('squat'))).toEqual([])
+  })
+})

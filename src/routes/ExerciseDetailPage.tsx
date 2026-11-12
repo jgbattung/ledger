@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { CircleSlash, SlidersHorizontal } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
 import { ExerciseActionsSheet } from '@/components/library/ExerciseActionsSheet'
+import { ExerciseHistory } from '@/components/library/ExerciseHistory'
 import { ExerciseFacts } from '@/components/library/ExerciseFacts'
 import { ExerciseMedia } from '@/components/library/ExerciseMedia'
 import { loadExerciseDetail, type ExerciseDetail } from '@/exercises/detail'
@@ -175,7 +176,7 @@ export function ExerciseDetailPage() {
             aria-labelledby={tabId(tab)}
             className="min-h-0 flex-1 overflow-y-auto"
           >
-            {tab === 'info' ? <InfoPanel detail={detail} /> : <p className="px-4 pt-6">History</p>}
+            {tab === 'info' ? <InfoPanel detail={detail} /> : <ExerciseHistory exerciseRef={detail.ref} />}
           </div>
 
           <ExerciseActionsSheet

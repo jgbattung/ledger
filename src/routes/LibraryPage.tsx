@@ -101,7 +101,7 @@ export function LibraryPage() {
             <Link
               key={exercise.id}
               to={exercisePath({ source: 'db', exerciseId: exercise.id })}
-              className="block rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="block outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
             >
               <ExerciseListItem exercise={exercise} />
             </Link>

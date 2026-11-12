@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { seedActiveProgram } from './workout-loop-helpers';
 
 type Exercise = {
   id: string;
@@ -25,9 +27,111 @@ test('LIB-2: typing "curl" filters the visible list live', async ({ page }) => {
 
   await page.getByLabel('Search exercises').fill('curl');
 
-  const curlMatches = exercises.filter((e) => e.name.toLowerCase().includes('curl'));
+  // Search matches names and aliases, so derive the expectation the same way.
+  const curlMatches = exercises.filter((e) =>
+    [e.name, ...e.aliases].some((n) =>
+      n
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '')
+        .includes('curl'),
+    ),
+  );
   await expect(page.getByText(`${curlMatches.length} exercises`)).toBeVisible();
   await expect(page.getByText(curlMatches[0].name, { exact: true })).toBeVisible();
+});
+
+test('LG-048: word order does not matter in search', async ({ page }) => {
+  await page.goto('/more/library');
+
+  await page.getByLabel('Search exercises').fill('bench close grip incline');
+
+  await expect(page.getByText('Incline Close Grip Bench Press', { exact: true })).toBeVisible();
+});
+
+test('LG-048: a one-letter typo still finds dumbbell presses', async ({ page }) => {
+  await page.goto('/more/library');
+
+  await page.getByLabel('Search exercises').fill('dumbell press');
+
+  await expect(page.getByText('Dumbbell Bench Press', { exact: true })).toBeVisible();
+});
+
+/** Clears the search field back to the full list, types a query, waits for the
+ * count line to leave the unfiltered total and returns the result names in
+ * display order. Clearing first means a stale count from the previous query
+ * can never be read as this query's result. */
+async function searchResultNames(page: Page, rows: Locator, query: string) {
+  const field = page.getByLabel('Search exercises');
+  const count = page.getByText(/^\d+ exercises?$/);
+  await field.fill('');
+  await expect(count).toHaveText(`${exercises.length} exercises`);
+  await field.fill(query);
+  await expect(count).not.toHaveText(`${exercises.length} exercises`);
+  const total = Number((await count.textContent())!.split(' ')[0]);
+  await expect(rows).toHaveCount(total);
+  return rows.locator('p.text-base').allTextContents();
+}
+
+const libraryRows = (page: Page) => page.locator('div.divide-y > div');
+const pickerRows = (page: Page) => page.locator('ul.divide-y > li');
+
+/** One query in canonical order, one reordered with a typo: both must give the
+ * same ranked list on every surface (AC1 + AC5 + AC7). */
+const CROSS_SURFACE_QUERIES = ['cable row', 'press dumbell'];
+
+async function libraryResults(page: Page) {
+  await page.goto('/more/library');
+  const results: string[][] = [];
+  for (const q of CROSS_SURFACE_QUERIES) {
+    results.push(await searchResultNames(page, libraryRows(page), q));
+  }
+  expect(results.every((r) => r.length > 0)).toBe(true);
+  return results;
+}
+
+test('LG-048 AC7: the program picker returns the same ranked results as the Library', async ({
+  page,
+}) => {
+  const expected = await libraryResults(page);
+
+  await page.goto('/workout');
+  await page.getByRole('link', { name: 'Create your first program' }).click();
+  await page.getByLabel('Program name').fill('Search parity');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('link', { name: 'Add exercises' }).click();
+  await expect(page.getByRole('heading', { name: /^Add to / })).toBeVisible();
+
+  for (const [i, q] of CROSS_SURFACE_QUERIES.entries()) {
+    expect(await searchResultNames(page, pickerRows(page), q), q).toEqual(expected[i]);
+  }
+});
+
+test('LG-048 AC7: the swap picker returns the same ranked results as the Library', async ({
+  page,
+}) => {
+  const expected = await libraryResults(page);
+
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await page.getByRole('button', { name: 'Swap' }).click();
+  await expect(page).toHaveURL(/\/session\/swap\//);
+
+  for (const [i, q] of CROSS_SURFACE_QUERIES.entries()) {
+    expect(await searchResultNames(page, pickerRows(page), q), q).toEqual(expected[i]);
+  }
+});
+
+test('LG-048: a query that matches nothing shows the empty state, and clearing it restores the list', async ({
+  page,
+}) => {
+  await page.goto('/more/library');
+
+  await page.getByLabel('Search exercises').fill('zzzzqq');
+  await expect(page.getByText('0 exercises')).toBeVisible();
+
+  await page.getByLabel('Search exercises').fill('');
+  await expect(page.getByText(`${exercises.length} exercises`)).toBeVisible();
 });
 
 test('LIB-3: Muscle=Chest + Equipment=Barbell combine with AND', async ({ page }) => {

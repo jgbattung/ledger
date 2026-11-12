@@ -26,7 +26,10 @@ export function LibraryPage() {
     equipment: filterOptions.equipment,
   }
 
-  const query = searchParams.get('q') ?? ''
+  // The query lives in local state so the input stays synchronous (router state
+  // commits asynchronously and would drop characters and move the caret). The URL
+  // is a write-only mirror: read once on mount, never synced back into the input.
+  const [query, setQuery] = useState(() => searchParams.get('q') ?? '')
   const filters = useMemo<LibraryFilters>(() => {
     // Unknown values in a hand-edited URL are ignored.
     const read = (name: Facet, options: string[]) => {
@@ -60,7 +63,10 @@ export function LibraryPage() {
     [deferredQuery, filters],
   )
 
-  const reset = () => update({ q: null, muscle: null, category: null, equipment: null })
+  const reset = () => {
+    setQuery('')
+    update({ q: null, muscle: null, category: null, equipment: null })
+  }
 
   return (
     <div ref={root}>
@@ -68,7 +74,10 @@ export function LibraryPage() {
         <BackLink to="/more" label="Back to More" />
         <h1 className="text-2xl font-semibold">Library</h1>
         <div className="mt-3 flex flex-col gap-2">
-          <ExerciseSearchField value={query} onChange={(value) => update({ q: value })} />
+          <ExerciseSearchField value={query} onChange={(value) => {
+              setQuery(value)
+              update({ q: value })
+            }} />
           <FilterChipRow
             filters={filters}
             onOpenFacet={setOpenFacet}

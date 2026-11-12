@@ -425,6 +425,36 @@ describe('filterExercises - token search edge cases (LG-048 QA)', () => {
     for (const id of flys) expect(ids('flyes')).toContain(id)
   })
 
+  it('plural fold sweep: every catalog plural and its singular find each other', () => {
+    const vocab = new Set(all.flatMap((e) => [...words(e)]))
+    const ownersOf = (w: string) => all.filter((e) => words(e).has(w)).map((e) => e.id)
+    let pairs = 0
+    for (const plural of vocab) {
+      if (plural.length < 4) continue
+      for (const suffix of ['s', 'es']) {
+        if (!plural.endsWith(suffix)) continue
+        const singular = plural.slice(0, -suffix.length)
+        if (singular.length < 3 || !vocab.has(singular)) continue
+        pairs++
+        const fromPlural = ids(plural)
+        for (const id of ownersOf(singular)) expect(fromPlural, `${plural} -> ${singular}`).toContain(id)
+        const fromSingular = ids(singular)
+        for (const id of ownersOf(plural)) expect(fromSingular, `${singular} -> ${plural}`).toContain(id)
+      }
+    }
+    expect(pairs).toBeGreaterThan(0)
+  })
+
+  it('a plural-fold match stays in the typo tier, below exact matches', () => {
+    // "presses" is an exact word for some entries and a folded match for
+    // every "press" entry: the exact owners must lead the list.
+    const results = filterExercises('presses', noFilters)
+    const exactCount = results.filter((e) => words(e).has('presses')).length
+    expect(exactCount).toBeGreaterThan(0)
+    expect(exactCount).toBeLessThan(results.length)
+    expect(results.slice(0, exactCount).every((e) => words(e).has('presses'))).toBe(true)
+  })
+
   it('a 3-letter query ending in "s" gets no plural fold', () => {
     expect([...ids('abs')].sort()).toEqual(cheapIds('abs').sort())
   })

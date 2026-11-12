@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { getAllExercises } from './catalog'
 import { getFilterOptions, filterExercises, formatFilterValue, normalize } from './filtering'
 import type { LibraryFilters } from './filtering'
+import type { Muscle } from './types'
 
 const noFilters: LibraryFilters = { muscle: null, category: null, equipment: null }
 const datasetSize = getAllExercises().length
@@ -281,12 +282,213 @@ describe('filterExercises - token search (LG-048)', () => {
   })
 })
 
+describe('filterExercises - token search edge cases (LG-048 QA)', () => {
+  const all = getAllExercises()
+  const ids = (query: string, filters: LibraryFilters = noFilters) =>
+    filterExercises(query, filters).map((e) => e.id)
+  const names = (e: { name: string; aliases: string[] }) => [e.name, ...e.aliases].map(normalize)
+  const words = (e: { name: string; aliases: string[] }) =>
+    new Set(names(e).flatMap((n) => n.split(' ')))
+  /** Catalog-order ids of exercises that a word reaches without the typo tier. */
+  const cheapIds = (q: string) =>
+    all
+      .filter(
+        (e) =>
+          [...words(e)].some((t) => t.startsWith(q) || (q.length >= 3 && t.includes(q))) ||
+          (q.length >= 3 && names(e).some((n) => n.replace(/ /g, '').includes(q))),
+      )
+      .map((e) => e.id)
+
+  it('AC1 sweep: every multi-word name typed in reverse word order still finds its exercise', () => {
+    for (const e of all) {
+      const nameWords = normalize(e.name).split(' ')
+      if (nameWords.length < 2) continue
+      expect(ids([...nameWords].reverse().join(' ')), e.name).toContain(e.id)
+    }
+  })
+
+  it('AC1: order independence also holds for prefix and typo words', () => {
+    for (const [a, b] of [
+      ['dumbell press', 'press dumbell'],
+      ['lat pull', 'pull lat'],
+      ['sqaut barbell', 'barbell sqaut'],
+    ]) {
+      expect(ids(a)).toEqual(ids(b))
+      expect(ids(a).length).toBeGreaterThan(0)
+    }
+  })
+
+  it('AC2 sweep: every name is found by its hyphenated, spaced and joined spellings', () => {
+    for (const e of all) {
+      const nameWords = normalize(e.name).split(' ')
+      for (const q of [nameWords.join('-'), nameWords.join(' '), nameWords.join('')]) {
+        expect(ids(q), `${e.name} via "${q}"`).toContain(e.id)
+      }
+    }
+  })
+
+  it('punctuation around and between words is ignored', () => {
+    expect(ids('row,')).toEqual(ids('row'))
+    expect(ids('  ROW  ')).toEqual(ids('row'))
+    expect(ids('(row)')).toEqual(ids('row'))
+    expect(ids('cable / row')).toEqual(ids('cable row'))
+  })
+
+  it('a punctuation-only query behaves like an empty query (full catalog, catalog order)', () => {
+    const catalogOrder = all.map((e) => e.id)
+    for (const q of ['!!!', '--', '()', ' / ', '.,;']) {
+      expect(ids(q), q).toEqual(catalogOrder)
+    }
+  })
+
+  it('a single letter is a prefix match on any word, never a mid-word match', () => {
+    const results = ids('b')
+    expect(results.length).toBeGreaterThan(0)
+    expect(results.length).toBeLessThan(all.length)
+    expect([...results].sort()).toEqual(
+      all.filter((e) => [...words(e)].some((t) => t.startsWith('b'))).map((e) => e.id).sort(),
+    )
+  })
+
+  it('a numeric query matches only words that start with those digits', () => {
+    for (const q of ['3', '45', '3/4']) {
+      const qWords = normalize(q).split(' ')
+      const expected = all
+        .filter((e) => qWords.every((w) => [...words(e)].some((t) => t.startsWith(w))))
+        .map((e) => e.id)
+      expect([...ids(q)].sort(), q).toEqual(expected.sort())
+    }
+  })
+
+  it('substring threshold: 3 letters match mid-word, 2 letters do not', () => {
+    const umb = filterExercises('umb', noFilters)
+    expect(umb.length).toBeGreaterThan(0)
+    expect(umb.every((e) => names(e).some((n) => n.replace(/ /g, '').includes('umb')))).toBe(true)
+    expect(umb.some((e) => words(e).has('dumbbell'))).toBe(true)
+    // "mb" sits inside "dumbbell" but is below the substring threshold, so
+    // only words that start with "mb" could match.
+    expect([...ids('mb')].sort()).toEqual(
+      all.filter((e) => [...words(e)].some((t) => t.startsWith('mb'))).map((e) => e.id).sort(),
+    )
+  })
+
+  it('typo threshold: one edit is tolerated at 5 letters but not at 4', () => {
+    // 5 letters: adjacent swap of "squat", and a swap inside "bench".
+    const sqaut = ids('sqaut')
+    for (const e of all.filter((x) => words(x).has('squat'))) expect(sqaut).toContain(e.id)
+    expect(filterExercises('benhc', noFilters).some((e) => words(e).has('bench'))).toBe(true)
+    // 4 letters: one edit away from "squat"/"bench"/"curl", but below the typo
+    // threshold, so only the cheaper tiers can contribute.
+    for (const q of ['sqat', 'benh', 'cutl']) {
+      expect([...ids(q)].sort(), q).toEqual(cheapIds(q).sort())
+    }
+  })
+
+  it('first-letter rule: a typo in the first letter is never tolerated', () => {
+    // Each is one edit from a real word ("squat", "dumbbell", "press") but
+    // changes or moves the first letter.
+    for (const q of ['qsuat', 'xquat', 'bumbbell', 'rpess']) {
+      expect([...ids(q)].sort(), q).toEqual(cheapIds(q).sort())
+    }
+  })
+
+  it('plural fold applies at 4 letters ("rdls" -> "rdl", "dips" -> "dip")', () => {
+    expect(filterExercises('rdls', noFilters).some((e) => e.name === 'Romanian Deadlift')).toBe(
+      true,
+    )
+    const dips = ids('dips')
+    const dipOwners = all.filter((e) => words(e).has('dip'))
+    expect(dipOwners.length).toBeGreaterThan(0)
+    for (const e of dipOwners) expect(dips).toContain(e.id)
+  })
+
+  it('a repeated word gives the same result as the word once', () => {
+    expect(ids('press press')).toEqual(ids('press'))
+    expect(ids('cable cable row')).toEqual(ids('cable row'))
+  })
+
+  it('ranking ties keep catalog order', () => {
+    const catalogIndex = new Map(all.map((e, i) => [e.id, i]))
+    // Every exact "press" match scores the same, so that leading block must
+    // be in catalog order.
+    const press = filterExercises('press', noFilters)
+    const exactBlock = press.filter((e) => words(e).has('press')).map((e) => e.id)
+    expect(press.slice(0, exactBlock.length).map((e) => e.id)).toEqual(exactBlock)
+    expect(exactBlock).toEqual(
+      [...exactBlock].sort((a, b) => catalogIndex.get(a)! - catalogIndex.get(b)!),
+    )
+    // "sqaut" reaches every result through the typo tier only: one tie.
+    const sqaut = ids('sqaut')
+    expect(sqaut).toEqual([...sqaut].sort((a, b) => catalogIndex.get(a)! - catalogIndex.get(b)!))
+  })
+
+  it('results are deterministic across repeated and interleaved calls', () => {
+    const first = ids('dumbell press')
+    ids('cable row')
+    ids('')
+    ids('b')
+    expect(ids('dumbell press')).toEqual(first)
+    expect(filterExercises('', noFilters).map((e) => e.id)).toEqual(all.map((e) => e.id))
+  })
+
+  it('search combined with each facet narrows the search result without reordering it', () => {
+    const options = getFilterOptions()
+    const facetCases: { filters: LibraryFilters; keep: (e: (typeof all)[number]) => boolean }[] = [
+      {
+        filters: { ...noFilters, muscle: options.muscles[0] },
+        keep: (e) => e.primaryMuscles.includes(options.muscles[0] as Muscle),
+      },
+      {
+        filters: { ...noFilters, category: options.categories[0] },
+        keep: (e) => e.category === options.categories[0],
+      },
+      {
+        filters: { ...noFilters, equipment: 'dumbbell' },
+        keep: (e) => e.equipment === 'dumbbell',
+      },
+      {
+        filters: { muscle: 'chest', category: options.categories[0], equipment: 'barbell' },
+        keep: (e) =>
+          e.primaryMuscles.includes('chest') &&
+          e.category === options.categories[0] &&
+          e.equipment === 'barbell',
+      },
+    ]
+    for (const q of ['press', 'dumbell press', 'row cable', 'sqaut']) {
+      const unfiltered = filterExercises(q, noFilters)
+      for (const { filters, keep } of facetCases) {
+        expect(ids(q, filters), `${q} + ${JSON.stringify(filters)}`).toEqual(
+          unfiltered.filter(keep).map((e) => e.id),
+        )
+      }
+    }
+  })
+
+  it('a facet that excludes every search match returns nothing', () => {
+    // Squat variations never list biceps as a primary muscle.
+    expect(ids('sqaut', { ...noFilters, muscle: 'biceps' })).toEqual([])
+    expect(ids('zzzzqq', { ...noFilters, equipment: 'dumbbell' })).toEqual([])
+  })
+})
+
 describe('perf (LIB-2 bound)', () => {
   it('filterExercises averages under 100ms per call over 100 calls', () => {
     const start = performance.now()
     for (let i = 0; i < 100; i++) {
       filterExercises('curl', { muscle: 'biceps', category: null, equipment: null })
       filterExercises('dumbell pres incline', noFilters)
+    }
+    const elapsed = performance.now() - start
+    expect(elapsed / 100).toBeLessThan(100)
+  })
+
+  it('a query that falls through to the typo tier on every word stays under the bound', () => {
+    // "pqqqqq" misses exact/prefix/substring everywhere, so the typo tier runs
+    // against every word of every exercise: the slowest path per query word.
+    const start = performance.now()
+    for (let i = 0; i < 100; i++) {
+      filterExercises('pqqqqq', noFilters)
+      filterExercises('sqaut barbel benhc', noFilters)
     }
     const elapsed = performance.now() - start
     expect(elapsed / 100).toBeLessThan(100)

@@ -27,7 +27,15 @@ test('LIB-2: typing "curl" filters the visible list live', async ({ page }) => {
 
   await page.getByLabel('Search exercises').fill('curl');
 
-  const curlMatches = exercises.filter((e) => e.name.toLowerCase().includes('curl'));
+  // Search matches names and aliases, so derive the expectation the same way.
+  const curlMatches = exercises.filter((e) =>
+    [e.name, ...e.aliases].some((n) =>
+      n
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '')
+        .includes('curl'),
+    ),
+  );
   await expect(page.getByText(`${curlMatches.length} exercises`)).toBeVisible();
   await expect(page.getByText(curlMatches[0].name, { exact: true })).toBeVisible();
 });

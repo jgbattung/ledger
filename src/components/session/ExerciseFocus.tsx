@@ -13,9 +13,9 @@ import type { SessionExercise } from '@/stores/sessionStore'
 
 // The button is a 44px tap target; the visible 36px pill is its inner span (design-system 10: 44px minimum).
 const CHIP =
-  'group flex h-touch-min shrink-0 items-center rounded-full text-sm font-medium outline-none'
+  'group flex h-touch-min shrink-0 items-center rounded-full text-[13px] font-medium outline-none'
 const PILL =
-  'flex h-9 items-center gap-1.5 rounded-full border px-3 group-focus-visible:ring-[3px] group-focus-visible:ring-ring/50'
+  'flex h-9 items-center gap-1 rounded-full border px-2.5 group-focus-visible:ring-[3px] group-focus-visible:ring-ring/50'
 
 /** "Set 2 of 3 · 8–10 reps · RIR 1" from the snapshot; "All sets done" once every set is checked. */
 function subtitle({ exercise, sets }: SessionExercise): string {
@@ -56,7 +56,7 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
         <p className="mt-0.5 text-sm text-muted-foreground tabular-nums">{subtitle(entry)}</p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto px-4 pt-1 pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-1.5 overflow-x-auto px-4 pt-1 pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
           aria-disabled={!canSwap}

@@ -98,6 +98,19 @@ describe('ExerciseDetailPage', () => {
     expect(screen.getByRole('tab', { name: 'History' })).toHaveAttribute('aria-selected', 'true')
   })
 
+  it('only the selected tab points aria-controls at a rendered panel', async () => {
+    renderPage('/exercises/db/barbell-deadlift')
+    const info = await screen.findByRole('tab', { name: 'Info' })
+    const history = screen.getByRole('tab', { name: 'History' })
+    expect(info).toHaveAttribute('aria-controls', screen.getByRole('tabpanel').id)
+    expect(history).not.toHaveAttribute('aria-controls')
+  })
+
+  it('shows Exercise not found for an unknown source', async () => {
+    renderPage('/exercises/other/x')
+    expect(await screen.findByText('Exercise not found')).toBeInTheDocument()
+  })
+
   it('opens at the History tab from ?tab=history', async () => {
     renderPage('/exercises/db/barbell-deadlift?tab=history')
     expect(await screen.findByRole('tab', { name: 'History' })).toHaveAttribute('aria-selected', 'true')

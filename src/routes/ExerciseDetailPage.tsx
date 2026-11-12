@@ -59,12 +59,14 @@ export function ExerciseDetailPage() {
 
   useEffect(() => {
     let cancelled = false
+    if (source !== 'db' && source !== 'custom') {
+      setDetail(null)
+      return
+    }
     setDetail(undefined)
-    void loadExerciseDetail({ source: source as 'db' | 'custom', exerciseId: exerciseId ?? '' }).then(
-      (loaded) => {
-        if (!cancelled) setDetail(loaded ?? null)
-      },
-    )
+    void loadExerciseDetail({ source, exerciseId: exerciseId ?? '' }).then((loaded) => {
+      if (!cancelled) setDetail(loaded ?? null)
+    })
     return () => {
       cancelled = true
     }
@@ -153,7 +155,7 @@ export function ExerciseDetailPage() {
                   type="button"
                   role="tab"
                   aria-selected={selected}
-                  aria-controls={panelId(id)}
+                  aria-controls={selected ? panelId(id) : undefined}
                   tabIndex={selected ? 0 : -1}
                   onClick={() => select(id)}
                   className={cn(

@@ -10,8 +10,9 @@ import { cn } from '@/lib/utils'
  * this one place so they can't drift apart. */
 const ROW_HEIGHT_PX = 72
 
-/** Static display row for one exercise (LG-005). No link/onClick - LG-006
- * wraps rows in navigation. `content-visibility: auto` keeps the full
+/** Display row for one exercise (LG-005). It carries no navigation itself:
+ * the Library wraps it in a `Link` to the detail page (LG-006); the pickers
+ * wrap it in their own select controls. `content-visibility: auto` keeps the full
  * 873-row list smooth on mobile without a virtualization dependency.
  *
  * `trailing` renders after the text column (e.g. a remove button or a

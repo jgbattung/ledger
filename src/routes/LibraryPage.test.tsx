@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import { getAllExercises } from '@/exercises/catalog'
 import { LibraryPage } from './LibraryPage'
 
@@ -154,5 +154,62 @@ describe('LibraryPage', () => {
     expect(await screen.findByText(`${all.length} exercises`)).toBeInTheDocument()
     expect(screen.getByLabelText('Search exercises')).toHaveValue('')
     expect(screen.getByRole('button', { name: 'Muscle' })).toBeInTheDocument()
+  })
+})
+
+function LocationProbe() {
+  const { pathname, search } = useLocation()
+  return <p data-testid="location">{pathname + search}</p>
+}
+
+function renderAt(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <LibraryPage />
+      <LocationProbe />
+    </MemoryRouter>,
+  )
+}
+
+describe('LibraryPage - detail links and URL state (LG-006)', () => {
+  it('renders each row as a link to its exercise page', () => {
+    renderAt('/more/library')
+    const first = getAllExercises()[0]
+    const link = screen.getByRole('link', { name: new RegExp(first.name) })
+    expect(link).toHaveAttribute('href', `/exercises/db/${first.id}`)
+  })
+
+  it('writes the query to ?q= as you type', async () => {
+    const user = userEvent.setup()
+    renderAt('/more/library')
+    await user.type(screen.getByLabelText('Search exercises'), 'curl')
+    expect(screen.getByTestId('location')).toHaveTextContent('/more/library?q=curl')
+  })
+
+  it('starts with the query and filter from the URL', () => {
+    renderAt('/more/library?q=curl&muscle=biceps')
+    expect(screen.getByLabelText('Search exercises')).toHaveValue('curl')
+    const expected = getAllExercises().filter(
+      (e) =>
+        e.primaryMuscles.includes('biceps') &&
+        e.name.toLowerCase().includes('curl'),
+    )
+    expect(screen.getByRole('button', { name: 'Biceps' })).toBeInTheDocument()
+    expect(expected.length).toBeGreaterThan(0)
+    expect(screen.getByText(expected[0].name)).toBeInTheDocument()
+  })
+
+  it('ignores an unknown filter value in the URL', () => {
+    renderAt('/more/library?muscle=wings')
+    expect(screen.getByText(`${getAllExercises().length} exercises`)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Muscle' })).toBeInTheDocument()
+  })
+
+  it('keeps a picked filter in the URL', async () => {
+    const user = userEvent.setup()
+    renderAt('/more/library')
+    await user.click(screen.getByRole('button', { name: 'Muscle' }))
+    await user.click(await screen.findByRole('button', { name: 'Chest' }))
+    expect(screen.getByTestId('location')).toHaveTextContent('/more/library?muscle=chest')
   })
 })

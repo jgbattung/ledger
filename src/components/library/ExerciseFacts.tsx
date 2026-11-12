@@ -31,7 +31,7 @@ export function ExerciseFacts({
   return (
     <dl className="mx-4">
       {present.map(([label, value]) => (
-        <div key={label} className="flex justify-between gap-4 border-b border-border py-3">
+        <div key={label} className="flex items-baseline justify-between gap-4 border-b border-border py-3">
           <dt className="shrink-0 text-sm text-muted-foreground">{label}</dt>
           <dd className="text-right text-base">{value}</dd>
         </div>

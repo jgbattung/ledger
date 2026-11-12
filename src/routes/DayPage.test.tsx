@@ -13,6 +13,7 @@ function renderDay(path: string) {
     [
       { path: '/workout', element: <p>Workout tab</p> },
       { path: '/session', element: <p>Session</p> },
+      { path: '/exercises/:source/:exerciseId', element: <p>Exercise page</p> },
       { path: '/programs/:programId/days/:dayId', element: <DayPage /> },
     ],
     { initialEntries: [path] },
@@ -50,6 +51,17 @@ describe('DayPage', () => {
     expect(screen.getAllByText('3 × 8–12 · RIR 0')).toHaveLength(2)
     expect(screen.getByRole('button', { name: 'Start workout' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument()
+  })
+
+  it('makes each exercise row a link to its exercise page', async () => {
+    const { programId, pushId } = await seed()
+    const router = renderDay(`/programs/${programId}/days/${pushId}`)
+    const link = await screen.findByRole('link', { name: /Barbell Bench Press/ })
+    expect(link).toHaveAttribute('href', '/exercises/db/barbell-bench-press')
+    expect(screen.getAllByRole('link')).toHaveLength(2)
+    await userEvent.click(link)
+    expect(await screen.findByText('Exercise page')).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/exercises/db/barbell-bench-press')
   })
 
   it('shows the dashed no-targets chip when targets are incomplete', async () => {

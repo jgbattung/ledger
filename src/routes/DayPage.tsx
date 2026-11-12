@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CircleSlash } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
 import { ExerciseThumb } from '@/components/ExerciseThumb'
 import { programs, WorkoutInProgressError } from '@/db/repos'
+import { exercisePath } from '@/exercises/detail'
 import type { ProgramTree } from '@/db/repos'
 import { exerciseName, formatTargets, isRestDay, programTreeToDraft } from '@/programs/model'
 import type { DraftDay } from '@/programs/model'
@@ -96,21 +97,23 @@ export function DayPage() {
               {day.exercises.map((exercise) => {
                 const targets = formatTargets(exercise)
                 return (
-                  <li
-                    key={exercise.id}
-                    className="flex min-h-18 items-center gap-3 border-b border-border px-4 py-3"
-                  >
-                    <ExerciseThumb exerciseRef={exercise.exerciseRef} className="size-12 rounded-lg" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-base leading-snug">{exerciseName(exercise.exerciseRef)}</p>
-                      {targets ? (
-                        <p className="text-sm text-muted-foreground tabular-nums">{targets}</p>
-                      ) : (
-                        <span className="mt-0.5 inline-block rounded-full border border-dashed border-muted-foreground px-2 text-[13px] text-muted-foreground">
-                          No targets · starts with 1 set
-                        </span>
-                      )}
-                    </div>
+                  <li key={exercise.id} className="border-b border-border">
+                    <Link
+                      to={exercisePath(exercise.exerciseRef)}
+                      className="flex min-h-18 w-full items-center gap-3 px-4 py-3 outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
+                    >
+                      <ExerciseThumb exerciseRef={exercise.exerciseRef} className="size-12 rounded-lg" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-base leading-snug">{exerciseName(exercise.exerciseRef)}</p>
+                        {targets ? (
+                          <p className="text-sm text-muted-foreground tabular-nums">{targets}</p>
+                        ) : (
+                          <span className="mt-0.5 inline-block rounded-full border border-dashed border-muted-foreground px-2 text-[13px] text-muted-foreground">
+                            No targets · starts with 1 set
+                          </span>
+                        )}
+                      </div>
+                    </Link>
                   </li>
                 )
               })}

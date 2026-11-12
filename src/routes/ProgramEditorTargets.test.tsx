@@ -241,3 +241,32 @@ describe('ProgramEditorPage - exercise targets', () => {
     expect(firstIncompleteExercise(programTreeToDraft(tree!))).not.toBeNull()
   })
 })
+
+describe('ProgramEditorPage - exercise info link (LG-006)', () => {
+  beforeEach(async () => {
+    await resetDb()
+    useProgramDraftStore.getState().reset()
+  })
+
+  it('opens the exercise page from a dirty draft without the unsaved-changes prompt and keeps the draft', async () => {
+    const user = userEvent.setup()
+    const { router } = await open()
+    await configure(user, 'Barbell Bench Press', '3', '8', '12')
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(true)
+
+    await user.click(screen.getByRole('button', { name: 'Configure Pull-Up' }))
+    const dialog = await screen.findByRole('dialog')
+    const info = within(dialog).getByRole('link', { name: 'Exercise info' })
+    expect(info).toHaveAttribute('href', '/exercises/db/pull-up')
+    await user.click(info)
+
+    expect(await screen.findByText('Exercise page')).toBeInTheDocument()
+    expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument()
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(true)
+
+    await router.navigate(-1)
+    expect(await screen.findByRole('tablist')).toBeInTheDocument()
+    expect(screen.getByText('3 × 8–12 · RIR 0')).toBeInTheDocument()
+    expect(selectIsDirty(useProgramDraftStore.getState())).toBe(true)
+  })
+})

@@ -1,4 +1,6 @@
 import { useId, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
+import { Link } from 'react-router-dom'
+import { Info } from 'lucide-react'
 import { FIELD_CLASS } from '@/components/ui/text-field-sheet'
 import {
   Sheet,
@@ -7,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { exercisePath } from '@/exercises/detail'
 import { formatSeconds } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
@@ -71,13 +74,22 @@ export function ExerciseConfigSheet({
           setsRef.current?.focus()
         }}
       >
-        <SheetHeader>
-          <div className="min-w-0">
+        <SheetHeader className="gap-1">
+          <div className="min-w-0 flex-1">
             <SheetTitle className="truncate text-[15px] font-semibold">
               {exercise ? exerciseName(exercise.exerciseRef) : 'Exercise'}
             </SheetTitle>
             <p className="truncate text-xs text-muted-foreground">{dayName}</p>
           </div>
+          {exercise ? (
+            <Link
+              to={exercisePath(exercise.exerciseRef)}
+              aria-label="Exercise info"
+              className="flex size-11 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
+              <Info className="size-5" aria-hidden="true" />
+            </Link>
+          ) : null}
         </SheetHeader>
         {notice ? (
           <SheetDescription className="shrink-0 px-4 pb-3 text-destructive">

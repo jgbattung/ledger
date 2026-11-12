@@ -19,6 +19,7 @@ import { ExercisePickerPage } from '@/routes/ExercisePickerPage'
 import { DayPage } from '@/routes/DayPage'
 import { SessionPage } from '@/routes/SessionPage'
 import { SwapPickerPage } from '@/routes/SwapPickerPage'
+import { ExerciseDetailPage } from '@/routes/ExerciseDetailPage'
 
 function createAppRouter() {
   return createBrowserRouter(
@@ -46,6 +47,7 @@ function createAppRouter() {
           <Route path="programs/:programId/days/:dayId" element={<DayPage />} />
           <Route path="session" element={<SessionPage />} />
           <Route path="session/swap/:workoutExerciseId" element={<SwapPickerPage />} />
+          <Route path="exercises/:source/:exerciseId" element={<ExerciseDetailPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </>,

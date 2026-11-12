@@ -1,9 +1,8 @@
-import { useRef, useState, type ComponentType, type ReactNode } from 'react'
+import { useRef, useState } from 'react'
 import {
   Archive,
   ArchiveRestore,
   ArrowUpDown,
-  ChevronRight,
   CirclePause,
   Copy,
   NotebookText,
@@ -11,66 +10,13 @@ import {
   Repeat,
   Trash2,
 } from 'lucide-react'
-import { SoonPill } from '@/components/SoonRow'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
+import { SheetRow } from '@/components/ui/sheet-row'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { TextFieldSheet } from '@/components/ui/text-field-sheet'
 import { programs } from '@/db/repos'
-import { cn } from '@/lib/utils'
 import type { ProgramDraft } from '@/programs/model'
 import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
-
-type Icon = ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' }>
-
-/** One 48px drawer row: 14px text, 16px muted leading icon (design-system 8b). */
-function Row({
-  icon: Icon,
-  label,
-  value,
-  onClick,
-  soon,
-  disabled,
-  danger,
-}: {
-  icon: Icon
-  label: string
-  value?: ReactNode
-  onClick?: () => void
-  soon?: boolean
-  /** Temporarily unavailable (an action is in flight): no Soon pill or muted label. */
-  disabled?: boolean
-  danger?: boolean
-}) {
-  return (
-    <button
-      type="button"
-      disabled={soon || disabled}
-      onClick={onClick}
-      className="flex min-h-12 w-full items-center gap-3 border-t border-border px-4 text-left text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
-    >
-      <Icon
-        className={cn('size-4 shrink-0', danger ? 'text-destructive' : 'text-muted-foreground')}
-        aria-hidden="true"
-      />
-      <span
-        className={cn(
-          'min-w-0 flex-1',
-          danger && 'text-destructive',
-          (soon || disabled) && 'text-muted-foreground',
-        )}
-      >
-        {label}
-      </span>
-      {value ? (
-        <span className="max-w-36 truncate text-muted-foreground">{value}</span>
-      ) : null}
-      {onClick && !danger && value !== undefined ? (
-        <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-      ) : null}
-      {soon ? <SoonPill /> : null}
-    </button>
-  )
-}
 
 type Panel = 'name' | 'notes' | 'archive' | 'delete' | null
 
@@ -188,18 +134,18 @@ export function ProgramSettingsSheet({
           <SheetHeader className="py-1.5 pr-1 pl-4">
             <SheetTitle className="text-[15px]">Program settings</SheetTitle>
           </SheetHeader>
-          <Row icon={Pencil} label="Name" value={draft.name} onClick={() => openPanel('name')} />
-          <Row
+          <SheetRow icon={Pencil} label="Name" value={draft.name} onClick={() => openPanel('name')} />
+          <SheetRow
             icon={NotebookText}
             label="Notes"
             value={draft.notes ?? ''}
             onClick={() => openPanel('notes')}
           />
-          <Row icon={Repeat} label={cyclesLabel} soon />
-          <Row icon={ArrowUpDown} label="Day order" soon />
-          <Row icon={Copy} label="Duplicate program" soon />
+          <SheetRow icon={Repeat} label={cyclesLabel} soon />
+          <SheetRow icon={ArrowUpDown} label="Day order" soon />
+          <SheetRow icon={Copy} label="Duplicate program" soon />
           {saved && draft.isActive ? (
-            <Row
+            <SheetRow
               icon={CirclePause}
               label="Deactivate program"
               disabled={pending}
@@ -207,7 +153,7 @@ export function ProgramSettingsSheet({
             />
           ) : null}
           {saved && draft.isArchived ? (
-            <Row
+            <SheetRow
               icon={ArchiveRestore}
               label="Restore program"
               disabled={pending}
@@ -215,7 +161,7 @@ export function ProgramSettingsSheet({
             />
           ) : null}
           {saved && !draft.isArchived ? (
-            <Row
+            <SheetRow
               icon={Archive}
               label="Archive program"
               disabled={pending}
@@ -226,7 +172,7 @@ export function ProgramSettingsSheet({
             />
           ) : null}
           {saved ? (
-            <Row
+            <SheetRow
               icon={Trash2}
               label="Delete program"
               danger

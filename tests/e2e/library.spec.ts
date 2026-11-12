@@ -72,7 +72,7 @@ async function searchResultNames(page: Page, rows: Locator, query: string) {
   return rows.locator('p.text-base').allTextContents();
 }
 
-const libraryRows = (page: Page) => page.locator('div.divide-y > div');
+const libraryRows = (page: Page) => page.locator('div.divide-y > a');
 const pickerRows = (page: Page) => page.locator('ul.divide-y > li');
 
 /** One query in canonical order, one reordered with a typo: both must give the
@@ -223,7 +223,7 @@ test('imageless entry renders the placeholder glyph (not a broken image) in both
   const imageless = exercises.find((e) => e.images.length === 0)!;
   const rowFor = () =>
     page
-      .locator('div.divide-y > div')
+      .locator('div.divide-y > a')
       .filter({ has: page.getByText(imageless.name, { exact: true }) });
 
   // Light theme.

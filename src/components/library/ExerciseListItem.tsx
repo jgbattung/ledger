@@ -5,10 +5,11 @@ import { formatFilterValue } from '@/exercises/filtering'
 import type { Exercise } from '@/exercises/types'
 import { cn } from '@/lib/utils'
 
-/** Fixed row height used for both the layout (`min-h-touch-primary` + this
- * padding) and the `content-visibility` perf hint below - keep the value in
- * this one place so they can't drift apart. */
-const ROW_HEIGHT_PX = 72
+/** Content-box height of a row: the 48px thumbnail. `contain-intrinsic-size`
+ * sizes the content box, so with the `py-2` padding a skipped row is exactly as
+ * tall as a rendered one (64px). A larger value makes the list's height change
+ * as rows scroll in and out, which breaks scroll restoration (LG-006). */
+const ROW_HEIGHT_PX = 48
 
 /** Display row for one exercise (LG-005). It carries no navigation itself:
  * the Library wraps it in a `Link` to the detail page (LG-006); the pickers

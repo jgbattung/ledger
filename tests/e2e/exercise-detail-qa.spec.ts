@@ -179,3 +179,26 @@ test('the program picker and swap picker rows keep their size and carry no info 
   await expect(page.locator('a[href^="/exercises/"]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /info/i })).toHaveCount(0);
 });
+
+test('a ?q= deep link fills the search, and both clear controls empty the field and the URL', async ({
+  page,
+}) => {
+  await page.goto('/more/library?q=curl&equipment=dumbbell');
+  const field = page.getByLabel('Search exercises');
+  await expect(field).toHaveValue('curl');
+  await expect(page.getByText('438 exercises')).toHaveCount(0);
+
+  // The field's own clear button.
+  await page.getByRole('button', { name: 'Clear search' }).click();
+  await expect(field).toHaveValue('');
+  await expect(page).not.toHaveURL(/q=/);
+  await expect(page).toHaveURL(/equipment=dumbbell/);
+
+  // Clear search & filters from the empty state resets the field and every param.
+  await field.pressSequentially('zzzqqq', { delay: 50 });
+  await expect(page.getByText('No exercises match')).toBeVisible();
+  await page.getByRole('button', { name: 'Clear search & filters' }).click();
+  await expect(field).toHaveValue('');
+  await expect(page).toHaveURL(/\/more\/library$/);
+  await expect(page.getByText('438 exercises')).toBeVisible();
+});

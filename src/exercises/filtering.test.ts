@@ -402,6 +402,33 @@ describe('filterExercises - token search edge cases (LG-048 QA)', () => {
     for (const e of dipOwners) expect(dips).toContain(e.id)
   })
 
+  it('plural fold covers "-es" plurals in both directions (shared stem)', () => {
+    const presses = filterExercises('presses', noFilters)
+    expect(presses.length).toBeGreaterThan(1)
+    expect(presses.some((e) => e.name.includes('Bench Press'))).toBe(true)
+    const pressOwners = all.filter((e) => words(e).has('press'))
+    for (const e of pressOwners) expect(presses.map((x) => x.id)).toContain(e.id)
+
+    const benches = filterExercises('benches', noFilters)
+    expect(benches.length).toBeGreaterThan(0)
+    expect(benches.every((e) => words(e).has('bench') || cheapIds('benches').includes(e.id))).toBe(
+      true,
+    )
+
+    // "flys" reaches every entry that has the word "flyes" (shared stem "fly").
+    // It does not reach the singular "flye" (no shared stem), which "flyes"
+    // does, so the sets are not identical.
+    const flys = ids('flys')
+    const flyesOwners = all.filter((e) => words(e).has('flyes'))
+    expect(flyesOwners.length).toBeGreaterThan(0)
+    for (const e of flyesOwners) expect(flys).toContain(e.id)
+    for (const id of flys) expect(ids('flyes')).toContain(id)
+  })
+
+  it('a 3-letter query ending in "s" gets no plural fold', () => {
+    expect([...ids('abs')].sort()).toEqual(cheapIds('abs').sort())
+  })
+
   it('a repeated word gives the same result as the word once', () => {
     expect(ids('press press')).toEqual(ids('press'))
     expect(ids('cable cable row')).toEqual(ids('cable row'))

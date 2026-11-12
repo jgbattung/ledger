@@ -114,12 +114,25 @@ function editDistanceWithinOne(a: string, b: string): number {
   return rows[a.length][b.length]
 }
 
+/** A word's plural-fold stems: itself, minus a trailing "s", and minus a
+ * trailing "es", keeping only stems of 3+ letters ("presses" -> "press",
+ * "flys" and "flyes" both -> "fly"). */
+function stems(word: string): string[] {
+  const result = [word]
+  if (word.endsWith('s')) result.push(word.slice(0, -1))
+  if (word.endsWith('es')) result.push(word.slice(0, -2))
+  return result.filter((stem) => stem.length >= 3)
+}
+
 /** One-typo tolerance for a query word `q` against a name word `t`.
  * Edit rule: 5+ letters, same first letter, at most one edit against a
- * prefix of `t` (so a half-typed word still matches). Plural fold: 4+
- * letters ending in "s" whose singular is exactly `t`. */
+ * prefix of `t` (so a half-typed word still matches). Plural fold: a 4+
+ * letter query and `t` share a stem (see `stems`), in either direction. */
 function isTypoMatch(q: string, t: string): boolean {
-  if (q.length >= 4 && q.endsWith('s') && t === q.slice(0, -1)) return true
+  if (q.length >= 4) {
+    const tStems = stems(t)
+    if (stems(q).some((stem) => tStems.includes(stem))) return true
+  }
   if (q.length < 5 || q[0] !== t[0]) return false
   for (const len of [q.length - 1, q.length, q.length + 1]) {
     const prefix = t.slice(0, Math.min(Math.max(len, 1), t.length))

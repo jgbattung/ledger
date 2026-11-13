@@ -182,6 +182,29 @@ describe('CustomExerciseFormPage', () => {
     expect(await screen.findByText('Exercise page')).toBeInTheDocument()
   })
 
+  it('Edit opened from the exercise page: after Save, one Back leaves the exercise page (decision D)', async () => {
+    const user = userEvent.setup()
+    const row = await seedSsb()
+    const router = createMemoryRouter(
+      [
+        { path: '/start', element: <p>Start page</p> },
+        { path: '/exercises/custom/:id/edit', element: <CustomExerciseFormPage /> },
+        { path: '/exercises/:source/:exerciseId', element: <p>Exercise page</p> },
+      ],
+      {
+        initialEntries: ['/start', `/exercises/custom/${row.id}`, `/exercises/custom/${row.id}/edit`],
+        initialIndex: 2,
+      },
+    )
+    render(<RouterProvider router={router} />)
+    await screen.findByRole('heading', { name: 'Edit exercise' })
+    await user.click(saveButton())
+    await waitFor(() => expect(router.state.location.pathname).toBe(`/exercises/custom/${row.id}`))
+    // The page the user came from, not a second copy of the exercise page.
+    await act(() => router.navigate(-1))
+    expect(router.state.location.pathname).toBe('/start')
+  })
+
   it('Edit of an unknown or deleted id shows Exercise not found', async () => {
     const row = await seedSsb()
     await customExercises.softDelete(row.id)

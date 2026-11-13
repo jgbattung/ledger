@@ -251,4 +251,19 @@ describe('LibraryPage - detail links and URL state (LG-006)', () => {
       expect(screen.queryByRole('link', { name: /SSB Squat/ })).toBeNull()
     })
   })
+
+  it('has a New exercise button that opens the form', () => {
+    renderLibrary()
+    expect(screen.getByRole('link', { name: 'New exercise' })).toHaveAttribute('href', '/exercises/new')
+  })
+
+  it('offers Create "query" in the empty state with the name carried over', async () => {
+    const user = userEvent.setup()
+    renderLibrary()
+    await user.type(screen.getByLabelText('Search exercises'), 'zzqqxx')
+    const create = await screen.findByRole('link', { name: 'Create "zzqqxx"' })
+    expect(create).toHaveAttribute('href', '/exercises/new?name=zzqqxx')
+    expect(screen.getByText('Nothing in the library is called that.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Clear search & filters' })).toBeInTheDocument()
+  })
 })

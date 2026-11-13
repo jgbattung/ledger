@@ -3,6 +3,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { resetDb } from '@/db/test-utils'
 import { useCustomExerciseStore } from '@/stores/customExerciseStore'
+import { useCustomExerciseFormStore } from '@/stores/customExerciseFormStore'
 import { useProgramDraftStore } from '@/stores/programDraftStore'
 import { resetAndHydrateCustomExercises } from '@/test/customExercises'
 import { renderEditor, seedProgram } from './editorTestUtils'
@@ -194,6 +195,40 @@ describe('ExercisePickerPage', () => {
       const existing = await screen.findByRole('button', { name: /^SSB Squat/ })
       expect(existing).toBeDisabled()
       expect(existing).toHaveTextContent('Already in Push')
+    })
+
+    it('has a + that opens the form for this picker and an empty-state Create with the query', async () => {
+      const user = userEvent.setup()
+      await openPickerFor(user, 'ssb squat')
+      expect(screen.getByRole('link', { name: 'New exercise' })).toHaveAttribute(
+        'href',
+        '/exercises/new?pick=program',
+      )
+      const create = await screen.findByRole('link', { name: 'Create "ssb squat"' })
+      expect(create).toHaveAttribute('href', '/exercises/new?pick=program&name=ssb%20squat')
+      expect(screen.getByRole('button', { name: 'Clear search & filters' })).toBeInTheDocument()
+    })
+
+    it('consumes a pending pick into the selection, keeping earlier picks', async () => {
+      const created = await useCustomExerciseStore.getState().create(input)
+      const id = await seedProgram('PPL', [{ name: 'Push', ids: [] }])
+      const user = userEvent.setup()
+      const router = renderEditor(`/programs/${id}`)
+      await screen.findByRole('link', { name: 'Add exercises' })
+      const dayId = useProgramDraftStore.getState().draft!.days[0].id
+      useProgramDraftStore.getState().togglePick({ source: 'db', exerciseId: 'pull-up' })
+      useCustomExerciseFormStore.getState().setPendingPick({ source: 'custom', exerciseId: created.id })
+      await router.navigate(`/programs/${id}/exercises?day=${dayId}`)
+      await screen.findByRole('heading', { name: 'Add to Push' })
+      await user.click(await screen.findByRole('button', { name: 'Add 2 exercises' }))
+      await waitFor(() => expect(router.state.location.pathname).toBe(`/programs/${id}`))
+      expect(
+        useProgramDraftStore.getState().draft!.days[0].exercises.map((e) => e.exerciseRef),
+      ).toEqual([
+        { source: 'db', exerciseId: 'pull-up' },
+        { source: 'custom', exerciseId: created.id },
+      ])
+      expect(useCustomExerciseFormStore.getState().pendingPick).toBeNull()
     })
 
     it('keeps the selection across an unmount and remount, and Back clears it', async () => {

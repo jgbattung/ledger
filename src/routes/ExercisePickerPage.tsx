@@ -1,12 +1,14 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { BackLink } from '@/components/BackLink'
+import { NewExerciseButton } from '@/components/library/NewExerciseButton'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { ExerciseSearchPanel } from '@/components/library/ExerciseSearchPanel'
 import { PickerTray } from '@/components/programs/PickerTray'
 import { filterExercises } from '@/exercises/filtering'
 import { refKey } from '@/exercises/listing'
 import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore'
+import { useCustomExerciseFormStore } from '@/stores/customExerciseFormStore'
 import { useProgramDraftStore } from '@/stores/programDraftStore'
 import { cn } from '@/lib/utils'
 
@@ -35,6 +37,15 @@ export function ExercisePickerPage() {
       ),
     [custom],
   )
+
+  // A custom exercise just created from this picker arrives as a pending pick:
+  // add it to the selection, keeping everything picked before.
+  useEffect(() => {
+    const pending = useCustomExerciseFormStore.getState().consumePendingPick()
+    if (!pending) return
+    const picks = useProgramDraftStore.getState()
+    if (!picks.pickerSelection.some((r) => refKey(r) === refKey(pending))) picks.togglePick(pending)
+  }, [])
 
   const editorPath = programId ? `/programs/${programId}` : '/programs/new'
   const dayId = searchParams.get('day')
@@ -73,9 +84,10 @@ export function ExercisePickerPage() {
           <h1 className="min-w-0 flex-1 truncate text-center text-base font-semibold">
             Add to {day.name}
           </h1>
-          <span aria-hidden="true" className="size-touch-min shrink-0" />
+          <NewExerciseButton to="/exercises/new?pick=program" />
         </header>
       }
+      createHref={(query) => `/exercises/new?pick=program&name=${encodeURIComponent(query)}`}
       renderRow={(exercise) => {
         const key = refKey(exercise.ref)
         const already = inDay.has(key)

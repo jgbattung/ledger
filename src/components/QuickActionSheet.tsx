@@ -10,9 +10,9 @@ import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
  * The FAB's quick-action launcher (`.gsd/user-flows.md` §1). Wraps the existing
  * bottom-sheet primitive - no new dependency, no second sheet pattern.
  *
- * "Start new program" is live since LG-020 and "Start next workout" since
- * LG-022; the other three stay disabled until their destinations exist. The
- * rows ship in final approved order now so a later story enables its own row
+ * "Start new program" is live since LG-020, "Start next workout" since LG-022
+ * and "Create exercise" since LG-007; the other two stay disabled until their
+ * destinations exist. The rows ship in final approved order now so a later story enables its own row
  * in a one-line diff and never re-sorts the menu.
  */
 const QUICK_ACTIONS = [
@@ -75,6 +75,8 @@ export function QuickActionSheet({
                 )
               ) : label === 'Start new program' ? (
                 <MenuLinkRow to="/programs/new" label={label} onClick={close} />
+              ) : label === 'Create exercise' ? (
+                <MenuLinkRow to="/exercises/new" label={label} onClick={close} />
               ) : (
                 <SoonRow label={label} />
               )}

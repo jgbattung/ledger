@@ -8,6 +8,7 @@ import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
 import { SwapPickerPage } from '@/routes/SwapPickerPage'
 import { useCustomExerciseStore } from '@/stores/customExerciseStore'
+import { useCustomExerciseFormStore } from '@/stores/customExerciseFormStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { resetAndHydrateCustomExercises } from '@/test/customExercises'
 
@@ -159,5 +160,27 @@ describe('SwapPickerPage', () => {
     const user = userEvent.setup()
     await search(user, 'ssb squat')
     expect(await screen.findByRole('button', { name: /^SSB Squat/ })).toBeDisabled()
+  })
+
+  it('has a + for this picker and an empty-state Create with the query', async () => {
+    await startAndOpenSwap()
+    const user = userEvent.setup()
+    expect(await screen.findByRole('link', { name: 'New exercise' })).toHaveAttribute(
+      'href',
+      '/exercises/new?pick=swap',
+    )
+    await search(user, 'zzqqxx')
+    expect(await screen.findByRole('link', { name: 'Create "zzqqxx"' })).toHaveAttribute(
+      'href',
+      '/exercises/new?pick=swap&name=zzqqxx',
+    )
+  })
+
+  it('consumes a pending pick and opens the Keep / Reset sheet for it', async () => {
+    const created = await useCustomExerciseStore.getState().create(ssbInput)
+    useCustomExerciseFormStore.getState().setPendingPick({ source: 'custom', exerciseId: created.id })
+    await startAndOpenSwap()
+    expect(await screen.findByRole('dialog', { name: /Swap to SSB Squat/ })).toBeInTheDocument()
+    expect(useCustomExerciseFormStore.getState().pendingPick).toBeNull()
   })
 })

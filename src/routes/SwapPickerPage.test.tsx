@@ -162,6 +162,16 @@ describe('SwapPickerPage', () => {
     expect(await screen.findByRole('button', { name: /^SSB Squat/ })).toBeDisabled()
   })
 
+  it('does not list a deleted custom exercise', async () => {
+    const created = await useCustomExerciseStore.getState().create(ssbInput)
+    await useCustomExerciseStore.getState().remove(created.id)
+    await startAndOpenSwap()
+    const user = userEvent.setup()
+    await search(user, 'ssb squat')
+    expect(await screen.findByRole('link', { name: 'Create "ssb squat"' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^SSB Squat/ })).toBeNull()
+  })
+
   it('has a + for this picker and an empty-state Create with the query', async () => {
     await startAndOpenSwap()
     const user = userEvent.setup()

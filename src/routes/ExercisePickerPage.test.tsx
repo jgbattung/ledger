@@ -178,6 +178,15 @@ describe('ExercisePickerPage', () => {
       })
     })
 
+    it('does not list a deleted custom exercise and offers Create instead', async () => {
+      const created = await useCustomExerciseStore.getState().create(input)
+      await useCustomExerciseStore.getState().remove(created.id)
+      const user = userEvent.setup()
+      await openPickerFor(user, 'ssb squat')
+      expect(await screen.findByRole('link', { name: 'Create "ssb squat"' })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /^SSB Squat/ })).toBeNull()
+    })
+
     it('disables a custom exercise already in the day', async () => {
       const created = await useCustomExerciseStore.getState().create(input)
       const id = await seedProgram('PPL', [{ name: 'Push', ids: [] }])
@@ -220,6 +229,7 @@ describe('ExercisePickerPage', () => {
       useCustomExerciseFormStore.getState().setPendingPick({ source: 'custom', exerciseId: created.id })
       await router.navigate(`/programs/${id}/exercises?day=${dayId}`)
       await screen.findByRole('heading', { name: 'Add to Push' })
+      await narrowTo(user, 'Bench Press')
       await user.click(await screen.findByRole('button', { name: 'Add 2 exercises' }))
       await waitFor(() => expect(router.state.location.pathname).toBe(`/programs/${id}`))
       expect(
@@ -243,6 +253,7 @@ describe('ExercisePickerPage', () => {
       await screen.findByRole('tablist')
       await router.navigate(`/programs/${id}/exercises?day=${dayId}`)
       await screen.findByRole('heading', { name: 'Add to Push' })
+      await narrowTo(user, 'Bench Press')
       expect(await screen.findByRole('button', { name: 'Add 1 exercise' })).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { name: 'Back' }))

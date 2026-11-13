@@ -18,6 +18,7 @@ function renderForm(path: string, { from = '/start' }: { from?: string } = {}) {
       { path: '/start', element: <p>Start page</p> },
       { path: '/picker', element: <p>Picker page</p> },
       { path: '/exercises/new', element: <CustomExerciseFormPage /> },
+      { path: '/exercises/new/muscles', element: <p>Muscle page</p> },
       { path: '/exercises/custom/:id/edit', element: <CustomExerciseFormPage /> },
       { path: '/exercises/:source/:exerciseId', element: <p>Exercise page</p> },
     ],
@@ -82,6 +83,42 @@ describe('CustomExerciseFormPage', () => {
     act(valid)
     await user.click(saveButton())
     expect(await screen.findByText('An exercise with this name already exists.')).toBeInTheDocument()
+  })
+
+  it('a deleted custom exercise frees its name for a new one', async () => {
+    const user = userEvent.setup()
+    const row = await seedSsb()
+    await useCustomExerciseStore.getState().remove(row.id)
+    renderForm('/exercises/new')
+    await user.type(await screen.findByLabelText('Name'), 'SSB Squat')
+    act(valid)
+    await user.click(saveButton())
+    await waitFor(async () => expect(await customExercises.list()).toHaveLength(1))
+    expect(screen.queryByText('An exercise with this name already exists.')).toBeNull()
+  })
+
+  it('trims the name and stores blank notes as undefined', async () => {
+    const user = userEvent.setup()
+    renderForm('/exercises/new')
+    await user.type(await screen.findByLabelText('Name'), '  Zercher Squat  ')
+    await user.type(screen.getByLabelText('Notes (optional)'), '   ')
+    act(valid)
+    await user.click(saveButton())
+    await waitFor(async () => expect(await customExercises.list()).toHaveLength(1))
+    const [created] = await customExercises.list()
+    expect(created.name).toBe('Zercher Squat')
+    expect(created.notes).toBeUndefined()
+  })
+
+  it('a dirty form opens the muscle page without the discard prompt and keeps the draft', async () => {
+    const user = userEvent.setup()
+    const router = renderForm('/exercises/new')
+    await user.type(await screen.findByLabelText('Name'), 'Zerc')
+    await user.click(screen.getByRole('button', { name: /^Primary/ }))
+    expect(await screen.findByText('Muscle page')).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/exercises/new/muscles')
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(form().draft.name).toBe('Zerc')
   })
 
   it('an exercise may keep its own name when edited', async () => {

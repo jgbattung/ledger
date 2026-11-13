@@ -131,6 +131,16 @@ describe('ExerciseConfigSheet', () => {
     expect(onSave).not.toHaveBeenCalled()
   })
 
+  it('marks an invalid field in ink, never destructive red (decision E, design-system 13b)', async () => {
+    const { user, dialog } = await setup()
+    await user.type(field('Rep min'), '10')
+    await user.type(field('Rep max'), '8')
+    await save(user)
+
+    expect(field('Rep min')).toHaveAttribute('aria-invalid', 'true')
+    expect(dialog.innerHTML).not.toMatch(/(text|border|ring)-destructive/)
+  })
+
   it('saves a single rep value as a fixed count', async () => {
     const { user, onSave } = await setup()
     await user.type(field('Sets'), '3')

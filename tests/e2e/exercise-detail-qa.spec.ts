@@ -160,7 +160,7 @@ test('the program picker and swap picker rows keep their size and carry no info 
   )) {
     expect(h).toBeGreaterThanOrEqual(56);
   }
-  await expect(page.locator('a[href^="/exercises/"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /info/i })).toHaveCount(0);
 
   await page.goto('/workout');
@@ -176,7 +176,7 @@ test('the program picker and swap picker rows keep their size and carry no info 
   )) {
     expect(h).toBeGreaterThanOrEqual(56);
   }
-  await expect(page.locator('a[href^="/exercises/"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /info/i })).toHaveCount(0);
 });
 

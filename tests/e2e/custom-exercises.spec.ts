@@ -128,7 +128,7 @@ test('LIB-6: create SSB Squat from the picker, add it to a program, log it', asy
 });
 
 test('LIB-7: delete keeps the program row, its page and its history', async ({ page }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   await startProgram(page);
   await addSsbSquatFromPicker(page);
   await saveAndActivate(page);

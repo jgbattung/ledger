@@ -55,9 +55,11 @@ test('the actions drawer lists the Soon rows and closes', async ({ page }) => {
   await page.getByRole('button', { name: 'Exercise actions' }).click();
   const dialog = page.getByRole('dialog', { name: 'Barbell Bench Press' });
   await expect(dialog.getByRole('button')).toHaveCount(5); // four rows plus Close
-  for (const label of ['Rest timer', 'Warm-up sets', 'Reset to defaults', 'Duplicate']) {
+  for (const label of ['Rest timer', 'Warm-up sets', 'Reset to defaults']) {
     await expect(dialog.getByRole('button', { name: new RegExp(label) })).toBeDisabled();
   }
+  // LG-007 enabled Duplicate in place.
+  await expect(dialog.getByRole('button', { name: 'Duplicate' })).toBeEnabled();
   await dialog.getByRole('button', { name: 'Close' }).click();
   await expect(dialog).toBeHidden();
 });

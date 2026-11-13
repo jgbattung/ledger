@@ -3,7 +3,8 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
-import { customExercises } from '@/db/repos'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
+import { resetAndHydrateCustomExercises } from '@/test/customExercises'
 import { getExerciseById } from '@/exercises/catalog'
 import { ExerciseDetailPage } from '@/routes/ExerciseDetailPage'
 
@@ -22,6 +23,7 @@ function renderPage(path: string) {
 describe('ExerciseDetailPage', () => {
   beforeEach(async () => {
     await resetDb()
+    await resetAndHydrateCustomExercises()
   })
 
   it('renders every LIB-5 field of a bundled exercise', async () => {
@@ -50,7 +52,7 @@ describe('ExerciseDetailPage', () => {
   })
 
   it('shows a custom exercise with the Custom pill, equipment tag and Notes', async () => {
-    const row = await customExercises.create({
+    const row = await useCustomExerciseStore.getState().create({
       name: 'Sandbag Carry',
       primaryMuscles: ['forearms'],
       secondaryMuscles: [],
@@ -63,7 +65,7 @@ describe('ExerciseDetailPage', () => {
     expect(screen.getByText('Other')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Notes' })).toBeInTheDocument()
     expect(screen.getByText('Hug it high')).toBeInTheDocument()
-    expect(screen.queryByText('Type')).toBeNull()
+    expect(screen.getByText('Strength')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Instructions' })).toBeNull()
   })
 

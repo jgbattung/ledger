@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { customExercises } from '@/db/repos'
+import { customExercises } from '@/db/repos/customExercises'
 import type { CustomExercise } from '@/db/types'
 
 /**

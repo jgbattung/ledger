@@ -4,8 +4,8 @@
  * a single layout by construction. Optional fields are left empty, never
  * invented; the UI omits what is empty.
  */
-import { customExercises } from '@/db/repos'
 import { getExerciseById } from '@/exercises/catalog'
+import { getCustomExercise } from '@/stores/customExerciseStore'
 import type { ExerciseRef } from '@/db/types'
 
 export type ExerciseDetail = {
@@ -17,9 +17,9 @@ export type ExerciseDetail = {
   secondaryMuscles: string[]
   /** Catalog equipment, or the custom exercise's equipment tag. */
   equipment?: string
-  /** Catalog only. */
+  /** Catalog value, or always `strength` for a custom exercise. */
   category?: string
-  /** Catalog only. */
+  /** Catalog value, or the custom exercise's mechanic when set. */
   mechanic?: string
   /** Catalog only. */
   instructions: string[]
@@ -27,6 +27,8 @@ export type ExerciseDetail = {
   images: string[]
   /** Custom only. */
   notes?: string
+  /** A soft-deleted custom exercise; always false for a bundled one. */
+  deleted: boolean
 }
 
 export function exercisePath(ref: ExerciseRef): string {
@@ -49,10 +51,12 @@ export async function loadExerciseDetail(ref: ExerciseRef): Promise<ExerciseDeta
       mechanic: exercise.mechanic,
       instructions: exercise.instructions,
       images: exercise.images,
+      deleted: false,
     }
   }
   if (ref.source === 'custom') {
-    const row = await customExercises.get(ref.exerciseId)
+    // Deleted rows still resolve: the page keeps showing history for them.
+    const row = getCustomExercise(ref.exerciseId)
     if (!row) return undefined
     return {
       ref,
@@ -62,9 +66,12 @@ export async function loadExerciseDetail(ref: ExerciseRef): Promise<ExerciseDeta
       primaryMuscles: row.primaryMuscles,
       secondaryMuscles: row.secondaryMuscles,
       equipment: row.equipmentTag,
+      category: 'strength',
+      mechanic: row.mechanic,
       instructions: [],
       images: [],
       notes: row.notes,
+      deleted: row.deletedAt != null,
     }
   }
   return undefined

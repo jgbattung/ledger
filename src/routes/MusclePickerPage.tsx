@@ -153,7 +153,7 @@ function MuscleStep({ step, basePath }: { step: Step; basePath: string }) {
                     )}
                   >
                     <MuscleFigure
-                      highlight={picked ? [muscle] : []}
+                      highlight={[muscle]}
                       crop={half}
                       view={MUSCLE_VIEW[muscle]}
                       className="h-[74px] w-[58px]"

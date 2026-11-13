@@ -7,6 +7,7 @@ import {
   Navigate,
 } from 'react-router-dom'
 import { SettingsProvider } from '@/settings/SettingsProvider'
+import { CustomExerciseFormPage } from '@/routes/CustomExerciseFormPage'
 import { AppShell, ChromelessShell } from '@/routes/AppShell'
 import { DashboardPage } from '@/routes/DashboardPage'
 import { WorkoutPage } from '@/routes/WorkoutPage'
@@ -47,6 +48,8 @@ function createAppRouter() {
           <Route path="programs/:programId/days/:dayId" element={<DayPage />} />
           <Route path="session" element={<SessionPage />} />
           <Route path="session/swap/:workoutExerciseId" element={<SwapPickerPage />} />
+          <Route path="exercises/new" element={<CustomExerciseFormPage />} />
+          <Route path="exercises/custom/:id/edit" element={<CustomExerciseFormPage />} />
           <Route path="exercises/:source/:exerciseId" element={<ExerciseDetailPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

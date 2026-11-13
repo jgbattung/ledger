@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 
 export type SegmentedControlOption<T extends string> = {
   value: T
-  label: string
+  label: React.ReactNode
 }
 
 type SegmentedControlProps<T extends string> = {

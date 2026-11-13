@@ -1,4 +1,5 @@
 import { newId } from '@/db/ids'
+import type { ExerciseRef } from '@/db/types'
 import type { DraftDay, DraftExercise, ProgramDraft } from '@/programs/model'
 
 export const PPL_NAME = 'PPL-R-UL'
@@ -22,10 +23,11 @@ function lift(
   repMax: number,
   rirTarget: number,
   restSeconds: number,
+  source: ExerciseRef['source'] = 'db',
 ): DraftExercise {
   return {
     id: newId(),
-    exerciseRef: { source: 'db', exerciseId },
+    exerciseRef: { source, exerciseId },
     workingSets,
     repMin,
     repMax,
@@ -50,8 +52,9 @@ function draft(name: string, days: DraftDay[]): ProgramDraft {
 /**
  * The four seeded programs. Exercise ids were looked up in
  * `src/exercises/exercises.json`; never guess or hand-write new ones.
+ * `custom.ssbSquatId` adds the seeded custom SSB Squat to the Legs day.
  */
-export function buildSeedDrafts(): ProgramDraft[] {
+export function buildSeedDrafts(custom: { ssbSquatId?: string } = {}): ProgramDraft[] {
   const ppl = draft(PPL_NAME, [
     day(PUSH_DAY, [
       lift('barbell-bench-press', 3, 5, 8, 1, MAIN),
@@ -71,6 +74,7 @@ export function buildSeedDrafts(): ProgramDraft[] {
     ]),
     day(LEGS_DAY, [
       lift('barbell-squat', 3, 5, 8, 2, MAIN),
+      ...(custom.ssbSquatId ? [lift(custom.ssbSquatId, 3, 5, 8, 2, MAIN, 'custom')] : []),
       lift('romanian-deadlift', 3, 8, 10, 1, MAIN),
       lift('leg-press', 3, 10, 12, 1, SECONDARY),
       lift('seated-leg-curl', 3, 10, 12, 0, ISOLATION),

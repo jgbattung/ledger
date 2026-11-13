@@ -6,6 +6,12 @@ import { programs, settings, workouts } from '@/db/repos'
 import { getExerciseById } from '@/exercises/catalog'
 import { hasRequiredTargets } from '@/programs/model'
 import { buildHistory } from '@/db/seed/history'
+import {
+  DELETED_CUSTOM_NAME,
+  SSB_PROGRESSION,
+  SSB_SINCE_DAYS,
+  SSB_SQUAT_NAME,
+} from '@/db/seed/custom'
 import { clearDatabase, ensureSeeded, seedDatabase } from '@/db/seed'
 import {
   ARCHIVED_NAME,
@@ -114,7 +120,9 @@ describe('seedDatabase programs', () => {
     for (const { day, exercises } of ppl!.days) {
       const ids = exercises.map((e) => e.exerciseRef.exerciseId)
       expect(new Set(ids).size).toBe(ids.length)
-      if (['Push', 'Pull', 'Legs'].includes(day.name)) expect(ids).toHaveLength(6)
+      // Legs also holds the seeded custom SSB Squat.
+      if (['Push', 'Pull'].includes(day.name)) expect(ids).toHaveLength(6)
+      if (day.name === 'Legs') expect(ids).toHaveLength(7)
       if (day.name === 'Rest') expect(ids).toHaveLength(0)
     }
     const fbeod = await programs.loadTree((await programByName(FBEOD_NAME)).id)
@@ -131,12 +139,17 @@ describe('seedDatabase exercise ids', () => {
   it('resolves every exercise id through the catalog', async () => {
     await seedDatabase(ANCHOR)
     const ids = new Set<string>()
-    for (const row of await db.programExercises.toArray()) ids.add(row.exerciseRef.exerciseId)
-    for (const row of await db.workoutExercises.toArray()) {
-      ids.add(row.exerciseRef.exerciseId)
-      if (row.swappedFrom) ids.add(row.swappedFrom.exerciseId)
+    // Custom refs resolve through the custom exercise table (see the custom exercise tests).
+    for (const row of await db.programExercises.toArray()) {
+      if (row.exerciseRef.source === 'db') ids.add(row.exerciseRef.exerciseId)
     }
-    for (const row of await db.exerciseMeta.toArray()) ids.add(row.exerciseId)
+    for (const row of await db.workoutExercises.toArray()) {
+      if (row.exerciseRef.source === 'db') ids.add(row.exerciseRef.exerciseId)
+      if (row.swappedFrom?.source === 'db') ids.add(row.swappedFrom.exerciseId)
+    }
+    for (const row of await db.exerciseMeta.toArray()) {
+      if (row.source === 'db') ids.add(row.exerciseId)
+    }
     for (const id of Object.keys(PROGRESSION)) ids.add(id)
 
     expect(ids.size).toBeGreaterThan(20)
@@ -241,6 +254,69 @@ describe('seedDatabase history', () => {
   })
 })
 
+describe('seedDatabase custom exercises', () => {
+  const finishedSets = async (exerciseId: string) => {
+    const finished = new Set(
+      (await db.workouts.toArray()).filter((w) => w.status === 'finished').map((w) => w.id),
+    )
+    const rows = (await db.workoutExercises.toArray()).filter(
+      (e) => e.exerciseRef.source === 'custom' && e.exerciseRef.exerciseId === exerciseId && finished.has(e.workoutId),
+    )
+    const ids = new Set(rows.map((r) => r.id))
+    return {
+      rows,
+      sets: (await db.sets.toArray()).filter((set) => ids.has(set.workoutExerciseId) && set.completedAt),
+    }
+  }
+
+  it('seeds a live SSB Squat in the PPL-R-UL Legs day with a few weeks of finished history', async () => {
+    await seedDatabase(ANCHOR)
+    const ssb = (await db.customExercises.toArray()).find((c) => c.name === SSB_SQUAT_NAME)!
+    expect(ssb.deletedAt).toBeNull()
+    expect(ssb).toMatchObject({
+      primaryMuscles: ['quads'],
+      secondaryMuscles: ['glutes', 'lower back'],
+      equipmentTag: 'barbell',
+      mechanic: 'compound',
+    })
+
+    const ppl = await programs.loadTree((await programByName(PPL_NAME)).id)
+    const legs = ppl!.days.find(({ day }) => day.name === LEGS_DAY)!
+    expect(legs.exercises.some((e) => e.exerciseRef.source === 'custom' && e.exerciseRef.exerciseId === ssb.id)).toBe(true)
+
+    const { rows, sets } = await finishedSets(ssb.id)
+    // About four weeks of Legs sessions (a six-day cycle), none older than the cutoff.
+    expect(rows.length).toBeGreaterThanOrEqual(3)
+    expect(rows.length).toBeLessThanOrEqual(6)
+    expect(sets.length).toBeGreaterThan(0)
+    const workouts = new Map((await db.workouts.toArray()).map((w) => [w.id, w]))
+    const oldest = Math.min(...rows.map((r) => workouts.get(r.workoutId)!.startedAt))
+    expect(differenceInCalendarDays(startOfDay(ANCHOR), oldest)).toBeLessThanOrEqual(SSB_SINCE_DAYS)
+  })
+
+  it('seeds a soft-deleted custom exercise with history and no live program', async () => {
+    await seedDatabase(ANCHOR)
+    const gone = (await db.customExercises.toArray()).find((c) => c.name === DELETED_CUSTOM_NAME)!
+    expect(gone.deletedAt).toEqual(expect.any(Number))
+
+    const { rows, sets } = await finishedSets(gone.id)
+    expect(rows.length).toBeGreaterThanOrEqual(2)
+    expect(sets.length).toBeGreaterThanOrEqual(2)
+    const inPrograms = (await db.programExercises.toArray()).filter(
+      (e) => e.exerciseRef.source === 'custom' && e.exerciseRef.exerciseId === gone.id,
+    )
+    expect(inPrograms).toHaveLength(0)
+  })
+
+  it('marks both custom exercises dirty in syncState', async () => {
+    await seedDatabase(ANCHOR)
+    const rows = await db.customExercises.toArray()
+    expect(rows).toHaveLength(2)
+    const dirty = new Set((await db.syncState.toArray()).map((r) => `${r.table}:${r.recordId}`))
+    for (const row of rows) expect(dirty.has(`customExercises:${row.id}`)).toBe(true)
+  })
+})
+
 describe('seedDatabase supporting data', () => {
   it('writes 13 weekly bodyweight entries drifting from about 78.5 to 80 kg', async () => {
     await seedDatabase(ANCHOR)
@@ -259,13 +335,14 @@ describe('seedDatabase supporting data', () => {
   it('writes exercise meta with five favorites and lastUsed values in kg', async () => {
     await seedDatabase(ANCHOR)
     const meta = await db.exerciseMeta.toArray()
-    const usedIds = new Set((await db.workoutExercises.toArray()).map((e) => e.exerciseRef.exerciseId))
-    expect(new Set(meta.map((m) => m.exerciseId))).toEqual(usedIds)
+    const key = (source: string, exerciseId: string) => `${source}:${exerciseId}`
+    const usedKeys = new Set(
+      (await db.workoutExercises.toArray()).map((e) => key(e.exerciseRef.source, e.exerciseRef.exerciseId)),
+    )
+    expect(new Set(meta.map((m) => key(m.source, m.exerciseId)))).toEqual(usedKeys)
     expect(meta.filter((m) => m.isFavorite)).toHaveLength(5)
-    for (const row of meta) {
-      expect(row.source).toBe('db')
-      expect(row.lastUsed?.unit).toBe('kg')
-    }
+    expect(meta.filter((m) => m.source === 'custom')).toHaveLength(2)
+    for (const row of meta) expect(row.lastUsed?.unit).toBe('kg')
   })
 
   it('does not write a settings row', async () => {
@@ -284,6 +361,7 @@ describe('seedDatabase supporting data', () => {
       'sets',
       'bodyMetrics',
       'exerciseMeta',
+      'customExercises',
     ] as const
     const dirty = new Set((await db.syncState.toArray()).map((r) => `${r.table}:${r.recordId}`))
     for (const table of tables) {
@@ -305,8 +383,14 @@ describe('buildHistory', () => {
       JSON.stringify(value, (key, v) =>
         ['id', 'workoutId', 'workoutExerciseId'].includes(key) ? undefined : v,
       )
-    const first = buildHistory({ trees, anchor: ANCHOR, rng: createRng() })
-    const second = buildHistory({ trees, anchor: ANCHOR, rng: createRng() })
+    const progression = Object.fromEntries(
+      trees.ppl.days
+        .flatMap((day) => day.exercises)
+        .filter((e) => e.exerciseRef.source === 'custom')
+        .map((e) => [e.exerciseRef.exerciseId, SSB_PROGRESSION]),
+    )
+    const first = buildHistory({ trees, anchor: ANCHOR, rng: createRng(), progression })
+    const second = buildHistory({ trees, anchor: ANCHOR, rng: createRng(), progression })
     expect(strip(second)).toBe(strip(first))
     expect(first.workouts.length).toBeGreaterThan(50)
   })
@@ -554,9 +638,9 @@ describe('seedDatabase integrity', () => {
         workouts: byTime(await db.workouts.toArray()),
         sets: byTime(await db.sets.toArray()).map((s) => [s.weight, s.reps, s.rir, s.completedAt]),
         bodyMetrics: byTime(await db.bodyMetrics.toArray()),
-        exerciseMeta: (await db.exerciseMeta.toArray()).sort((a, b) =>
-          a.exerciseId.localeCompare(b.exerciseId),
-        ),
+        exerciseMeta: (await db.exerciseMeta.toArray())
+          .filter((m) => m.source === 'db')
+          .sort((a, b) => a.exerciseId.localeCompare(b.exerciseId)),
       })
     }
     await seedDatabase(ANCHOR)
@@ -590,7 +674,7 @@ describe('atomic seeding', () => {
     await ensureSeeded({ fresh: false, runId: 'a' })
     expect(await db.programs.count()).toBe(4)
     expect((await db.programs.toArray()).filter((p) => p.isActive)).toHaveLength(1)
-    expect(await db.workouts.count()).toBe(59)
+    expect(await db.workouts.count()).toBe(61)
   })
 
   it('rolls back seedDatabase itself when it fails after programs are written', async () => {
@@ -605,7 +689,7 @@ describe('atomic seeding', () => {
       ensureSeeded({ fresh: false, runId: 'a' }),
     ])
     expect(await db.programs.count()).toBe(4)
-    expect(await db.workouts.count()).toBe(59)
+    expect(await db.workouts.count()).toBe(61)
   })
 
   it('keeps the previous data and stores no run id when a fresh seed fails', async () => {

@@ -92,4 +92,10 @@ describe('customExerciseFormStore', () => {
     expect(form().consumePendingPick()).toEqual({ source: 'custom', exerciseId: 'abc' })
     expect(form().consumePendingPick()).toBeNull()
   })
+
+  it('start clears a pending pick left by an abandoned picker trip', () => {
+    form().setPendingPick({ source: 'custom', exerciseId: 'abc' })
+    form().start({ mode: 'new' })
+    expect(form().pendingPick).toBeNull()
+  })
 })

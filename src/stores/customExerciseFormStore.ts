@@ -135,6 +135,7 @@ export const useCustomExerciseFormStore = create<FormState>()((set, get) => ({
       mode: options.mode,
       editingId: options.editingId ?? null,
       pickOrigin: options.pickOrigin ?? null,
+      pendingPick: null,
     })
   },
 

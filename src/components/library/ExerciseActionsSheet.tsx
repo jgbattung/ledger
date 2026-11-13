@@ -1,23 +1,34 @@
-import { Copy, Flame, RotateCcw, Timer, Trash2 } from 'lucide-react'
+import { Copy, Flame, Pencil, RotateCcw, Timer, Trash2 } from 'lucide-react'
 import { SheetRow } from '@/components/ui/sheet-row'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 /**
- * Exercise actions drawer (LG-006). Every row ships as a disabled Soon row, in
- * its final order: LG-054 enables the first three in place, LG-007 enables
- * Duplicate and Delete. Never re-sort the rows when enabling one.
+ * Exercise actions drawer (LG-006). Rows keep their final order: Rest timer,
+ * Warm-up sets and Reset to defaults are still Soon rows (LG-054 enables them
+ * in place); LG-007 added Edit (a live custom exercise), Duplicate (any
+ * exercise) and Delete (a live custom exercise). Never re-sort the rows.
  */
 export function ExerciseActionsSheet({
   open,
   onOpenChange,
   name,
   isCustom,
+  deleted = false,
+  onEdit,
+  onDuplicate,
+  onDelete,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   name: string
   isCustom: boolean
+  /** A soft-deleted custom exercise: only Duplicate stays. */
+  deleted?: boolean
+  onEdit: () => void
+  onDuplicate: () => void
+  onDelete: () => void
 }) {
+  const editable = isCustom && !deleted
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent aria-describedby={undefined} className="max-h-[85svh] overflow-y-auto">
@@ -27,8 +38,9 @@ export function ExerciseActionsSheet({
         <SheetRow icon={Timer} label="Rest timer" soon />
         <SheetRow icon={Flame} label="Warm-up sets" soon />
         <SheetRow icon={RotateCcw} label="Reset to defaults" soon />
-        <SheetRow icon={Copy} label="Duplicate" soon />
-        {isCustom ? <SheetRow icon={Trash2} label="Delete exercise" soon /> : null}
+        {editable ? <SheetRow icon={Pencil} label="Edit exercise" onClick={onEdit} /> : null}
+        <SheetRow icon={Copy} label="Duplicate" onClick={onDuplicate} />
+        {editable ? <SheetRow icon={Trash2} label="Delete exercise" danger onClick={onDelete} /> : null}
       </SheetContent>
     </Sheet>
   )

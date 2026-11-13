@@ -1,14 +1,18 @@
 import { useEffect, useState, type KeyboardEvent } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { CircleSlash, SlidersHorizontal } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
+import { DeletedPill } from '@/components/library/DeletedPill'
 import { ExerciseActionsSheet } from '@/components/library/ExerciseActionsSheet'
 import { ExerciseHistory } from '@/components/library/ExerciseHistory'
 import { ExerciseFacts } from '@/components/library/ExerciseFacts'
 import { ExerciseMedia } from '@/components/library/ExerciseMedia'
+import { ConfirmSheet } from '@/components/ui/confirm-sheet'
+import { programs } from '@/db/repos'
 import { loadExerciseDetail, type ExerciseDetail } from '@/exercises/detail'
 import { useGoBack } from '@/lib/useGoBack'
 import { cn } from '@/lib/utils'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 
 type Tab = 'info' | 'history'
 const TABS: { id: Tab; label: string }[] = [
@@ -48,6 +52,13 @@ function InfoPanel({ detail }: { detail: ExerciseDetail }) {
   )
 }
 
+function deleteDescription(programNames: string[]): string {
+  const base = 'It leaves the library and the pickers. Your logged sets are kept.'
+  if (programNames.length === 0) return base
+  const count = programNames.length
+  return `${base} It stays in ${count} ${count === 1 ? 'program' : 'programs'} (${programNames.join(', ')}) until you remove it there.`
+}
+
 /** One page for any exercise, bundled or custom: Info and History tabs plus the actions drawer. */
 export function ExerciseDetailPage() {
   const { source, exerciseId } = useParams()
@@ -55,6 +66,8 @@ export function ExerciseDetailPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [detail, setDetail] = useState<ExerciseDetail | null | undefined>(undefined)
   const [actionsOpen, setActionsOpen] = useState(false)
+  const [deleteNames, setDeleteNames] = useState<string[] | null>(null)
+  const navigate = useNavigate()
   const tab: Tab = searchParams.get('tab') === 'history' ? 'history' : 'info'
 
   useEffect(() => {
@@ -71,6 +84,20 @@ export function ExerciseDetailPage() {
       cancelled = true
     }
   }, [source, exerciseId])
+
+  const openDelete = async () => {
+    if (!detail) return
+    setActionsOpen(false)
+    setDeleteNames(await programs.namesUsingExercise(detail.ref))
+  }
+
+  const confirmDelete = async () => {
+    if (!detail) return
+    await useCustomExerciseStore.getState().remove(detail.ref.exerciseId)
+    setDeleteNames(null)
+    // The page stays and re-renders as deleted (Deleted pill, History, Duplicate only).
+    setDetail((await loadExerciseDetail(detail.ref)) ?? null)
+  }
 
   const select = (next: Tab) => {
     setSearchParams(
@@ -132,6 +159,7 @@ export function ExerciseDetailPage() {
                   Custom
                 </span>
               ) : null}
+              {detail.deleted ? <DeletedPill className="align-[3px]" /> : null}
             </h1>
             {detail.aliases.length > 0 ? (
               <p className="mt-1 text-sm text-muted-foreground">
@@ -186,6 +214,28 @@ export function ExerciseDetailPage() {
             onOpenChange={setActionsOpen}
             name={detail.name}
             isCustom={detail.isCustom}
+            deleted={detail.deleted}
+            onEdit={() => {
+              setActionsOpen(false)
+              navigate(`/exercises/custom/${detail.ref.exerciseId}/edit`)
+            }}
+            onDuplicate={() => {
+              setActionsOpen(false)
+              navigate(`/exercises/new?from=${detail.ref.source}:${detail.ref.exerciseId}`)
+            }}
+            onDelete={() => void openDelete()}
+          />
+          <ConfirmSheet
+            open={deleteNames !== null}
+            onOpenChange={(open) => {
+              if (!open) setDeleteNames(null)
+            }}
+            title={`Delete ${detail.name}?`}
+            description={deleteDescription(deleteNames ?? [])}
+            confirmLabel="Delete exercise"
+            cancelLabel="Keep it"
+            tone="destructive"
+            onConfirm={() => void confirmDelete()}
           />
         </>
       ) : null}

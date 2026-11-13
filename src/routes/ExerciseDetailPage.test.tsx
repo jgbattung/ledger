@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
+import { seedProgram } from '@/routes/editorTestUtils'
 import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 import { resetAndHydrateCustomExercises } from '@/test/customExercises'
 import { getExerciseById } from '@/exercises/catalog'
@@ -12,6 +13,8 @@ function renderPage(path: string) {
   const router = createMemoryRouter(
     [
       { path: '/more/library', element: <p>Library page</p> },
+      { path: '/exercises/new', element: <p>New exercise form</p> },
+      { path: '/exercises/custom/:id/edit', element: <p>Edit exercise form</p> },
       { path: '/exercises/:source/:exerciseId', element: <ExerciseDetailPage /> },
     ],
     { initialEntries: [path] },
@@ -124,5 +127,93 @@ describe('ExerciseDetailPage', () => {
     await user.click(await screen.findByRole('button', { name: 'Exercise actions' }))
     const dialog = await screen.findByRole('dialog')
     expect(within(dialog).getByText('Rest timer')).toBeInTheDocument()
+  })
+
+  describe('Delete and Duplicate', () => {
+    const input = {
+      name: 'SSB Squat',
+      primaryMuscles: ['quads' as const],
+      secondaryMuscles: [],
+      mechanic: 'compound' as const,
+    }
+
+    async function openActions(user: ReturnType<typeof userEvent.setup>) {
+      await user.click(await screen.findByRole('button', { name: 'Exercise actions' }))
+      return screen.findByRole('dialog')
+    }
+
+    it('Duplicate on a bundled exercise opens the form prefilled from it', async () => {
+      const user = userEvent.setup()
+      const router = renderPage('/exercises/db/barbell-squat')
+      const drawer = await openActions(user)
+      expect(within(drawer).queryByText('Edit exercise')).toBeNull()
+      expect(within(drawer).queryByText('Delete exercise')).toBeNull()
+      await user.click(within(drawer).getByRole('button', { name: 'Duplicate' }))
+      expect(router.state.location.pathname).toBe('/exercises/new')
+      expect(router.state.location.search).toBe('?from=db:barbell-squat')
+    })
+
+    it('Edit goes to the edit route of a live custom exercise', async () => {
+      const user = userEvent.setup()
+      const row = await useCustomExerciseStore.getState().create(input)
+      const router = renderPage(`/exercises/custom/${row.id}`)
+      const drawer = await openActions(user)
+      await user.click(within(drawer).getByRole('button', { name: 'Edit exercise' }))
+      expect(router.state.location.pathname).toBe(`/exercises/custom/${row.id}/edit`)
+    })
+
+    it('Delete names the programs that use it, and the page then shows Deleted with Duplicate only', async () => {
+      const user = userEvent.setup()
+      const row = await useCustomExerciseStore.getState().create(input)
+      const { programs } = await import('@/db/repos')
+      const { emptyDraft } = await import('@/programs/model')
+      const draft = emptyDraft()
+      draft.name = 'PPL-R-UL'
+      draft.days = [
+        {
+          id: crypto.randomUUID(),
+          name: 'Legs',
+          exercises: [
+            {
+              id: crypto.randomUUID(),
+              exerciseRef: { source: 'custom', exerciseId: row.id },
+              workingSets: 3,
+              repMin: 8,
+              repMax: 12,
+            },
+          ],
+        },
+      ]
+      await programs.saveTree(draft)
+
+      renderPage(`/exercises/custom/${row.id}`)
+      const drawer = await openActions(user)
+      await user.click(within(drawer).getByRole('button', { name: 'Delete exercise' }))
+      const confirm = await screen.findByRole('dialog', { name: 'Delete SSB Squat?' })
+      expect(confirm).toHaveTextContent('It leaves the library and the pickers. Your logged sets are kept.')
+      expect(confirm).toHaveTextContent('It stays in 1 program (PPL-R-UL) until you remove it there.')
+      await user.click(within(confirm).getByRole('button', { name: 'Delete exercise' }))
+
+      expect(await screen.findByText('Deleted')).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: 'History' })).toBeInTheDocument()
+      expect(useCustomExerciseStore.getState().byId[row.id].deletedAt).toBeTruthy()
+      const after = await openActions(user)
+      expect(within(after).getByRole('button', { name: 'Duplicate' })).toBeEnabled()
+      expect(within(after).queryByText('Edit exercise')).toBeNull()
+      expect(within(after).queryByText('Delete exercise')).toBeNull()
+    })
+
+    it('Delete omits the program sentence when nothing uses it', async () => {
+      const user = userEvent.setup()
+      const row = await useCustomExerciseStore.getState().create(input)
+      await seedProgram('Other', [{ name: 'Push', ids: ['barbell-bench-press'] }])
+      renderPage(`/exercises/custom/${row.id}`)
+      const drawer = await openActions(user)
+      await user.click(within(drawer).getByRole('button', { name: 'Delete exercise' }))
+      const confirm = await screen.findByRole('dialog', { name: 'Delete SSB Squat?' })
+      expect(confirm).not.toHaveTextContent('It stays in')
+      await user.click(within(confirm).getByRole('button', { name: 'Keep it' }))
+      expect(useCustomExerciseStore.getState().byId[row.id].deletedAt).toBeFalsy()
+    })
   })
 })

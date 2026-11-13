@@ -3,7 +3,8 @@ import { Moon, Plus, X } from 'lucide-react'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { getExerciseById } from '@/exercises/catalog'
 import { listedFromCatalog } from '@/exercises/listing'
-import { exerciseName, formatTargets, isRestDay } from '@/programs/model'
+import { DeletedPill } from '@/components/library/DeletedPill'
+import { exerciseName, formatTargets, isDeletedExercise, isRestDay } from '@/programs/model'
 import type { DraftDay } from '@/programs/model'
 
 const ADD_LINK =
@@ -88,7 +89,10 @@ export function DayExerciseList({
                 ) : (
                   <div className="flex min-h-touch-primary items-center py-2">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-base">{name}</p>
+                      <p className="flex items-center">
+                        <span className="truncate text-base">{name}</span>
+                        {isDeletedExercise(exercise.exerciseRef) ? <DeletedPill /> : null}
+                      </p>
                       <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
                     </div>
                   </div>

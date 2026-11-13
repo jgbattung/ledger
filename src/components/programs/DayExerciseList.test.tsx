@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import type { DraftDay } from '@/programs/model'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 import { DayExerciseList } from './DayExerciseList'
 
 const customDay = (targets: object = {}): DraftDay => ({
@@ -49,5 +50,30 @@ describe('DayExerciseList - custom exercise rows', () => {
     setup(customDay({ workingSets: 3, repMin: 8, repMax: 12, restSeconds: 150 }))
     expect(screen.getByText('3 × 8–12 · RIR 0 · rest 2:30')).toBeInTheDocument()
     expect(screen.queryByText('No targets yet')).not.toBeInTheDocument()
+  })
+})
+
+describe('DayExerciseList - deleted custom exercise', () => {
+  const row = (deletedAt?: number) =>
+    ({
+      id: 'mine',
+      name: 'SSB Squat',
+      primaryMuscles: ['quads'],
+      secondaryMuscles: [],
+      deletedAt,
+    }) as never
+
+  it('shows the real name with a Deleted pill', () => {
+    useCustomExerciseStore.setState({ byId: { mine: row(1) }, hydrated: true })
+    setup(customDay())
+    expect(screen.getByRole('button', { name: 'Configure SSB Squat' })).toHaveTextContent('Deleted')
+    useCustomExerciseStore.setState({ byId: {}, hydrated: false })
+  })
+
+  it('shows no pill for a live custom exercise', () => {
+    useCustomExerciseStore.setState({ byId: { mine: row() }, hydrated: true })
+    setup(customDay())
+    expect(screen.queryByText('Deleted')).toBeNull()
+    useCustomExerciseStore.setState({ byId: {}, hydrated: false })
   })
 })

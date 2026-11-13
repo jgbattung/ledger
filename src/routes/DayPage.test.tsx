@@ -109,4 +109,39 @@ describe('DayPage', () => {
     renderDay(`/programs/${programId}/days/${pushId}`)
     expect(await screen.findByText("This day can't be started")).toBeInTheDocument()
   })
+
+  it('names a deleted custom exercise with a Deleted pill', async () => {
+    const { useCustomExerciseStore } = await import('@/stores/customExerciseStore')
+    const row = await useCustomExerciseStore.getState().create({
+      name: 'SSB Squat',
+      primaryMuscles: ['quads'],
+      secondaryMuscles: [],
+      mechanic: 'compound',
+    })
+    const { programs } = await import('@/db/repos')
+    const { emptyDraft } = await import('@/programs/model')
+    const draft = emptyDraft()
+    draft.name = 'PPL'
+    draft.days = [
+      {
+        id: crypto.randomUUID(),
+        name: 'Legs',
+        exercises: [
+          {
+            id: crypto.randomUUID(),
+            exerciseRef: { source: 'custom', exerciseId: row.id },
+            workingSets: 3,
+            repMin: 8,
+            repMax: 12,
+          },
+        ],
+      },
+    ]
+    const programId = await programs.saveTree(draft)
+    const dayId = (await programs.loadTree(programId))!.days[0].day.id
+    await useCustomExerciseStore.getState().remove(row.id)
+    renderDay(`/programs/${programId}/days/${dayId}`)
+    const link = await screen.findByRole('link', { name: /SSB Squat/ })
+    expect(link).toHaveTextContent('Deleted')
+  })
 })

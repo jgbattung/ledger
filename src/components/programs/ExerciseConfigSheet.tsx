@@ -359,7 +359,7 @@ function NumberInput({
       className={cn(
         FIELD_CLASS,
         'min-h-touch-min min-w-0 tabular-nums',
-        invalid && 'border-destructive',
+        invalid && 'border-foreground',
       )}
     />
   )

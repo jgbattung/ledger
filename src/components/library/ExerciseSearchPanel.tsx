@@ -5,7 +5,9 @@ import { FilterSheet } from '@/components/library/FilterSheet'
 import type { Facet } from '@/components/library/types'
 import { filterExercises, getFilterOptions } from '@/exercises/filtering'
 import type { LibraryFilters } from '@/exercises/filtering'
-import type { Exercise } from '@/exercises/types'
+import { refKey } from '@/exercises/listing'
+import type { ListedExercise } from '@/exercises/listing'
+import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore'
 
 const EMPTY_FILTERS: LibraryFilters = { muscle: null, category: null, equipment: null }
 
@@ -22,7 +24,7 @@ export function ExerciseSearchPanel({
   footer,
 }: {
   header: ReactNode
-  renderRow: (exercise: Exercise) => ReactNode
+  renderRow: (exercise: ListedExercise) => ReactNode
   footer?: ReactNode
 }) {
   const [query, setQuery] = useState('')
@@ -30,7 +32,11 @@ export function ExerciseSearchPanel({
   const [openFacet, setOpenFacet] = useState<Facet | null>(null)
 
   const deferredQuery = useDeferredValue(query)
-  const results = useMemo(() => filterExercises(deferredQuery, filters), [deferredQuery, filters])
+  const custom = useCustomExerciseStore(selectLive)
+  const results = useMemo(
+    () => filterExercises(deferredQuery, filters, custom),
+    [deferredQuery, filters, custom],
+  )
   const filterOptions = useMemo(() => getFilterOptions(), [])
 
   const facetOptions: Record<Facet, string[]> = {
@@ -80,7 +86,7 @@ export function ExerciseSearchPanel({
         ) : (
           <ul className="mt-1 divide-y divide-border">
             {results.map((exercise) => (
-              <li key={exercise.id}>{renderRow(exercise)}</li>
+              <li key={refKey(exercise.ref)}>{renderRow(exercise)}</li>
             ))}
           </ul>
         )}

@@ -12,6 +12,7 @@
  */
 import type { CustomExercise } from '@/db/types'
 import { getAllExercises } from './catalog'
+import { listedFromCatalog } from './listing'
 import type { ListedExercise } from './listing'
 import type { Muscle } from './types'
 
@@ -86,20 +87,7 @@ function indexListed(listed: ListedExercise): IndexedExercise {
 
 function getSearchIndex(): IndexedExercise[] {
   if (!searchIndex) {
-    searchIndex = getAllExercises().map((exercise) =>
-      indexListed({
-        ref: { source: 'db', exerciseId: exercise.id },
-        name: exercise.name,
-        aliases: exercise.aliases,
-        primaryMuscles: exercise.primaryMuscles,
-        secondaryMuscles: exercise.secondaryMuscles,
-        equipment: exercise.equipment,
-        category: exercise.category,
-        mechanic: exercise.mechanic,
-        images: exercise.images,
-        isCustom: false,
-      }),
-    )
+    searchIndex = getAllExercises().map((exercise) => indexListed(listedFromCatalog(exercise)))
   }
   return searchIndex
 }

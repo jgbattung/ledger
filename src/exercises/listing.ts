@@ -4,7 +4,7 @@
  * never assume `source: 'db'`.
  */
 import type { ExerciseRef } from '@/db/types'
-import type { Category, Equipment, Mechanic, Muscle } from './types'
+import type { Category, Equipment, Exercise, Mechanic, Muscle } from './types'
 
 export type ListedExercise = {
   ref: ExerciseRef
@@ -17,6 +17,22 @@ export type ListedExercise = {
   mechanic?: Mechanic
   images: string[]
   isCustom: boolean
+}
+
+/** A bundled catalog exercise as a list row. */
+export function listedFromCatalog(exercise: Exercise): ListedExercise {
+  return {
+    ref: { source: 'db', exerciseId: exercise.id },
+    name: exercise.name,
+    aliases: exercise.aliases,
+    primaryMuscles: exercise.primaryMuscles,
+    secondaryMuscles: exercise.secondaryMuscles,
+    equipment: exercise.equipment,
+    category: exercise.category,
+    mechanic: exercise.mechanic,
+    images: exercise.images,
+    isCustom: false,
+  }
 }
 
 /** Stable string key for a ref (`source:exerciseId`): list keys, selection sets. */

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Moon, Plus, X } from 'lucide-react'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { getExerciseById } from '@/exercises/catalog'
+import { listedFromCatalog } from '@/exercises/listing'
 import { exerciseName, formatTargets, isRestDay } from '@/programs/model'
 import type { DraftDay } from '@/programs/model'
 
@@ -83,7 +84,7 @@ export function DayExerciseList({
                 className="min-w-0 flex-1 rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
               >
                 {catalog ? (
-                  <ExerciseListItem exercise={catalog} subtitle={subtitle} />
+                  <ExerciseListItem exercise={listedFromCatalog(catalog)} subtitle={subtitle} />
                 ) : (
                   <div className="flex min-h-touch-primary items-center py-2">
                     <div className="min-w-0 flex-1">

@@ -9,7 +9,9 @@ import { FilterSheet } from '@/components/library/FilterSheet'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import type { Facet } from '@/components/library/types'
 import { exercisePath } from '@/exercises/detail'
+import { refKey } from '@/exercises/listing'
 import { useScrollRestore } from '@/lib/useScrollRestore'
+import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore'
 
 export function LibraryPage() {
   // Search and filters live in the URL (replace, so typing never grows the
@@ -58,9 +60,10 @@ export function LibraryPage() {
   }
 
   const deferredQuery = useDeferredValue(query)
+  const custom = useCustomExerciseStore(selectLive)
   const results = useMemo(
-    () => filterExercises(deferredQuery, filters),
-    [deferredQuery, filters],
+    () => filterExercises(deferredQuery, filters, custom),
+    [deferredQuery, filters, custom],
   )
 
   const reset = () => {
@@ -108,8 +111,8 @@ export function LibraryPage() {
         <div className="mt-1 divide-y divide-border">
           {results.map((exercise) => (
             <Link
-              key={exercise.id}
-              to={exercisePath({ source: 'db', exerciseId: exercise.id })}
+              key={refKey(exercise.ref)}
+              to={exercisePath(exercise.ref)}
               className="block outline-none focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring/50"
             >
               <ExerciseListItem exercise={exercise} />

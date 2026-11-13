@@ -7,7 +7,9 @@ import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
 import { SwapPickerPage } from '@/routes/SwapPickerPage'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 import { useSessionStore } from '@/stores/sessionStore'
+import { resetAndHydrateCustomExercises } from '@/test/customExercises'
 
 const store = () => useSessionStore.getState()
 
@@ -37,6 +39,7 @@ describe('SwapPickerPage', () => {
   beforeEach(async () => {
     await resetDb()
     store().reset()
+    await resetAndHydrateCustomExercises()
   })
 
   it('disables exercises already in the workout and shows a top Back button', async () => {
@@ -115,5 +118,46 @@ describe('SwapPickerPage', () => {
     )
     render(<RouterProvider router={router} />)
     expect(await screen.findByText('Session')).toBeInTheDocument()
+  })
+
+  const ssbInput = {
+    name: 'SSB Squat',
+    primaryMuscles: ['quads' as const],
+    secondaryMuscles: [],
+    mechanic: 'compound' as const,
+  }
+
+  it('swaps to a custom exercise with the custom ref', async () => {
+    const created = await useCustomExerciseStore.getState().create(ssbInput)
+    const { router, bench } = await startAndOpenSwap()
+    const user = userEvent.setup()
+    await search(user, 'ssb squat')
+    await user.click(await screen.findByRole('button', { name: /^SSB Squat/ }))
+    const sheet = await screen.findByRole('dialog', { name: /Swap to SSB Squat/ })
+    await user.click(within(sheet).getByRole('button', { name: /Reset/ }))
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/session'))
+    const stored = await db.workoutExercises.get(bench)
+    expect(stored?.exerciseRef).toEqual({ source: 'custom', exerciseId: created.id })
+  })
+
+  it('disables a custom exercise already in the workout', async () => {
+    const created = await useCustomExerciseStore.getState().create(ssbInput)
+    const programId = await seedProgram('PPL', [{ name: 'Push', ids: ['barbell-bench-press'] }])
+    const tree = (await programs.loadTree(programId))!
+    await store().start(programId, tree.days[0].day.id)
+    const first = store().exercises[0].exercise.id
+    await store().swap(first, { source: 'custom', exerciseId: created.id }, 'reset')
+    const router = createMemoryRouter(
+      [
+        { path: '/session', element: <p>Session</p> },
+        { path: '/session/swap/:workoutExerciseId', element: <SwapPickerPage /> },
+      ],
+      { initialEntries: ['/session', `/session/swap/${first}`], initialIndex: 1 },
+    )
+    render(<RouterProvider router={router} />)
+    const user = userEvent.setup()
+    await search(user, 'ssb squat')
+    expect(await screen.findByRole('button', { name: /^SSB Squat/ })).toBeDisabled()
   })
 })

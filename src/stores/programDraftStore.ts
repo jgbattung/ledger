@@ -18,6 +18,9 @@ type ProgramDraftState = {
   baseline: string
   selectedDayId: string | null
   namePromptOpen: boolean
+  /** Exercises ticked in the picker, in add order. Lives here (not in the
+   * picker) so it survives the trip to the create form and back. */
+  pickerSelection: ExerciseRef[]
 
   startNew: () => void
   /** Resolves false when the program does not exist (or is deleted). */
@@ -31,6 +34,8 @@ type ProgramDraftState = {
   changeDayToRest: (dayId: string) => void
   selectDay: (dayId: string) => void
   addExercises: (dayId: string, refs: ExerciseRef[]) => void
+  togglePick: (ref: ExerciseRef) => void
+  clearPicks: () => void
   removeExercise: (dayId: string, exerciseId: string) => void
   updateExercise: (dayId: string, exerciseId: string, targets: ExerciseTargets) => void
   closeNamePrompt: () => void
@@ -44,6 +49,7 @@ const INITIAL = {
   baseline: '',
   selectedDayId: null,
   namePromptOpen: false,
+  pickerSelection: [] as ExerciseRef[],
 } as const
 
 const snapshot = (draft: ProgramDraft | null) => JSON.stringify(draft)
@@ -137,6 +143,15 @@ export const useProgramDraftStore = create<ProgramDraftState>((set, get) => ({
         return { ...day, exercises: [...day.exercises, ...added] }
       }),
     })),
+
+  togglePick: (ref) =>
+    set(({ pickerSelection }) => ({
+      pickerSelection: pickerSelection.some((r) => refKey(r) === refKey(ref))
+        ? pickerSelection.filter((r) => refKey(r) !== refKey(ref))
+        : [...pickerSelection, ref],
+    })),
+
+  clearPicks: () => set({ pickerSelection: [] }),
 
   removeExercise: (dayId, exerciseId) =>
     set(({ draft }) => ({

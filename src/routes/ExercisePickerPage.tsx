@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { BackLink } from '@/components/BackLink'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { ExerciseSearchPanel } from '@/components/library/ExerciseSearchPanel'
 import { PickerTray } from '@/components/programs/PickerTray'
-import { getExerciseById } from '@/exercises/catalog'
+import { filterExercises } from '@/exercises/filtering'
+import { refKey } from '@/exercises/listing'
+import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore'
 import { useProgramDraftStore } from '@/stores/programDraftStore'
 import { cn } from '@/lib/utils'
 
@@ -19,8 +21,20 @@ export function ExercisePickerPage() {
   const navigate = useNavigate()
   const draft = useProgramDraftStore((s) => s.draft)
 
-  // Ordered ids of the exercises picked so far (selection order = add order).
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  // Ordered refs picked so far (selection order = add order), kept in the draft
+  // store so they survive a trip to the create form.
+  const selection = useProgramDraftStore((s) => s.pickerSelection)
+  const custom = useCustomExerciseStore(selectLive)
+  const listedByKey = useMemo(
+    () =>
+      new Map(
+        filterExercises('', { muscle: null, category: null, equipment: null }, custom).map((e) => [
+          refKey(e.ref),
+          e,
+        ]),
+      ),
+    [custom],
+  )
 
   const editorPath = programId ? `/programs/${programId}` : '/programs/new'
   const dayId = searchParams.get('day')
@@ -30,32 +44,32 @@ export function ExercisePickerPage() {
   // No draft (e.g. after a reload) or an unknown day: the editor re-initialises.
   if (!draft || !day || !routeMatches) return <Navigate to={editorPath} replace />
 
-  const inDay = new Set(
-    day.exercises.flatMap((e) => (e.exerciseRef.source === 'db' ? [e.exerciseRef.exerciseId] : [])),
-  )
-  const selectedExercises = selectedIds.flatMap((id) => {
-    const exercise = getExerciseById(id)
+  const inDay = new Set(day.exercises.map((e) => refKey(e.exerciseRef)))
+  const selectedKeys = selection.map(refKey)
+  const selectedExercises = selectedKeys.flatMap((key) => {
+    const exercise = listedByKey.get(key)
     return exercise ? [exercise] : []
   })
 
-  const toggle = (id: string) =>
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
-
   const add = () => {
-    useProgramDraftStore.getState().addExercises(
-      day.id,
-      selectedIds.map((exerciseId) => ({ source: 'db' as const, exerciseId })),
-    )
+    const store = useProgramDraftStore.getState()
+    store.addExercises(day.id, selection)
+    store.clearPicks()
     navigate(-1)
   }
 
-  const count = selectedIds.length
+  const back = () => {
+    useProgramDraftStore.getState().clearPicks()
+    navigate(-1)
+  }
+
+  const count = selection.length
 
   return (
     <ExerciseSearchPanel
       header={
         <header className="flex h-[52px] items-center gap-2">
-          <BackLink onBack={() => navigate(-1)} label="Back" />
+          <BackLink onBack={back} label="Back" />
           <h1 className="min-w-0 flex-1 truncate text-center text-base font-semibold">
             Add to {day.name}
           </h1>
@@ -63,15 +77,16 @@ export function ExercisePickerPage() {
         </header>
       }
       renderRow={(exercise) => {
-        const already = inDay.has(exercise.id)
-        const order = selectedIds.indexOf(exercise.id) + 1
+        const key = refKey(exercise.ref)
+        const already = inDay.has(key)
+        const order = selectedKeys.indexOf(key) + 1
         const picked = order > 0
         return (
           <button
             type="button"
             aria-pressed={already ? undefined : picked}
             disabled={already}
-            onClick={() => toggle(exercise.id)}
+            onClick={() => useProgramDraftStore.getState().togglePick(exercise.ref)}
             className="block w-full rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <ExerciseListItem
@@ -102,7 +117,10 @@ export function ExercisePickerPage() {
           <div className="sticky bottom-0 z-10 flex flex-col gap-2.5 border-t border-border bg-background px-4 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
             <PickerTray
               selected={selectedExercises}
-              onDeselect={(id) => setSelectedIds((prev) => prev.filter((x) => x !== id))}
+              onDeselect={(key) => {
+                const ref = selection.find((r) => refKey(r) === key)
+                if (ref) useProgramDraftStore.getState().togglePick(ref)
+              }}
             />
             <button
               type="button"

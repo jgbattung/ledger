@@ -76,9 +76,10 @@ describe('MusclePickerPage', () => {
     expect(screen.getByText('Step 2 of 2')).toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: /Lower body/ }))
     expect(tile('Quads')).toBeDisabled()
-    expect(within(tile('Quads')).getByText('P')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Quads, primary' })).toBeDisabled()
     await user.click(tile('Glutes'))
-    expect(within(tile('Glutes')).getByText('S')).toBeInTheDocument()
+    expect(within(tile('Glutes')).getByText('S')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.queryByRole('button', { name: / [PS]$/ })).toBeNull()
     expect(form().draft.secondaryMuscles).toEqual(['glutes'])
   })
 

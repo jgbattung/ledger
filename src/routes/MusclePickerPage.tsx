@@ -144,6 +144,7 @@ function MuscleStep({ step, basePath }: { step: Step; basePath: string }) {
                     key={muscle}
                     type="button"
                     aria-pressed={picked}
+                    aria-label={isPrimary ? `${formatFilterValue(muscle)}, primary` : undefined}
                     disabled={isPrimary}
                     onClick={() => toggle(muscle)}
                     className={cn(
@@ -169,12 +170,14 @@ function MuscleStep({ step, basePath }: { step: Step; basePath: string }) {
                     {isPrimary ? (
                       <span
                         className={cn(BADGE, 'absolute top-1.5 right-1.5 bg-muted-foreground')}
-                        title="Primary muscle"
+                        aria-hidden="true"
                       >
                         P
                       </span>
                     ) : picked && step === 'secondary' ? (
-                      <span className={cn(BADGE, 'absolute top-1.5 right-1.5')}>S</span>
+                      <span className={cn(BADGE, 'absolute top-1.5 right-1.5')} aria-hidden="true">
+                        S
+                      </span>
                     ) : picked ? (
                       <span className={cn(BADGE, 'absolute top-1.5 right-1.5')} aria-hidden="true">
                         <Check className="size-3" strokeWidth={3} />

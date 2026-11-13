@@ -108,7 +108,7 @@ describe('alias resolution (full dataset)', () => {
 
   it.each(aliasCases)('alias "$alias" resolves its owner "$name"', ({ alias, id }) => {
     const results = filterExercises(alias, noFilters)
-    expect(results.some((e) => e.id === id)).toBe(true)
+    expect(results.some((e) => e.ref.exerciseId === id)).toBe(true)
   })
 
   // Named regression anchors for the specific multi-round renames the build

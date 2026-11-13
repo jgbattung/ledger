@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { newId } from '@/db/ids'
 import { programs } from '@/db/repos'
+import { refKey } from '@/exercises/listing'
 import { emptyDraft, nextDayName, programTreeToDraft } from '@/programs/model'
 import type { DraftDay, DraftExercise, ExerciseTargets, ProgramDraft } from '@/programs/model'
 import type { ExerciseRef } from '@/db/types'
@@ -46,8 +47,6 @@ const INITIAL = {
 } as const
 
 const snapshot = (draft: ProgramDraft | null) => JSON.stringify(draft)
-
-const refKey = (ref: ExerciseRef) => `${ref.source}:${ref.exerciseId}`
 
 /** Replaces one day by id; no-op when the day does not exist. */
 function mapDay(

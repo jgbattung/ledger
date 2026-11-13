@@ -54,13 +54,13 @@ describe('ExerciseDetailPage', () => {
       name: 'Sandbag Carry',
       primaryMuscles: ['forearms'],
       secondaryMuscles: [],
-      equipmentTag: 'sandbag',
+      equipmentTag: 'other',
       notes: 'Hug it high',
     })
     renderPage(`/exercises/custom/${row.id}`)
     await screen.findByRole('heading', { level: 1, name: /Sandbag Carry/ })
     expect(screen.getByText('Custom')).toBeInTheDocument()
-    expect(screen.getByText('Sandbag')).toBeInTheDocument()
+    expect(screen.getByText('Other')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Notes' })).toBeInTheDocument()
     expect(screen.getByText('Hug it high')).toBeInTheDocument()
     expect(screen.queryByText('Type')).toBeNull()

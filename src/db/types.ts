@@ -5,6 +5,8 @@
  * display-boundary concern, not a data-layer one (PRD §3.13).
  */
 
+import type { Equipment, Mechanic, Muscle } from '@/exercises/types'
+
 /** Reference to an exercise, which may live in the Ledger-owned read-only
  * JSON catalog (`source: 'db'`, LG-047 - curated dataset, permanent IDs)
  * or in the user's `customExercises` table. */
@@ -31,9 +33,10 @@ export type WeekStart = 'mon' | 'sun'
 
 export type CustomExercise = BaseRecord & {
   name: string
-  primaryMuscles: string[]
-  secondaryMuscles: string[]
-  equipmentTag?: string
+  primaryMuscles: Muscle[]
+  secondaryMuscles: Muscle[]
+  equipmentTag?: Equipment
+  mechanic?: Mechanic
   notes?: string
 }
 

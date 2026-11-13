@@ -44,7 +44,7 @@ describe('loadExerciseDetail', () => {
       name: 'Sandbag Carry',
       primaryMuscles: ['forearms'],
       secondaryMuscles: ['abs'],
-      equipmentTag: 'sandbag',
+      equipmentTag: 'other',
       notes: 'Hug it high',
     })
     const ref: ExerciseRef = { source: 'custom', exerciseId: row.id }
@@ -55,7 +55,7 @@ describe('loadExerciseDetail', () => {
       aliases: [],
       primaryMuscles: ['forearms'],
       secondaryMuscles: ['abs'],
-      equipment: 'sandbag',
+      equipment: 'other',
       category: undefined,
       mechanic: undefined,
       instructions: [],

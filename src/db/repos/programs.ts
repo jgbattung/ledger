@@ -171,7 +171,7 @@ export const programs = {
     return trees.filter((tree): tree is ProgramTree => tree !== undefined)
   },
 
-  /** Names of the non-deleted, non-archived programs that use an exercise. */
+  /** Names (alphabetical) of the non-deleted, non-archived programs that use an exercise. */
   async namesUsingExercise(ref: ExerciseRef): Promise<string[]> {
     const trees = await programs.listTrees()
     return trees
@@ -185,6 +185,7 @@ export const programs = {
           ),
       )
       .map((tree) => tree.program.name)
+      .sort((a, b) => a.localeCompare(b))
   },
 
   /**

@@ -12,7 +12,7 @@ import App from '@/App'
 
 const form = () => useCustomExerciseFormStore.getState()
 
-function renderForm(path: string, { from = '/start' }: { from?: string } = {}) {
+function renderForm(path: string, { from = '/start' }: { from?: string | null } = {}) {
   const router = createMemoryRouter(
     [
       { path: '/start', element: <p>Start page</p> },
@@ -22,7 +22,7 @@ function renderForm(path: string, { from = '/start' }: { from?: string } = {}) {
       { path: '/exercises/custom/:id/edit', element: <CustomExerciseFormPage /> },
       { path: '/exercises/:source/:exerciseId', element: <p>Exercise page</p> },
     ],
-    { initialEntries: [from, path], initialIndex: 1 },
+    from === null ? { initialEntries: [path] } : { initialEntries: [from, path], initialIndex: 1 },
   )
   render(<RouterProvider router={router} />)
   return router
@@ -127,7 +127,7 @@ describe('CustomExerciseFormPage', () => {
     const router = renderForm(`/exercises/custom/${row.id}/edit`)
     await screen.findByRole('heading', { name: 'Edit exercise' })
     await user.click(saveButton())
-    await waitFor(() => expect(router.state.location.pathname).toBe('/start'))
+    await waitFor(() => expect(router.state.location.pathname).toBe(`/exercises/custom/${row.id}`))
   })
 
   it('a valid New save creates the row and lands on its page, replacing the form', async () => {
@@ -156,7 +156,7 @@ describe('CustomExerciseFormPage', () => {
     expect(form().pendingPick).toMatchObject({ source: 'custom' })
   })
 
-  it('Edit saves the changes and goes back', async () => {
+  it('Edit saves the changes and lands on the exercise page, replacing the form', async () => {
     const user = userEvent.setup()
     const row = await seedSsb()
     const router = renderForm(`/exercises/custom/${row.id}/edit`)
@@ -165,9 +165,21 @@ describe('CustomExerciseFormPage', () => {
     await user.clear(name)
     await user.type(name, 'SSB Box Squat')
     await user.click(saveButton())
-    await waitFor(() => expect(router.state.location.pathname).toBe('/start'))
+    await waitFor(() => expect(router.state.location.pathname).toBe(`/exercises/custom/${row.id}`))
     expect((await customExercises.get(row.id))?.name).toBe('SSB Box Squat')
     expect(useCustomExerciseStore.getState().byId[row.id].name).toBe('SSB Box Squat')
+  })
+
+  it('Edit opened as the first history entry saves and lands on the exercise page', async () => {
+    const user = userEvent.setup()
+    const row = await seedSsb()
+    const router = renderForm(`/exercises/custom/${row.id}/edit`, { from: null })
+    expect(router.state.historyAction).toBe('POP')
+    await screen.findByRole('heading', { name: 'Edit exercise' })
+    await user.type(await screen.findByLabelText('Name'), ' 2')
+    await user.click(saveButton())
+    await waitFor(() => expect(router.state.location.pathname).toBe(`/exercises/custom/${row.id}`))
+    expect(await screen.findByText('Exercise page')).toBeInTheDocument()
   })
 
   it('Edit of an unknown or deleted id shows Exercise not found', async () => {

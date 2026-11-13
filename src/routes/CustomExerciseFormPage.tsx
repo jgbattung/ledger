@@ -183,7 +183,7 @@ export function CustomExerciseFormPage() {
         await exercises.update(id, input)
         leaving.current = true
         store().reset()
-        navigate(-1)
+        navigate(exercisePath({ source: 'custom', exerciseId: id }), { replace: true })
         return
       }
       const created = await exercises.create(input)

@@ -86,7 +86,6 @@ export function CustomExerciseFormPage() {
   const isEdit = id !== undefined
   const mode = useCustomExerciseFormStore((s) => s.mode)
   const draft = useCustomExerciseFormStore((s) => s.draft)
-  const dirty = useCustomExerciseFormStore(selectIsDirty)
   const live = useCustomExerciseStore(selectLive)
   const row = useCustomExerciseStore((s) => (id ? s.byId[id] : undefined))
   const missing = isEdit && (!row || row.deletedAt != null)
@@ -339,7 +338,7 @@ export function CustomExerciseFormPage() {
           if (!open && blocker.state === 'blocked') blocker.reset()
         }}
         title="Discard this exercise?"
-        description={dirty ? 'Your changes will be lost.' : 'This exercise has not been saved.'}
+        description="Your changes will be lost."
         confirmLabel="Discard"
         cancelLabel="Keep editing"
         tone="destructive"

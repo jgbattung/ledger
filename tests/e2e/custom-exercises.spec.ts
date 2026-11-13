@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { addExercises, configureExercise, renameDay } from './program-builder-helpers';
+import { configureExercise, renameDay } from './program-builder-helpers';
 import { fillAllSets, readStore, seedActiveProgram } from './workout-loop-helpers';
 
 type Row = Record<string, unknown>;

@@ -128,13 +128,15 @@ test('LIB-6: create SSB Squat from the picker, add it to a program, log it', asy
 });
 
 test('LIB-7: delete keeps the program row, its page and its history', async ({ page }) => {
-  test.setTimeout(240_000);
+  test.setTimeout(120_000);
   await startProgram(page);
   await addSsbSquatFromPicker(page);
   await saveAndActivate(page);
 
   await page.getByRole('link', { name: /Legs/ }).first().click();
   await page.getByRole('button', { name: 'Start workout' }).click();
+  // Wait for the session to open before writing sets (the reload would race the navigation).
+  await expect(page).toHaveURL(/\/session$/);
   await fillAllSets(page, { reps: 8, weight: 100 });
   for (const exercise of ['Barbell Squat', 'SSB Squat']) {
     await page.getByRole('button', { name: exercise }).first().click();

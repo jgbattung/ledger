@@ -124,7 +124,7 @@ describe('CustomExerciseFormPage', () => {
   it('an exercise may keep its own name when edited', async () => {
     const user = userEvent.setup()
     const row = await seedSsb()
-    const router = renderForm(`/exercises/custom/${row.id}/edit`)
+    const router = renderForm(`/exercises/custom/${row.id}/edit`, { from: `/exercises/custom/${row.id}` })
     await screen.findByRole('heading', { name: 'Edit exercise' })
     await user.click(saveButton())
     await waitFor(() => expect(router.state.location.pathname).toBe(`/exercises/custom/${row.id}`))
@@ -156,10 +156,10 @@ describe('CustomExerciseFormPage', () => {
     expect(form().pendingPick).toMatchObject({ source: 'custom' })
   })
 
-  it('Edit saves the changes and lands on the exercise page, replacing the form', async () => {
+  it('Edit saves the changes and returns to the exercise page it was opened from', async () => {
     const user = userEvent.setup()
     const row = await seedSsb()
-    const router = renderForm(`/exercises/custom/${row.id}/edit`)
+    const router = renderForm(`/exercises/custom/${row.id}/edit`, { from: `/exercises/custom/${row.id}` })
     const name = await screen.findByLabelText('Name')
     expect(name).toHaveValue('SSB Squat')
     await user.clear(name)

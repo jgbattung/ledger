@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useBlocker, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useBlocker, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Check, ChevronRight, CircleSlash } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
 import { EQUIPMENT_OPTIONS } from '@/components/library/equipmentOptions'
@@ -81,6 +81,7 @@ export function CustomExerciseFormPage() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const goBack = useGoBack('/more/library')
 
   const isEdit = id !== undefined
@@ -182,7 +183,10 @@ export function CustomExerciseFormPage() {
         await exercises.update(id, input)
         leaving.current = true
         store().reset()
-        navigate(exercisePath({ source: 'custom', exerciseId: id }), { replace: true })
+        // Back to the exercise page already in history; only a cold deep link
+        // (no history) replaces to it.
+        if (location.key !== 'default') navigate(-1)
+        else navigate(exercisePath({ source: 'custom', exerciseId: id }), { replace: true })
         return
       }
       const created = await exercises.create(input)

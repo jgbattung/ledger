@@ -91,6 +91,37 @@ describe('workoutExercises.swap', () => {
         [0, 0],
       ])
     })
+
+    it('maps by position among live rows after a removal', async () => {
+      const { id, bench } = await startWithPressHistory()
+      await sets.softDelete(bench.sets[0].id)
+      await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'reset')
+      const after = (await workouts.loadSession(id))!.exercises[0]
+      expect(after.sets.map((s) => [s.weight, s.reps])).toEqual([
+        [100, 8],
+        [90, 6],
+      ])
+    })
+
+    it("uses the new exercise's history, not the old one's or the current workout's", async () => {
+      const { programId, pushId } = await seedProgram([exercise('bench'), exercise('db-press')])
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      const [oldBench, oldPress] = (await workouts.loadSession(first))!.exercises
+      await sets.patch(oldBench.sets[0].id, { weight: 60, reps: 12 })
+      await sets.setCompleted(oldBench.sets[0].id, true)
+      await sets.patch(oldPress.sets[0].id, { weight: 30, reps: 10 })
+      await sets.setCompleted(oldPress.sets[0].id, true)
+      await workouts.finish(first)
+
+      const id = await workouts.startFromProgramDay(programId, pushId)
+      const [bench, press] = (await workouts.loadSession(id))!.exercises
+      await sets.patch(press.sets[0].id, { weight: 45, reps: 4 })
+      await sets.setCompleted(press.sets[0].id, true)
+
+      await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'reset')
+      const after = (await workouts.loadSession(id))!.exercises[0]
+      for (const set of after.sets) expect(set).toMatchObject({ weight: 30, reps: 10 })
+    })
   })
 
   it('repeated swaps keep the first original in swappedFrom', async () => {

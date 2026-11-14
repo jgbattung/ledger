@@ -112,3 +112,36 @@ test('a pre-filled set is checked with one tap, without opening the number pad',
   await expect(page.getByRole('button', { name: 'Set 1 weight in kilograms' })).toHaveText('100');
   await expect(page.getByRole('button', { name: /^Set 1 reps/ })).toHaveText(/^8/);
 });
+
+/** Swaps the open bench to Dumbbell Bench Press with the given sheet choice. */
+async function swapBenchToDbPress(page: Page, mode: RegExp) {
+  await page.getByRole('button', { name: 'Swap' }).click();
+  await expect(page).toHaveURL(/\/session\/swap\//);
+  await page.getByRole('searchbox').fill('dumbbell bench press');
+  await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click();
+  const sheet = page.getByRole('dialog', { name: /Swap to Dumbbell Bench Press/ });
+  await sheet.getByRole('button', { name: mode }).click();
+  await expect(page).toHaveURL(/\/session$/);
+  await expect(page.getByRole('heading', { level: 2, name: 'Dumbbell Bench Press' })).toBeVisible();
+}
+
+test('a reset swap pre-fills the rows from the new exercise, row by row', async ({ page }) => {
+  test.setTimeout(120_000);
+  await seedActiveProgram(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: BENCH })).toBeVisible();
+  await swapBenchToDbPress(page, /Keep targets/);
+  await logSet(page, 1, '30', '10');
+  await logSet(page, 2, '28', '9');
+  await finish(page);
+
+  await startPushA(page);
+  await expect(page.getByRole('button', { name: 'Set 1 weight in kilograms' })).not.toHaveText('30');
+  await swapBenchToDbPress(page, /Reset targets/);
+  await expect(page.getByRole('button', { name: 'Set 1 weight in kilograms' })).toHaveText('30');
+  await expect(page.getByRole('button', { name: /^Set 1 reps/ })).toHaveText(/^10/);
+  await expect(page.getByRole('button', { name: 'Set 2 weight in kilograms' })).toHaveText('28');
+  await expect(page.getByRole('button', { name: /^Set 2 reps/ })).toHaveText(/^9/);
+  await expect(page.getByRole('button', { name: 'Set 3 weight in kilograms' })).toHaveText('28');
+});

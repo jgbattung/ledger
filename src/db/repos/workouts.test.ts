@@ -124,6 +124,79 @@ describe('workouts.startFromProgramDay', () => {
     }
   })
 
+  describe('pre-fill from last session', () => {
+    /** Logs the first N rows of bench as the given weight x reps pairs, then finishes. */
+    async function finishBench(workoutId: string, logged: [number, number][]) {
+      const session = await workouts.loadSession(workoutId)
+      const rows = session!.exercises[0].sets
+      for (const [index, [weight, reps]] of logged.entries()) {
+        await sets.patch(rows[index].id, { weight, reps })
+        await sets.setCompleted(rows[index].id, true)
+      }
+      await workouts.finish(workoutId)
+    }
+
+    it('LIB-10: pre-fills each working row from the same row of last session', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [
+        [100, 8],
+        [90, 6],
+      ])
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench[0]).toMatchObject({ weight: 100, reps: 8, rir: 0, rirIsPlus: false })
+      expect(bench[1]).toMatchObject({ weight: 90, reps: 6, rir: 0, rirIsPlus: false })
+      for (const set of bench) {
+        expect(set.partialReps).toBeUndefined()
+        expect(set.completedAt).toBeUndefined()
+      }
+    })
+
+    it('rows beyond last session pre-fill from its final working set', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [
+        [100, 8],
+        [90, 6],
+      ])
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench).toHaveLength(3)
+      expect(bench[2]).toMatchObject({ weight: 90, reps: 6 })
+    })
+
+    it('ignores discarded and in-progress workouts', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [[100, 8]])
+
+      const discarded = await workouts.startFromProgramDay(programId, pushId)
+      await logAll(discarded, 12)
+      await workouts.discard(discarded)
+
+      const next = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(next))!.exercises[0].sets
+      expect(bench.map((set) => [set.weight, set.reps])).toEqual([
+        [100, 8],
+        [100, 8],
+        [100, 8],
+      ])
+    })
+
+    it('leaves an exercise with no history blank', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [[100, 8]])
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const fly = (await workouts.loadSession(second))!.exercises[1].sets
+      for (const set of fly) expect(set).toMatchObject({ weight: 0, reps: 0, rir: 0 })
+    })
+  })
+
   it('getInProgress finds only the live in-progress workout', async () => {
     expect(await workouts.getInProgress()).toBeUndefined()
     const { programId, pushId } = await seedProgram()

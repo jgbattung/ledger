@@ -3,7 +3,7 @@ import { newId, now } from '@/db/ids'
 import { createRepo } from '@/db/repos/base'
 import { programs } from '@/db/repos/programs'
 import { markDirty } from '@/db/repos/syncState'
-import { BLANK_SET, toTargetsSnapshot } from '@/workouts/model'
+import { BLANK_SET, prefillFor, toTargetsSnapshot } from '@/workouts/model'
 import type { ExerciseRef, Set as SetRecord, Workout, WorkoutExercise } from '@/db/types'
 
 const baseRepo = createRepo<Workout>(db.workouts, 'workouts')
@@ -96,6 +96,7 @@ export const workouts = {
           })
           await markDirty('workoutExercises', exerciseId)
 
+          const previous = await this.previousSets(source.exerciseRef, workoutId)
           for (let setIndex = 0; setIndex < (source.workingSets ?? 1); setIndex += 1) {
             const setId = newId()
             await db.sets.put({
@@ -107,6 +108,7 @@ export const workouts = {
               orderIndex: setIndex,
               type: 'working',
               ...BLANK_SET,
+              ...prefillFor(previous, setIndex),
             })
             await markDirty('sets', setId)
           }

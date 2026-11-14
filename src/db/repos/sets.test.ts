@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '@/db/ledger'
 import { resetDb } from '@/db/test-utils'
 import { sets } from '@/db/repos/sets'
+import { workouts } from '@/db/repos/workouts'
+import { seedProgram } from '@/workouts/test-fixtures'
 
 describe('sets repo - kg weight persistence (§3.13)', () => {
   beforeEach(async () => {
@@ -122,5 +124,49 @@ describe('sets repo - logging operations', () => {
     expect((await sets.get(first.id))?.completedAt).toBeTypeOf('number')
     await sets.setCompleted(first.id, false)
     expect((await sets.get(first.id))?.completedAt).toBeUndefined()
+  })
+})
+
+describe('sets.add - pre-fill from last session', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  /** Finishes a bench session of 100x8 and 90x6, then starts a new one trimmed to `rows` live rows. */
+  async function startWithHistory(rows: number) {
+    const { programId, pushId } = await seedProgram()
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const logged = (await workouts.loadSession(first))!.exercises[0].sets
+    await sets.patch(logged[0].id, { weight: 100, reps: 8 })
+    await sets.setCompleted(logged[0].id, true)
+    await sets.patch(logged[1].id, { weight: 90, reps: 6 })
+    await sets.setCompleted(logged[1].id, true)
+    await workouts.finish(first)
+
+    const second = await workouts.startFromProgramDay(programId, pushId)
+    const bench = (await workouts.loadSession(second))!.exercises[0]
+    for (const set of bench.sets.slice(rows)) await sets.softDelete(set.id)
+    return bench.exercise.id
+  }
+
+  it('maps the new row to the same row of last session', async () => {
+    const exerciseId = await startWithHistory(1)
+    expect(await sets.add(exerciseId)).toMatchObject({ weight: 90, reps: 6, rir: 0, rirIsPlus: false })
+  })
+
+  it('past last session keeps the weight above and blank reps', async () => {
+    const exerciseId = await startWithHistory(2)
+    const [, second] = await sets.listByWorkoutExercise(exerciseId)
+    await sets.patch(second.id, { weight: 95 })
+    const added = await sets.add(exerciseId)
+    expect(added).toMatchObject({ weight: 95, reps: 0 })
+  })
+
+  it('keeps the existing behaviour with no history', async () => {
+    const { programId, pushId } = await seedProgram()
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const bench = (await workouts.loadSession(id))!.exercises[0]
+    await sets.patch(bench.sets[2].id, { weight: 50 })
+    expect(await sets.add(bench.exercise.id)).toMatchObject({ weight: 50, reps: 0 })
   })
 })

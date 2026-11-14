@@ -124,6 +124,162 @@ describe('workouts.startFromProgramDay', () => {
     }
   })
 
+  describe('pre-fill from last session', () => {
+    /** Logs the first N rows of bench as the given weight x reps pairs, then finishes. */
+    async function finishBench(workoutId: string, logged: [number, number][]) {
+      const session = await workouts.loadSession(workoutId)
+      const rows = session!.exercises[0].sets
+      for (const [index, [weight, reps]] of logged.entries()) {
+        await sets.patch(rows[index].id, { weight, reps })
+        await sets.setCompleted(rows[index].id, true)
+      }
+      await workouts.finish(workoutId)
+    }
+
+    it('LIB-10: pre-fills each working row from the same row of last session', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [
+        [100, 8],
+        [90, 6],
+      ])
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench[0]).toMatchObject({ weight: 100, reps: 8, rir: 0, rirIsPlus: false })
+      expect(bench[1]).toMatchObject({ weight: 90, reps: 6, rir: 0, rirIsPlus: false })
+      for (const set of bench) {
+        expect(set.partialReps).toBeUndefined()
+        expect(set.completedAt).toBeUndefined()
+      }
+    })
+
+    it('rows beyond last session pre-fill from its final working set', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [
+        [100, 8],
+        [90, 6],
+      ])
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench).toHaveLength(3)
+      expect(bench[2]).toMatchObject({ weight: 90, reps: 6 })
+    })
+
+    it('ignores discarded and in-progress workouts', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [[100, 8]])
+
+      const discarded = await workouts.startFromProgramDay(programId, pushId)
+      await logAll(discarded, 12)
+      await workouts.discard(discarded)
+
+      const next = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(next))!.exercises[0].sets
+      expect(bench.map((set) => [set.weight, set.reps])).toEqual([
+        [100, 8],
+        [100, 8],
+        [100, 8],
+      ])
+    })
+
+    it('leaves an exercise with no history blank', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [[100, 8]])
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const fly = (await workouts.loadSession(second))!.exercises[1].sets
+      for (const set of fly) expect(set).toMatchObject({ weight: 0, reps: 0, rir: 0 })
+    })
+
+    it('uses the newest finished session when there are several', async () => {
+      const { programId, pushId } = await seedProgram()
+      const older = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(older, [[100, 8]])
+      const newer = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(newer, [[110, 5]])
+
+      const next = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(next))!.exercises[0].sets
+      expect(bench[0]).toMatchObject({ weight: 110, reps: 5 })
+    })
+
+    it('warm-up rows of last session do not take a working row', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [
+        [100, 8],
+        [90, 6],
+      ])
+      const benchId = (await workouts.loadSession(first))!.exercises[0].exercise.id
+      await db.sets.put({
+        id: 'warmup-1',
+        createdAt: 1,
+        updatedAt: 1,
+        deletedAt: null,
+        workoutExerciseId: benchId,
+        orderIndex: -1,
+        type: 'warmup',
+        weight: 40,
+        reps: 10,
+        rir: 0,
+        rirIsPlus: false,
+        completedAt: 1,
+      })
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench.map((set) => [set.weight, set.reps])).toEqual([
+        [100, 8],
+        [90, 6],
+        [90, 6],
+      ])
+    })
+
+    it('keeps full kg precision (§3.13)', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      await finishBench(first, [[102.0582, 8]])
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench[0].weight).toBe(102.0582)
+    })
+
+    it('neither reads nor writes exerciseMeta.lastUsed', async () => {
+      const { programId, pushId } = await seedProgram()
+      await db.exerciseMeta.put({
+        id: 'meta-bench',
+        createdAt: 1,
+        updatedAt: 1,
+        deletedAt: null,
+        source: 'db',
+        exerciseId: 'bench',
+        isFavorite: false,
+        lastUsed: { weight: 200, reps: 1, unit: 'kg', at: 1 },
+      })
+
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(first))!.exercises[0]
+      for (const set of bench.sets) expect(set).toMatchObject({ weight: 0, reps: 0 })
+
+      await finishBench(first, [[100, 8]])
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const next = (await workouts.loadSession(second))!.exercises[0]
+      await sets.add(next.exercise.id)
+      await workoutExercises.swap(next.exercise.id, ref('fly'), 'reset')
+
+      const metas = await db.exerciseMeta.toArray()
+      expect(metas).toHaveLength(1)
+      expect(metas[0].lastUsed).toEqual({ weight: 200, reps: 1, unit: 'kg', at: 1 })
+      expect(metas[0].updatedAt).toBe(1)
+    })
+  })
+
   it('getInProgress finds only the live in-progress workout', async () => {
     expect(await workouts.getInProgress()).toBeUndefined()
     const { programId, pushId } = await seedProgram()

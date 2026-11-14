@@ -2,6 +2,7 @@ import { db } from '@/db/ledger'
 import { now } from '@/db/ids'
 import { createRepo } from '@/db/repos/base'
 import { markDirty } from '@/db/repos/syncState'
+import { workouts } from '@/db/repos/workouts'
 import { BLANK_SET } from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
 
@@ -25,22 +26,32 @@ export const sets = {
   /**
    * Appends a working set. `orderIndex` is the last live index + 1 (never the
    * row count, which collides after a removal); weight and RIR are copied
-   * from the previous row and reps start blank.
+   * from the previous row and reps start blank. When last session has a row
+   * at the new position, weight and reps come from it instead (LIB-10).
    */
   async add(workoutExerciseId: string): Promise<SetRecord> {
-    return db.transaction('rw', db.sets, db.syncState, async () => {
-      const existing = await liveSets(workoutExerciseId)
-      const last = existing[existing.length - 1]
-      return baseRepo.create({
-        workoutExerciseId,
-        orderIndex: last ? last.orderIndex + 1 : 0,
-        type: 'working',
-        weight: last?.weight ?? BLANK_SET.weight,
-        reps: 0,
-        rir: last?.rir ?? BLANK_SET.rir,
-        rirIsPlus: last?.rirIsPlus ?? BLANK_SET.rirIsPlus,
-      })
-    })
+    return db.transaction(
+      'rw',
+      [db.sets, db.workouts, db.workoutExercises, db.syncState],
+      async () => {
+        const existing = await liveSets(workoutExerciseId)
+        const last = existing[existing.length - 1]
+        const exercise = await db.workoutExercises.get(workoutExerciseId)
+        const previous = exercise
+          ? await workouts.previousSets(exercise.exerciseRef, exercise.workoutId)
+          : []
+        const sameRow = previous[existing.length]
+        return baseRepo.create({
+          workoutExerciseId,
+          orderIndex: last ? last.orderIndex + 1 : 0,
+          type: 'working',
+          weight: sameRow?.weight ?? last?.weight ?? BLANK_SET.weight,
+          reps: sameRow?.reps ?? 0,
+          rir: last?.rir ?? BLANK_SET.rir,
+          rirIsPlus: last?.rirIsPlus ?? BLANK_SET.rirIsPlus,
+        })
+      },
+    )
   },
 
   /** Writes only the logged fields of a set. */

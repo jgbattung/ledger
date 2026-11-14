@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { Dumbbell, X } from 'lucide-react'
 import { exerciseImageUrl } from '@/exercises/catalog'
-import type { Exercise } from '@/exercises/types'
+import { refKey } from '@/exercises/listing'
+import type { ListedExercise } from '@/exercises/listing'
 
 /**
  * Horizontally scrolling tray of the picker's current selection, in add order.
@@ -12,8 +13,8 @@ export function PickerTray({
   selected,
   onDeselect,
 }: {
-  selected: Exercise[]
-  onDeselect: (exerciseId: string) => void
+  selected: ListedExercise[]
+  onDeselect: (key: string) => void
 }) {
   const trayRef = useRef<HTMLUListElement>(null)
   const count = selected.length
@@ -31,7 +32,7 @@ export function PickerTray({
     >
       {selected.map((exercise) => (
         <li
-          key={exercise.id}
+          key={refKey(exercise.ref)}
           className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-muted pr-0.5 pl-[3px] text-[13px] font-medium"
         >
           {exercise.images.length > 0 ? (
@@ -52,7 +53,7 @@ export function PickerTray({
           <button
             type="button"
             aria-label={`Remove ${exercise.name} from selection`}
-            onClick={() => onDeselect(exercise.id)}
+            onClick={() => onDeselect(refKey(exercise.ref))}
             className="relative flex size-[30px] shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none after:absolute after:-inset-[7px] after:content-[''] focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <X className="size-4" aria-hidden="true" />

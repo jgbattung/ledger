@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import { getAllExercises } from './catalog'
 import { getFilterOptions, filterExercises, formatFilterValue, normalize } from './filtering'
 import type { LibraryFilters } from './filtering'
+import type { ListedExercise } from './listing'
+import type { CustomExercise } from '@/db/types'
 import type { Muscle } from './types'
 
 const noFilters: LibraryFilters = { muscle: null, category: null, equipment: null }
@@ -55,7 +57,7 @@ describe('filterExercises - search', () => {
     const upper = filterExercises('CURL', noFilters)
     const lower = filterExercises('curl', noFilters)
     expect(upper.length).toBeGreaterThan(0)
-    expect(upper.map((e) => e.id)).toEqual(lower.map((e) => e.id))
+    expect(upper.map((e) => e.ref.exerciseId)).toEqual(lower.map((e) => e.ref.exerciseId))
   })
 
   it('matches mid-word substrings', () => {
@@ -136,9 +138,9 @@ describe('filterExercises - facets', () => {
     const results = filterExercises('press', { ...noFilters, equipment: 'barbell' })
     // The facet narrows the search result set without changing which
     // exercises match the query, nor their relative ranking.
-    const expectedIds = searchOnly.filter((e) => e.equipment === 'barbell').map((e) => e.id)
+    const expectedIds = searchOnly.filter((e) => e.equipment === 'barbell').map((e) => e.ref.exerciseId)
     expect(results.length).toBeGreaterThan(0)
-    expect(results.map((e) => e.id)).toEqual(expectedIds)
+    expect(results.map((e) => e.ref.exerciseId)).toEqual(expectedIds)
     expect(results.every((e) => e.equipment === 'barbell')).toBe(true)
   })
 
@@ -146,7 +148,7 @@ describe('filterExercises - facets', () => {
     const all = getAllExercises()
     const results = filterExercises('', { ...noFilters, category: 'strength' })
     const expectedOrder = all.filter((e) => e.category === 'strength').map((e) => e.id)
-    expect(results.map((e) => e.id)).toEqual(expectedOrder)
+    expect(results.map((e) => e.ref.exerciseId)).toEqual(expectedOrder)
   })
 })
 
@@ -162,14 +164,14 @@ describe('formatFilterValue', () => {
 })
 
 describe('filterExercises - token search (LG-048)', () => {
-  const ids = (query: string) => filterExercises(query, noFilters).map((e) => e.id)
+  const ids = (query: string) => filterExercises(query, noFilters).map((e) => e.ref.exerciseId)
   const words = (e: { name: string; aliases: string[] }) =>
     new Set([e.name, ...e.aliases].flatMap((n) => normalize(n).split(' ')))
 
   it('AC1: word order does not change the result', () => {
     const a = filterExercises('incline close grip bench', noFilters)
     const b = filterExercises('bench close grip incline', noFilters)
-    expect(a.map((e) => e.id)).toEqual(b.map((e) => e.id))
+    expect(a.map((e) => e.ref.exerciseId)).toEqual(b.map((e) => e.ref.exerciseId))
     expect(a.some((e) => e.name === 'Incline Close Grip Bench Press')).toBe(true)
   })
 
@@ -285,7 +287,7 @@ describe('filterExercises - token search (LG-048)', () => {
 describe('filterExercises - token search edge cases (LG-048 QA)', () => {
   const all = getAllExercises()
   const ids = (query: string, filters: LibraryFilters = noFilters) =>
-    filterExercises(query, filters).map((e) => e.id)
+    filterExercises(query, filters).map((e) => e.ref.exerciseId)
   const names = (e: { name: string; aliases: string[] }) => [e.name, ...e.aliases].map(normalize)
   const words = (e: { name: string; aliases: string[] }) =>
     new Set(names(e).flatMap((n) => n.split(' ')))
@@ -407,11 +409,11 @@ describe('filterExercises - token search edge cases (LG-048 QA)', () => {
     expect(presses.length).toBeGreaterThan(1)
     expect(presses.some((e) => e.name.includes('Bench Press'))).toBe(true)
     const pressOwners = all.filter((e) => words(e).has('press'))
-    for (const e of pressOwners) expect(presses.map((x) => x.id)).toContain(e.id)
+    for (const e of pressOwners) expect(presses.map((x) => x.ref.exerciseId)).toContain(e.id)
 
     const benches = filterExercises('benches', noFilters)
     expect(benches.length).toBeGreaterThan(0)
-    expect(benches.every((e) => words(e).has('bench') || cheapIds('benches').includes(e.id))).toBe(
+    expect(benches.every((e) => words(e).has('bench') || cheapIds('benches').includes(e.ref.exerciseId))).toBe(
       true,
     )
 
@@ -469,8 +471,8 @@ describe('filterExercises - token search edge cases (LG-048 QA)', () => {
     // Every exact "press" match scores the same, so that leading block must
     // be in catalog order.
     const press = filterExercises('press', noFilters)
-    const exactBlock = press.filter((e) => words(e).has('press')).map((e) => e.id)
-    expect(press.slice(0, exactBlock.length).map((e) => e.id)).toEqual(exactBlock)
+    const exactBlock = press.filter((e) => words(e).has('press')).map((e) => e.ref.exerciseId)
+    expect(press.slice(0, exactBlock.length).map((e) => e.ref.exerciseId)).toEqual(exactBlock)
     expect(exactBlock).toEqual(
       [...exactBlock].sort((a, b) => catalogIndex.get(a)! - catalogIndex.get(b)!),
     )
@@ -485,12 +487,12 @@ describe('filterExercises - token search edge cases (LG-048 QA)', () => {
     ids('')
     ids('b')
     expect(ids('dumbell press')).toEqual(first)
-    expect(filterExercises('', noFilters).map((e) => e.id)).toEqual(all.map((e) => e.id))
+    expect(filterExercises('', noFilters).map((e) => e.ref.exerciseId)).toEqual(all.map((e) => e.id))
   })
 
   it('search combined with each facet narrows the search result without reordering it', () => {
     const options = getFilterOptions()
-    const facetCases: { filters: LibraryFilters; keep: (e: (typeof all)[number]) => boolean }[] = [
+    const facetCases: { filters: LibraryFilters; keep: (e: ListedExercise) => boolean }[] = [
       {
         filters: { ...noFilters, muscle: options.muscles[0] },
         keep: (e) => e.primaryMuscles.includes(options.muscles[0] as Muscle),
@@ -515,7 +517,7 @@ describe('filterExercises - token search edge cases (LG-048 QA)', () => {
       const unfiltered = filterExercises(q, noFilters)
       for (const { filters, keep } of facetCases) {
         expect(ids(q, filters), `${q} + ${JSON.stringify(filters)}`).toEqual(
-          unfiltered.filter(keep).map((e) => e.id),
+          unfiltered.filter(keep).map((e) => e.ref.exerciseId),
         )
       }
     }
@@ -549,5 +551,67 @@ describe('perf (LIB-2 bound)', () => {
     }
     const elapsed = performance.now() - start
     expect(elapsed / 100).toBeLessThan(100)
+  })
+})
+
+describe('filterExercises with custom exercises', () => {
+  const ssb: CustomExercise = {
+    id: 'ssb-1',
+    createdAt: 1,
+    updatedAt: 1,
+    deletedAt: null,
+    name: 'SSB Squat',
+    primaryMuscles: ['quads'],
+    secondaryMuscles: ['glutes'],
+    equipmentTag: 'barbell',
+    mechanic: 'compound',
+  }
+  const names = (query: string, filters = noFilters, custom = [ssb]) =>
+    filterExercises(query, filters, custom).map((e) => e.name)
+
+  it('finds a custom exercise by a word, in any order, and by a typo', () => {
+    expect(names('ssb')).toContain('SSB Squat')
+    expect(names('squat ssb')).toContain('SSB Squat')
+    // 'sbb' is 3 letters, below the 5-letter typo threshold, so the typo is on 'squat'.
+    expect(names('ssb sqaut')).toContain('SSB Squat')
+  })
+
+  it('returns the custom ref, isCustom and strength category', () => {
+    const found = filterExercises('ssb', noFilters, [ssb]).find((e) => e.isCustom)
+    expect(found).toMatchObject({
+      ref: { source: 'custom', exerciseId: 'ssb-1' },
+      category: 'strength',
+      mechanic: 'compound',
+      equipment: 'barbell',
+      images: [],
+    })
+  })
+
+  it('places a custom exercise alphabetically among catalog rows when the query is empty', () => {
+    const results = filterExercises('', noFilters, [ssb])
+    expect(results).toHaveLength(datasetSize + 1)
+    const sorted = [...results].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    )
+    expect(results.map((e) => e.name)).toEqual(sorted.map((e) => e.name))
+  })
+
+  it('catalog-only results are unchanged by an empty custom list', () => {
+    expect(filterExercises('press', noFilters, []).map((e) => e.ref.exerciseId)).toEqual(
+      filterExercises('press', noFilters).map((e) => e.ref.exerciseId),
+    )
+  })
+
+  it('applies facets to custom rows', () => {
+    expect(names('ssb', { ...noFilters, equipment: 'barbell' })).toContain('SSB Squat')
+    expect(names('ssb', { ...noFilters, equipment: 'dumbbell' })).not.toContain('SSB Squat')
+    expect(names('ssb', { ...noFilters, muscle: 'quads' })).toContain('SSB Squat')
+    expect(names('ssb', { ...noFilters, muscle: 'chest' })).not.toContain('SSB Squat')
+    expect(names('ssb', { ...noFilters, category: 'strength' })).toContain('SSB Squat')
+    expect(names('ssb', { ...noFilters, category: 'cardio' })).not.toContain('SSB Squat')
+  })
+
+  it('never shows a custom exercise that was not passed in', () => {
+    expect(names('ssb', noFilters, [])).not.toContain('SSB Squat')
   })
 })

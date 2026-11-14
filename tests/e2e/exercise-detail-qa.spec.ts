@@ -38,10 +38,14 @@ test('Android Back from the exercise page restores Library query and filters; ta
   await page.goto('/more');
   await page.goto('/more/library');
   await page.getByLabel('Search exercises').fill('press');
+  const count = page.getByText(/^\d+ exercises?$/);
+  // The list renders from a deferred query: wait for each result to settle before reading it.
+  await expect(count).not.toHaveText(/^4\d\d exercises$/);
+  const queryOnlyText = await count.textContent();
   await page.getByRole('button', { name: /^Equipment/ }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Dumbbell', exact: true }).click();
   await expect(page).toHaveURL(/equipment=dumbbell/);
-  const count = page.getByText(/^\d+ exercises?$/);
+  await expect(count).not.toHaveText(queryOnlyText ?? '');
   const countText = await count.textContent();
 
   await page.locator('div.divide-y > a').first().click();
@@ -160,7 +164,7 @@ test('the program picker and swap picker rows keep their size and carry no info 
   )) {
     expect(h).toBeGreaterThanOrEqual(56);
   }
-  await expect(page.locator('a[href^="/exercises/"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /info/i })).toHaveCount(0);
 
   await page.goto('/workout');
@@ -176,7 +180,7 @@ test('the program picker and swap picker rows keep their size and carry no info 
   )) {
     expect(h).toBeGreaterThanOrEqual(56);
   }
-  await expect(page.locator('a[href^="/exercises/"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /info/i })).toHaveCount(0);
 });
 

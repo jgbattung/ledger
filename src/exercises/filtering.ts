@@ -10,8 +10,11 @@
  * is matched against the pooled words of an exercise's canonical name and
  * aliases (see the search index below); all words must match, in any order.
  */
+import type { CustomExercise } from '@/db/types'
 import { getAllExercises } from './catalog'
-import type { Exercise, Muscle } from './types'
+import { listedFromCatalog } from './listing'
+import type { ListedExercise } from './listing'
+import type { Muscle } from './types'
 
 export type LibraryFilters = {
   muscle: string | null
@@ -64,7 +67,7 @@ export function normalize(value: string): string {
 }
 
 type IndexedExercise = {
-  exercise: Exercise
+  listed: ListedExercise
   /** Distinct words across the normalized name and all aliases (pooled). */
   tokens: string[]
   /** Each normalized name/alias with spaces removed ("pullups"). */
@@ -73,19 +76,43 @@ type IndexedExercise = {
 
 let searchIndex: IndexedExercise[] | null = null
 
+function indexListed(listed: ListedExercise): IndexedExercise {
+  const names = [listed.name, ...listed.aliases].map(normalize)
+  return {
+    listed,
+    tokens: [...new Set(names.flatMap((n) => n.split(' ')))],
+    joined: names.map((n) => n.replace(/ /g, '')),
+  }
+}
+
 function getSearchIndex(): IndexedExercise[] {
   if (!searchIndex) {
-    searchIndex = getAllExercises().map((exercise) => {
-      const names = [exercise.name, ...exercise.aliases].map(normalize)
-      return {
-        exercise,
-        tokens: [...new Set(names.flatMap((n) => n.split(' ')))],
-        joined: names.map((n) => n.replace(/ /g, '')),
-      }
-    })
+    searchIndex = getAllExercises().map((exercise) => indexListed(listedFromCatalog(exercise)))
   }
   return searchIndex
 }
+
+/** Custom exercises are indexed per call (a handful of rows) with the same
+ * normalisation as the catalog. Custom means strength; it has no photos. */
+function indexCustom(custom: CustomExercise[]): IndexedExercise[] {
+  return custom.map((row) =>
+    indexListed({
+      ref: { source: 'custom', exerciseId: row.id },
+      name: row.name,
+      aliases: [],
+      primaryMuscles: row.primaryMuscles,
+      secondaryMuscles: row.secondaryMuscles,
+      equipment: row.equipmentTag,
+      category: 'strength',
+      mechanic: row.mechanic,
+      images: [],
+      isCustom: true,
+    }),
+  )
+}
+
+const byName = (a: ListedExercise, b: ListedExercise) =>
+  a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
 
 /** Optimal-string-alignment distance (insert, delete, substitute, adjacent
  * swap). Returns 2 as soon as the distance is known to exceed 1, since the
@@ -154,19 +181,26 @@ function scoreToken(q: string, { tokens, joined }: IndexedExercise): number {
   return 0
 }
 
-/** Search + facet filter. Every query word must match (AND, any order);
- * with a query, results are ranked by summed match tier (ties keep catalog
- * order), with no query they stay in catalog order. */
-export function filterExercises(query: string, filters: LibraryFilters): Exercise[] {
+/** Search + facet filter over the bundled catalog and the given custom
+ * exercises. Every query word must match (AND, any order); with a query,
+ * results are ranked by summed match tier, with no query they are in name
+ * order. Ties keep case-insensitive name order, so custom and bundled rows
+ * interleave. Pass only live custom exercises (`selectLive`). */
+export function filterExercises(
+  query: string,
+  filters: LibraryFilters,
+  custom: CustomExercise[] = [],
+): ListedExercise[] {
   const normalizedQuery = normalize(query)
   const queryTokens = normalizedQuery ? normalizedQuery.split(' ') : []
-  const matches: { exercise: Exercise; score: number }[] = []
+  const matches: { listed: ListedExercise; score: number }[] = []
 
-  for (const entry of getSearchIndex()) {
-    const { exercise } = entry
-    if (filters.muscle && !exercise.primaryMuscles.includes(filters.muscle as Muscle)) continue
-    if (filters.category && exercise.category !== filters.category) continue
-    if (filters.equipment && exercise.equipment !== filters.equipment) continue
+  const entries = custom.length > 0 ? [...getSearchIndex(), ...indexCustom(custom)] : getSearchIndex()
+  for (const entry of entries) {
+    const { listed } = entry
+    if (filters.muscle && !listed.primaryMuscles.includes(filters.muscle as Muscle)) continue
+    if (filters.category && listed.category !== filters.category) continue
+    if (filters.equipment && listed.equipment !== filters.equipment) continue
 
     let score = 0
     for (const q of queryTokens) {
@@ -177,11 +211,13 @@ export function filterExercises(query: string, filters: LibraryFilters): Exercis
       }
       score += tier
     }
-    if (score >= 0) matches.push({ exercise, score })
+    if (score >= 0) matches.push({ listed, score })
   }
 
-  if (queryTokens.length > 0) matches.sort((a, b) => b.score - a.score)
-  return matches.map(({ exercise }) => exercise)
+  // With no query every score is 0, so this is plain name order. The catalog is
+  // already name ordered, so catalog-only results keep their LG-048 order.
+  matches.sort((a, b) => b.score - a.score || byName(a.listed, b.listed))
+  return matches.map(({ listed }) => listed)
 }
 
 /** Display-only Title-case formatting for filter values. Never feed the

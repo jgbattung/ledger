@@ -42,7 +42,7 @@ describe('createRepo conventions (via customExercises)', () => {
     const created = await customExercises.create({
       name: 'Deadlift',
       primaryMuscles: ['hamstrings'],
-      secondaryMuscles: ['back'],
+      secondaryMuscles: ['lats'],
     })
 
     await customExercises.softDelete(created.id)
@@ -55,7 +55,7 @@ describe('createRepo conventions (via customExercises)', () => {
   it('softDelete stamps deletedAt and bumps updatedAt (replicates as an update)', async () => {
     const created = await customExercises.create({
       name: 'Row',
-      primaryMuscles: ['back'],
+      primaryMuscles: ['lats'],
       secondaryMuscles: ['biceps'],
     })
 
@@ -93,7 +93,7 @@ describe('createRepo conventions (via customExercises)', () => {
   it('create/update/softDelete each leave a matching syncState row', async () => {
     const created = await customExercises.create({
       name: 'Overhead Press',
-      primaryMuscles: ['shoulders'],
+      primaryMuscles: ['front delts'],
       secondaryMuscles: ['triceps'],
     })
     let dirty = await db.syncState.get(['customExercises', created.id])

@@ -11,7 +11,7 @@ import { sets } from '@/db/repos/sets'
 import { programTreeToDraft } from '@/programs/model'
 import { useProgramDraftStore } from '@/stores/programDraftStore'
 import type { DraftExercise, ProgramDraft } from '@/programs/model'
-import type { Program } from '@/db/types'
+import type { ExerciseRef, Program } from '@/db/types'
 
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -578,5 +578,50 @@ describe('programs rotation (LG-021)', () => {
     await programs.setActive(draft.id)
     await programs.completeDay(draft.id, draft.days[0].id)
     expect(await state(draft.id)).toEqual({ done: [], index: 0 })
+  })
+})
+
+describe('programs.namesUsingExercise', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  const custom = { source: 'custom' as const, exerciseId: 'ssb' }
+
+  function draftWith(name: string, refs: ExerciseRef[]): ProgramDraft {
+    return {
+      id: newId(),
+      isNew: true,
+      name,
+      isActive: false,
+      isArchived: false,
+      days: [
+        {
+          id: newId(),
+          name: 'Legs',
+          exercises: refs.map((exerciseRef) => ({ id: newId(), exerciseRef, ...COMPLETE })),
+        },
+      ],
+    }
+  }
+
+  it('lists active and inactive programs, skipping archived, deleted and unrelated ones', async () => {
+    const active = draftWith('Active', [custom])
+    const inactive = draftWith('Inactive', [ref('a'), custom])
+    const archived = draftWith('Archived', [custom])
+    const deleted = draftWith('Deleted', [custom])
+    const unrelated = draftWith('Unrelated', [ref('a')])
+    for (const draft of [active, inactive, archived, deleted, unrelated]) {
+      await programs.saveTree(draft)
+    }
+    await programs.setActive(active.id)
+    await programs.archive(archived.id)
+    await programs.softDeleteCascade(deleted.id)
+
+    expect((await programs.namesUsingExercise(custom)).sort()).toEqual(['Active', 'Inactive'])
+    expect(await programs.namesUsingExercise({ source: 'db', exerciseId: 'a' })).toEqual([
+      'Inactive',
+      'Unrelated',
+    ])
   })
 })

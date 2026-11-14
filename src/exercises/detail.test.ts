@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { resetDb } from '@/db/test-utils'
-import { customExercises } from '@/db/repos'
+import { resetAndHydrateCustomExercises } from '@/test/customExercises'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 import { getExerciseById } from '@/exercises/catalog'
 import { exercisePath, loadExerciseDetail } from '@/exercises/detail'
 import type { ExerciseRef } from '@/db/types'
@@ -10,6 +11,7 @@ const db = (exerciseId: string): ExerciseRef => ({ source: 'db', exerciseId })
 describe('loadExerciseDetail', () => {
   beforeEach(async () => {
     await resetDb()
+    await resetAndHydrateCustomExercises()
   })
 
   it('maps every field of a bundled exercise', async () => {
@@ -27,6 +29,7 @@ describe('loadExerciseDetail', () => {
       mechanic: source.mechanic,
       instructions: source.instructions,
       images: source.images,
+      deleted: false,
     })
     expect(detail!.aliases.length).toBeGreaterThan(0)
     expect(detail!.images).toHaveLength(2)
@@ -40,11 +43,12 @@ describe('loadExerciseDetail', () => {
   })
 
   it('maps a custom exercise created through the repo', async () => {
-    const row = await customExercises.create({
+    const row = await useCustomExerciseStore.getState().create({
       name: 'Sandbag Carry',
       primaryMuscles: ['forearms'],
       secondaryMuscles: ['abs'],
-      equipmentTag: 'sandbag',
+      equipmentTag: 'other',
+      mechanic: 'compound',
       notes: 'Hug it high',
     })
     const ref: ExerciseRef = { source: 'custom', exerciseId: row.id }
@@ -55,23 +59,31 @@ describe('loadExerciseDetail', () => {
       aliases: [],
       primaryMuscles: ['forearms'],
       secondaryMuscles: ['abs'],
-      equipment: 'sandbag',
-      category: undefined,
-      mechanic: undefined,
+      equipment: 'other',
+      category: 'strength',
+      mechanic: 'compound',
       instructions: [],
       images: [],
       notes: 'Hug it high',
+      deleted: false,
     })
   })
 
-  it('returns undefined for a soft-deleted custom exercise', async () => {
-    const row = await customExercises.create({
+  it('returns a soft-deleted custom exercise flagged deleted, with mechanic and category mapped', async () => {
+    const row = await useCustomExerciseStore.getState().create({
       name: 'Gone',
-      primaryMuscles: [],
+      primaryMuscles: ['quads'],
       secondaryMuscles: [],
+      mechanic: 'isolation',
     })
-    await customExercises.softDelete(row.id)
-    expect(await loadExerciseDetail({ source: 'custom', exerciseId: row.id })).toBeUndefined()
+    await useCustomExerciseStore.getState().remove(row.id)
+    expect(await loadExerciseDetail({ source: 'custom', exerciseId: row.id })).toMatchObject({
+      name: 'Gone',
+      isCustom: true,
+      deleted: true,
+      mechanic: 'isolation',
+      category: 'strength',
+    })
   })
 
   it('returns undefined for an unknown id', async () => {

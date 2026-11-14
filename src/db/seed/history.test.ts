@@ -6,6 +6,7 @@ import { programs } from '@/db/repos'
 import { getExerciseById } from '@/exercises/catalog'
 import { toTargetsSnapshot } from '@/workouts/model'
 import { buildHistory } from '@/db/seed/history'
+import { SSB_PROGRESSION } from '@/db/seed/custom'
 import type { SeedHistory } from '@/db/seed/history'
 import { seedDatabase } from '@/db/seed'
 import { FBEOD_NAME, PPL_NAME, PROGRESSION, PULL_DAY, PUSH_DAY } from '@/db/seed/programs'
@@ -33,8 +34,21 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
+/** Loads for the seeded custom exercise, whose id is random per seed run. */
+function customProgression() {
+  const custom = trees.ppl.days
+    .flatMap((day) => day.exercises)
+    .filter((e) => e.exerciseRef.source === 'custom')
+  return Object.fromEntries(custom.map((e) => [e.exerciseRef.exerciseId, SSB_PROGRESSION]))
+}
+
 function build(anchor = ANCHOR, seed?: number): SeedHistory {
-  return buildHistory({ trees, anchor, rng: createRng(seed) })
+  return buildHistory({
+    trees,
+    anchor,
+    rng: createRng(seed),
+    progression: customProgression(),
+  })
 }
 
 /** Day offset of a timestamp relative to the local start of the anchor day. */
@@ -286,7 +300,7 @@ describe.each(SEEDS)('buildHistory invariants (rng seed %i)', (seed) => {
     }
 
     for (const [id, list] of sessions) {
-      const { startKg, incrementKg } = PROGRESSION[id]
+      const { startKg, incrementKg } = PROGRESSION[id] ?? customProgression()[id]
       let previous: { weight: number; topped: boolean } | undefined
       for (const { exercise, sets } of list) {
         const weight = sets[0].weight

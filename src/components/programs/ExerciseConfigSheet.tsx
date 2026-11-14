@@ -1,6 +1,7 @@
 import { useId, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
 import { Link } from 'react-router-dom'
-import { Info } from 'lucide-react'
+import { CircleAlert, Info } from 'lucide-react'
+import { FieldError } from '@/components/ui/field-error'
 import { FIELD_CLASS } from '@/components/ui/text-field-sheet'
 import {
   Sheet,
@@ -92,8 +93,9 @@ export function ExerciseConfigSheet({
           ) : null}
         </SheetHeader>
         {notice ? (
-          <SheetDescription className="shrink-0 px-4 pb-3 text-destructive">
-            {notice}
+          <SheetDescription className="flex shrink-0 items-start gap-1.5 px-4 pb-3 text-foreground">
+            <CircleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            <span>{notice}</span>
           </SheetDescription>
         ) : null}
         {/* Mounted only while open (Radix unmounts closed content), so the
@@ -318,15 +320,6 @@ function ConfigForm({
   )
 }
 
-function FieldError({ id, message }: { id: string; message?: string }) {
-  if (!message) return null
-  return (
-    <p id={id} className="text-sm text-destructive">
-      {message}
-    </p>
-  )
-}
-
 function NumberInput({
   id,
   ariaLabel,
@@ -366,7 +359,7 @@ function NumberInput({
       className={cn(
         FIELD_CLASS,
         'min-h-touch-min min-w-0 tabular-nums',
-        invalid && 'border-destructive',
+        invalid && 'border-foreground',
       )}
     />
   )

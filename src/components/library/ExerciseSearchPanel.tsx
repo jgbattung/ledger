@@ -1,11 +1,56 @@
 import { useDeferredValue, useMemo, useState, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { ExerciseSearchField } from '@/components/library/ExerciseSearchField'
 import { FilterChipRow } from '@/components/library/FilterChipRow'
 import { FilterSheet } from '@/components/library/FilterSheet'
 import type { Facet } from '@/components/library/types'
 import { filterExercises, getFilterOptions } from '@/exercises/filtering'
 import type { LibraryFilters } from '@/exercises/filtering'
-import type { Exercise } from '@/exercises/types'
+import { refKey } from '@/exercises/listing'
+import type { ListedExercise } from '@/exercises/listing'
+import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore'
+
+export function EmptyResults({
+  query,
+  createHref,
+  onReset,
+}: {
+  query: string
+  createHref?: (query: string) => string
+  onReset: () => void
+}) {
+  const typed = query.trim()
+  const canCreate = createHref !== undefined && typed !== ''
+  return (
+    <div className="flex min-h-40 flex-col items-center justify-center gap-3 py-8 text-center">
+      <p className="text-base text-foreground">No exercises match</p>
+      <p className="text-sm text-muted-foreground">
+        {canCreate
+          ? 'Nothing in the library is called that.'
+          : 'Nothing matches your search and filters. Try clearing them.'}
+      </p>
+      {canCreate ? (
+        <Link
+          to={createHref(typed)}
+          className="flex min-h-touch-min items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          Create &quot;{typed}&quot;
+        </Link>
+      ) : null}
+      <button
+        type="button"
+        onClick={onReset}
+        className={
+          canCreate
+            ? 'min-h-touch-min rounded-md bg-secondary px-4 text-sm font-medium text-secondary-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+            : 'min-h-touch-min rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+        }
+      >
+        Clear search & filters
+      </button>
+    </div>
+  )
+}
 
 const EMPTY_FILTERS: LibraryFilters = { muscle: null, category: null, equipment: null }
 
@@ -20,17 +65,24 @@ export function ExerciseSearchPanel({
   header,
   renderRow,
   footer,
+  createHref,
 }: {
   header: ReactNode
-  renderRow: (exercise: Exercise) => ReactNode
+  renderRow: (exercise: ListedExercise) => ReactNode
   footer?: ReactNode
+  /** Where `Create "query"` goes (the custom exercise form); omit to hide it. */
+  createHref?: (query: string) => string
 }) {
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<LibraryFilters>(EMPTY_FILTERS)
   const [openFacet, setOpenFacet] = useState<Facet | null>(null)
 
   const deferredQuery = useDeferredValue(query)
-  const results = useMemo(() => filterExercises(deferredQuery, filters), [deferredQuery, filters])
+  const custom = useCustomExerciseStore(selectLive)
+  const results = useMemo(
+    () => filterExercises(deferredQuery, filters, custom),
+    [deferredQuery, filters, custom],
+  )
   const filterOptions = useMemo(() => getFilterOptions(), [])
 
   const facetOptions: Record<Facet, string[]> = {
@@ -64,23 +116,11 @@ export function ExerciseSearchPanel({
         </p>
 
         {results.length === 0 ? (
-          <div className="flex min-h-40 flex-col items-center justify-center gap-3 py-8 text-center">
-            <p className="text-base text-foreground">No exercises match</p>
-            <p className="text-sm text-muted-foreground">
-              Nothing matches your search and filters. Try clearing them.
-            </p>
-            <button
-              type="button"
-              onClick={reset}
-              className="min-h-touch-min rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-              Clear search & filters
-            </button>
-          </div>
+          <EmptyResults query={query} createHref={createHref} onReset={reset} />
         ) : (
           <ul className="mt-1 divide-y divide-border">
             {results.map((exercise) => (
-              <li key={exercise.id}>{renderRow(exercise)}</li>
+              <li key={refKey(exercise.ref)}>{renderRow(exercise)}</li>
             ))}
           </ul>
         )}

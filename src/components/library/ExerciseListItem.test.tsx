@@ -1,11 +1,12 @@
 import { render } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { ExerciseListItem } from './ExerciseListItem'
-import type { Exercise } from '@/exercises/types'
+import type { ListedExercise } from '@/exercises/listing'
 
-function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
+function makeExercise(overrides: Partial<ListedExercise> = {}): ListedExercise {
   return {
-    id: 'test-exercise',
+    ref: { source: 'db', exerciseId: 'test-exercise' },
+    isCustom: false,
     name: 'Test Exercise',
     aliases: [],
     primaryMuscles: ['chest'],
@@ -13,7 +14,6 @@ function makeExercise(overrides: Partial<Exercise> = {}): Exercise {
     equipment: 'barbell',
     category: 'strength',
     mechanic: 'compound',
-    instructions: ['Do it.'],
     images: ['Test_Exercise/0.jpg'],
     ...overrides,
   }
@@ -54,5 +54,17 @@ describe('ExerciseListItem', () => {
     )
     expect(getByText('Already in Push')).toBeInTheDocument()
     expect(queryByText(/Chest/)).toBeNull()
+  })
+
+  it('shows the Custom pill only for a custom exercise', () => {
+    const custom = render(
+      <ExerciseListItem
+        exercise={makeExercise({ isCustom: true, ref: { source: 'custom', exerciseId: 'c1' }, images: [] })}
+      />,
+    )
+    expect(custom.getByText('Custom')).toBeInTheDocument()
+    custom.unmount()
+    const bundled = render(<ExerciseListItem exercise={makeExercise()} />)
+    expect(bundled.queryByText('Custom')).toBeNull()
   })
 })

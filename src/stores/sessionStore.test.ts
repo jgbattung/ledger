@@ -4,7 +4,9 @@ import { resetDb } from '@/db/test-utils'
 import { workouts } from '@/db/repos/workouts'
 import { useSessionStore } from '@/stores/sessionStore'
 import { __resetRestTimerForTests, useRestTimerStore } from '@/stores/restTimerStore'
-import { seedProgram } from '@/workouts/test-fixtures'
+import { exercise, seedProgram } from '@/workouts/test-fixtures'
+import { exerciseName } from '@/programs/model'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 
 const store = () => useSessionStore.getState()
 const settle = async () => {
@@ -209,6 +211,29 @@ describe('sessionStore', () => {
     await store().swap(bench.exercise.id, { source: 'db', exerciseId: 'db-press' }, 'keep')
     expect(store().exercises[0].exercise.exerciseRef.exerciseId).toBe('db-press')
     expect(store().exercises[0].exercise.swappedFrom?.exerciseId).toBe('bench')
+  })
+
+  it('a deleted custom exercise in the program day is still started, named and loggable (LIB-7, decision C)', async () => {
+    const row = await useCustomExerciseStore.getState().create({
+      name: 'SSB Squat',
+      primaryMuscles: ['quads'],
+      secondaryMuscles: [],
+      mechanic: 'compound',
+    })
+    const customRef = { source: 'custom' as const, exerciseId: row.id }
+    await useCustomExerciseStore.getState().remove(row.id)
+    const seeded = await seedProgram([{ ...exercise('bench'), exerciseRef: customRef }])
+    await store().start(seeded.programId, seeded.pushId)
+
+    const entry = store().exercises[0]
+    expect(entry.exercise.exerciseRef).toEqual(customRef)
+    expect(exerciseName(entry.exercise.exerciseRef)).toBe('SSB Squat')
+    const set = entry.sets[0]
+    store().openPad(set.id, 'reps')
+    store().padKey('8')
+    store().toggleComplete(set.id)
+    await store().finish()
+    expect((await db.sets.get(set.id))?.completedAt).not.toBeNull()
   })
 
   it('loads previous sets from the newest finished workout', async () => {

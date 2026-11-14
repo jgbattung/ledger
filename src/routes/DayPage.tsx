@@ -6,7 +6,8 @@ import { ExerciseThumb } from '@/components/ExerciseThumb'
 import { programs, WorkoutInProgressError } from '@/db/repos'
 import { exercisePath } from '@/exercises/detail'
 import type { ProgramTree } from '@/db/repos'
-import { exerciseName, formatTargets, isRestDay, programTreeToDraft } from '@/programs/model'
+import { DeletedPill } from '@/components/library/DeletedPill'
+import { exerciseName, formatTargets, isDeletedExercise, isRestDay, programTreeToDraft } from '@/programs/model'
 import type { DraftDay } from '@/programs/model'
 import { useGoBack } from '@/lib/useGoBack'
 import { useSessionStore } from '@/stores/sessionStore'
@@ -104,7 +105,10 @@ export function DayPage() {
                     >
                       <ExerciseThumb exerciseRef={exercise.exerciseRef} className="size-12 rounded-lg" />
                       <div className="min-w-0 flex-1">
-                        <p className="text-base leading-snug">{exerciseName(exercise.exerciseRef)}</p>
+                        <p className="text-base leading-snug">
+                          {exerciseName(exercise.exerciseRef)}
+                          {isDeletedExercise(exercise.exerciseRef) ? <DeletedPill className="align-[1px]" /> : null}
+                        </p>
                         {targets ? (
                           <p className="text-sm text-muted-foreground tabular-nums">{targets}</p>
                         ) : (

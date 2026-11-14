@@ -1,6 +1,7 @@
 import { newId } from '@/db/ids'
 import { getExerciseById } from '@/exercises/catalog'
 import { formatSeconds } from '@/lib/format'
+import { getCustomExercise } from '@/stores/customExerciseStore'
 import type { ExerciseRef } from '@/db/types'
 import type { ProgramTree } from '@/db/repos/programs'
 
@@ -173,10 +174,16 @@ export function programTreeToDraft(tree: ProgramTree): ProgramDraft {
   }
 }
 
-/** Custom exercises do not exist yet (LG-007), so they get a fixed label. */
+/** Display name for a ref. Custom refs read the in-memory store, deleted rows
+ * included, so a deleted exercise keeps its real name. */
 export function exerciseName(ref: ExerciseRef): string {
   if (ref.source === 'db') return getExerciseById(ref.exerciseId)?.name ?? 'Custom exercise'
-  return 'Custom exercise'
+  return getCustomExercise(ref.exerciseId)?.name ?? 'Custom exercise'
+}
+
+/** True only for a custom ref whose row has been soft-deleted. */
+export function isDeletedExercise(ref: ExerciseRef): boolean {
+  return ref.source === 'custom' && getCustomExercise(ref.exerciseId)?.deletedAt != null
 }
 
 /** An exercise is activatable once sets and both rep bounds are set (LG-052). */

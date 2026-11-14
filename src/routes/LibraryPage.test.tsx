@@ -1,8 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { beforeEach, describe, it, expect } from 'vitest'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useLocation } from 'react-router-dom'
+import { resetDb } from '@/db/test-utils'
 import { getAllExercises } from '@/exercises/catalog'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
+import { resetAndHydrateCustomExercises } from '@/test/customExercises'
 import { LibraryPage } from './LibraryPage'
 
 /**
@@ -211,5 +214,56 @@ describe('LibraryPage - detail links and URL state (LG-006)', () => {
     await user.click(screen.getByRole('button', { name: 'Muscle' }))
     await user.click(await screen.findByRole('button', { name: 'Chest' }))
     expect(screen.getByTestId('location')).toHaveTextContent('/more/library?muscle=chest')
+  })
+
+  describe('custom exercises', () => {
+    const input = {
+      name: 'SSB Squat',
+      primaryMuscles: ['quads' as const],
+      secondaryMuscles: [],
+      mechanic: 'compound' as const,
+    }
+
+    beforeEach(async () => {
+      await resetDb()
+      await resetAndHydrateCustomExercises()
+    })
+
+    it('lists a hydrated custom exercise with a Custom pill, linking to its page', async () => {
+      const row = await useCustomExerciseStore.getState().create(input)
+      const user = userEvent.setup()
+      renderLibrary()
+
+      await user.type(screen.getByLabelText('Search exercises'), 'ssb')
+      const link = await screen.findByRole('link', { name: /SSB Squat/ })
+      expect(link).toHaveAttribute('href', `/exercises/custom/${row.id}`)
+      expect(within(link).getByText('Custom')).toBeInTheDocument()
+    })
+
+    it('does not list a deleted custom exercise', async () => {
+      const row = await useCustomExerciseStore.getState().create(input)
+      await useCustomExerciseStore.getState().remove(row.id)
+      const user = userEvent.setup()
+      renderLibrary()
+
+      await user.type(screen.getByLabelText('Search exercises'), 'ssb squat')
+      expect(await screen.findByText('No exercises match')).toBeInTheDocument()
+      expect(screen.queryByRole('link', { name: /SSB Squat/ })).toBeNull()
+    })
+  })
+
+  it('has a New exercise button that opens the form', () => {
+    renderLibrary()
+    expect(screen.getByRole('link', { name: 'New exercise' })).toHaveAttribute('href', '/exercises/new')
+  })
+
+  it('offers Create "query" in the empty state with the name carried over', async () => {
+    const user = userEvent.setup()
+    renderLibrary()
+    await user.type(screen.getByLabelText('Search exercises'), 'zzqqxx')
+    const create = await screen.findByRole('link', { name: 'Create "zzqqxx"' })
+    expect(create).toHaveAttribute('href', '/exercises/new?name=zzqqxx')
+    expect(screen.getByText('Nothing in the library is called that.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Clear search & filters' })).toBeInTheDocument()
   })
 })

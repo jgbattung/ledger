@@ -11,6 +11,7 @@ import { ExerciseConfigSheet } from '@/components/programs/ExerciseConfigSheet'
 import { ProgramSettingsSheet } from '@/components/programs/ProgramSettingsSheet'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { TextFieldSheet } from '@/components/ui/text-field-sheet'
+import { FieldError } from '@/components/ui/field-error'
 import { firstIncompleteExercise } from '@/programs/model'
 import { selectIsDirty, useProgramDraftStore } from '@/stores/programDraftStore'
 import { cn } from '@/lib/utils'
@@ -170,9 +171,7 @@ export function ProgramEditorPage() {
 
       <footer className="sticky bottom-0 border-t border-border bg-background px-4 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
         {error ? (
-          <p role="alert" className="pb-2 text-sm text-destructive">
-            {error}
-          </p>
+          <FieldError alert message={error} className="mt-0 pb-2" />
         ) : null}
         <div className={cn('grid gap-2.5', showActivate ? 'grid-cols-[1fr_1.25fr]' : 'grid-cols-1')}>
           <button

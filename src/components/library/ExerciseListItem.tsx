@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Dumbbell } from 'lucide-react'
 import { exerciseImageUrl } from '@/exercises/catalog'
 import { formatFilterValue } from '@/exercises/filtering'
-import type { Exercise } from '@/exercises/types'
+import type { ListedExercise } from '@/exercises/listing'
 import { cn } from '@/lib/utils'
 
 /** Content-box height of a row: the 48px thumbnail. `contain-intrinsic-size`
@@ -25,7 +25,7 @@ export function ExerciseListItem({
   muted = false,
   subtitle,
 }: {
-  exercise: Exercise
+  exercise: ListedExercise
   trailing?: ReactNode
   muted?: boolean
   subtitle?: ReactNode
@@ -60,7 +60,16 @@ export function ExerciseListItem({
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className={cn('truncate text-base', muted && 'text-muted-foreground')}>{exercise.name}</p>
+        <p className="flex items-center">
+          <span className={cn('truncate text-base', muted && 'text-muted-foreground')}>
+            {exercise.name}
+          </span>
+          {exercise.isCustom ? (
+            <span className="ml-1.5 inline-block shrink-0 rounded-full border border-border px-2 py-px text-xs font-medium text-muted-foreground">
+              Custom
+            </span>
+          ) : null}
+        </p>
         {secondLine ? (
           <p className="mt-0.5 truncate text-sm text-muted-foreground">{secondLine}</p>
         ) : null}

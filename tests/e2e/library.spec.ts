@@ -69,7 +69,7 @@ async function searchResultNames(page: Page, rows: Locator, query: string) {
   await expect(count).not.toHaveText(`${exercises.length} exercises`);
   const total = Number((await count.textContent())!.split(' ')[0]);
   await expect(rows).toHaveCount(total);
-  return rows.locator('p.text-base').allTextContents();
+  return rows.locator('p > span.text-base').allTextContents();
 }
 
 const libraryRows = (page: Page) => page.locator('div.divide-y > a');

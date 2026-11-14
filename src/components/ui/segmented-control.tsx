@@ -3,11 +3,12 @@ import { cn } from '@/lib/utils'
 
 export type SegmentedControlOption<T extends string> = {
   value: T
-  label: string
+  label: React.ReactNode
 }
 
 type SegmentedControlProps<T extends string> = {
-  value: T
+  /** `null` leaves every segment unselected (a required choice with no default). */
+  value: T | null
   onValueChange: (value: T) => void
   options: readonly SegmentedControlOption<T>[]
   'aria-label': string
@@ -31,13 +32,12 @@ function SegmentedControl<T extends string>({
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (disabled) return
     const currentIndex = options.findIndex((option) => option.value === value)
-    if (currentIndex === -1) return
 
     let nextIndex: number | null = null
     if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
       nextIndex = (currentIndex + 1) % options.length
     } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-      nextIndex = (currentIndex - 1 + options.length) % options.length
+      nextIndex = currentIndex === -1 ? options.length - 1 : (currentIndex - 1 + options.length) % options.length
     } else if (event.key === 'Home') {
       nextIndex = 0
     } else if (event.key === 'End') {
@@ -67,15 +67,17 @@ function SegmentedControl<T extends string>({
         className,
       )}
     >
-      {options.map((option) => {
+      {options.map((option, index) => {
         const checked = option.value === value
+        // With nothing selected the first segment is the single tab stop.
+        const tabStop = checked || (value === null && index === 0)
         return (
           <button
             key={option.value}
             type="button"
             role="radio"
             aria-checked={checked}
-            tabIndex={checked ? 0 : -1}
+            tabIndex={tabStop ? 0 : -1}
             disabled={disabled}
             onClick={() => select(option.value)}
             className={cn(

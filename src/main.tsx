@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { APP_NAME } from './config/app'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 
 document.title = APP_NAME
 
@@ -18,6 +19,9 @@ async function boot() {
     const { ensureSeeded } = await import('@/db/seed')
     await ensureSeeded({ fresh: mode === 'seed-fresh', runId: __SEED_RUN_ID__ })
   }
+
+  // Custom exercises resolve synchronously everywhere, so load them first.
+  await useCustomExerciseStore.getState().hydrate()
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

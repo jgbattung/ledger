@@ -95,4 +95,13 @@ describe('SegmentedControl', () => {
       expect(screen.getByRole('radio', { name: label }).className).toContain('min-h-touch-min')
     }
   })
+
+  it('with no value selected, no segment is checked and the first is the tab stop', () => {
+    render(
+      <SegmentedControl value={null} onValueChange={() => {}} options={OPTIONS} aria-label="Units" />,
+    )
+    const radios = screen.getAllByRole('radio')
+    expect(radios.map((r) => r.getAttribute('aria-checked'))).toEqual(['false', 'false'])
+    expect(radios.map((r) => r.tabIndex)).toEqual([0, -1])
+  })
 })

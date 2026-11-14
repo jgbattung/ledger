@@ -2,6 +2,7 @@ import { set as setTime, startOfDay, subDays } from 'date-fns'
 import { db } from '@/db/ledger'
 import { newId, now } from '@/db/ids'
 import { programs } from '@/db/repos/programs'
+import { buildCustomExercises, buildDeletedCustomHistory, SSB_SINCE_DAYS } from '@/db/seed/custom'
 import { buildHistory } from '@/db/seed/history'
 import {
   ARCHIVED_NAME,
@@ -14,7 +15,7 @@ import {
 import { createRng } from '@/db/seed/rng'
 import type { Rng } from '@/db/seed/rng'
 import type { SeedHistory } from '@/db/seed/history'
-import type { BodyMetric, ExerciseMeta, SyncStateRow } from '@/db/types'
+import type { BodyMetric, ExerciseMeta, ExerciseRef, SyncStateRow } from '@/db/types'
 
 const SEED_RUN_KEY = 'ledger-seed-run'
 const REST_TIMER_KEY = 'ledger-rest-timer'
@@ -61,11 +62,12 @@ function buildExerciseMeta(history: SeedHistory): ExerciseMeta[] {
     history.workouts.filter((workout) => workout.status === 'finished').map((w) => w.id),
   )
   const exerciseByWorkoutExercise = new Map<string, string>()
-  const seen = new Set<string>()
+  const seen = new Map<string, ExerciseRef>()
+  const keyOf = (exerciseRef: ExerciseRef) => `${exerciseRef.source}:${exerciseRef.exerciseId}`
   for (const row of history.workoutExercises) {
-    seen.add(row.exerciseRef.exerciseId)
+    seen.set(keyOf(row.exerciseRef), row.exerciseRef)
     if (finished.has(row.workoutId)) {
-      exerciseByWorkoutExercise.set(row.id, row.exerciseRef.exerciseId)
+      exerciseByWorkoutExercise.set(row.id, keyOf(row.exerciseRef))
     }
   }
 
@@ -80,16 +82,16 @@ function buildExerciseMeta(history: SeedHistory): ExerciseMeta[] {
   }
 
   const timestamp = now()
-  return [...seen].map((exerciseId): ExerciseMeta => {
-    const last = latest.get(exerciseId)
+  return [...seen].map(([key, exerciseRef]): ExerciseMeta => {
+    const last = latest.get(key)
     return {
       id: newId(),
       createdAt: timestamp,
       updatedAt: timestamp,
       deletedAt: null,
-      source: 'db',
-      exerciseId,
-      isFavorite: FAVORITE_EXERCISE_IDS.includes(exerciseId),
+      source: exerciseRef.source,
+      exerciseId: exerciseRef.exerciseId,
+      isFavorite: exerciseRef.source === 'db' && FAVORITE_EXERCISE_IDS.includes(exerciseRef.exerciseId),
       ...(last ? { lastUsed: { weight: last.weight, reps: last.reps, unit: 'kg', at: last.at } } : {}),
     }
   })
@@ -108,7 +110,8 @@ function buildExerciseMeta(history: SeedHistory): ExerciseMeta[] {
  */
 export function seedDatabase(anchor: number = Date.now()): Promise<void> {
   return db.transaction('rw', db.tables, async () => {
-    const drafts = buildSeedDrafts()
+    const custom = buildCustomExercises(anchor)
+    const drafts = buildSeedDrafts({ ssbSquatId: custom.ssbSquat.id })
     const byName = (name: string) => {
       const found = drafts.find((draft) => draft.name === name)
       if (!found) throw new Error(`Seed program missing: ${name}`)
@@ -134,7 +137,25 @@ export function seedDatabase(anchor: number = Date.now()): Promise<void> {
     if (!pplTree || !fbeodTree) throw new Error('Seed programs were not saved')
 
     const rng = createRng()
-    const history = buildHistory({ trees: { ppl: pplTree, fbeod: fbeodTree }, anchor, rng })
+    const archivedTree = await programs.loadTree(archived.id)
+    if (!archivedTree) throw new Error('Seed archived program was not saved')
+    const generated = buildHistory({
+      trees: { ppl: pplTree, fbeod: fbeodTree },
+      anchor,
+      rng,
+      progression: custom.progression,
+      customSinceDays: SSB_SINCE_DAYS,
+    })
+    const deletedHistory = buildDeletedCustomHistory({
+      deleted: custom.deleted,
+      archived: archivedTree,
+      anchor,
+    })
+    const history = {
+      workouts: [...generated.workouts, ...deletedHistory.workouts],
+      workoutExercises: [...generated.workoutExercises, ...deletedHistory.workoutExercises],
+      sets: [...generated.sets, ...deletedHistory.sets],
+    }
     const bodyMetrics = buildBodyMetrics(anchor, rng)
     const exerciseMeta = buildExerciseMeta(history)
 
@@ -142,12 +163,14 @@ export function seedDatabase(anchor: number = Date.now()): Promise<void> {
     const dirty = (table: string, rows: { id: string }[]): SyncStateRow[] =>
       rows.map((row) => ({ table, recordId: row.id, dirtyAt }))
 
+    await db.customExercises.bulkPut(custom.rows)
     await db.workouts.bulkPut(history.workouts)
     await db.workoutExercises.bulkPut(history.workoutExercises)
     await db.sets.bulkPut(history.sets)
     await db.bodyMetrics.bulkPut(bodyMetrics)
     await db.exerciseMeta.bulkPut(exerciseMeta)
     await db.syncState.bulkPut([
+      ...dirty('customExercises', custom.rows),
       ...dirty('workouts', history.workouts),
       ...dirty('workoutExercises', history.workoutExercises),
       ...dirty('sets', history.sets),

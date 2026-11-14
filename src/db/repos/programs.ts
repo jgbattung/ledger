@@ -6,7 +6,7 @@ import { programExercises } from '@/db/repos/programExercises'
 import { markDirty } from '@/db/repos/syncState'
 import { firstIncompleteExercise, hasRequiredTargets, normalizePass } from '@/programs/model'
 import type { ProgramDraft } from '@/programs/model'
-import type { BaseRecord, Program, ProgramDay, ProgramExercise } from '@/db/types'
+import type { BaseRecord, ExerciseRef, Program, ProgramDay, ProgramExercise } from '@/db/types'
 
 const MISSING_TARGETS = 'Programs with missing targets cannot be activated'
 
@@ -169,6 +169,23 @@ export const programs = {
     const live = await baseRepo.list()
     const trees = await Promise.all(live.map((program) => programs.loadTree(program.id)))
     return trees.filter((tree): tree is ProgramTree => tree !== undefined)
+  },
+
+  /** Names (alphabetical) of the non-deleted, non-archived programs that use an exercise. */
+  async namesUsingExercise(ref: ExerciseRef): Promise<string[]> {
+    const trees = await programs.listTrees()
+    return trees
+      .filter(
+        (tree) =>
+          !tree.program.isArchived &&
+          tree.days.some((day) =>
+            day.exercises.some(
+              (e) => e.exerciseRef.source === ref.source && e.exerciseRef.exerciseId === ref.exerciseId,
+            ),
+          ),
+      )
+      .map((tree) => tree.program.name)
+      .sort((a, b) => a.localeCompare(b))
   },
 
   /**

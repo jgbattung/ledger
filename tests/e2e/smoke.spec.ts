@@ -39,7 +39,8 @@ test('the FAB opens the quick-action sheet', async ({ page }) => {
   await expect(sheet).toBeVisible();
   // LG-022: Start next workout is live (no active program: it opens the Workout tab).
   await expect(sheet.getByRole('link', { name: 'Start next workout' })).toHaveAttribute('href', '/workout');
-  await expect(sheet.getByRole('button', { name: 'Create exercise' })).toBeDisabled();
+  // LG-007: Create exercise is live and opens the form.
+  await expect(sheet.getByRole('link', { name: 'Create exercise' })).toHaveAttribute('href', '/exercises/new');
 
   await page.keyboard.press('Escape');
   await expect(sheet).toBeHidden();

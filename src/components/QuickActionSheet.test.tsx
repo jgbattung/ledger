@@ -56,12 +56,17 @@ describe('QuickActionSheet', () => {
     expect(screen.getByRole('link', { name: 'Start next workout' })).toBeInTheDocument()
     const link = screen.getByRole('link', { name: 'Start new program' })
     expect(link).toHaveAttribute('href', '/programs/new')
-    for (const label of ['Create exercise', 'Log bodyweight', 'Progress photo']) {
+    expect(screen.getByRole('link', { name: 'Create exercise' })).toHaveAttribute(
+      'href',
+      '/exercises/new',
+    )
+    for (const label of ['Log bodyweight', 'Progress photo']) {
       expect(screen.getByRole('button', { name: new RegExp(label) })).toBeDisabled()
     }
     const rows = screen.getAllByRole('listitem').map((li) => li.textContent)
     expect(rows[0]).toMatch(/Start next workout/)
     expect(rows[1]).toMatch(/Start new program/)
+    expect(rows[2]).toMatch(/Create exercise/)
   })
 
   it('with no active program Start next workout goes to the Workout tab', () => {

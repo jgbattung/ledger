@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { resetDb } from '@/db/test-utils'
 import { getAllExercises } from '@/exercises/catalog'
+import { useCustomExerciseStore } from '@/stores/customExerciseStore'
 import type { ProgramTree } from '@/db/repos/programs'
 import {
   NEW_PROGRAM_NAME,
@@ -8,6 +10,7 @@ import {
   exerciseName,
   firstIncompleteExercise,
   formatTargets,
+  isDeletedExercise,
   hasRequiredTargets,
   dayAfter,
   isRestDay,
@@ -88,6 +91,41 @@ describe('programs model', () => {
     expect(exerciseName({ source: 'db', exerciseId: known.id })).toBe(known.name)
     expect(exerciseName({ source: 'db', exerciseId: 'nope' })).toBe('Custom exercise')
     expect(exerciseName({ source: 'custom', exerciseId: 'x' })).toBe('Custom exercise')
+  })
+
+  describe('custom refs', () => {
+    beforeEach(async () => {
+      await resetDb()
+      useCustomExerciseStore.setState({ byId: {}, hydrated: false })
+    })
+
+    const input = {
+      name: 'SSB Squat',
+      primaryMuscles: ['quads' as const],
+      secondaryMuscles: [],
+    }
+
+    it('exerciseName returns the real name of a live and of a deleted custom exercise', async () => {
+      const store = useCustomExerciseStore.getState()
+      const live = await store.create(input)
+      const gone = await store.create({ ...input, name: 'Old Move' })
+      await store.remove(gone.id)
+
+      expect(exerciseName({ source: 'custom', exerciseId: live.id })).toBe('SSB Squat')
+      expect(exerciseName({ source: 'custom', exerciseId: gone.id })).toBe('Old Move')
+    })
+
+    it('isDeletedExercise is true only for a deleted custom exercise', async () => {
+      const store = useCustomExerciseStore.getState()
+      const live = await store.create(input)
+      const gone = await store.create({ ...input, name: 'Old Move' })
+      await store.remove(gone.id)
+
+      expect(isDeletedExercise({ source: 'custom', exerciseId: gone.id })).toBe(true)
+      expect(isDeletedExercise({ source: 'custom', exerciseId: live.id })).toBe(false)
+      expect(isDeletedExercise({ source: 'custom', exerciseId: 'unknown' })).toBe(false)
+      expect(isDeletedExercise({ source: 'db', exerciseId: getAllExercises()[0].id })).toBe(false)
+    })
   })
 
   it('hasRequiredTargets needs sets, min and max', () => {

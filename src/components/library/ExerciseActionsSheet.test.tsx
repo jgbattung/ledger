@@ -1,30 +1,64 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 import { ExerciseActionsSheet } from './ExerciseActionsSheet'
 
-function renderSheet(isCustom: boolean) {
-  render(<ExerciseActionsSheet open onOpenChange={() => {}} name="Curl" isCustom={isCustom} />)
-  return screen.getAllByRole('button').filter((b) => b.getAttribute('aria-label') !== 'Close')
+function renderSheet(isCustom: boolean, deleted = false) {
+  const handlers = { onEdit: vi.fn(), onDuplicate: vi.fn(), onDelete: vi.fn() }
+  render(
+    <ExerciseActionsSheet
+      open
+      onOpenChange={() => {}}
+      name="Curl"
+      isCustom={isCustom}
+      deleted={deleted}
+      {...handlers}
+    />,
+  )
+  const rows = screen.getAllByRole('button').filter((b) => b.getAttribute('aria-label') !== 'Close')
+  return { rows, ...handlers }
 }
 
 describe('ExerciseActionsSheet', () => {
-  it('lists four disabled Soon rows in order for a bundled exercise', () => {
-    const rows = renderSheet(false)
+  it('a bundled exercise has three Soon rows and an enabled Duplicate, no Edit or Delete', () => {
+    const { rows } = renderSheet(false)
     expect(rows.map((r) => r.textContent)).toEqual([
       'Rest timerSoon',
       'Warm-up setsSoon',
       'Reset to defaultsSoon',
-      'DuplicateSoon',
+      'Duplicate',
     ])
-    rows.forEach((row) => expect(row).toBeDisabled())
+    rows.slice(0, 3).forEach((row) => expect(row).toBeDisabled())
+    expect(rows[3]).toBeEnabled()
   })
 
-  it('adds a disabled Delete exercise row last for a custom exercise', () => {
-    const rows = renderSheet(true)
-    expect(rows).toHaveLength(5)
-    expect(rows[4]).toHaveTextContent('Delete exercise')
-    expect(rows[4]).toBeDisabled()
-    expect(screen.getAllByText('Soon')).toHaveLength(5)
+  it('a live custom exercise has Edit, Duplicate and Delete in that order after the Soon rows', async () => {
+    const user = userEvent.setup()
+    const { rows, onEdit, onDuplicate, onDelete } = renderSheet(true)
+    expect(rows.map((r) => r.textContent)).toEqual([
+      'Rest timerSoon',
+      'Warm-up setsSoon',
+      'Reset to defaultsSoon',
+      'Edit exercise',
+      'Duplicate',
+      'Delete exercise',
+    ])
+    await user.click(rows[3])
+    await user.click(rows[4])
+    await user.click(rows[5])
+    expect(onEdit).toHaveBeenCalledOnce()
+    expect(onDuplicate).toHaveBeenCalledOnce()
+    expect(onDelete).toHaveBeenCalledOnce()
+  })
+
+  it('a deleted custom exercise keeps Duplicate only', () => {
+    const { rows } = renderSheet(true, true)
+    expect(rows.map((r) => r.textContent)).toEqual([
+      'Rest timerSoon',
+      'Warm-up setsSoon',
+      'Reset to defaultsSoon',
+      'Duplicate',
+    ])
   })
 
   it('titles the sheet with the exercise name', () => {

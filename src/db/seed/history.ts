@@ -3,6 +3,7 @@ import { newId } from '@/db/ids'
 import { getExerciseById } from '@/exercises/catalog'
 import { toTargetsSnapshot } from '@/workouts/model'
 import { PROGRESSION } from '@/db/seed/programs'
+import type { Progression } from '@/db/seed/programs'
 import type { Rng } from '@/db/seed/rng'
 import type { ProgramTree } from '@/db/repos/programs'
 import type { ExerciseRef, Set as SetRow, Workout, WorkoutExercise } from '@/db/types'
@@ -75,8 +76,15 @@ export function buildHistory(input: {
   trees: { ppl: ProgramTree; fbeod: ProgramTree }
   anchor: number
   rng: Rng
+  /** Loads for exercises outside `PROGRESSION` (the seeded custom ones). */
+  progression?: Record<string, Progression>
+  /** Custom exercises only appear in slots this many days before the anchor or later. */
+  customSinceDays?: number
 }): SeedHistory {
   const { trees, anchor, rng } = input
+  const progressionFor = (exerciseId: string): Progression | undefined =>
+    PROGRESSION[exerciseId] ?? input.progression?.[exerciseId]
+  const customCutoff = -(input.customSinceDays ?? Number.POSITIVE_INFINITY)
   const today = startOfDay(anchor)
   const slots = buildSlots(trees)
 
@@ -98,7 +106,7 @@ export function buildHistory(input: {
   function liftState(exerciseId: string): LiftState {
     let state = lifts.get(exerciseId)
     if (!state) {
-      const progression = PROGRESSION[exerciseId]
+      const progression = progressionFor(exerciseId)
       if (!progression) throw new Error(`No progression entry for ${exerciseId}`)
       state = { kg: progression.startKg, level: null }
       lifts.set(exerciseId, state)
@@ -114,7 +122,11 @@ export function buildHistory(input: {
     const isMissed = missed.has(slot)
     if (isMissed && slot !== discardedSlot) continue
 
-    const { day, exercises } = slot.tree.days[slot.dayIndex]
+    const { day, exercises: programmedAll } = slot.tree.days[slot.dayIndex]
+    // A custom exercise was added to the program recently: older sessions lack it.
+    const exercises = programmedAll.filter(
+      (e) => e.exerciseRef.source !== 'custom' || slot.offset >= customCutoff,
+    )
     const discarded = slot === discardedSlot
     const date = setTime(subDays(today, -slot.offset), { hours: 18 })
     const startedAt = addMinutes(date, rng.int(-45, 60)).getTime()
@@ -206,7 +218,7 @@ export function buildHistory(input: {
       if (discarded) continue
 
       // Double progression: climb the rep range, then add load.
-      const progression = PROGRESSION[performedId]
+      const progression = progressionFor(performedId)!
       if (level >= repMax) {
         if (progression.incrementKg > 0) {
           state.kg += progression.incrementKg

@@ -213,6 +213,19 @@ describe('L/R merge confirm and Previous edge cases (LG-012)', () => {
     expect(screen.getByText(/set 2 becomes 24 kg × 6/)).toBeInTheDocument()
   })
 
+  it('shows the merged partial in the confirm copy', async () => {
+    await setup()
+    await userEvent.click(chip())
+    const first = store().exercises[0].sets[0].id
+    type(first, 'weight', 'L', '2', '0')
+    type(first, 'reps', 'L', '8', 'fp', '2')
+    type(first, 'weight', 'R', '2', '0')
+    type(first, 'reps', 'R', '6')
+
+    await userEvent.click(chip())
+    expect(screen.getByText(/set 1 becomes 20 kg × 8 | 2./)).toBeInTheDocument()
+  })
+
   it('asks before merging when only the partials differ', async () => {
     await setup()
     await userEvent.click(chip())

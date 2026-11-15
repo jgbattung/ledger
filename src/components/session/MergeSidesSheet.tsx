@@ -1,5 +1,6 @@
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import { formatSide } from '@/workouts/model'
 
 const BUTTON =
   'flex h-12 w-full items-center justify-center rounded-md text-base font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50'
@@ -14,6 +15,7 @@ export function MergeSidesSheet({
   setNumber,
   weight,
   reps,
+  partial,
   onConfirm,
 }: {
   open: boolean
@@ -23,15 +25,19 @@ export function MergeSidesSheet({
   /** What that set becomes once merged. */
   weight: number
   reps: number
+  /** Partial reps the merged set keeps, if any. */
+  partial?: number
   onConfirm: () => void
 }) {
+  const merged = formatSide(weight, reps, partial)
+  const result = merged.partial ? `${merged.text} | ${merged.partial}` : merged.text
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
         <div className="flex flex-col gap-1 px-4 pb-2 pt-4">
           <SheetTitle className="text-base font-semibold">Log both sides together?</SheetTitle>
           <SheetDescription>
-            {`Sets where your sides differ keep the heavier side: set ${setNumber} becomes ${weight} kg × ${reps}. You can't undo this.`}
+            {`Sets where your sides differ keep the heavier side: set ${setNumber} becomes ${result}. You can't undo this.`}
           </SheetDescription>
         </div>
         <div className="flex flex-col gap-2 px-4 pb-4 pt-2">

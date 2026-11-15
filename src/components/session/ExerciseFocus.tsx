@@ -38,6 +38,13 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
   const [targetsOpen, setTargetsOpen] = useState(false)
   const [swapHint, setSwapHint] = useState(false)
   const [mergeOpen, setMergeOpen] = useState(false)
+  // Snapshot taken when the sheet opens: it stays mounted after confirming so it can animate closed.
+  const [mergeShown, setMergeShown] = useState<{
+    setNumber: number
+    weight: number
+    reps: number
+    partial?: number
+  } | null>(null)
   const pad = useSessionStore((state) => state.pad)
   const openSwipeSetId = useSessionStore((state) => state.openSwipeSetId)
   const previous = useSessionStore((state) => state.previousByExercise[entry.exercise.id])
@@ -54,6 +61,14 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
     if (!unilateralOn) {
       useSessionStore.getState().setUnilateral(exercise.id, true)
     } else if (firstDiffering >= 0) {
+      if (merged) {
+        setMergeShown({
+          setNumber: firstDiffering + 1,
+          weight: merged.weight,
+          reps: merged.reps,
+          partial: merged.partialReps,
+        })
+      }
       setMergeOpen(true)
     } else {
       useSessionStore.getState().setUnilateral(exercise.id, false)
@@ -163,13 +178,14 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
         onChange={(value) => useSessionStore.getState().setExerciseNote(exercise.id, value)}
       />
 
-      {merged ? (
+      {mergeShown ? (
         <MergeSidesSheet
           open={mergeOpen}
           onOpenChange={setMergeOpen}
-          setNumber={firstDiffering + 1}
-          weight={merged.weight}
-          reps={merged.reps}
+          setNumber={mergeShown.setNumber}
+          weight={mergeShown.weight}
+          reps={mergeShown.reps}
+          partial={mergeShown.partial}
           onConfirm={() => {
             setMergeOpen(false)
             useSessionStore.getState().setUnilateral(exercise.id, false)

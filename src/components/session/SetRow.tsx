@@ -40,6 +40,7 @@ export function SetRow({
   swipeOpen,
   onSwipeOpenChange,
   onRemove,
+  divider = false,
 }: {
   set: SetRecord
   number: number
@@ -53,6 +54,8 @@ export function SetRow({
   swipeOpen: boolean
   onSwipeOpenChange: (open: boolean) => void
   onRemove: () => void
+  /** A hairline above the row, between sets where an L/R row is involved (10n). */
+  divider?: boolean
 }) {
   const [drag, setDrag] = useState<number | null>(null)
   const gesture = useRef<{ x: number; y: number; moved: boolean } | null>(null)
@@ -324,6 +327,7 @@ export function SetRow({
         style={{ transform: `translateX(${offset}px)`, touchAction: 'pan-y' }}
         className={cn(
           'relative bg-background',
+          divider && 'border-t border-border/60',
           drag === null &&
             'transition-transform duration-200 ease-out-app motion-reduce:transition-none',
         )}

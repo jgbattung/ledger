@@ -62,6 +62,7 @@ export function SetTable({
             swipeOpen={openSwipeSetId === set.id}
             onSwipeOpenChange={(open) => onSwipeOpenChange(open ? set.id : null)}
             onRemove={() => onRemove(set.id)}
+            divider={index > 0 && (set.unilateral != null || sets[index - 1].unilateral != null)}
           />
         ))}
       </div>

@@ -519,3 +519,132 @@ describe('sessionStore', () => {
     })
   })
 })
+
+describe('sessionStore - L/R sets (LG-012)', () => {
+  beforeEach(async () => {
+    await resetDb()
+    store().reset()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    __resetRestTimerForTests()
+  })
+
+  const type = (...keys: Parameters<ReturnType<typeof store>['padKey']>[0][]) => {
+    for (const key of keys) store().padKey(key)
+  }
+
+  it('typing L then R persists both sides and the aggregate', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    store().setUnilateral(bench.exercise.id, true)
+    const id = bench.sets[0].id
+
+    store().openPad(id, 'weight', 'L')
+    type('2', '0')
+    store().padNext()
+    expect(store().pad?.entry).toMatchObject({ field: 'reps', side: 'L' })
+    type('1', '2')
+    store().padNext()
+    expect(store().pad?.entry).toMatchObject({ field: 'weight', side: 'R' })
+    type('2', '2')
+    store().padNext()
+    expect(store().pad?.entry).toMatchObject({ field: 'reps', side: 'R' })
+    type('1', '0')
+
+    expect(store().exercises[0].sets[0]).toMatchObject({ weight: 22, reps: 10 })
+    await settle()
+    const stored = await db.sets.get(id)
+    expect(stored?.unilateral).toEqual({
+      leftWeight: 20,
+      leftReps: 12,
+      rightWeight: 22,
+      rightReps: 10,
+    })
+    expect(stored).toMatchObject({ weight: 22, reps: 10 })
+    expect(stored?.partialReps).toBeUndefined()
+  })
+
+  it('stores a per-side partial and never a set-level one', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    store().setUnilateral(bench.exercise.id, true)
+    const id = bench.sets[0].id
+    store().openPad(id, 'reps', 'R')
+    type('8', 'fp', '2')
+    await settle()
+    const stored = await db.sets.get(id)
+    expect(stored?.unilateral).toMatchObject({ rightReps: 8, rightPartialReps: 2 })
+    expect(stored?.partialReps).toBeUndefined()
+  })
+
+  it('checking an L/R set with one side empty opens the pad on that side', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    store().setUnilateral(bench.exercise.id, true)
+    const id = bench.sets[0].id
+    store().toggleComplete(id)
+    expect(store().exercises[0].sets[0].completedAt).toBeUndefined()
+    expect(store().pad?.entry).toMatchObject({ field: 'reps', side: 'L' })
+
+    store().openPad(id, 'reps', 'L')
+    type('1', '0')
+    store().toggleComplete(id)
+    expect(store().pad?.entry).toMatchObject({ field: 'reps', side: 'R' })
+    type('9')
+    store().toggleComplete(id)
+    expect(store().exercises[0].sets[0].completedAt).toBeTypeOf('number')
+  })
+
+  it('clearing a side reps unchecks the set', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    store().setUnilateral(bench.exercise.id, true)
+    const id = bench.sets[0].id
+    store().openPad(id, 'reps', 'L')
+    type('1', '0')
+    store().openPad(id, 'reps', 'R')
+    type('9')
+    store().toggleComplete(id)
+    expect(store().exercises[0].sets[0].completedAt).toBeTypeOf('number')
+    type('back')
+    expect(store().exercises[0].sets[0].completedAt).toBeUndefined()
+    await settle()
+    expect((await db.sets.get(id))?.completedAt).toBeUndefined()
+  })
+
+  it('toggle on and off persists and closes the pad on that exercise', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    const id = bench.sets[0].id
+    store().openPad(id, 'weight')
+    type('2', '0')
+    store().setUnilateral(bench.exercise.id, true)
+    expect(store().pad).toBeNull()
+    expect(store().exercises[0].sets.every((row) => row.unilateral != null)).toBe(true)
+    await settle()
+    expect((await db.sets.get(id))?.unilateral).toMatchObject({ leftWeight: 20, rightWeight: 20 })
+
+    store().setUnilateral(bench.exercise.id, false)
+    expect(store().exercises[0].sets.every((row) => row.unilateral == null)).toBe(true)
+    await settle()
+    const stored = await db.sets.get(id)
+    expect(stored?.unilateral).toBeUndefined()
+    expect(stored?.weight).toBe(20)
+  })
+
+  it('hydrate restores L/R sets', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    store().setUnilateral(bench.exercise.id, true)
+    store().openPad(bench.sets[0].id, 'weight', 'R')
+    type('3', '0')
+    await settle()
+
+    store().reset()
+    await store().hydrate()
+    expect(store().exercises[0].sets[0].unilateral).toMatchObject({ leftWeight: 0, rightWeight: 30 })
+    expect(store().exercises[0].sets[0].weight).toBe(30)
+  })
+})

@@ -5,15 +5,19 @@ import type { SwapMode } from '@/db/repos/workoutExercises'
 import type { ExerciseRef, Set as SetRecord, Workout, WorkoutExercise } from '@/db/types'
 import { useRestTimerStore } from '@/stores/restTimerStore'
 import {
+  applyEntry,
   applyPadKey,
   canCheck,
+  firstEmptyReps,
+  fromUnilateral,
   nextCursor,
   nextIncompleteExercise,
   padEntryFor,
-  padEntryValues,
+  toUnilateral,
   type PadEntry,
   type PadField,
   type PadKey,
+  type Side,
 } from '@/workouts/model'
 
 /**
@@ -44,13 +48,15 @@ type SessionState = {
   hydrate: () => Promise<void>
   start: (programId: string, dayId: string) => Promise<string>
   focusExercise: (workoutExerciseId: string) => void
-  openPad: (setId: string, field: PadField) => void
+  openPad: (setId: string, field: PadField, side?: Side) => void
   padKey: (key: PadKey) => void
   padNext: () => void
   closePad: () => void
   setRir: (setId: string, rir: number, rirIsPlus: boolean) => void
   toggleComplete: (setId: string) => void
   addSet: (workoutExerciseId: string) => Promise<void>
+  /** Switches every set of the exercise to or from L/R (the exercise-level chip). */
+  setUnilateral: (workoutExerciseId: string, on: boolean) => void
   removeSet: (setId: string) => void
   setSwipeOpen: (setId: string | null) => void
   swap: (workoutExerciseId: string, newRef: ExerciseRef, mode: SwapMode) => Promise<void>
@@ -169,6 +175,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
   }
 
   const schedulePatch = (setId: string, fields: SetFields) => {
+    // Shallow merge by field: a `unilateral` in `fields` replaces the earlier object whole.
     pendingPatches.set(setId, { ...pendingPatches.get(setId), ...fields })
     void enqueue(async () => {
       const patch = pendingPatches.get(setId)
@@ -326,13 +333,20 @@ export const useSessionStore = create<SessionState>((set, get) => {
       set({ focusedExerciseId: workoutExerciseId, pad: keep ? pad : null, openSwipeSetId: null })
     },
 
-    openPad(setId, field) {
+    openPad(setId, field, side) {
       const found = findSet(setId)
       if (!found) return
       const current = get().pad
-      if (current && current.setId === setId && current.entry.field === field) return
+      if (
+        current &&
+        current.setId === setId &&
+        current.entry.field === field &&
+        current.entry.side === side
+      ) {
+        return
+      }
       set({
-        pad: { setId, entry: padEntryFor(found.set, field) },
+        pad: { setId, entry: padEntryFor(found.set, field, side) },
         focusedExerciseId: found.entry.exercise.id,
         openSwipeSetId: null,
       })
@@ -343,34 +357,33 @@ export const useSessionStore = create<SessionState>((set, get) => {
       if (!pad) return
       const entry = applyPadKey(pad.entry, key)
       if (entry === pad.entry) return
-      const values = padEntryValues(entry)
       const found = findSet(pad.setId)
       if (!found) return
-      const uncheck = found.set.completedAt != null && values.reps < 1
+      const fields = applyEntry(found.set, entry)
+      const uncheck = found.set.completedAt != null && !canCheck({ ...found.set, ...fields })
       set({ pad: { setId: pad.setId, entry } })
       mapSets(pad.setId, (row) => {
-        const next = { ...row, weight: values.weight, reps: values.reps, partialReps: values.partialReps }
+        const next = { ...row, ...fields }
         if (uncheck) delete next.completedAt
         return next
       })
-      schedulePatch(pad.setId, {
-        weight: values.weight,
-        reps: values.reps,
-        partialReps: values.partialReps,
-      })
+      schedulePatch(pad.setId, fields)
       if (uncheck) void enqueue(() => sets.setCompleted(pad.setId, false))
     },
 
     padNext() {
       const pad = get().pad
       if (!pad) return
-      const next = nextCursor({ setId: pad.setId, field: pad.entry.field }, get().exercises)
+      const next = nextCursor(
+        { setId: pad.setId, field: pad.entry.field, side: pad.entry.side },
+        get().exercises,
+      )
       if (!next) {
         set({ pad: null })
         return
       }
       set({ pad: null })
-      get().openPad(next.setId, next.field)
+      get().openPad(next.setId, next.field, next.side)
     },
 
     closePad() {
@@ -395,7 +408,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
         return
       }
       if (!canCheck(found.set)) {
-        get().openPad(setId, 'reps')
+        const target = firstEmptyReps(found.set)
+        get().openPad(setId, target.field, target.side)
         return
       }
       mapSets(setId, (row) => ({ ...row, completedAt: Date.now() }))
@@ -444,6 +458,36 @@ export const useSessionStore = create<SessionState>((set, get) => {
           ),
         }))
       })
+    },
+
+    setUnilateral(workoutExerciseId, on) {
+      set((state) => ({
+        exercises: state.exercises.map((entry) =>
+          entry.exercise.id === workoutExerciseId
+            ? {
+                ...entry,
+                sets: entry.sets.map((row) =>
+                  (row.unilateral != null) === on
+                    ? row
+                    : on
+                      ? toUnilateral(row)
+                      : fromUnilateral(row),
+                ),
+              }
+            : entry,
+        ),
+        pad:
+          state.pad &&
+          state.exercises.some(
+            (entry) =>
+              entry.exercise.id === workoutExerciseId &&
+              entry.sets.some((row) => row.id === state.pad?.setId),
+          )
+            ? null
+            : state.pad,
+        openSwipeSetId: null,
+      }))
+      void enqueue(() => sets.setUnilateral(workoutExerciseId, on))
     },
 
     removeSet(setId) {

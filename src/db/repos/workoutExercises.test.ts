@@ -4,7 +4,7 @@ import { programs } from '@/db/repos/programs'
 import { workouts } from '@/db/repos/workouts'
 import { workoutExercises } from '@/db/repos/workoutExercises'
 import { sets } from '@/db/repos/sets'
-import { exercise, seedProgram } from '@/workouts/test-fixtures'
+import { exercise, seedProgram, setAllUnilateral } from '@/workouts/test-fixtures'
 
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
 
@@ -173,7 +173,7 @@ describe('workoutExercises.swap - L/R sets (LG-012)', () => {
 
   it('keep preserves L/R; reset clears it when the new exercise has no L/R history', async () => {
     const { id, bench } = await startPush()
-    await sets.setUnilateral(bench.exercise.id, true)
+    await setAllUnilateral(bench.exercise.id, true)
     await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'keep')
     let after = (await workouts.loadSession(id))!.exercises[0]
     for (const set of after.sets) expect(set.unilateral).toBeDefined()
@@ -190,7 +190,7 @@ describe('workoutExercises.swap - L/R sets (LG-012)', () => {
     const { programId, pushId } = await seedProgram([exercise('bench'), exercise('db-press')])
     const first = await workouts.startFromProgramDay(programId, pushId)
     const press = (await workouts.loadSession(first))!.exercises[1]
-    await sets.setUnilateral(press.exercise.id, true)
+    await setAllUnilateral(press.exercise.id, true)
     const [row] = await sets.listByWorkoutExercise(press.exercise.id)
     await sets.patch(row.id, { unilateral: LR, weight: 22, reps: 10 })
     await sets.setCompleted(row.id, true)

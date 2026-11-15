@@ -6,7 +6,7 @@ import { workouts, WorkoutInProgressError } from '@/db/repos/workouts'
 import { workoutExercises } from '@/db/repos/workoutExercises'
 import { sets } from '@/db/repos/sets'
 import type { ProgramDraft } from '@/programs/model'
-import { exercise, seedProgram } from '@/workouts/test-fixtures'
+import { exercise, seedProgram, setAllUnilateral } from '@/workouts/test-fixtures'
 
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
 
@@ -158,7 +158,7 @@ describe('workouts.startFromProgramDay', () => {
       const { programId, pushId } = await seedProgram()
       const first = await workouts.startFromProgramDay(programId, pushId)
       const logged = (await workouts.loadSession(first))!.exercises[0]
-      await sets.setUnilateral(logged.exercise.id, true)
+      await setAllUnilateral(logged.exercise.id, true)
       const [row] = await sets.listByWorkoutExercise(logged.exercise.id)
       const sides = { leftWeight: 20, leftReps: 12, rightWeight: 20, rightReps: 10 }
       await sets.patch(row.id, { unilateral: sides, weight: 20, reps: 10 })

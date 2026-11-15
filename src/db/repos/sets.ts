@@ -6,8 +6,6 @@ import { workouts } from '@/db/repos/workouts'
 import {
   BLANK_SET,
   canCheck,
-  fromUnilateral,
-  toUnilateral,
   unilateralAggregate,
 } from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
@@ -22,6 +20,8 @@ async function liveSets(workoutExerciseId: string): Promise<SetRecord[]> {
   const rows = await db.sets.where('workoutExerciseId').equals(workoutExerciseId).toArray()
   return rows.filter((set) => set.deletedAt == null).sort((a, b) => a.orderIndex - b.orderIndex)
 }
+
+const LOGGED_FIELDS = ['weight', 'reps', 'partialReps', 'unilateral', 'rir', 'rirIsPlus'] as const
 
 export const sets = {
   ...baseRepo,
@@ -87,14 +87,25 @@ export const sets = {
 
   /** Writes only the logged fields of a set. */
   async patch(id: string, fields: SetFields): Promise<void> {
-    const patch: SetFields = {}
-    if ('weight' in fields) patch.weight = fields.weight
-    if ('reps' in fields) patch.reps = fields.reps
-    if ('partialReps' in fields) patch.partialReps = fields.partialReps
-    if ('unilateral' in fields) patch.unilateral = fields.unilateral
-    if ('rir' in fields) patch.rir = fields.rir
-    if ('rirIsPlus' in fields) patch.rirIsPlus = fields.rirIsPlus
-    await baseRepo.update(id, patch)
+    await sets.patchMany([[id, fields]])
+  },
+
+  /**
+   * Writes the logged fields of several sets in one transaction, so a batch
+   * (an L/R toggle, a flush) never lands half-applied. A field passed as
+   * `undefined` is removed from the row, not stored as an undefined key.
+   */
+  async patchMany(entries: ReadonlyArray<readonly [string, SetFields]>): Promise<void> {
+    if (entries.length === 0) return
+    await db.transaction('rw', db.sets, db.syncState, async () => {
+      const timestamp = now()
+      for (const [id, fields] of entries) {
+        const patch: SetFields = {}
+        for (const key of LOGGED_FIELDS) if (key in fields) (patch as Record<string, unknown>)[key] = fields[key]
+        await db.sets.update(id, { ...patch, updatedAt: timestamp })
+        await markDirty('sets', id)
+      }
+    })
   },
 
   /** Stamps or clears `completedAt`. Completing needs at least one rep. */
@@ -109,31 +120,6 @@ export const sets = {
       else delete next.completedAt
       await db.sets.put(next)
       await markDirty('sets', id)
-    })
-  },
-
-  /**
-   * Switches every live set of the exercise to or from L/R in one
-   * transaction. Sets already in the target mode are left alone. `pending`
-   * holds not-yet-written patches (by set id) from before the toggle; they are
-   * applied first so the conversion sees the latest typed values.
-   */
-  async setUnilateral(
-    workoutExerciseId: string,
-    on: boolean,
-    pending: ReadonlyMap<string, SetFields> = new Map(),
-  ): Promise<void> {
-    await db.transaction('rw', db.sets, db.syncState, async () => {
-      const timestamp = now()
-      for (const live of await liveSets(workoutExerciseId)) {
-        const patch = pending.get(live.id)
-        const set = patch ? { ...live, ...patch } : live
-        const inMode = (set.unilateral != null) === on
-        if (inMode && !patch) continue
-        const next = inMode ? set : on ? toUnilateral(set) : fromUnilateral(set)
-        await db.sets.put({ ...next, updatedAt: timestamp })
-        await markDirty('sets', set.id)
-      }
     })
   },
 }

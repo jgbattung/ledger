@@ -831,5 +831,42 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       expect(memory(0, 0)).toMatchObject({ weight: 22 })
       expect(await stored(id)).toEqual(memory(0, 0))
     })
+
+    it('a flush with no toggle still writes every pending entry', async () => {
+      await startPush()
+      const [bench, fly] = store().exercises
+      store().openPad(bench.sets[0].id, 'weight')
+      type('6', '0')
+      store().openPad(fly.sets[0].id, 'reps')
+      type('1', '2')
+      store().flushPending()
+
+      await settle()
+      expect(await stored(bench.sets[0].id)).toEqual(memory(0, 0))
+      expect(await stored(fly.sets[0].id)).toEqual(memory(1, 0))
+      expect(memory(0, 0)).toMatchObject({ weight: 60 })
+      expect(memory(1, 0)).toMatchObject({ reps: 12 })
+    })
+
+    it('a reload after a flush shows the memory state, cleared L/R fields included', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const id = bench.sets[0].id
+      store().setUnilateral(bench.exercise.id, true)
+      store().openPad(id, 'reps', 'L')
+      type('9')
+      store().setUnilateral(bench.exercise.id, false)
+      store().openPad(id, 'reps')
+      type('1', '1')
+      store().flushPending()
+      await settle()
+      const before = memory(0, 0)
+
+      store().reset()
+      await store().hydrate()
+      expect(memory(0, 0)).toEqual(before)
+      expect(before).toMatchObject({ reps: 11, unilateral: undefined })
+      expect('unilateral' in (await db.sets.get(id))!).toBe(false)
+    })
   })
 })

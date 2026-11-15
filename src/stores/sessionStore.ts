@@ -79,6 +79,9 @@ const NOTE_DEBOUNCE_MS = 400
 let queue: Promise<unknown> = Promise.resolve()
 let inflightHydrate: Promise<void> | null = null
 const pendingPatches = new Map<string, SetFields>()
+// L/R toggles drain pending patches; a patch queued before a toggle must not consume one typed after it.
+let toggleEpoch = 0
+const patchEpochs = new Map<string, number>()
 const noteTimers = new Map<string, ReturnType<typeof setTimeout>>()
 const pendingNotes = new Map<string, string>()
 
@@ -141,6 +144,7 @@ function clearNoteState() {
   noteTimers.clear()
   pendingNotes.clear()
   pendingPatches.clear()
+  patchEpochs.clear()
 }
 
 export const useSessionStore = create<SessionState>((set, get) => {
@@ -177,7 +181,11 @@ export const useSessionStore = create<SessionState>((set, get) => {
   const schedulePatch = (setId: string, fields: SetFields) => {
     // Shallow merge by field: a `unilateral` in `fields` replaces the earlier object whole.
     pendingPatches.set(setId, { ...pendingPatches.get(setId), ...fields })
+    const epoch = toggleEpoch
+    patchEpochs.set(setId, epoch)
     void enqueue(async () => {
+      // A later-epoch task owns this entry now (a toggle ran in between).
+      if (patchEpochs.get(setId) !== epoch) return
       const patch = pendingPatches.get(setId)
       if (!patch) return
       pendingPatches.delete(setId)
@@ -461,6 +469,17 @@ export const useSessionStore = create<SessionState>((set, get) => {
     },
 
     setUnilateral(workoutExerciseId, on) {
+      // Take queued pre-toggle patches now: the toggle writes them with the
+      // conversion, and their own queued tasks find nothing and no-op.
+      const drained = new Map<string, SetFields>()
+      toggleEpoch += 1
+      const target = get().exercises.find((entry) => entry.exercise.id === workoutExerciseId)
+      for (const row of target?.sets ?? []) {
+        const patch = pendingPatches.get(row.id)
+        if (!patch) continue
+        drained.set(row.id, patch)
+        pendingPatches.delete(row.id)
+      }
       set((state) => ({
         exercises: state.exercises.map((entry) =>
           entry.exercise.id === workoutExerciseId
@@ -487,7 +506,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
             : state.pad,
         openSwipeSetId: null,
       }))
-      void enqueue(() => sets.setUnilateral(workoutExerciseId, on))
+      void enqueue(() => sets.setUnilateral(workoutExerciseId, on, drained))
     },
 
     removeSet(setId) {

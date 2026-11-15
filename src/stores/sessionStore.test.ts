@@ -670,6 +670,28 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     expect(stored?.reps).toBe(11)
   })
 
+  it('a queued pre-toggle value survives turning L/R on and then off', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    const id = bench.sets[0].id
+    store().openPad(id, 'weight')
+    type('2', '5')
+    store().setUnilateral(bench.exercise.id, true)
+    await settle()
+    expect(await db.sets.get(id)).toMatchObject({
+      unilateral: { leftWeight: 25, rightWeight: 25 },
+      weight: 25,
+    })
+
+    store().openPad(id, 'weight', 'R')
+    type('back', 'back', '3', '0')
+    store().setUnilateral(bench.exercise.id, false)
+    await settle()
+    const stored = await db.sets.get(id)
+    expect(stored?.unilateral).toBeUndefined()
+    expect(stored?.weight).toBe(store().exercises[0].sets[0].weight)
+  })
+
   it('typing right after turning L/R on persists the new side values', async () => {
     await startPush()
     const bench = store().exercises[0]

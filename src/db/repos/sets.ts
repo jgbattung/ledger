@@ -114,14 +114,23 @@ export const sets = {
 
   /**
    * Switches every live set of the exercise to or from L/R in one
-   * transaction. Sets already in the target mode are left alone.
+   * transaction. Sets already in the target mode are left alone. `pending`
+   * holds not-yet-written patches (by set id) from before the toggle; they are
+   * applied first so the conversion sees the latest typed values.
    */
-  async setUnilateral(workoutExerciseId: string, on: boolean): Promise<void> {
+  async setUnilateral(
+    workoutExerciseId: string,
+    on: boolean,
+    pending: ReadonlyMap<string, SetFields> = new Map(),
+  ): Promise<void> {
     await db.transaction('rw', db.sets, db.syncState, async () => {
       const timestamp = now()
-      for (const set of await liveSets(workoutExerciseId)) {
-        if ((set.unilateral != null) === on) continue
-        const next = on ? toUnilateral(set) : fromUnilateral(set)
+      for (const live of await liveSets(workoutExerciseId)) {
+        const patch = pending.get(live.id)
+        const set = patch ? { ...live, ...patch } : live
+        const inMode = (set.unilateral != null) === on
+        if (inMode && !patch) continue
+        const next = inMode ? set : on ? toUnilateral(set) : fromUnilateral(set)
         await db.sets.put({ ...next, updatedAt: timestamp })
         await markDirty('sets', set.id)
       }

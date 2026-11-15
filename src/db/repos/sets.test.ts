@@ -323,4 +323,58 @@ describe('sets repo - L/R sets (LG-012)', () => {
     expect(added.unilateral).toEqual(LR)
     expect(added).toMatchObject({ weight: 22, reps: 10 })
   })
+
+  it('add never carries last session partials and switches sides by the current mode', async () => {
+    const { programId, pushId } = await seedProgram()
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const bench = (await workouts.loadSession(first))!.exercises[0]
+    const [a, b] = await sets.listByWorkoutExercise(bench.exercise.id)
+    // Last session: row 1 L/R with partials, row 2 normal.
+    await sets.patch(a.id, {
+      unilateral: { ...LR, leftPartialReps: 2, rightPartialReps: 1 },
+      weight: 22,
+      reps: 10,
+    })
+    await sets.patch(b.id, { weight: 30, reps: 6 })
+    await sets.setCompleted(a.id, true)
+    await sets.setCompleted(b.id, true)
+    await workouts.finish(first)
+
+    const second = await workouts.startFromProgramDay(programId, pushId)
+    const live = (await workouts.loadSession(second))!.exercises[0]
+    for (const set of live.sets) await sets.softDelete(set.id)
+
+    // Row 1: same row was L/R, sides carried without partials.
+    const one = await sets.add(live.exercise.id)
+    expect(one.unilateral).toEqual(LR)
+    expect(one.partialReps).toBeUndefined()
+
+    // Row 2: L/R because the last live row is, but the same row was normal, so the
+    // sides take the last row's side weights with blank reps.
+    const two = await sets.add(live.exercise.id)
+    expect(two.unilateral).toEqual({ leftWeight: 20, leftReps: 0, rightWeight: 22, rightReps: 0 })
+    expect(two).toMatchObject({ weight: 22, reps: 0 })
+  })
+
+  it('add in normal mode after an L/R last session takes the same-row aggregate', async () => {
+    const { programId, pushId } = await seedProgram()
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const bench = (await workouts.loadSession(first))!.exercises[0]
+    await sets.setUnilateral(bench.exercise.id, true)
+    const [a, b] = await sets.listByWorkoutExercise(bench.exercise.id)
+    await sets.patch(a.id, { unilateral: LR, weight: 22, reps: 10 })
+    await sets.patch(b.id, { unilateral: LR, weight: 22, reps: 10 })
+    await sets.setCompleted(a.id, true)
+    await sets.setCompleted(b.id, true)
+    await workouts.finish(first)
+
+    const second = await workouts.startFromProgramDay(programId, pushId)
+    const live = (await workouts.loadSession(second))!.exercises[0]
+    await sets.setUnilateral(live.exercise.id, false)
+    // Keep only row 1, so the added row is row 2 of last session.
+    for (const set of live.sets.slice(1)) await sets.softDelete(set.id)
+    const added = await sets.add(live.exercise.id)
+    expect(added.unilateral).toBeUndefined()
+    expect(added).toMatchObject({ weight: 22, reps: 10 })
+  })
 })

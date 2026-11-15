@@ -7,6 +7,7 @@ import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
 import { useSessionStore } from '@/stores/sessionStore'
 import { ExerciseFocus } from '@/components/session/ExerciseFocus'
+import type { Set as SetRecord } from '@/db/types'
 
 const store = () => useSessionStore.getState()
 
@@ -180,5 +181,99 @@ describe('L/R set row (LG-012, M2)', () => {
     const cell = screen.getByRole('button', { name: 'Set 1 right reps' })
     expect(cell).toHaveTextContent('8|2')
     expect(screen.getByRole('button', { name: /Set 1 left reps/ })).not.toHaveTextContent('|')
+  })
+})
+
+describe('L/R merge confirm and Previous edge cases (LG-012)', () => {
+  beforeEach(async () => {
+    await resetDb()
+    store().reset()
+  })
+
+  /** Last session's sets for the focused exercise, as the store would load them. */
+  function setPrevious(previous: Partial<SetRecord>[]) {
+    const id = store().exercises[0].exercise.id
+    act(() =>
+      useSessionStore.setState((state) => ({
+        previousByExercise: { ...state.previousByExercise, [id]: previous as SetRecord[] },
+      })),
+    )
+  }
+
+  it('names the first set whose sides differ, not set 1', async () => {
+    await setup()
+    await userEvent.click(chip())
+    const second = store().exercises[0].sets[1].id
+    type(second, 'weight', 'L', '2', '4')
+    type(second, 'reps', 'L', '6')
+    type(second, 'weight', 'R', '2', '4')
+    type(second, 'reps', 'R', '8')
+
+    await userEvent.click(chip())
+    expect(screen.getByText(/set 2 becomes 24 kg × 6/)).toBeInTheDocument()
+  })
+
+  it('asks before merging when only the partials differ', async () => {
+    await setup()
+    await userEvent.click(chip())
+    const first = store().exercises[0].sets[0].id
+    type(first, 'reps', 'L', '8', 'fp', '2')
+    type(first, 'reps', 'R', '8')
+
+    await userEvent.click(chip())
+    expect(screen.getByText('Log both sides together?')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Log both sides together' }))
+    // Full tie: L wins and keeps its partial on the merged set.
+    expect(store().exercises[0].sets[0]).toMatchObject({ reps: 8, partialReps: 2 })
+    expect(chip()).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.queryByText('Log both sides together?')).toBeNull()
+  })
+
+  it('shows a normal previous set on both lines of an L/R row, without RIR', async () => {
+    await setup()
+    setPrevious([{ weight: 20, reps: 12, rir: 1, rirIsPlus: false }])
+    await userEvent.click(chip())
+    const row = rows()[0]
+    expect(within(row).getAllByText('20 kg × 12')).toHaveLength(2)
+    expect(within(row).queryByText('RIR 1')).toBeNull()
+  })
+
+  it('shows an L/R previous set per side, with its partial, on an L/R row', async () => {
+    await setup()
+    setPrevious([
+      {
+        weight: 22,
+        reps: 10,
+        rir: 1,
+        rirIsPlus: false,
+        unilateral: {
+          leftWeight: 20,
+          leftReps: 12,
+          rightWeight: 22,
+          rightReps: 10,
+          rightPartialReps: 2,
+        },
+      },
+    ])
+    await userEvent.click(chip())
+    const row = rows()[0]
+    expect(within(row).getByText('20 kg × 12')).toBeInTheDocument()
+    expect(within(row).getByText(/22 kg × 10/)).toHaveTextContent('22 kg × 10|2')
+  })
+
+  it('shows an L/R previous set as its aggregate on a normal row', async () => {
+    await setup()
+    setPrevious([
+      {
+        weight: 22,
+        reps: 10,
+        rir: 1,
+        rirIsPlus: false,
+        unilateral: { leftWeight: 20, leftReps: 12, rightWeight: 22, rightReps: 10 },
+      },
+    ])
+    const row = rows()[0]
+    expect(within(row).getByText('22 kg × 10')).toBeInTheDocument()
+    expect(within(row).getByText('RIR 1')).toBeInTheDocument()
   })
 })

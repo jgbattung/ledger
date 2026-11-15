@@ -647,4 +647,63 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     expect(store().exercises[0].sets[0].unilateral).toMatchObject({ leftWeight: 0, rightWeight: 30 })
     expect(store().exercises[0].sets[0].weight).toBe(30)
   })
+
+  it('typing right after turning L/R off persists the new values, not a stale merge', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    const id = bench.sets[0].id
+    store().setUnilateral(bench.exercise.id, true)
+    await settle()
+
+    // An L/R patch is still queued when L/R goes off and the merged row is edited.
+    store().openPad(id, 'reps', 'L')
+    type('9')
+    store().setUnilateral(bench.exercise.id, false)
+    store().openPad(id, 'reps')
+    type('1', '1')
+
+    expect(store().exercises[0].sets[0]).toMatchObject({ reps: 11 })
+    expect(store().exercises[0].sets[0].unilateral).toBeUndefined()
+    await settle()
+    const stored = await db.sets.get(id)
+    expect(stored?.unilateral).toBeUndefined()
+    expect(stored?.reps).toBe(11)
+  })
+
+  it('typing right after turning L/R on persists the new side values', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    const id = bench.sets[0].id
+    store().openPad(id, 'weight')
+    type('2', '0')
+    store().setUnilateral(bench.exercise.id, true)
+    store().openPad(id, 'weight', 'R')
+    type('back', 'back', '2', '2')
+
+    await settle()
+    const stored = await db.sets.get(id)
+    expect(stored?.unilateral).toMatchObject({ leftWeight: 20, rightWeight: 22 })
+    expect(stored?.weight).toBe(22)
+  })
+
+  it('toggling L/R keeps a pad that is open on another exercise', async () => {
+    await startPush()
+    const [bench, fly] = store().exercises
+    store().openPad(fly.sets[0].id, 'weight')
+    store().setUnilateral(bench.exercise.id, true)
+    expect(store().pad?.setId).toBe(fly.sets[0].id)
+    expect(store().exercises[1].sets.every((row) => row.unilateral == null)).toBe(true)
+  })
+
+  it('Next from the last L/R set right reps moves to the next exercise first set', async () => {
+    await startPush()
+    const [bench, fly] = store().exercises
+    store().setUnilateral(bench.exercise.id, true)
+    const last = bench.sets.at(-1)!
+    store().openPad(last.id, 'reps', 'R')
+    store().padNext()
+    expect(store().pad?.setId).toBe(fly.sets[0].id)
+    expect(store().pad?.entry).toMatchObject({ field: 'weight' })
+    expect(store().pad?.entry.side).toBeUndefined()
+  })
 })

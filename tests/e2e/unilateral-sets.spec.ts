@@ -153,4 +153,29 @@ test('LG-012: log L/R sets, persist, merge confirm, history and next-session car
   await expect(cell(page, 'Set 1 right reps')).toHaveText('10');
   await expect(cell(page, 'Set 2 right weight in kilograms')).toHaveText('22');
   await expect(page.getByRole('row', { name: 'Set 1' })).toContainText('20 kg × 12');
+
+  // Confirming the merge plays the Sheet close animation (it stays mounted in the
+  // closed state for a moment) and merges every differing set to its heavier side.
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  const nextChip = page.getByRole('button', { name: 'L/R', exact: true });
+  await nextChip.click();
+  const merge = page.getByRole('dialog', { name: 'Log both sides together?' });
+  await expect(merge).toBeVisible();
+  await page.evaluate(() => {
+    const w = window as unknown as { __mergeClosedSeen?: boolean };
+    w.__mergeClosedSeen = false;
+    new MutationObserver(() => {
+      if (document.querySelector('[role="dialog"][data-state="closed"]')) w.__mergeClosedSeen = true;
+    }).observe(document.body, { subtree: true, childList: true, attributes: true });
+  });
+  await merge.getByRole('button', { name: 'Log both sides together' }).click();
+  await expect(merge).toBeHidden();
+  expect(
+    await page.evaluate(() => (window as unknown as { __mergeClosedSeen?: boolean }).__mergeClosedSeen),
+  ).toBe(true);
+  await expect(nextChip).toHaveAttribute('aria-pressed', 'false');
+  await expect(cell(page, 'Set 1 weight in kilograms')).toHaveText('20');
+  await expect(cell(page, /^Set 1 reps/)).toContainText('10');
+  await expect(cell(page, 'Set 2 weight in kilograms')).toHaveText('22');
+  await expect(cell(page, /^Set 2 reps/)).toContainText('10');
 });

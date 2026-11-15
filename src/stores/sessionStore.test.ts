@@ -728,4 +728,108 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     expect(store().pad?.entry).toMatchObject({ field: 'weight' })
     expect(store().pad?.entry.side).toBeUndefined()
   })
+
+  describe('toggle races (B1 re-verification)', () => {
+    const fields = (row: { weight: number; reps: number; unilateral?: unknown } | undefined) => ({
+      weight: row?.weight,
+      reps: row?.reps,
+      unilateral: row?.unilateral,
+    })
+    const memory = (exerciseIndex: number, setIndex: number) =>
+      fields(store().exercises[exerciseIndex].sets[setIndex])
+    const stored = async (id: string) => fields(await db.sets.get(id))
+
+    it('on, off, on with a queued patch at every step ends with Dexie matching memory', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const id = bench.sets[0].id
+      store().openPad(id, 'weight')
+      type('2', '0')
+      store().setUnilateral(bench.exercise.id, true)
+      store().openPad(id, 'reps', 'L')
+      type('9')
+      store().setUnilateral(bench.exercise.id, false)
+      store().openPad(id, 'reps')
+      type('1', '1')
+      store().setUnilateral(bench.exercise.id, true)
+      store().openPad(id, 'weight', 'R')
+      type('back', 'back', '2', '4')
+
+      expect(memory(0, 0)).toMatchObject({ weight: 24, reps: 11 })
+      await settle()
+      expect(await stored(id)).toEqual(memory(0, 0))
+    })
+
+    it('typing on another exercise across a toggle keeps that exercise values', async () => {
+      await startPush()
+      const [bench, fly] = store().exercises
+      const flyId = fly.sets[0].id
+      store().openPad(flyId, 'weight')
+      type('1', '5')
+      store().setUnilateral(bench.exercise.id, true)
+      await settle()
+      expect((await db.sets.get(flyId))?.weight).toBe(15)
+
+      store().openPad(flyId, 'reps')
+      type('1', '2')
+      store().setUnilateral(bench.exercise.id, false)
+      type('back', '4')
+      await settle()
+      expect(await stored(flyId)).toEqual(memory(1, 0))
+      expect(memory(1, 0)).toMatchObject({ weight: 15, reps: 14 })
+    })
+
+    it('no toggle: coalesced patches across sets all persist', async () => {
+      await startPush()
+      const [bench, fly] = store().exercises
+      store().openPad(bench.sets[0].id, 'weight')
+      type('6', '0')
+      store().openPad(fly.sets[0].id, 'weight')
+      type('1', '2')
+      store().openPad(bench.sets[0].id, 'reps')
+      type('8')
+      store().openPad(bench.sets[1].id, 'reps')
+      type('7')
+      await settle()
+      expect(await stored(bench.sets[0].id)).toEqual(memory(0, 0))
+      expect(await stored(bench.sets[1].id)).toEqual(memory(0, 1))
+      expect(await stored(fly.sets[0].id)).toEqual(memory(1, 0))
+      expect(memory(0, 0)).toMatchObject({ weight: 60, reps: 8 })
+    })
+
+    it('a flush (tab hidden) right after turning L/R off keeps the typed value', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const id = bench.sets[0].id
+      store().setUnilateral(bench.exercise.id, true)
+      await settle()
+
+      store().openPad(id, 'reps', 'L')
+      type('9')
+      store().setUnilateral(bench.exercise.id, false)
+      store().openPad(id, 'reps')
+      type('1', '1')
+      store().flushPending()
+
+      await settle()
+      expect(memory(0, 0)).toMatchObject({ reps: 11, unilateral: undefined })
+      expect(await stored(id)).toEqual(memory(0, 0))
+    })
+
+    it('a flush (tab hidden) right after turning L/R on keeps the aggregate consistent', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const id = bench.sets[0].id
+      store().openPad(id, 'weight')
+      type('2', '0')
+      store().setUnilateral(bench.exercise.id, true)
+      store().openPad(id, 'weight', 'R')
+      type('back', 'back', '2', '2')
+      store().flushPending()
+
+      await settle()
+      expect(memory(0, 0)).toMatchObject({ weight: 22 })
+      expect(await stored(id)).toEqual(memory(0, 0))
+    })
+  })
 })

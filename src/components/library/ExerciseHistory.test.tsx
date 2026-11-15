@@ -9,7 +9,14 @@ import { exercise, seedProgram } from '@/workouts/test-fixtures'
 
 const BENCH = { source: 'db' as const, exerciseId: 'barbell-bench-press' }
 
-type Logged = { weight: number; reps: number; rir?: number; rirIsPlus?: boolean; partialReps?: number }
+type Logged = {
+  weight: number
+  reps: number
+  rir?: number
+  rirIsPlus?: boolean
+  partialReps?: number
+  unilateral?: NonNullable<Parameters<typeof sets.patch>[1]['unilateral']>
+}
 
 async function finishedWorkout(
   programId: string,
@@ -120,5 +127,36 @@ describe('ExerciseDetailPage History tab', () => {
     const { container } = render(<RouterProvider router={router} />)
     expect(await screen.findByText('30 kg × 10')).toBeInTheDocument()
     expect(container.textContent).not.toMatch(/e1rm|1rm/i)
+  })
+})
+
+describe('ExerciseHistory - L/R sets (LG-012, M3)', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  it('renders an L/R set per side with a per-side partial next to a normal set', async () => {
+    const { programId, pushId } = await seed()
+    await finishedWorkout(programId, pushId, thisYear(0, 10), [
+      {
+        weight: 22,
+        reps: 10,
+        rir: 1,
+        unilateral: {
+          leftWeight: 20,
+          leftReps: 12,
+          rightWeight: 22,
+          rightReps: 10,
+          leftPartialReps: 2,
+        },
+      },
+      { weight: 30, reps: 8, rir: 0, partialReps: 2 },
+    ])
+    render(<ExerciseHistory exerciseRef={BENCH} />)
+    const sideLine = await screen.findByText(/20 kg × 12/)
+    expect(sideLine.closest('li')).toHaveTextContent('L 20 kg × 12|2·R 22 kg × 10RIR 1')
+    const normal = screen.getByText(/^30 kg × 8/)
+    expect(normal).toHaveTextContent('30 kg × 8|2')
+    expect(normal).not.toHaveTextContent('L ')
   })
 })

@@ -1,7 +1,7 @@
 import { addMinutes, set as setTime, startOfDay, subDays } from 'date-fns'
 import { newId } from '@/db/ids'
 import { getExerciseById } from '@/exercises/catalog'
-import { toTargetsSnapshot } from '@/workouts/model'
+import { toTargetsSnapshot, unilateralAggregate } from '@/workouts/model'
 import { PROGRESSION } from '@/db/seed/programs'
 import type { Progression } from '@/db/seed/programs'
 import type { Rng } from '@/db/seed/rng'
@@ -34,6 +34,9 @@ const MISSED_WORKOUTS = 3
 const SWAP_PROGRAMMED = 'lat-pulldown'
 const SWAP_PERFORMED = 'wide-grip-lat-pulldown'
 const SWAP_ON_PULL_NUMBER = 4
+
+/** Exercises logged left and right separately (LG-012). */
+const UNILATERAL = new Set(['dumbbell-lunges'])
 
 const NOTES = [
   'Felt strong today',
@@ -190,11 +193,14 @@ export function buildHistory(input: {
       const level = Math.min(repMax, Math.max(repMin, state.level ?? repMin))
       const isolation = getExerciseById(performedId)?.mechanic === 'isolation'
 
+      // Decided per session (never on a topped-out one) so the aggregate keeps the progression rules.
+      const rightShort = UNILATERAL.has(performedId) && level < repMax && rng.chance(0.2)
       let loss = 0
       for (let setIndex = 0; setIndex < setCount; setIndex++) {
         // Every set hits the top of the range once the lift is ready to go up.
         if (level < repMax && setIndex > 0) loss = Math.min(2, loss + rng.int(0, 1))
         const last = setIndex === setCount - 1
+        const reps = Math.max(1, level - loss)
         const row: SetRow = {
           id: newId(),
           createdAt: startedAt,
@@ -204,12 +210,31 @@ export function buildHistory(input: {
           orderIndex: setIndex,
           type: 'working',
           weight: state.kg,
-          reps: Math.max(1, level - loss),
+          reps,
           rir: last ? 0 : rng.int(1, 2),
           rirIsPlus: false,
-          ...(!discarded && last && isolation && rng.chance(0.05)
-            ? { partialReps: rng.int(1, 3) }
-            : {}),
+        }
+        if (UNILATERAL.has(performedId)) {
+          // Usually equal sides, some sessions with the right side one rep short, and
+          // an occasional per-side partial on the last set. The set-level
+          // weight and reps hold the LOG-6 aggregate and never a partial.
+          const rightReps = rightShort && reps - 1 >= repMin ? reps - 1 : reps
+          const unilateral: NonNullable<SetRow['unilateral']> = {
+            leftWeight: state.kg,
+            leftReps: reps,
+            rightWeight: state.kg,
+            rightReps,
+          }
+          if (!discarded && last && rng.chance(0.1)) {
+            if (rng.chance(0.5)) unilateral.leftPartialReps = rng.int(1, 3)
+            else unilateral.rightPartialReps = rng.int(1, 3)
+          }
+          const aggregate = unilateralAggregate(unilateral)
+          row.weight = aggregate.weight
+          row.reps = aggregate.reps
+          row.unilateral = unilateral
+        } else if (!discarded && last && isolation && rng.chance(0.05)) {
+          row.partialReps = rng.int(1, 3)
         }
         pending.push({ row, windowIndex: pending.length })
         sets.push(row)

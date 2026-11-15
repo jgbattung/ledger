@@ -2,8 +2,8 @@ import { useRef, useState } from 'react'
 import { Check, Minus } from 'lucide-react'
 import { RIR_FILL, ROW_GRID } from '@/components/session/styles'
 import { cn } from '@/lib/utils'
-import { formatPrevious, rirLabel } from '@/workouts/model'
-import type { PadEntry, PadField } from '@/workouts/model'
+import { formatPrevious, formatSide, formatSides, rirLabel } from '@/workouts/model'
+import type { PadEntry, PadField, Side } from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
 
 /** The muted `|` between full and partial reps (design-system 10d). */
@@ -25,7 +25,9 @@ const CELL =
 
 /**
  * One set row (design-system 10a-10f): Set | Previous | kg | Reps | check.
- * `pad` is the live pad buffer when this row is the one being edited.
+ * An L/R set (design-system 10n) renders two lines inside the same row, so
+ * swipe, dim and check behave identically. `pad` is the live pad buffer when
+ * this row is the one being edited.
  */
 export function SetRow({
   set,
@@ -45,7 +47,7 @@ export function SetRow({
   /** Target rep range shown in an unfilled reps cell ("8–10", "8" or ""). */
   placeholder: string
   pad: PadEntry | null
-  onOpenPad: (field: PadField) => void
+  onOpenPad: (field: PadField, side?: Side) => void
   onToggle: () => void
   /** The row is swiped open, showing its remove button. */
   swipeOpen: boolean
@@ -59,27 +61,162 @@ export function SetRow({
   const editing = pad !== null
   const dim = checked && !editing
 
-  const weightActive = pad?.field === 'weight'
+  const unilateral = set.unilateral
   const repsActive = pad?.field === 'reps'
+  const hasReps = unilateral ? Math.max(unilateral.leftReps, unilateral.rightReps) > 0 : set.reps > 0
 
-  // While typing, show the buffer ("62." must survive); otherwise the stored value.
-  const weightText =
-    weightActive && !pad.fresh
-      ? pad.weight
-      : set.weight === 0 && !checked
-        ? ''
-        : `${set.weight}`
-  const repsText =
-    repsActive && pad.mode === 'F' && !pad.fresh
-      ? pad.reps
-      : set.reps === 0 && !checked
-        ? ''
-        : `${set.reps}`
-  const partialText = repsActive ? pad.partial : set.partialReps ? `${set.partialReps}` : ''
-  const partialPending = repsActive && pad.mode === 'P' && pad.partial === ''
-  const showRir = set.reps > 0 || checked || repsActive
+  const prev = previous && !unilateral ? formatPrevious(previous) : null
+  const prevSides = previous
+    ? (formatSides(previous) ?? [
+        { side: 'L' as const, ...formatSide(previous.weight, previous.reps, previous.partialReps) },
+        { side: 'R' as const, ...formatSide(previous.weight, previous.reps, previous.partialReps) },
+      ])
+    : null
 
-  const prev = previous ? formatPrevious(previous) : null
+  /** The kg and reps cells of one line; `side` is set only on an L/R set. */
+  const renderCells = (
+    side: Side | undefined,
+    value: { weight: number; reps: number; partial?: number },
+    withRir: boolean,
+  ) => {
+    const lineActive = pad !== null && pad.side === side
+    const weightActive = lineActive && pad.field === 'weight'
+    const lineRepsActive = lineActive && pad.field === 'reps'
+    const name = side ? `${side === 'L' ? 'left' : 'right'} ` : ''
+    // While typing, show the buffer ("62." must survive); otherwise the stored value.
+    const weightText =
+      weightActive && !pad.fresh ? pad.weight : value.weight === 0 && !checked ? '' : `${value.weight}`
+    const repsText =
+      lineRepsActive && pad.mode === 'F' && !pad.fresh
+        ? pad.reps
+        : value.reps === 0 && !checked
+          ? ''
+          : `${value.reps}`
+    const partialText = lineRepsActive ? pad.partial : value.partial ? `${value.partial}` : ''
+    const partialPending = lineRepsActive && pad.mode === 'P' && pad.partial === ''
+    const showRir = withRir && (hasReps || checked || repsActive)
+    return (
+      <>
+        <div role="cell" className={cn(dim && 'opacity-50')}>
+          <button
+            type="button"
+            aria-label={`Set ${number} ${name}weight in kilograms`}
+            aria-current={weightActive ? 'true' : undefined}
+            onClick={() => onOpenPad('weight', side)}
+            className={cn(CELL, weightActive && 'bg-background ring-2 ring-ring')}
+          >
+            {weightText !== '' ? (
+              weightText
+            ) : (
+              <span className="text-[15px] font-normal text-muted-foreground">–</span>
+            )}
+          </button>
+        </div>
+
+        <div role="cell" className={cn(dim && 'opacity-50')}>
+          <button
+            type="button"
+            aria-label={`Set ${number} ${name}reps${showRir ? `, RIR ${rirLabel(set.rir, set.rirIsPlus)}` : ''}`}
+            aria-current={lineRepsActive ? 'true' : undefined}
+            onClick={() => onOpenPad('reps', side)}
+            className={cn(CELL, lineRepsActive && 'bg-background ring-2 ring-ring')}
+          >
+            {repsText !== '' || partialText !== '' || partialPending ? (
+              <>
+                {repsText}
+                {partialText !== '' || partialPending ? (
+                  <>
+                    <PartialDivider />
+                    {partialText !== '' ? (
+                      partialText
+                    ) : (
+                      <span className="text-muted-foreground">_</span>
+                    )}
+                  </>
+                ) : null}
+              </>
+            ) : (
+              <span className="text-[15px] font-normal text-muted-foreground">{placeholder || '–'}</span>
+            )}
+            {showRir ? (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'absolute -top-2 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-none font-semibold text-rir-ink ring-2 ring-background',
+                  RIR_FILL[set.rirIsPlus ? 6 : Math.min(6, Math.max(0, set.rir))],
+                )}
+              >
+                {rirLabel(set.rir, set.rirIsPlus)}
+              </span>
+            ) : null}
+          </button>
+        </div>
+      </>
+    )
+  }
+
+  /** One side's Previous cell: the side letter leads its value; no RIR (design-system 10n). */
+  const renderSidePrevious = (side: Side) => {
+    const entry = prevSides?.find((item) => item.side === side)
+    return (
+      <div role="cell" className={cn('flex min-w-0 items-center gap-1.5', dim && 'opacity-50')}>
+        <span
+          aria-hidden="true"
+          className="w-[18px] shrink-0 text-center text-xs font-semibold text-muted-foreground"
+        >
+          {side}
+        </span>
+        {entry ? (
+          <p className="min-w-0 truncate text-sm leading-tight tabular-nums">
+            {entry.text}
+            {entry.partial ? (
+              <>
+                <PartialDivider />
+                {entry.partial}
+              </>
+            ) : null}
+          </p>
+        ) : (
+          <span className="text-sm text-muted-foreground">–</span>
+        )}
+      </div>
+    )
+  }
+
+  const numberCell = (
+    <div
+      role="cell"
+      className={cn(
+        'flex size-8 items-center justify-center rounded-full bg-secondary text-sm font-semibold tabular-nums',
+        dim && 'opacity-50',
+      )}
+    >
+      {number}
+    </div>
+  )
+
+  const checkCell = (
+    <div role="cell" className="flex justify-end">
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        aria-label={`Mark set ${number} ${checked ? 'not done' : 'done'}`}
+        onClick={onToggle}
+        className="flex size-touch-min items-center justify-center rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        <span
+          aria-hidden="true"
+          className={cn(
+            'flex size-[26px] items-center justify-center rounded-md border-2 border-foreground transition-colors duration-150 motion-reduce:transition-none',
+            checked && 'bg-foreground text-background',
+          )}
+        >
+          {checked ? <Check className="size-[15px]" strokeWidth={3} /> : null}
+        </span>
+      </button>
+    </div>
+  )
 
   const offset = drag ?? (swipeOpen ? -SWIPE_TRAVEL : 0)
 
@@ -162,112 +299,62 @@ export function SetRow({
           drag === null && 'transition-transform duration-200 ease-out-app motion-reduce:transition-none',
         )}
       >
-        <div className={cn(ROW_GRID, 'min-h-14')}>
-          <div
-            role="cell"
-            className={cn(
-              'flex size-8 items-center justify-center rounded-full bg-secondary text-sm font-semibold tabular-nums',
-              dim && 'opacity-50',
+        {unilateral ? (
+          <div className={cn(ROW_GRID, 'gap-y-1.5 py-1.5')}>
+            <div className="col-start-1 row-start-1">{numberCell}</div>
+            <div className="col-start-2 row-start-1 min-w-0">{renderSidePrevious('L')}</div>
+            {renderCells(
+              'L',
+              {
+                weight: unilateral.leftWeight,
+                reps: unilateral.leftReps,
+                partial: unilateral.leftPartialReps,
+              },
+              true,
             )}
-          >
-            {number}
-          </div>
-
-          <div role="cell" className={cn('min-w-0 text-sm leading-tight tabular-nums', dim && 'opacity-50')}>
-            {prev ? (
-              <>
-                <p className="truncate">
-                  {prev.text}
-                  {prev.partial ? (
-                    <>
-                      <PartialDivider />
-                      {prev.partial}
-                    </>
-                  ) : null}
-                </p>
-                <p className="text-xs text-muted-foreground">{prev.rir}</p>
-              </>
-            ) : (
-              <span className="text-muted-foreground">–</span>
+            <div className="col-start-5 row-span-2 row-start-1">{checkCell}</div>
+            <div className="col-start-2 row-start-2 min-w-0">{renderSidePrevious('R')}</div>
+            {renderCells(
+              'R',
+              {
+                weight: unilateral.rightWeight,
+                reps: unilateral.rightReps,
+                partial: unilateral.rightPartialReps,
+              },
+              false,
             )}
           </div>
+        ) : (
+          <div className={cn(ROW_GRID, 'min-h-14')}>
+            {numberCell}
 
-          <div role="cell" className={cn(dim && 'opacity-50')}>
-            <button
-              type="button"
-              aria-label={`Set ${number} weight in kilograms`}
-              aria-current={weightActive ? 'true' : undefined}
-              onClick={() => onOpenPad('weight')}
-              className={cn(CELL, weightActive && 'bg-background ring-2 ring-ring')}
+            <div
+              role="cell"
+              className={cn('min-w-0 text-sm leading-tight tabular-nums', dim && 'opacity-50')}
             >
-              {weightText !== '' ? (
-                weightText
-              ) : (
-                <span className="text-[15px] font-normal text-muted-foreground">–</span>
-              )}
-            </button>
-          </div>
-
-          <div role="cell" className={cn(dim && 'opacity-50')}>
-            <button
-              type="button"
-              aria-label={`Set ${number} reps${showRir ? `, RIR ${rirLabel(set.rir, set.rirIsPlus)}` : ''}`}
-              aria-current={repsActive ? 'true' : undefined}
-              onClick={() => onOpenPad('reps')}
-              className={cn(CELL, repsActive && 'bg-background ring-2 ring-ring')}
-            >
-              {repsText !== '' || partialText !== '' || partialPending ? (
+              {prev ? (
                 <>
-                  {repsText}
-                  {partialText !== '' || partialPending ? (
-                    <>
-                      <PartialDivider />
-                      {partialText !== '' ? (
-                        partialText
-                      ) : (
-                        <span className="text-muted-foreground">_</span>
-                      )}
-                    </>
-                  ) : null}
+                  <p className="truncate">
+                    {prev.text}
+                    {prev.partial ? (
+                      <>
+                        <PartialDivider />
+                        {prev.partial}
+                      </>
+                    ) : null}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{prev.rir}</p>
                 </>
               ) : (
-                <span className="text-[15px] font-normal text-muted-foreground">{placeholder || '–'}</span>
+                <span className="text-muted-foreground">–</span>
               )}
-              {showRir ? (
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    'absolute -top-2 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-none font-semibold text-rir-ink ring-2 ring-background',
-                    RIR_FILL[set.rirIsPlus ? 6 : Math.min(6, Math.max(0, set.rir))],
-                  )}
-                >
-                  {rirLabel(set.rir, set.rirIsPlus)}
-                </span>
-              ) : null}
-            </button>
-          </div>
+            </div>
 
-          <div role="cell" className="flex justify-end">
-            <button
-              type="button"
-              role="checkbox"
-              aria-checked={checked}
-              aria-label={`Mark set ${number} ${checked ? 'not done' : 'done'}`}
-              onClick={onToggle}
-              className="flex size-touch-min items-center justify-center rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-              <span
-                aria-hidden="true"
-                className={cn(
-                  'flex size-[26px] items-center justify-center rounded-md border-2 border-foreground transition-colors duration-150 motion-reduce:transition-none',
-                  checked && 'bg-foreground text-background',
-                )}
-              >
-                {checked ? <Check className="size-[15px]" strokeWidth={3} /> : null}
-              </span>
-            </button>
+            {renderCells(undefined, { weight: set.weight, reps: set.reps, partial: set.partialReps }, true)}
+
+            {checkCell}
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

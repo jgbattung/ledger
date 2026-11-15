@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '@/db/ledger'
 import { resetDb } from '@/db/test-utils'
+import { sets } from '@/db/repos/sets'
 import { workouts } from '@/db/repos/workouts'
 import { useSessionStore } from '@/stores/sessionStore'
 import { __resetRestTimerForTests, useRestTimerStore } from '@/stores/restTimerStore'
@@ -867,6 +868,182 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       expect(memory(0, 0)).toEqual(before)
       expect(before).toMatchObject({ reps: 11, unilateral: undefined })
       expect('unilateral' in (await db.sets.get(id))!).toBe(false)
+    })
+  })
+  describe('toggle as pending patches (phase 7 re-verification)', () => {
+    const logged = (row: Record<string, unknown> | undefined) => ({
+      weight: row?.weight,
+      reps: row?.reps,
+      partialReps: row?.partialReps,
+      unilateral: row?.unilateral,
+      rir: row?.rir,
+      rirIsPlus: row?.rirIsPlus,
+      completed: row?.completedAt != null,
+      deleted: row?.deletedAt != null,
+    })
+    const expectDexieMatchesMemory = async (exerciseIndex: number) => {
+      for (const row of store().exercises[exerciseIndex].sets) {
+        expect(logged((await db.sets.get(row.id)) as unknown as Record<string, unknown>)).toEqual(
+          logged(row as unknown as Record<string, unknown>),
+        )
+      }
+    }
+    const withPartial = async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      store().openPad(bench.sets[0].id, 'reps')
+      type('8', 'fp', '2')
+      store().closePad()
+      await settle()
+      return bench
+    }
+
+    it('a flush in the middle of a toggle writes the converted rows and the toggle task no-ops', async () => {
+      const bench = await withPartial()
+      const spy = vi.spyOn(sets, 'patchMany')
+      store().setUnilateral(bench.exercise.id, true)
+      store().flushPending()
+      await settle()
+
+      const written = spy.mock.calls.map(([entries]) => entries.length)
+      spy.mockRestore()
+      expect(written[0]).toBe(bench.sets.length)
+      expect(written.slice(1).every((count) => count === 0)).toBe(true)
+      await expectDexieMatchesMemory(0)
+      const stored = await db.sets.get(bench.sets[0].id)
+      expect('partialReps' in stored!).toBe(false)
+      expect(stored?.unilateral).toMatchObject({ leftPartialReps: 2, rightPartialReps: 2 })
+    })
+
+    it('a flush between two toggles and typing after them ends with Dexie matching memory', async () => {
+      const bench = await withPartial()
+      const id = bench.sets[0].id
+      store().setUnilateral(bench.exercise.id, true)
+      store().openPad(id, 'weight', 'L')
+      type('back', 'back', '2', '4')
+      store().flushPending()
+      store().setUnilateral(bench.exercise.id, false)
+      store().openPad(id, 'reps')
+      type('1', '0')
+      await settle()
+
+      expect(store().exercises[0].sets[0]).toMatchObject({ weight: 24, reps: 10, partialReps: 2 })
+      await expectDexieMatchesMemory(0)
+    })
+
+    it('toggling on and off twice before the queue drains keeps partials and the aggregate', async () => {
+      const bench = await withPartial()
+      store().setUnilateral(bench.exercise.id, true)
+      store().setUnilateral(bench.exercise.id, false)
+      store().setUnilateral(bench.exercise.id, true)
+      store().setUnilateral(bench.exercise.id, false)
+      await settle()
+
+      expect(store().exercises[0].sets[0]).toMatchObject({ reps: 8, partialReps: 2 })
+      expect(store().exercises[0].sets[0].unilateral).toBeUndefined()
+      await expectDexieMatchesMemory(0)
+      expect('unilateral' in (await db.sets.get(bench.sets[0].id))!).toBe(false)
+    })
+
+    it('typing on a converted set and then removing it still converts the other sets', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const [first, second] = bench.sets
+      store().setUnilateral(bench.exercise.id, true)
+      store().openPad(first.id, 'reps', 'R')
+      type('7')
+      store().removeSet(first.id)
+      store().openPad(second.id, 'reps', 'L')
+      type('9')
+      await settle()
+
+      expect((await db.sets.get(first.id))?.deletedAt).not.toBeNull()
+      expect(store().exercises[0].sets.map((row) => row.id)).not.toContain(first.id)
+      await expectDexieMatchesMemory(0)
+      expect((await db.sets.get(second.id))?.unilateral).toMatchObject({ leftReps: 9 })
+    })
+
+    it('removing a converted set then flushing writes the rest and never resurrects it', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const [first] = bench.sets
+      store().setUnilateral(bench.exercise.id, true)
+      store().removeSet(first.id)
+      store().flushPending()
+      await settle()
+
+      const removed = await db.sets.get(first.id)
+      expect(removed?.deletedAt).not.toBeNull()
+      expect(removed?.unilateral).toBeUndefined()
+      await expectDexieMatchesMemory(0)
+    })
+
+    it('a failing toggle write reloads from Dexie and a later edit does not leave them apart', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const id = bench.sets[0].id
+      const spy = vi.spyOn(sets, 'patchMany').mockRejectedValueOnce(new Error('QuotaExceededError'))
+      store().setUnilateral(bench.exercise.id, true)
+      store().openPad(id, 'weight', 'R')
+      type('back', 'back', '2', '2')
+      await settle()
+      spy.mockRestore()
+
+      expect(store().error).toBe('QuotaExceededError')
+      await expectDexieMatchesMemory(0)
+    })
+
+    // Known gap (pre-existing on main, logged for the Architect): a failed write reloads memory from
+    // Dexie, but edits queued behind it still land, so Dexie ends up ahead of memory. Flip to `it` once fixed.
+    it.fails('a toggle write that fails while the next edit is queued leaves Dexie matching memory', async () => {
+      await startPush()
+      const bench = store().exercises[0]
+      const id = bench.sets[0].id
+      let fail: (error: Error) => void = () => {}
+      const spy = vi
+        .spyOn(sets, 'patchMany')
+        .mockImplementationOnce(() => new Promise<void>((_, reject) => (fail = reject)))
+      store().setUnilateral(bench.exercise.id, true)
+      await vi.waitFor(() => expect(spy).toHaveBeenCalledTimes(1))
+      store().openPad(id, 'weight', 'R')
+      type('back', 'back', '2', '2')
+      fail(new Error('QuotaExceededError'))
+      await settle()
+      spy.mockRestore()
+
+      expect(store().error).toBe('QuotaExceededError')
+      await expectDexieMatchesMemory(0)
+    })
+
+    it('normal edits, RIR and completion never drop a field they did not touch', async () => {
+      const bench = await withPartial()
+      const id = bench.sets[0].id
+      store().setRir(id, 2, true)
+      store().toggleComplete(id)
+      store().openPad(id, 'weight')
+      type('back', 'back', '6', '0')
+      await settle()
+
+      expect(await db.sets.get(id)).toMatchObject({ weight: 60, reps: 8, partialReps: 2, rir: 2, rirIsPlus: true })
+      expect((await db.sets.get(id))?.completedAt).toBeTypeOf('number')
+      await expectDexieMatchesMemory(0)
+    })
+
+    it('RIR, completion and the other side on an L/R set keep every side value', async () => {
+      const bench = await withPartial()
+      const id = bench.sets[0].id
+      store().setUnilateral(bench.exercise.id, true)
+      store().setRir(id, 1, false)
+      store().toggleComplete(id)
+      store().openPad(id, 'weight', 'R')
+      type('back', 'back', '2', '2')
+      await settle()
+
+      const stored = await db.sets.get(id)
+      expect(stored?.unilateral).toMatchObject({ leftReps: 8, leftPartialReps: 2, rightWeight: 22, rightPartialReps: 2 })
+      expect(stored).toMatchObject({ weight: 22, rir: 1 })
+      expect(stored?.completedAt).toBeTypeOf('number')
+      await expectDexieMatchesMemory(0)
     })
   })
 })

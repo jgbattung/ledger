@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeftRight, Flame, Info, Target } from 'lucide-react'
+import { MergeSidesSheet } from '@/components/session/MergeSidesSheet'
 import { ExerciseNoteCard } from '@/components/session/ExerciseNoteCard'
 import { SetTable } from '@/components/session/SetTable'
 import { TargetsSheet } from '@/components/session/TargetsSheet'
 import { exercisePath } from '@/exercises/detail'
 import { exerciseName } from '@/programs/model'
-import { repPlaceholder } from '@/workouts/model'
+import { fromUnilateral, repPlaceholder, sidesDiffer } from '@/workouts/model'
 import { cn } from '@/lib/utils'
 import { useSessionStore } from '@/stores/sessionStore'
 import type { SessionExercise } from '@/stores/sessionStore'
@@ -36,6 +37,7 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
   const navigate = useNavigate()
   const [targetsOpen, setTargetsOpen] = useState(false)
   const [swapHint, setSwapHint] = useState(false)
+  const [mergeOpen, setMergeOpen] = useState(false)
   const pad = useSessionStore((state) => state.pad)
   const openSwipeSetId = useSessionStore((state) => state.openSwipeSetId)
   const previous = useSessionStore((state) => state.previousByExercise[entry.exercise.id])
@@ -43,6 +45,20 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
 
   const name = exerciseName(exercise.exerciseRef)
   const canSwap = !sets.some((set) => set.completedAt != null)
+  const unilateralOn = sets.some((set) => set.unilateral != null)
+  const firstDiffering = sets.findIndex(sidesDiffer)
+  const merged = firstDiffering >= 0 ? fromUnilateral(sets[firstDiffering]) : null
+
+  const toggleUnilateral = () => {
+    if (sets.length === 0) return
+    if (!unilateralOn) {
+      useSessionStore.getState().setUnilateral(exercise.id, true)
+    } else if (firstDiffering >= 0) {
+      setMergeOpen(true)
+    } else {
+      useSessionStore.getState().setUnilateral(exercise.id, false)
+    }
+  }
 
   return (
     <div>
@@ -101,6 +117,26 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
             Info
           </span>
         </button>
+        <button
+          type="button"
+          aria-pressed={unilateralOn}
+          disabled={sets.length === 0}
+          onClick={toggleUnilateral}
+          className={CHIP}
+        >
+          <span
+            className={cn(
+              PILL,
+              sets.length === 0
+                ? 'border-dashed border-muted-foreground text-muted-foreground'
+                : unilateralOn
+                  ? 'border-foreground bg-foreground text-background'
+                  : 'border-border',
+            )}
+          >
+            L/R
+          </span>
+        </button>
       </div>
       {swapHint && !canSwap ? (
         <p role="status" className="px-4 pt-1 text-[13px] text-muted-foreground">
@@ -113,7 +149,7 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
         previous={previous ?? []}
         snapshot={exercise.targetsSnapshot}
         pad={pad}
-        onOpenPad={(setId, field) => useSessionStore.getState().openPad(setId, field)}
+        onOpenPad={(setId, field, side) => useSessionStore.getState().openPad(setId, field, side)}
         onToggle={(setId) => useSessionStore.getState().toggleComplete(setId)}
         onAddSet={() => void useSessionStore.getState().addSet(exercise.id)}
         openSwipeSetId={openSwipeSetId}
@@ -126,6 +162,20 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
         value={exercise.notes ?? ''}
         onChange={(value) => useSessionStore.getState().setExerciseNote(exercise.id, value)}
       />
+
+      {merged ? (
+        <MergeSidesSheet
+          open={mergeOpen}
+          onOpenChange={setMergeOpen}
+          setNumber={firstDiffering + 1}
+          weight={merged.weight}
+          reps={merged.reps}
+          onConfirm={() => {
+            setMergeOpen(false)
+            useSessionStore.getState().setUnilateral(exercise.id, false)
+          }}
+        />
+      ) : null}
 
       <TargetsSheet
         open={targetsOpen}

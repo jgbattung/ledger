@@ -46,9 +46,12 @@ function HistoryBlock({ entry }: { entry: ExerciseHistoryEntry }) {
                     {sides.map((side, index) => (
                       <span key={side.side}>
                         {index > 0 ? (
-                          <span aria-hidden="true" className="px-1.5 text-muted-foreground">
-                            ·
-                          </span>
+                          <>
+                            {' '}
+                            <span aria-hidden="true" className="px-0.5 text-muted-foreground">
+                              ·
+                            </span>{' '}
+                          </>
                         ) : null}
                         <span className="text-[13px] font-semibold text-muted-foreground">
                           {side.side}

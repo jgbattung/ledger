@@ -154,7 +154,7 @@ describe('ExerciseHistory - L/R sets (LG-012, M3)', () => {
     ])
     render(<ExerciseHistory exerciseRef={BENCH} />)
     const sideLine = await screen.findByText(/20 kg × 12/)
-    expect(sideLine.closest('li')).toHaveTextContent('L 20 kg × 12|2·R 22 kg × 10RIR 1')
+    expect(sideLine.closest('li')).toHaveTextContent('L 20 kg × 12|2 · R 22 kg × 10RIR 1')
     const normal = screen.getByText(/^30 kg × 8/)
     expect(normal).toHaveTextContent('30 kg × 8|2')
     expect(normal).not.toHaveTextContent('L ')

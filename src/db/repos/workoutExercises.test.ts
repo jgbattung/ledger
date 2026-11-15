@@ -4,7 +4,7 @@ import { programs } from '@/db/repos/programs'
 import { workouts } from '@/db/repos/workouts'
 import { workoutExercises } from '@/db/repos/workoutExercises'
 import { sets } from '@/db/repos/sets'
-import { seedProgram } from '@/workouts/test-fixtures'
+import { exercise, seedProgram } from '@/workouts/test-fixtures'
 
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
 
@@ -42,6 +42,86 @@ describe('workoutExercises.swap', () => {
       expect(set).toMatchObject({ weight: 0, reps: 0, rir: 0, rirIsPlus: false })
       expect(set.partialReps).toBeUndefined()
     }
+  })
+
+  describe('reset pre-fill from the new exercise', () => {
+    /** One finished session where db-press was logged 100x8 and 90x6, then a fresh bench session. */
+    async function startWithPressHistory() {
+      const { programId, pushId } = await seedProgram([exercise('bench'), exercise('db-press')])
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      const press = (await workouts.loadSession(first))!.exercises[1].sets
+      await sets.patch(press[0].id, { weight: 100, reps: 8 })
+      await sets.setCompleted(press[0].id, true)
+      await sets.patch(press[1].id, { weight: 90, reps: 6 })
+      await sets.setCompleted(press[1].id, true)
+      await workouts.finish(first)
+
+      const id = await workouts.startFromProgramDay(programId, pushId)
+      return { id, bench: (await workouts.loadSession(id))!.exercises[0] }
+    }
+
+    it('pre-fills row by row from the last session of the new exercise', async () => {
+      const { id, bench } = await startWithPressHistory()
+      await sets.patch(bench.sets[0].id, { weight: 80, reps: 5, partialReps: 2, rir: 3 })
+      await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'reset')
+      const after = (await workouts.loadSession(id))!.exercises[0]
+      expect(after.sets.map((s) => [s.weight, s.reps, s.rir, s.rirIsPlus])).toEqual([
+        [100, 8, 0, false],
+        [90, 6, 0, false],
+        [90, 6, 0, false],
+      ])
+      for (const set of after.sets) expect(set.partialReps).toBeUndefined()
+    })
+
+    it('stays blank when the new exercise has no history', async () => {
+      const { id, bench } = await startWithPressHistory()
+      await workoutExercises.swap(bench.exercise.id, ref('never-done'), 'reset')
+      const after = (await workouts.loadSession(id))!.exercises[0]
+      for (const set of after.sets) expect(set).toMatchObject({ weight: 0, reps: 0, rir: 0 })
+    })
+
+    it('keep mode leaves the values as they were', async () => {
+      const { id, bench } = await startWithPressHistory()
+      await sets.patch(bench.sets[0].id, { weight: 80, reps: 5 })
+      await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'keep')
+      const after = (await workouts.loadSession(id))!.exercises[0]
+      expect(after.sets.map((s) => [s.weight, s.reps])).toEqual([
+        [80, 5],
+        [0, 0],
+        [0, 0],
+      ])
+    })
+
+    it('maps by position among live rows after a removal', async () => {
+      const { id, bench } = await startWithPressHistory()
+      await sets.softDelete(bench.sets[0].id)
+      await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'reset')
+      const after = (await workouts.loadSession(id))!.exercises[0]
+      expect(after.sets.map((s) => [s.weight, s.reps])).toEqual([
+        [100, 8],
+        [90, 6],
+      ])
+    })
+
+    it("uses the new exercise's history, not the old one's or the current workout's", async () => {
+      const { programId, pushId } = await seedProgram([exercise('bench'), exercise('db-press')])
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      const [oldBench, oldPress] = (await workouts.loadSession(first))!.exercises
+      await sets.patch(oldBench.sets[0].id, { weight: 60, reps: 12 })
+      await sets.setCompleted(oldBench.sets[0].id, true)
+      await sets.patch(oldPress.sets[0].id, { weight: 30, reps: 10 })
+      await sets.setCompleted(oldPress.sets[0].id, true)
+      await workouts.finish(first)
+
+      const id = await workouts.startFromProgramDay(programId, pushId)
+      const [bench, press] = (await workouts.loadSession(id))!.exercises
+      await sets.patch(press.sets[0].id, { weight: 45, reps: 4 })
+      await sets.setCompleted(press.sets[0].id, true)
+
+      await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'reset')
+      const after = (await workouts.loadSession(id))!.exercises[0]
+      for (const set of after.sets) expect(set).toMatchObject({ weight: 30, reps: 10 })
+    })
   })
 
   it('repeated swaps keep the first original in swappedFrom', async () => {

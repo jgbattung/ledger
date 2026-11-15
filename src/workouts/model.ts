@@ -3,6 +3,16 @@ import type { Set as SetRecord, TargetsSnapshot, Workout } from '@/db/types'
 /** Values every new or reset set starts from (RIR is always 0, never the target). */
 export const BLANK_SET = { weight: 0, reps: 0, rir: 0, rirIsPlus: false } as const
 
+/** Pre-fill for working row `index` from last session's working sets: same row, else its last row, else blank. */
+export function prefillFor(
+  previous: Pick<SetRecord, 'weight' | 'reps'>[],
+  index: number,
+): { weight: number; reps: number } {
+  const source = previous[index] ?? previous[previous.length - 1]
+  if (!source) return { weight: BLANK_SET.weight, reps: BLANK_SET.reps }
+  return { weight: source.weight, reps: source.reps }
+}
+
 type WorkoutTiming = Pick<Workout, 'startedAt' | 'pausedAt' | 'pausedMs' | 'finishedAt'>
 
 /** True while the workout clock is frozen. */

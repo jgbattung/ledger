@@ -10,6 +10,7 @@ import {
   nextIncompleteExercise,
   padEntryFor,
   padEntryValues,
+  prefillFor,
   repPlaceholder,
   rirLabel,
   toTargetsSnapshot,
@@ -48,6 +49,31 @@ describe('toTargetsSnapshot', () => {
 describe('blank set', () => {
   it('is weight 0, reps 0, RIR 0, not plus', () => {
     expect(BLANK_SET).toEqual({ weight: 0, reps: 0, rir: 0, rirIsPlus: false })
+  })
+})
+
+describe('prefillFor', () => {
+  const previous = [
+    { weight: 100, reps: 8 },
+    { weight: 90, reps: 6 },
+  ]
+
+  it('maps each row to the same row of last session', () => {
+    expect(prefillFor(previous, 0)).toEqual({ weight: 100, reps: 8 })
+    expect(prefillFor(previous, 1)).toEqual({ weight: 90, reps: 6 })
+  })
+
+  it('falls back to the last row for an index past the end', () => {
+    expect(prefillFor(previous, 2)).toEqual({ weight: 90, reps: 6 })
+  })
+
+  it('is blank when there is no history', () => {
+    expect(prefillFor([], 0)).toEqual({ weight: 0, reps: 0 })
+  })
+
+  it('never returns rir or partial reps', () => {
+    const rich = [{ weight: 100, reps: 8, rir: 2, rirIsPlus: true, partialReps: 3 }]
+    expect(prefillFor(rich, 0)).toEqual({ weight: 100, reps: 8 })
   })
 })
 

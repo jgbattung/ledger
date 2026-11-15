@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  applyEntry,
   applyPadKey,
   BLANK_SET,
   canCheck,
+  firstEmptyReps,
   formatPrevious,
+  formatSide,
+  formatSides,
+  fromUnilateral,
   formatReps,
   isPaused,
   nextCursor,
@@ -13,6 +18,9 @@ import {
   prefillFor,
   repPlaceholder,
   rirLabel,
+  sidesDiffer,
+  toUnilateral,
+  unilateralAggregate,
   toTargetsSnapshot,
   workoutElapsedMs,
   type PadEntry,
@@ -272,5 +280,219 @@ describe('workoutElapsedMs', () => {
   it('is never negative', () => {
     expect(workoutElapsedMs({ startedAt: 5_000, pausedMs: 9_000 }, 6_000)).toBe(0)
     expect(workoutElapsedMs({ startedAt: 5_000 }, 1_000)).toBe(0)
+  })
+})
+
+const sides = (leftWeight: number, leftReps: number, rightWeight: number, rightReps: number) => ({
+  leftWeight,
+  leftReps,
+  rightWeight,
+  rightReps,
+})
+
+describe('unilateralAggregate (LOG-6)', () => {
+  it('counts the side with fewer reps on a weight tie: L 20x12 / R 20x10 -> 20x10', () => {
+    expect(unilateralAggregate(sides(20, 12, 20, 10))).toEqual({ weight: 20, reps: 10, side: 'R' })
+  })
+
+  it('takes the heavier side: L 20x12 / R 22x10 -> 22x10', () => {
+    expect(unilateralAggregate(sides(20, 12, 22, 10))).toEqual({ weight: 22, reps: 10, side: 'R' })
+    expect(unilateralAggregate(sides(24, 8, 22, 10))).toEqual({ weight: 24, reps: 8, side: 'L' })
+  })
+
+  it('tie on weight and reps goes to L', () => {
+    expect(unilateralAggregate(sides(20, 10, 20, 10))).toEqual({ weight: 20, reps: 10, side: 'L' })
+  })
+})
+
+describe('sidesDiffer', () => {
+  it('is false for a normal set and identical sides', () => {
+    expect(sidesDiffer({})).toBe(false)
+    expect(sidesDiffer({ unilateral: sides(20, 10, 20, 10) })).toBe(false)
+  })
+
+  it('is true when weight, reps or partials differ', () => {
+    expect(sidesDiffer({ unilateral: sides(20, 10, 22, 10) })).toBe(true)
+    expect(sidesDiffer({ unilateral: sides(20, 12, 20, 10) })).toBe(true)
+    expect(sidesDiffer({ unilateral: { ...sides(20, 10, 20, 10), rightPartialReps: 2 } })).toBe(true)
+  })
+})
+
+describe('toUnilateral / fromUnilateral', () => {
+  it('puts the current values on both sides and clears set-level partials', () => {
+    const set = toUnilateral({ weight: 20, reps: 10, partialReps: 2 })
+    expect(set).toEqual({
+      weight: 20,
+      reps: 10,
+      unilateral: { ...sides(20, 10, 20, 10), leftPartialReps: 2, rightPartialReps: 2 },
+    })
+    expect('partialReps' in set).toBe(false)
+  })
+
+  it('round-trips a normal set including partials', () => {
+    const original = { weight: 20, reps: 10, partialReps: 2 }
+    expect(fromUnilateral(toUnilateral(original))).toEqual(original)
+    expect(fromUnilateral(toUnilateral({ weight: 20, reps: 10 }))).toEqual({ weight: 20, reps: 10 })
+  })
+
+  it('merges to the aggregate side and takes its partials', () => {
+    const set = fromUnilateral({
+      weight: 22,
+      reps: 10,
+      unilateral: { ...sides(20, 12, 22, 10), leftPartialReps: 3, rightPartialReps: 1 },
+    })
+    expect(set).toEqual({ weight: 22, reps: 10, partialReps: 1 })
+    expect('unilateral' in set).toBe(false)
+  })
+
+  it('leaves a normal set untouched', () => {
+    expect(fromUnilateral({ weight: 5, reps: 5 })).toEqual({ weight: 5, reps: 5 })
+  })
+})
+
+describe('canCheck for L/R sets', () => {
+  it('needs reps on both sides', () => {
+    expect(canCheck({ reps: 10, unilateral: sides(20, 10, 20, 0) })).toBe(false)
+    expect(canCheck({ reps: 0, unilateral: sides(20, 0, 20, 10) })).toBe(false)
+    expect(canCheck({ reps: 10, unilateral: sides(20, 10, 20, 8) })).toBe(true)
+  })
+})
+
+describe('firstEmptyReps', () => {
+  it('points at the first side missing reps', () => {
+    expect(firstEmptyReps({})).toEqual({ field: 'reps' })
+    expect(firstEmptyReps({ unilateral: sides(20, 0, 20, 0) })).toEqual({ field: 'reps', side: 'L' })
+    expect(firstEmptyReps({ unilateral: sides(20, 10, 20, 0) })).toEqual({ field: 'reps', side: 'R' })
+  })
+})
+
+describe('formatSide / formatSides', () => {
+  it('formats one side with and without a partial', () => {
+    expect(formatSide(20, 12)).toEqual({ text: '20 kg × 12', partial: undefined })
+    expect(formatSide(22, 10, 2)).toEqual({ text: '22 kg × 10', partial: '2' })
+  })
+
+  it('returns per-side parts for an L/R set and null otherwise', () => {
+    expect(formatSides({})).toBeNull()
+    expect(formatSides({ unilateral: { ...sides(20, 12, 22, 10), leftPartialReps: 2 } })).toEqual([
+      { side: 'L', text: '20 kg × 12', partial: '2' },
+      { side: 'R', text: '22 kg × 10', partial: undefined },
+    ])
+  })
+})
+
+describe('prefillFor with L/R history', () => {
+  it('carries L/R and the aggregate, never partials', () => {
+    const previous = [
+      { weight: 20, reps: 10, unilateral: { ...sides(20, 12, 20, 10), leftPartialReps: 2 } },
+      { weight: 22, reps: 8, unilateral: sides(22, 8, 20, 8) },
+    ]
+    expect(prefillFor(previous, 0)).toEqual({
+      weight: 20,
+      reps: 10,
+      unilateral: sides(20, 12, 20, 10),
+    })
+    expect(prefillFor(previous, 5)).toEqual({ weight: 22, reps: 8, unilateral: sides(22, 8, 20, 8) })
+  })
+
+  it('puts a normal later row on both sides when the first row is L/R', () => {
+    const previous = [
+      { weight: 20, reps: 10, unilateral: sides(20, 10, 20, 10) },
+      { weight: 18, reps: 9 },
+    ]
+    expect(prefillFor(previous, 1)).toEqual({
+      weight: 18,
+      reps: 9,
+      unilateral: sides(18, 9, 18, 9),
+    })
+  })
+
+  it('stays normal when the first row is normal', () => {
+    const previous = [
+      { weight: 20, reps: 10 },
+      { weight: 20, reps: 8, unilateral: sides(20, 8, 20, 8) },
+    ]
+    expect(prefillFor(previous, 1)).toEqual({ weight: 20, reps: 8 })
+  })
+})
+
+describe('L/R pad entry and cursor', () => {
+  const set = {
+    weight: 22,
+    reps: 10,
+    unilateral: { ...sides(20, 12, 22, 10), leftPartialReps: 2 },
+  }
+
+  it('reads the tapped side', () => {
+    expect(padEntryFor(set, 'reps', 'L')).toMatchObject({
+      side: 'L',
+      weight: '20',
+      reps: '12',
+      partial: '2',
+    })
+    expect(padEntryFor(set, 'weight', 'R')).toMatchObject({
+      side: 'R',
+      weight: '22',
+      reps: '10',
+      partial: '',
+    })
+  })
+
+  it('walks L kg, L reps, R kg, R reps, then the next set', () => {
+    const exercises = [
+      { sets: [{ id: 'a', unilateral: {} }, { id: 'b', unilateral: {} }] },
+      { sets: [{ id: 'c' }] },
+    ]
+    const l1 = nextCursor({ setId: 'a', field: 'weight', side: 'L' }, exercises)
+    expect(l1).toEqual({ setId: 'a', field: 'reps', side: 'L' })
+    const r0 = nextCursor(l1!, exercises)
+    expect(r0).toEqual({ setId: 'a', field: 'weight', side: 'R' })
+    const r1 = nextCursor(r0!, exercises)
+    expect(r1).toEqual({ setId: 'a', field: 'reps', side: 'R' })
+    expect(nextCursor(r1!, exercises)).toEqual({ setId: 'b', field: 'weight', side: 'L' })
+    expect(nextCursor({ setId: 'b', field: 'reps', side: 'R' }, exercises)).toEqual({
+      setId: 'c',
+      field: 'weight',
+    })
+  })
+
+  it('ends after the last L/R set', () => {
+    const exercises = [{ sets: [{ id: 'a', unilateral: {} }] }]
+    expect(nextCursor({ setId: 'a', field: 'reps', side: 'R' }, exercises)).toBeNull()
+  })
+})
+
+describe('applyEntry', () => {
+  it('writes the normal fields for a normal set', () => {
+    const entry = press(padEntryFor({ weight: 0, reps: 0 }, 'reps'), '8')
+    expect(applyEntry({}, entry)).toEqual({ weight: 0, reps: 8, partialReps: undefined })
+  })
+
+  it('writes the edited side and recomputes the aggregate as R passes L', () => {
+    const base = { weight: 20, reps: 12, unilateral: sides(20, 12, 20, 12) }
+    const entry = press(padEntryFor(base, 'weight', 'R'), '2', '2')
+    const out = applyEntry(base, entry)
+    expect(out.unilateral).toEqual(sides(20, 12, 22, 12))
+    expect(out).toMatchObject({ weight: 22, reps: 12 })
+    expect(out.partialReps).toBeUndefined()
+  })
+
+  it('stores a per-side partial and never a set-level one', () => {
+    const base = { weight: 20, reps: 10, unilateral: sides(20, 12, 20, 10) }
+    const entry = press(padEntryFor(base, 'reps', 'L'), 'fp', '3')
+    const out = applyEntry(base, entry)
+    expect(out.unilateral).toEqual({ ...sides(20, 12, 20, 10), leftPartialReps: 3 })
+    expect(out.partialReps).toBeUndefined()
+    expect(out).toMatchObject({ weight: 20, reps: 10 })
+  })
+
+  it('drops a cleared partial from the side', () => {
+    const base = {
+      weight: 20,
+      reps: 10,
+      unilateral: { ...sides(20, 12, 20, 10), leftPartialReps: 3 },
+    }
+    const entry = press(padEntryFor(base, 'reps', 'L'), 'fp', 'back')
+    expect(applyEntry(base, entry).unilateral).toEqual(sides(20, 12, 20, 10))
   })
 })

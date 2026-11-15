@@ -141,6 +141,8 @@ export type Set = BaseRecord & {
     leftReps: number
     rightWeight: number
     rightReps: number
+    leftPartialReps?: number
+    rightPartialReps?: number
   }
   completedAt?: number
 }

@@ -3,13 +3,19 @@ import { now } from '@/db/ids'
 import { createRepo } from '@/db/repos/base'
 import { markDirty } from '@/db/repos/syncState'
 import { workouts } from '@/db/repos/workouts'
-import { BLANK_SET } from '@/workouts/model'
+import {
+  BLANK_SET,
+  canCheck,
+  fromUnilateral,
+  toUnilateral,
+  unilateralAggregate,
+} from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
 
 const baseRepo = createRepo<SetRecord>(db.sets, 'sets')
 
 export type SetFields = Partial<
-  Pick<SetRecord, 'weight' | 'reps' | 'partialReps' | 'rir' | 'rirIsPlus'>
+  Pick<SetRecord, 'weight' | 'reps' | 'partialReps' | 'unilateral' | 'rir' | 'rirIsPlus'>
 >
 
 async function liveSets(workoutExerciseId: string): Promise<SetRecord[]> {
@@ -41,14 +47,39 @@ export const sets = {
           ? await workouts.previousSets(exercise.exerciseRef, exercise.workoutId)
           : []
         const sameRow = previous[existing.length]
+        const unilateralMode = last ? last.unilateral != null : sameRow?.unilateral != null
+        const rir = { rir: last?.rir ?? BLANK_SET.rir, rirIsPlus: last?.rirIsPlus ?? BLANK_SET.rirIsPlus }
+        if (unilateralMode) {
+          const sides = sameRow?.unilateral ?? {
+            leftWeight: last?.unilateral?.leftWeight ?? last?.weight ?? BLANK_SET.weight,
+            leftReps: 0,
+            rightWeight: last?.unilateral?.rightWeight ?? last?.weight ?? BLANK_SET.weight,
+            rightReps: 0,
+          }
+          const unilateral = {
+            leftWeight: sides.leftWeight,
+            leftReps: sides.leftReps,
+            rightWeight: sides.rightWeight,
+            rightReps: sides.rightReps,
+          }
+          const { weight, reps } = unilateralAggregate(unilateral)
+          return baseRepo.create({
+            workoutExerciseId,
+            orderIndex: last ? last.orderIndex + 1 : 0,
+            type: 'working',
+            weight,
+            reps,
+            ...rir,
+            unilateral,
+          })
+        }
         return baseRepo.create({
           workoutExerciseId,
           orderIndex: last ? last.orderIndex + 1 : 0,
           type: 'working',
           weight: sameRow?.weight ?? last?.weight ?? BLANK_SET.weight,
           reps: sameRow?.reps ?? 0,
-          rir: last?.rir ?? BLANK_SET.rir,
-          rirIsPlus: last?.rirIsPlus ?? BLANK_SET.rirIsPlus,
+          ...rir,
         })
       },
     )
@@ -60,6 +91,7 @@ export const sets = {
     if ('weight' in fields) patch.weight = fields.weight
     if ('reps' in fields) patch.reps = fields.reps
     if ('partialReps' in fields) patch.partialReps = fields.partialReps
+    if ('unilateral' in fields) patch.unilateral = fields.unilateral
     if ('rir' in fields) patch.rir = fields.rir
     if ('rirIsPlus' in fields) patch.rirIsPlus = fields.rirIsPlus
     await baseRepo.update(id, patch)
@@ -70,13 +102,29 @@ export const sets = {
     await db.transaction('rw', db.sets, db.syncState, async () => {
       const set = await db.sets.get(id)
       if (!set || set.deletedAt != null) throw new Error('Set not found')
-      if (completed && set.reps < 1) throw new Error('A set needs at least 1 rep to be checked')
+      if (completed && !canCheck(set)) throw new Error('A set needs at least 1 rep to be checked')
       const timestamp = now()
       const next = { ...set, updatedAt: timestamp }
       if (completed) next.completedAt = timestamp
       else delete next.completedAt
       await db.sets.put(next)
       await markDirty('sets', id)
+    })
+  },
+
+  /**
+   * Switches every live set of the exercise to or from L/R in one
+   * transaction. Sets already in the target mode are left alone.
+   */
+  async setUnilateral(workoutExerciseId: string, on: boolean): Promise<void> {
+    await db.transaction('rw', db.sets, db.syncState, async () => {
+      const timestamp = now()
+      for (const set of await liveSets(workoutExerciseId)) {
+        if ((set.unilateral != null) === on) continue
+        const next = on ? toUnilateral(set) : fromUnilateral(set)
+        await db.sets.put({ ...next, updatedAt: timestamp })
+        await markDirty('sets', set.id)
+      }
     })
   },
 }

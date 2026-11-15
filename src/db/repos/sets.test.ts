@@ -202,3 +202,125 @@ describe('sets.add - pre-fill from last session', () => {
     expect(await sets.add(exerciseId)).toMatchObject({ weight: 100, reps: 8, rir: 0, rirIsPlus: false })
   })
 })
+
+const LR = { leftWeight: 20, leftReps: 12, rightWeight: 22, rightReps: 10 }
+
+describe('sets repo - L/R sets (LG-012)', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  async function seedSet(fields: Partial<Parameters<typeof sets.create>[0]> = {}, index = 0) {
+    return sets.create({
+      workoutExerciseId: 'we-1',
+      orderIndex: index,
+      type: 'working',
+      weight: 0,
+      reps: 0,
+      rir: 0,
+      rirIsPlus: false,
+      ...fields,
+    })
+  }
+
+  it('patch persists both sides and replaces the whole unilateral object', async () => {
+    const set = await seedSet()
+    await sets.patch(set.id, { unilateral: { ...LR, leftPartialReps: 2 }, weight: 22, reps: 10 })
+    expect((await sets.get(set.id))?.unilateral).toEqual({ ...LR, leftPartialReps: 2 })
+    await sets.patch(set.id, { unilateral: LR })
+    expect((await sets.get(set.id))?.unilateral).toEqual(LR)
+  })
+
+  it('setCompleted rejects an L/R set with one side at 0 reps', async () => {
+    const set = await seedSet({ reps: 10, unilateral: { ...LR, rightReps: 0 } })
+    await expect(sets.setCompleted(set.id, true)).rejects.toThrow('at least 1 rep')
+    await sets.patch(set.id, { unilateral: LR })
+    await sets.setCompleted(set.id, true)
+    expect((await sets.get(set.id))?.completedAt).toBeTypeOf('number')
+  })
+
+  it('setUnilateral on copies the values to both sides and marks rows dirty', async () => {
+    const a = await seedSet({ weight: 20, reps: 10, partialReps: 2 }, 0)
+    const b = await seedSet({ weight: 25, reps: 8 }, 1)
+    await db.syncState.clear()
+    await sets.setUnilateral('we-1', true)
+    const [first, second] = await sets.listByWorkoutExercise('we-1')
+    expect(first.unilateral).toEqual({
+      leftWeight: 20,
+      leftReps: 10,
+      rightWeight: 20,
+      rightReps: 10,
+      leftPartialReps: 2,
+      rightPartialReps: 2,
+    })
+    expect(first.partialReps).toBeUndefined()
+    expect(second.unilateral).toEqual({ leftWeight: 25, leftReps: 8, rightWeight: 25, rightReps: 8 })
+    const dirty = JSON.stringify(await db.syncState.toArray())
+    expect(dirty).toContain(a.id)
+    expect(dirty).toContain(b.id)
+  })
+
+  it('setUnilateral off merges to the aggregate and the winning side partials', async () => {
+    const set = await seedSet({
+      weight: 22,
+      reps: 10,
+      unilateral: { ...LR, leftPartialReps: 3, rightPartialReps: 1 },
+    })
+    await db.syncState.clear()
+    await sets.setUnilateral('we-1', false)
+    const stored = await sets.get(set.id)
+    expect(stored).toMatchObject({ weight: 22, reps: 10, partialReps: 1 })
+    expect(stored?.unilateral).toBeUndefined()
+    expect(JSON.stringify(await db.syncState.toArray())).toContain(set.id)
+  })
+
+  it('setUnilateral is a no-op for sets already in the target mode', async () => {
+    await seedSet({ weight: 22, reps: 10, unilateral: LR })
+    await db.syncState.clear()
+    await sets.setUnilateral('we-1', true)
+    expect(await db.syncState.count()).toBe(0)
+  })
+
+  it('add copies the L/R mode from the last row with its side weights and blank reps', async () => {
+    await seedSet({ weight: 22, reps: 10, rir: 2, unilateral: LR })
+    const added = await sets.add('we-1')
+    expect(added.unilateral).toEqual({ leftWeight: 20, leftReps: 0, rightWeight: 22, rightReps: 0 })
+    expect(added).toMatchObject({ weight: 22, reps: 0, rir: 2 })
+  })
+
+  it('add stays normal after a normal row', async () => {
+    await seedSet({ weight: 20, reps: 10 })
+    expect((await sets.add('we-1')).unilateral).toBeUndefined()
+  })
+
+  it('add takes the same-row sides of last session when it was L/R', async () => {
+    const { programId, pushId } = await seedProgram()
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const bench = (await workouts.loadSession(first))!.exercises[0]
+    await sets.setUnilateral(bench.exercise.id, true)
+    const [a, b] = await sets.listByWorkoutExercise(bench.exercise.id)
+    await sets.patch(a.id, { unilateral: LR, weight: 22, reps: 10 })
+    await sets.patch(b.id, {
+      unilateral: { leftWeight: 18, leftReps: 9, rightWeight: 18, rightReps: 8 },
+      weight: 18,
+      reps: 8,
+    })
+    await sets.setCompleted(a.id, true)
+    await sets.setCompleted(b.id, true)
+    await workouts.finish(first)
+
+    const second = await workouts.startFromProgramDay(programId, pushId)
+    const live = (await workouts.loadSession(second))!.exercises[0]
+    expect(live.sets[1].unilateral).toEqual({
+      leftWeight: 18,
+      leftReps: 9,
+      rightWeight: 18,
+      rightReps: 8,
+    })
+    // Remove every live row: mode and sides come from the same (first) row of last session.
+    for (const set of live.sets) await sets.softDelete(set.id)
+    const added = await sets.add(live.exercise.id)
+    expect(added.unilateral).toEqual(LR)
+    expect(added).toMatchObject({ weight: 22, reps: 10 })
+  })
+})

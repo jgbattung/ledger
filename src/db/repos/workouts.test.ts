@@ -154,6 +154,26 @@ describe('workouts.startFromProgramDay', () => {
       }
     })
 
+    it('LG-012: starts in L/R, pre-filled per side, when last session was logged L/R', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      const logged = (await workouts.loadSession(first))!.exercises[0]
+      await sets.setUnilateral(logged.exercise.id, true)
+      const [row] = await sets.listByWorkoutExercise(logged.exercise.id)
+      const sides = { leftWeight: 20, leftReps: 12, rightWeight: 20, rightReps: 10 }
+      await sets.patch(row.id, { unilateral: sides, weight: 20, reps: 10 })
+      await sets.setCompleted(row.id, true)
+      await workouts.finish(first)
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench).toHaveLength(3)
+      for (const set of bench) {
+        expect(set.unilateral).toEqual(sides)
+        expect(set).toMatchObject({ weight: 20, reps: 10 })
+      }
+    })
+
     it('rows beyond last session pre-fill from its final working set', async () => {
       const { programId, pushId } = await seedProgram()
       const first = await workouts.startFromProgramDay(programId, pushId)

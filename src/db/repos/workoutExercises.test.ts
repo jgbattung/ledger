@@ -163,3 +163,44 @@ describe('workoutExercises.swap', () => {
     expect(list.map((e) => e.orderIndex)).toEqual([0, 1])
   })
 })
+
+describe('workoutExercises.swap - L/R sets (LG-012)', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  const LR = { leftWeight: 20, leftReps: 12, rightWeight: 22, rightReps: 10 }
+
+  it('keep preserves L/R; reset clears it when the new exercise has no L/R history', async () => {
+    const { id, bench } = await startPush()
+    await sets.setUnilateral(bench.exercise.id, true)
+    await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'keep')
+    let after = (await workouts.loadSession(id))!.exercises[0]
+    for (const set of after.sets) expect(set.unilateral).toBeDefined()
+
+    await workoutExercises.swap(bench.exercise.id, ref('never-done'), 'reset')
+    after = (await workouts.loadSession(id))!.exercises[0]
+    for (const set of after.sets) {
+      expect(set.unilateral).toBeUndefined()
+      expect(set).toMatchObject({ weight: 0, reps: 0 })
+    }
+  })
+
+  it('reset re-fills as L/R when the new exercise was last logged that way', async () => {
+    const { programId, pushId } = await seedProgram([exercise('bench'), exercise('db-press')])
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const press = (await workouts.loadSession(first))!.exercises[1]
+    await sets.setUnilateral(press.exercise.id, true)
+    const [row] = await sets.listByWorkoutExercise(press.exercise.id)
+    await sets.patch(row.id, { unilateral: LR, weight: 22, reps: 10 })
+    await sets.setCompleted(row.id, true)
+    await workouts.finish(first)
+
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const bench = (await workouts.loadSession(id))!.exercises[0]
+    await workoutExercises.swap(bench.exercise.id, ref('db-press'), 'reset')
+    const after = (await workouts.loadSession(id))!.exercises[0]
+    expect(after.sets[0]).toMatchObject({ weight: 22, reps: 10, unilateral: LR })
+    expect(after.sets[0].partialReps).toBeUndefined()
+  })
+})

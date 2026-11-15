@@ -54,8 +54,8 @@ export const workoutExercises = {
         const previous = await workouts.previousSets(newRef, existing.workoutId)
         const ordered = [...live].sort((a, b) => a.orderIndex - b.orderIndex)
         for (const [index, set] of ordered.entries()) {
-          const reset = { ...set, ...BLANK_SET, ...prefillFor(previous, index), updatedAt: timestamp }
-          delete reset.partialReps
+          const { partialReps: _partial, unilateral: _unilateral, ...kept } = set
+          const reset = { ...kept, ...BLANK_SET, ...prefillFor(previous, index), updatedAt: timestamp }
           await db.sets.put(reset)
           await markDirty('sets', set.id)
         }

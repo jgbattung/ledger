@@ -63,13 +63,21 @@ export function SetRow({
 
   const unilateral = set.unilateral
   const repsActive = pad?.field === 'reps'
-  const hasReps = unilateral ? Math.max(unilateral.leftReps, unilateral.rightReps) > 0 : set.reps > 0
+  const hasReps = unilateral
+    ? Math.max(unilateral.leftReps, unilateral.rightReps) > 0
+    : set.reps > 0
 
   const prev = previous && !unilateral ? formatPrevious(previous) : null
   const prevSides = previous
     ? (formatSides(previous) ?? [
-        { side: 'L' as const, ...formatSide(previous.weight, previous.reps, previous.partialReps) },
-        { side: 'R' as const, ...formatSide(previous.weight, previous.reps, previous.partialReps) },
+        {
+          side: 'L' as const,
+          ...formatSide(previous.weight, previous.reps, previous.partialReps),
+        },
+        {
+          side: 'R' as const,
+          ...formatSide(previous.weight, previous.reps, previous.partialReps),
+        },
       ])
     : null
 
@@ -79,13 +87,25 @@ export function SetRow({
     value: { weight: number; reps: number; partial?: number },
     withRir: boolean,
   ) => {
+    // An L/R line pins its cells to its grid row so auto-placement cannot shift them.
+    const place =
+      side === 'L'
+        ? ['col-start-3 row-start-1', 'col-start-4 row-start-1']
+        : side === 'R'
+          ? ['col-start-3 row-start-2', 'col-start-4 row-start-2']
+          : ['', '']
+
     const lineActive = pad !== null && pad.side === side
     const weightActive = lineActive && pad.field === 'weight'
     const lineRepsActive = lineActive && pad.field === 'reps'
     const name = side ? `${side === 'L' ? 'left' : 'right'} ` : ''
     // While typing, show the buffer ("62." must survive); otherwise the stored value.
     const weightText =
-      weightActive && !pad.fresh ? pad.weight : value.weight === 0 && !checked ? '' : `${value.weight}`
+      weightActive && !pad.fresh
+        ? pad.weight
+        : value.weight === 0 && !checked
+          ? ''
+          : `${value.weight}`
     const repsText =
       lineRepsActive && pad.mode === 'F' && !pad.fresh
         ? pad.reps
@@ -97,7 +117,7 @@ export function SetRow({
     const showRir = withRir && (hasReps || checked || repsActive)
     return (
       <>
-        <div role="cell" className={cn(dim && 'opacity-50')}>
+        <div role="cell" className={cn(place[0], dim && 'opacity-50')}>
           <button
             type="button"
             aria-label={`Set ${number} ${name}weight in kilograms`}
@@ -113,7 +133,7 @@ export function SetRow({
           </button>
         </div>
 
-        <div role="cell" className={cn(dim && 'opacity-50')}>
+        <div role="cell" className={cn(place[1], dim && 'opacity-50')}>
           <button
             type="button"
             aria-label={`Set ${number} ${name}reps${showRir ? `, RIR ${rirLabel(set.rir, set.rirIsPlus)}` : ''}`}
@@ -136,7 +156,9 @@ export function SetRow({
                 ) : null}
               </>
             ) : (
-              <span className="text-[15px] font-normal text-muted-foreground">{placeholder || '–'}</span>
+              <span className="text-[15px] font-normal text-muted-foreground">
+                {placeholder || '–'}
+              </span>
             )}
             {showRir ? (
               <span
@@ -258,14 +280,20 @@ export function SetRow({
       tabIndex={0}
       data-swipe-row={swipeOpen ? 'open' : undefined}
       onKeyDown={(event) => {
-        if (event.target === event.currentTarget && (event.key === 'Delete' || event.key === 'Backspace')) {
+        if (
+          event.target === event.currentTarget &&
+          (event.key === 'Delete' || event.key === 'Backspace')
+        ) {
           event.preventDefault()
           onRemove()
         }
       }}
       className="relative overflow-x-clip rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
     >
-      <div role="cell" className="absolute inset-y-0 right-0 flex w-[52px] items-center justify-center">
+      <div
+        role="cell"
+        className="absolute inset-y-0 right-0 flex w-[52px] items-center justify-center"
+      >
         <button
           type="button"
           aria-label={`Remove set ${number}`}
@@ -296,7 +324,8 @@ export function SetRow({
         style={{ transform: `translateX(${offset}px)`, touchAction: 'pan-y' }}
         className={cn(
           'relative bg-background',
-          drag === null && 'transition-transform duration-200 ease-out-app motion-reduce:transition-none',
+          drag === null &&
+            'transition-transform duration-200 ease-out-app motion-reduce:transition-none',
         )}
       >
         {unilateral ? (
@@ -350,7 +379,11 @@ export function SetRow({
               )}
             </div>
 
-            {renderCells(undefined, { weight: set.weight, reps: set.reps, partial: set.partialReps }, true)}
+            {renderCells(
+              undefined,
+              { weight: set.weight, reps: set.reps, partial: set.partialReps },
+              true,
+            )}
 
             {checkCell}
           </div>

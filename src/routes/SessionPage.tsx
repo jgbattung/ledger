@@ -119,6 +119,7 @@ export function SessionPage() {
         exercises={exercises}
         focusedId={focused?.exercise.id ?? null}
         onFocus={(id) => useSessionStore.getState().focusExercise(id)}
+        onAdd={() => navigate('/session/add')}
       />
       <div
         ref={scrollRef}

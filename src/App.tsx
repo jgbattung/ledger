@@ -20,6 +20,7 @@ import { ProgramEditorPage } from '@/routes/ProgramEditorPage'
 import { ExercisePickerPage } from '@/routes/ExercisePickerPage'
 import { DayPage } from '@/routes/DayPage'
 import { SessionPage } from '@/routes/SessionPage'
+import { SessionAddPickerPage } from '@/routes/SessionAddPickerPage'
 import { SwapPickerPage } from '@/routes/SwapPickerPage'
 import { ExerciseDetailPage } from '@/routes/ExerciseDetailPage'
 
@@ -49,6 +50,7 @@ function createAppRouter() {
           <Route path="programs/:programId/days/:dayId" element={<DayPage />} />
           <Route path="session" element={<SessionPage />} />
           <Route path="session/swap/:workoutExerciseId" element={<SwapPickerPage />} />
+          <Route path="session/add" element={<SessionAddPickerPage />} />
           <Route path="exercises/new" element={<CustomExerciseFormPage />} />
           <Route path="exercises/new/muscles" element={<MusclePickerPage />} />
           <Route path="exercises/custom/:id/edit" element={<CustomExerciseFormPage />} />

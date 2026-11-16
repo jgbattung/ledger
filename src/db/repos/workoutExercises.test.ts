@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { db } from '@/db/ledger'
 import { resetDb } from '@/db/test-utils'
 import { programs } from '@/db/repos/programs'
 import { workouts } from '@/db/repos/workouts'
-import { workoutExercises } from '@/db/repos/workoutExercises'
+import { LastExerciseError, workoutExercises } from '@/db/repos/workoutExercises'
 import { sets } from '@/db/repos/sets'
 import { exercise, seedProgram, setAllUnilateral } from '@/workouts/test-fixtures'
 
@@ -202,5 +203,195 @@ describe('workoutExercises.swap - L/R sets (LG-012)', () => {
     const after = (await workouts.loadSession(id))!.exercises[0]
     expect(after.sets[0]).toMatchObject({ weight: 22, reps: 10, unilateral: LR })
     expect(after.sets[0].partialReps).toBeUndefined()
+  })
+})
+
+describe('workoutExercises.insert (LG-013)', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  const idsOf = async (id: string) =>
+    (await workoutExercises.listByWorkout(id)).map((row) => row.exerciseRef.exerciseId)
+
+  it('inserts at the start, after a middle row and at the end with contiguous indexes', async () => {
+    const { programId, pushId } = await seedProgram([exercise('a'), exercise('b'), exercise('c')])
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const [a] = await workoutExercises.listByWorkout(id)
+
+    await workoutExercises.insert(id, [ref('s1'), ref('s2')], { kind: 'start' })
+    expect(await idsOf(id)).toEqual(['s1', 's2', 'a', 'b', 'c'])
+
+    await workoutExercises.insert(id, [ref('m1'), ref('m2')], {
+      kind: 'after',
+      workoutExerciseId: a.id,
+    })
+    expect(await idsOf(id)).toEqual(['s1', 's2', 'a', 'm1', 'm2', 'b', 'c'])
+
+    const ids = await workoutExercises.insert(id, [ref('e1'), ref('e2')], { kind: 'end' })
+    const rows = await workoutExercises.listByWorkout(id)
+    expect(rows.map((row) => row.exerciseRef.exerciseId)).toEqual([
+      's1',
+      's2',
+      'a',
+      'm1',
+      'm2',
+      'b',
+      'c',
+      'e1',
+      'e2',
+    ])
+    expect(rows.map((row) => row.orderIndex)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    expect(rows.slice(-2).map((row) => row.id)).toEqual(ids)
+  })
+
+  it('new rows carry no snapshot and no swappedFrom, and start with one blank set', async () => {
+    const { id } = await startPush()
+    const [added] = await workoutExercises.insert(id, [ref('cable-curl')], { kind: 'end' })
+    const row = (await workoutExercises.listByWorkout(id)).find((r) => r.id === added)!
+    expect(row.targetsSnapshot).toBeUndefined()
+    expect(row.swappedFrom).toBeUndefined()
+    const rowSets = await sets.listByWorkoutExercise(added)
+    expect(rowSets).toHaveLength(1)
+    expect(rowSets[0]).toMatchObject({ type: 'working', weight: 0, reps: 0, orderIndex: 0 })
+  })
+
+  it('starts with the last session working-set count, pre-filled row by row', async () => {
+    const { programId, pushId } = await seedProgram([exercise('bench'), exercise('curl')])
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const curl = (await workouts.loadSession(first))!.exercises[1].sets
+    await sets.patch(curl[0].id, { weight: 20, reps: 12 })
+    await sets.setCompleted(curl[0].id, true)
+    await sets.patch(curl[1].id, { weight: 18, reps: 10 })
+    await sets.setCompleted(curl[1].id, true)
+    await sets.patch(curl[2].id, { weight: 16, reps: 8 })
+    await sets.setCompleted(curl[2].id, true)
+    await workouts.finish(first)
+
+    const other = await seedProgram([exercise('bench')])
+    const id = await workouts.startFromProgramDay(other.programId, other.pushId)
+    const [added] = await workoutExercises.insert(id, [ref('curl')], { kind: 'end' })
+    const addedSets = await sets.listByWorkoutExercise(added)
+    expect(addedSets.map((s) => [s.weight, s.reps])).toEqual([
+      [20, 12],
+      [18, 10],
+      [16, 8],
+    ])
+  })
+
+  it('carries L/R from the last session', async () => {
+    const LR = { leftWeight: 20, leftReps: 12, rightWeight: 22, rightReps: 10 }
+    const { programId, pushId } = await seedProgram([exercise('curl')])
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const curl = (await workouts.loadSession(first))!.exercises[0]
+    await setAllUnilateral(curl.exercise.id, true)
+    const [row] = await sets.listByWorkoutExercise(curl.exercise.id)
+    await sets.patch(row.id, { unilateral: LR, weight: 22, reps: 10 })
+    await sets.setCompleted(row.id, true)
+    await workouts.finish(first)
+
+    const other = await seedProgram([exercise('bench')])
+    const id = await workouts.startFromProgramDay(other.programId, other.pushId)
+    const [added] = await workoutExercises.insert(id, [ref('curl')], { kind: 'end' })
+    const [first1] = await sets.listByWorkoutExercise(added)
+    expect(first1).toMatchObject({ unilateral: LR })
+  })
+
+  it('rejects a duplicate, an unknown anchor, no refs and a finished workout, writing nothing', async () => {
+    const { id } = await startPush()
+    const before = await workoutExercises.listByWorkout(id)
+    await db.syncState.clear()
+    await expect(workoutExercises.insert(id, [ref('bench')], { kind: 'end' })).rejects.toThrow(
+      'already',
+    )
+    await expect(workoutExercises.insert(id, [ref('x'), ref('x')], { kind: 'end' })).rejects.toThrow(
+      'already',
+    )
+    await expect(
+      workoutExercises.insert(id, [ref('x')], { kind: 'after', workoutExerciseId: 'nope' }),
+    ).rejects.toThrow('not found')
+    await expect(workoutExercises.insert(id, [], { kind: 'end' })).rejects.toThrow()
+    expect(await workoutExercises.listByWorkout(id)).toEqual(before)
+    expect(await db.syncState.count()).toBe(0)
+
+    await workouts.finish(id)
+    await expect(workoutExercises.insert(id, [ref('x')], { kind: 'end' })).rejects.toThrow(
+      'not in progress',
+    )
+  })
+
+  it('marks shifted and new rows dirty but not untouched ones', async () => {
+    const { id } = await startPush()
+    const [bench, fly] = await workoutExercises.listByWorkout(id)
+    await db.syncState.clear()
+    const [added] = await workoutExercises.insert(id, [ref('x')], {
+      kind: 'after',
+      workoutExerciseId: bench.id,
+    })
+    const dirty = (await db.syncState.toArray())
+      .filter((row) => row.table === 'workoutExercises')
+      .map((row) => row.recordId)
+    expect([...dirty].sort()).toEqual([fly.id, added].sort())
+  })
+})
+
+describe('workoutExercises.remove (LG-013)', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  it('soft-deletes a planned exercise and its sets and renumbers the rest', async () => {
+    const { programId, pushId } = await seedProgram([exercise('a'), exercise('b'), exercise('c')])
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const [a, b] = await workoutExercises.listByWorkout(id)
+    expect(await sets.listByWorkoutExercise(b.id)).not.toHaveLength(0)
+
+    await workoutExercises.remove(b.id)
+    const rows = await workoutExercises.listByWorkout(id)
+    expect(rows.map((row) => [row.exerciseRef.exerciseId, row.orderIndex])).toEqual([
+      ['a', 0],
+      ['c', 1],
+    ])
+    expect(rows[0].id).toBe(a.id)
+    expect(await sets.listByWorkoutExercise(b.id)).toEqual([])
+    const session = await workouts.loadSession(id)
+    expect(session!.exercises.map((e) => e.exercise.id)).not.toContain(b.id)
+    const raw = await db.sets.where('workoutExerciseId').equals(b.id).toArray()
+    expect(raw.length).toBeGreaterThan(0)
+    expect(raw.every((s) => s.deletedAt != null)).toBe(true)
+  })
+
+  it('removes an added exercise', async () => {
+    const { id } = await startPush()
+    const [added] = await workoutExercises.insert(id, [ref('x')], { kind: 'end' })
+    await workoutExercises.remove(added)
+    expect(await workoutExercises.listByWorkout(id)).toHaveLength(2)
+  })
+
+  it('refuses the last exercise and writes nothing', async () => {
+    const { programId, pushId } = await seedProgram([exercise('a')])
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const [only] = await workoutExercises.listByWorkout(id)
+    await db.syncState.clear()
+    await expect(workoutExercises.remove(only.id)).rejects.toBeInstanceOf(LastExerciseError)
+    expect(await workoutExercises.listByWorkout(id)).toHaveLength(1)
+    expect(await sets.listByWorkoutExercise(only.id)).not.toHaveLength(0)
+    expect(await db.syncState.count()).toBe(0)
+  })
+
+  it('a removed exercise never feeds smart defaults or history after finish', async () => {
+    const { programId, pushId } = await seedProgram([exercise('bench'), exercise('curl')])
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const [bench, curl] = (await workouts.loadSession(first))!.exercises
+    await sets.patch(curl.sets[0].id, { weight: 20, reps: 12 })
+    await sets.setCompleted(curl.sets[0].id, true)
+    await sets.patch(bench.sets[0].id, { weight: 60, reps: 8 })
+    await sets.setCompleted(bench.sets[0].id, true)
+    await workoutExercises.remove(curl.exercise.id)
+    await workouts.finish(first)
+
+    expect(await workouts.previousSets(ref('curl'), 'other')).toEqual([])
+    expect(await workouts.historyForExercise(ref('curl'))).toEqual([])
+    expect(await workouts.historyForExercise(ref('bench'))).toHaveLength(1)
   })
 })

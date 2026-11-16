@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { sets, workoutExercises, workouts } from '@/db/repos'
 import type { SetFields } from '@/db/repos/sets'
-import type { SwapMode } from '@/db/repos/workoutExercises'
+import { LastExerciseError, type InsertPosition, type SwapMode } from '@/db/repos/workoutExercises'
+import { refKey } from '@/exercises/listing'
 import type { ExerciseRef, Set as SetRecord, Workout, WorkoutExercise } from '@/db/types'
 import { useRestTimerStore } from '@/stores/restTimerStore'
 import {
@@ -44,6 +45,9 @@ type SessionState = {
   hydrated: boolean
   hydratedWorkoutId: string | null
   error: string | null
+  /** Exercises picked on the add picker, in pick order. Memory only. */
+  addSelection: ExerciseRef[]
+  addPosition: InsertPosition
 
   hydrate: () => Promise<void>
   start: (programId: string, dayId: string) => Promise<string>
@@ -60,6 +64,13 @@ type SessionState = {
   removeSet: (setId: string) => void
   setSwipeOpen: (setId: string | null) => void
   swap: (workoutExerciseId: string, newRef: ExerciseRef, mode: SwapMode) => Promise<void>
+  toggleAddPick: (ref: ExerciseRef) => void
+  clearAddPicks: () => void
+  setAddPosition: (position: InsertPosition) => void
+  /** Adds the exercises to the workout. Resolves true when they were added. */
+  addExercises: (refs: ExerciseRef[], position: InsertPosition) => Promise<boolean>
+  /** Removes an exercise from this workout. Rejects with LastExerciseError for the only one. */
+  removeExercise: (workoutExerciseId: string) => Promise<void>
   setExerciseNote: (workoutExerciseId: string, notes: string) => void
   setWorkoutNote: (notes: string) => void
   flushNotes: () => Promise<void>
@@ -134,6 +145,8 @@ const initial = {
   hydrated: false,
   hydratedWorkoutId: null,
   error: null,
+  addSelection: [],
+  addPosition: { kind: 'end' },
 } satisfies Partial<SessionState>
 
 function clearNoteState() {
@@ -228,7 +241,9 @@ export const useSessionStore = create<SessionState>((set, get) => {
     }
     const previousByExercise = await loadPrevious(session.exercises, workout.id)
     const focused = get().focusedExerciseId
+    const sameWorkout = get().hydratedWorkoutId === workout.id
     set({
+      ...(sameWorkout ? {} : { addSelection: [], addPosition: { kind: 'end' } as InsertPosition }),
       workout: session.workout,
       exercises: session.exercises,
       previousByExercise,
@@ -529,6 +544,64 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
     async swap(workoutExerciseId, newRef, mode) {
       await enqueue(() => workoutExercises.swap(workoutExerciseId, newRef, mode))
+      await refresh()
+    },
+
+    toggleAddPick(ref) {
+      set(({ addSelection }) => ({
+        addSelection: addSelection.some((r) => refKey(r) === refKey(ref))
+          ? addSelection.filter((r) => refKey(r) !== refKey(ref))
+          : [...addSelection, ref],
+      }))
+    },
+
+    clearAddPicks() {
+      set({ addSelection: [], addPosition: { kind: 'end' } })
+    },
+
+    setAddPosition(position) {
+      set({ addPosition: position })
+    },
+
+    async addExercises(refs, position) {
+      const workoutId = get().workout?.id
+      if (!workoutId) return false
+      let ids: string[] | undefined
+      await enqueue(async () => {
+        ids = await workoutExercises.insert(workoutId, refs, position)
+      })
+      // On failure enqueue already reported the error and reloaded from Dexie.
+      if (!ids) return false
+      await refresh()
+      set({ addSelection: [], addPosition: { kind: 'end' } })
+      get().focusExercise(ids[0])
+      return true
+    },
+
+    async removeExercise(workoutExerciseId) {
+      const list = get().exercises
+      const index = list.findIndex((entry) => entry.exercise.id === workoutExerciseId)
+      if (index < 0) return
+      if (list.length <= 1) throw new LastExerciseError()
+
+      const doomed = list[index]
+      const setIds = new Set(doomed.sets.map((row) => row.id))
+      for (const id of setIds) pendingPatches.delete(id)
+      clearTimeout(noteTimers.get(workoutExerciseId))
+      noteTimers.delete(workoutExerciseId)
+      const note = pendingNotes.get(workoutExerciseId)
+      pendingNotes.delete(workoutExerciseId)
+      if (note !== undefined) unjournalNote(workoutExerciseId, note)
+
+      const wasFocused = get().focusedExerciseId === workoutExerciseId
+      const neighbour = list[index + 1] ?? list[index - 1]
+      set((state) => ({
+        exercises: state.exercises.filter((entry) => entry.exercise.id !== workoutExerciseId),
+        focusedExerciseId: wasFocused ? neighbour.exercise.id : state.focusedExerciseId,
+        pad: state.pad && setIds.has(state.pad.setId) ? null : state.pad,
+        openSwipeSetId: null,
+      }))
+      await enqueue(() => workoutExercises.remove(workoutExerciseId))
       await refresh()
     },
 

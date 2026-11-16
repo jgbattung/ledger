@@ -146,6 +146,16 @@ describe('session: add tile, More sheet and removing an exercise', () => {
     expect(store().exercises).toHaveLength(1)
   })
 
+  it('showing the session discards add-picker picks and resets the position (B1)', async () => {
+    await start(['barbell-bench-press', 'pull-up'])
+    store().toggleAddPick({ source: 'db', exerciseId: 'barbell-curl' })
+    store().setAddPosition({ kind: 'start' })
+    renderSession()
+    await screen.findByRole('heading', { level: 2, name: 'Barbell Bench Press' })
+    expect(store().addSelection).toEqual([])
+    expect(store().addPosition).toEqual({ kind: 'end' })
+  })
+
   it('the Targets sheet says an added exercise has no targets in this workout', async () => {
     await start(['barbell-bench-press'])
     await store().addExercises([{ source: 'db', exerciseId: 'barbell-curl' }], { kind: 'end' })

@@ -62,6 +62,12 @@ export function SessionPage() {
     if (defaultRestSeconds != null) useRestTimerStore.getState().setDefaultSeconds(defaultRestSeconds)
   }, [defaultRestSeconds])
 
+  // Showing the session discards any add-picker picks: every exit from the picker except the
+  // exercise page and create form detours (which return straight to it) lands here, system Back included.
+  useEffect(() => {
+    useSessionStore.getState().clearAddPicks()
+  }, [])
+
   // Notes flush on unmount (they also debounce at 400ms in the store).
   useEffect(() => () => void useSessionStore.getState().flushNotes(), [])
 

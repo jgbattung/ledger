@@ -156,6 +156,17 @@ describe('CustomExerciseFormPage', () => {
     expect(form().pendingPick).toMatchObject({ source: 'custom' })
   })
 
+  it('from the add picker (pick=session), Save sets the pending pick and returns to it', async () => {
+    const user = userEvent.setup()
+    const router = renderForm('/exercises/new?pick=session&name=ssb%20squat', { from: '/picker' })
+    await screen.findByLabelText('Name')
+    expect(form().pickOrigin).toBe('session')
+    act(valid)
+    await user.click(saveButton())
+    await waitFor(() => expect(router.state.location.pathname).toBe('/picker'))
+    expect(form().pendingPick).toMatchObject({ source: 'custom' })
+  })
+
   it('Edit saves the changes and returns to the exercise page it was opened from', async () => {
     const user = userEvent.setup()
     const row = await seedSsb()

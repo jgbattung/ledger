@@ -11,7 +11,7 @@ import { getCustomExercise } from '@/stores/customExerciseStore'
  */
 
 export type FormMode = 'new' | 'edit' | 'duplicate'
-export type PickOrigin = 'program' | 'swap'
+export type PickOrigin = 'program' | 'swap' | 'session'
 
 export type FormDraft = {
   name: string

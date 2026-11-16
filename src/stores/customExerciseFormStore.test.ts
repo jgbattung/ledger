@@ -64,6 +64,11 @@ describe('customExerciseFormStore', () => {
     expect(form().draft.primaryMuscles).toEqual([])
   })
 
+  it('remembers the session picker origin', () => {
+    form().start({ mode: 'new', pickOrigin: 'session' })
+    expect(form().pickOrigin).toBe('session')
+  })
+
   it('adding a primary removes it from secondary, and secondary never takes a primary', () => {
     form().start({ mode: 'new' })
     form().setSecondaryMuscles(['glutes', 'calves'])

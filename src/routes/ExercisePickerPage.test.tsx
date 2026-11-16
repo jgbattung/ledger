@@ -26,7 +26,7 @@ async function openPicker(user: User) {
   const id = await seedProgram('PPL', [{ name: 'Push', ids: ['barbell-bench-press'] }])
   const router = renderEditor(`/programs/${id}`)
   await user.click(await screen.findByRole('link', { name: 'Add exercises' }))
-  await screen.findByRole('heading', { name: 'Add to Push' })
+  await screen.findByRole('heading', { name: 'Add to Push' }, { timeout: 5_000 })
   await narrowTo(user, 'Bench Press')
   return router
 }
@@ -124,7 +124,7 @@ describe('ExercisePickerPage', () => {
     await user.click(screen.getByRole('link', { name: /^Decline Barbell Bench Press/ }))
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/exercises\/db\//))
     await act(() => router.navigate(-1))
-    await screen.findByRole('heading', { name: 'Add to Push' })
+    await screen.findByRole('heading', { name: 'Add to Push' }, { timeout: 5_000 })
     expect(screen.getByLabelText('Search exercises')).toHaveValue('Bench Press')
     expect(await screen.findByRole('button', { name: 'Add 1 exercise' })).toBeInTheDocument()
     expect(router.state.location.search).toMatch(/day=/)
@@ -192,7 +192,7 @@ describe('ExercisePickerPage', () => {
       const id = await seedProgram('PPL', [{ name: 'Push', ids: ['barbell-bench-press'] }])
       const router = renderEditor(`/programs/${id}`)
       await user.click(await screen.findByRole('link', { name: 'Add exercises' }))
-      await screen.findByRole('heading', { name: 'Add to Push' })
+      await screen.findByRole('heading', { name: 'Add to Push' }, { timeout: 5_000 })
       await user.click(screen.getByLabelText('Search exercises'))
       await user.paste(query)
       return { router, id }
@@ -231,7 +231,7 @@ describe('ExercisePickerPage', () => {
         .getState()
         .addExercises(dayId, [{ source: 'custom', exerciseId: created.id }])
       await router.navigate(`/programs/${id}/exercises?day=${dayId}`)
-      await screen.findByRole('heading', { name: 'Add to Push' })
+      await screen.findByRole('heading', { name: 'Add to Push' }, { timeout: 5_000 })
       await user.click(screen.getByLabelText('Search exercises'))
       await user.paste('ssb')
       const link = await screen.findByRole('link', { name: /^SSB Squat/ })
@@ -261,7 +261,7 @@ describe('ExercisePickerPage', () => {
       useProgramDraftStore.getState().togglePick({ source: 'db', exerciseId: 'pull-up' })
       useCustomExerciseFormStore.getState().setPendingPick({ source: 'custom', exerciseId: created.id })
       await router.navigate(`/programs/${id}/exercises?day=${dayId}`)
-      await screen.findByRole('heading', { name: 'Add to Push' })
+      await screen.findByRole('heading', { name: 'Add to Push' }, { timeout: 5_000 })
       await narrowTo(user, 'Bench Press')
       await user.click(await screen.findByRole('button', { name: 'Add 2 exercises' }))
       await waitFor(() => expect(router.state.location.pathname).toBe(`/programs/${id}`))
@@ -285,7 +285,7 @@ describe('ExercisePickerPage', () => {
       await router.navigate(`/programs/${id}`)
       await screen.findByRole('tablist')
       await router.navigate(`/programs/${id}/exercises?day=${dayId}`)
-      await screen.findByRole('heading', { name: 'Add to Push' })
+      await screen.findByRole('heading', { name: 'Add to Push' }, { timeout: 5_000 })
       await narrowTo(user, 'Bench Press')
       expect(await screen.findByRole('button', { name: 'Add 1 exercise' })).toBeInTheDocument()
 

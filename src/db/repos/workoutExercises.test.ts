@@ -395,3 +395,126 @@ describe('workoutExercises.remove (LG-013)', () => {
     expect(await workouts.historyForExercise(ref('bench'))).toHaveLength(1)
   })
 })
+
+describe('workoutExercises insert and remove together (LG-013 QA)', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  const programTree = async () => ({
+    programs: await db.programs.toArray(),
+    programDays: await db.programDays.toArray(),
+    programExercises: await db.programExercises.toArray(),
+  })
+
+  it('adding and removing never change the program, its days or its exercises', async () => {
+    const { programId, pushId } = await seedProgram([exercise('a'), exercise('b'), exercise('c')])
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const before = await programTree()
+    await db.syncState.clear()
+
+    const [a, b] = await workoutExercises.listByWorkout(id)
+    const [added] = await workoutExercises.insert(id, [ref('x')], {
+      kind: 'after',
+      workoutExerciseId: a.id,
+    })
+    await workoutExercises.remove(b.id)
+    await workoutExercises.remove(added)
+
+    expect(await programTree()).toEqual(before)
+    const touched = new Set((await db.syncState.toArray()).map((row) => row.table))
+    expect(touched.has('programs')).toBe(false)
+    expect(touched.has('programDays')).toBe(false)
+    expect(touched.has('programExercises')).toBe(false)
+  })
+
+  it('a removed exercise can be added back and starts fresh, pre-filled from its last session', async () => {
+    const { programId, pushId } = await seedProgram([exercise('bench'), exercise('curl')])
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const curl = (await workouts.loadSession(first))!.exercises[1].sets
+    await sets.patch(curl[0].id, { weight: 20, reps: 12 })
+    await sets.setCompleted(curl[0].id, true)
+    await sets.patch(curl[1].id, { weight: 18, reps: 10 })
+    await sets.setCompleted(curl[1].id, true)
+    await workouts.finish(first)
+
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const [, removed] = await workoutExercises.listByWorkout(id)
+    const [gone] = await sets.listByWorkoutExercise(removed.id)
+    await sets.patch(gone.id, { weight: 99, reps: 1 })
+    await sets.setCompleted(gone.id, true)
+    await workoutExercises.remove(removed.id)
+
+    const [readded] = await workoutExercises.insert(id, [ref('curl')], { kind: 'end' })
+    expect(readded).not.toBe(removed.id)
+    const rows = await workoutExercises.listByWorkout(id)
+    expect(rows.map((row) => [row.exerciseRef.exerciseId, row.orderIndex])).toEqual([
+      ['bench', 0],
+      ['curl', 1],
+    ])
+    const fresh = await sets.listByWorkoutExercise(readded)
+    expect(fresh.map((s) => [s.weight, s.reps, s.completedAt ?? null])).toEqual([
+      [20, 12, null],
+      [18, 10, null],
+    ])
+    // The removed row stays soft-deleted; it is not revived.
+    expect((await db.workoutExercises.get(removed.id))?.deletedAt).not.toBeNull()
+  })
+
+  it('a sequence of inserts and removes keeps orderIndex contiguous and in the expected order', async () => {
+    const { programId, pushId } = await seedProgram([exercise('a'), exercise('b'), exercise('c')])
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const [a, b] = await workoutExercises.listByWorkout(id)
+    const order = async () =>
+      (await workoutExercises.listByWorkout(id)).map((row) => [row.exerciseRef.exerciseId, row.orderIndex])
+
+    const [m] = await workoutExercises.insert(id, [ref('m')], { kind: 'after', workoutExerciseId: a.id })
+    await workoutExercises.remove(b.id)
+    await workoutExercises.insert(id, [ref('s')], { kind: 'start' })
+    expect(await order()).toEqual([
+      ['s', 0],
+      ['a', 1],
+      ['m', 2],
+      ['c', 3],
+    ])
+    await workoutExercises.remove(a.id)
+    await workoutExercises.insert(id, [ref('e')], { kind: 'after', workoutExerciseId: m })
+    await workoutExercises.insert(id, [ref('z')], { kind: 'end' })
+    expect(await order()).toEqual([
+      ['s', 0],
+      ['m', 1],
+      ['e', 2],
+      ['c', 3],
+      ['z', 4],
+    ])
+    const session = await workouts.loadSession(id)
+    expect(session!.exercises.map((e) => e.exercise.exerciseRef.exerciseId)).toEqual(['s', 'm', 'e', 'c', 'z'])
+  })
+
+  it('an added exercise can be swapped with keep and with reset', async () => {
+    const { programId, pushId } = await seedProgram([exercise('bench'), exercise('curl')])
+    const first = await workouts.startFromProgramDay(programId, pushId)
+    const curl = (await workouts.loadSession(first))!.exercises[1].sets
+    await sets.patch(curl[0].id, { weight: 20, reps: 12 })
+    await sets.setCompleted(curl[0].id, true)
+    await workouts.finish(first)
+
+    const other = await seedProgram([exercise('row')])
+    const id = await workouts.startFromProgramDay(other.programId, other.pushId)
+    const [added] = await workoutExercises.insert(id, [ref('x')], { kind: 'end' })
+    const [blank] = await sets.listByWorkoutExercise(added)
+    await sets.patch(blank.id, { weight: 7, reps: 7 })
+
+    await workoutExercises.swap(added, ref('y'), 'keep')
+    let row = (await db.workoutExercises.get(added))!
+    expect(row).toMatchObject({ exerciseRef: ref('y'), swappedFrom: ref('x') })
+    expect(row.targetsSnapshot).toBeUndefined()
+    expect((await sets.listByWorkoutExercise(added)).map((s) => [s.weight, s.reps])).toEqual([[7, 7]])
+
+    await workoutExercises.swap(added, ref('curl'), 'reset')
+    row = (await db.workoutExercises.get(added))!
+    expect(row).toMatchObject({ exerciseRef: ref('curl'), swappedFrom: ref('x') })
+    expect(row.targetsSnapshot).toBeUndefined()
+    expect((await sets.listByWorkoutExercise(added)).map((s) => [s.weight, s.reps])).toEqual([[20, 12]])
+  })
+})

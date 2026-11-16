@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeftRight, Flame, Info, Target } from 'lucide-react'
+import { ArrowLeftRight, Ellipsis, Flame, Info, Target } from 'lucide-react'
 import { MergeSidesSheet } from '@/components/session/MergeSidesSheet'
 import { ExerciseNoteCard } from '@/components/session/ExerciseNoteCard'
 import { SetTable } from '@/components/session/SetTable'
@@ -33,7 +33,14 @@ function subtitle({ exercise, sets }: SessionExercise): string {
 }
 
 /** The focused exercise: header, chips, set table and note card. */
-export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
+export function ExerciseFocus({
+  entry,
+  onMore,
+}: {
+  entry: SessionExercise
+  /** Opens the exercise's More sheet (owned by the page, so it outlives this exercise). */
+  onMore?: () => void
+}) {
   const navigate = useNavigate()
   const [targetsOpen, setTargetsOpen] = useState(false)
   const [swapHint, setSwapHint] = useState(false)
@@ -150,6 +157,12 @@ export function ExerciseFocus({ entry }: { entry: SessionExercise }) {
             )}
           >
             L/R
+          </span>
+        </button>
+        <button type="button" onClick={onMore} className={CHIP}>
+          <span className={cn(PILL, 'border-border')}>
+            <Ellipsis className="size-4" aria-hidden="true" />
+            More
           </span>
         </button>
       </div>

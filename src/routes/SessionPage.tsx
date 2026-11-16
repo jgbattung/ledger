@@ -6,6 +6,7 @@ import { ExerciseStrip } from '@/components/session/ExerciseStrip'
 import { FinishBar } from '@/components/session/FinishBar'
 import { NumberPad } from '@/components/session/NumberPad'
 import { RestTimerSheet } from '@/components/session/RestTimerSheet'
+import { SessionExerciseSheet } from '@/components/session/SessionExerciseSheet'
 import { WorkoutMenuSheet } from '@/components/session/WorkoutMenuSheet'
 import { WorkoutNoteSheet } from '@/components/session/WorkoutNoteSheet'
 import { WorkoutTopBar } from '@/components/session/WorkoutTopBar'
@@ -15,6 +16,7 @@ import { useGoBack } from '@/lib/useGoBack'
 import { useSettings } from '@/settings/SettingsProvider'
 import { useRestTimerStore } from '@/stores/restTimerStore'
 import { useSessionStore } from '@/stores/sessionStore'
+import type { SessionExercise } from '@/stores/sessionStore'
 import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 
 /**
@@ -50,6 +52,9 @@ export function SessionPage() {
   const [noteOpen, setNoteOpen] = useState(false)
   const [confirmFinish, setConfirmFinish] = useState(false)
   const [confirmDiscard, setConfirmDiscard] = useState(false)
+  // Snapshot of the exercise the More sheet was opened for (it outlives the exercise on removal).
+  const [moreEntry, setMoreEntry] = useState<SessionExercise | null>(null)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   // The rest timer store never reads Settings: hand it the default here.
   const defaultRestSeconds = useSettings().settings?.defaultRestSeconds
@@ -141,7 +146,13 @@ export function SessionPage() {
               { '--exercise-slide-from': `calc(${slide.dir} * var(--slide-distance))` } as CSSProperties
             }
           >
-            <ExerciseFocus entry={focused} />
+            <ExerciseFocus
+              entry={focused}
+              onMore={() => {
+                setMoreEntry(focused)
+                setMoreOpen(true)
+              }}
+            />
           </div>
         ) : null}
       </div>
@@ -149,6 +160,14 @@ export function SessionPage() {
       {allDone && !pad ? <FinishBar onFinish={requestFinish} /> : null}
 
       <RestTimerSheet open={restOpen} onOpenChange={setRestOpen} />
+      {moreEntry ? (
+        <SessionExerciseSheet
+          open={moreOpen}
+          onOpenChange={setMoreOpen}
+          entry={moreEntry}
+          isOnly={exercises.length <= 1}
+        />
+      ) : null}
       <WorkoutMenuSheet
         open={menuOpen}
         onOpenChange={setMenuOpen}

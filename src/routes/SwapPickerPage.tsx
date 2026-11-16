@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { BackLink } from '@/components/BackLink'
 import { NewExerciseButton } from '@/components/library/NewExerciseButton'
-import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { ExerciseSearchPanel } from '@/components/library/ExerciseSearchPanel'
+import { PickerRow } from '@/components/library/PickerRow'
 import { SwapModeSheet } from '@/components/session/SwapModeSheet'
 import { filterExercises } from '@/exercises/filtering'
 import { refKey } from '@/exercises/listing'
@@ -17,8 +17,9 @@ import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 
 /**
  * Single-select swap picker (`/session/swap/:workoutExerciseId`, LOG-10).
- * Exercises already in the workout are disabled. Picking one opens the
- * Keep / Reset sheet; Back and closing that sheet both cancel.
+ * Exercises already in the workout are disabled. The circle opens the
+ * Keep / Reset sheet (the name opens the exercise page); Back and closing
+ * that sheet both cancel.
  */
 export function SwapPickerPage() {
   const { workoutExerciseId } = useParams()
@@ -76,18 +77,13 @@ export function SwapPickerPage() {
         renderRow={(exercise) => {
           const already = inWorkout.has(refKey(exercise.ref))
           return (
-            <button
-              type="button"
+            <PickerRow
+              exercise={exercise}
+              multi={false}
               disabled={already}
-              onClick={() => setPicked(exercise)}
-              className="block w-full rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-              <ExerciseListItem
-                exercise={exercise}
-                muted={already}
-                subtitle={already ? 'Already in this workout' : undefined}
-              />
-            </button>
+              subtitle={already ? 'Already in this workout' : undefined}
+              onSelect={() => setPicked(exercise)}
+            />
           )
         }}
       />

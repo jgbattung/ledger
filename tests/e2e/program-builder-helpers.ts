@@ -16,7 +16,9 @@ export async function addExercises(page: Page, search: string, names: RegExp[]) 
   await expect(page.getByRole('heading', { name: /^Add to / })).toBeVisible();
   await page.getByLabel('Search exercises').fill(search);
   for (const name of names) {
-    await page.getByRole('button', { name }).click();
+    // Rows select through their trailing circle, labelled "Select <name>".
+    const select = new RegExp(`^Select ${name.source.startsWith('^') ? name.source.slice(1) : name.source}`, name.flags);
+    await page.getByRole('button', { name: select }).click();
   }
   const noun = names.length === 1 ? 'exercise' : 'exercises';
   await page.getByRole('button', { name: `Add ${names.length} ${noun}` }).click();

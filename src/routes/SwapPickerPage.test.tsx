@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
@@ -36,6 +36,9 @@ async function search(user: ReturnType<typeof userEvent.setup>, text: string) {
   await user.type(await screen.findByRole('searchbox'), text)
 }
 
+// Each row is a link plus a button over the whole catalog: under a loaded full run the default 5s is tight.
+vi.setConfig({ testTimeout: 20_000 })
+
 describe('SwapPickerPage', () => {
   beforeEach(async () => {
     await resetDb()
@@ -48,17 +51,18 @@ describe('SwapPickerPage', () => {
     const user = userEvent.setup()
     expect(await screen.findByRole('button', { name: 'Back' })).toBeInTheDocument()
     await search(user, 'bench press')
-    const inWorkout = await screen.findByRole('button', { name: /^Barbell Bench Press/ })
+    const inWorkout = await screen.findByRole('button', { name: /^Select Barbell Bench Press/ })
     expect(inWorkout).toBeDisabled()
-    expect(within(inWorkout).getByText('Already in this workout')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ })).toBeEnabled()
+    const link = screen.getByRole('link', { name: /^Barbell Bench Press/ })
+    expect(within(link).getByText('Already in this workout')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^Select Dumbbell Bench Press(?! with)/ })).toBeEnabled()
   })
 
   it('Keep swaps the exercise, keeps the targets and goes back', async () => {
     const { router, bench } = await startAndOpenSwap()
     const user = userEvent.setup()
     await search(user, 'dumbbell bench press')
-    await user.click(await screen.findByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }))
+    await user.click(await screen.findByRole('button', { name: /^Select Dumbbell Bench Press(?! with)/ }))
     const sheet = await screen.findByRole('dialog', { name: /Swap to Dumbbell Bench Press/ })
     expect(within(sheet).getByText('Replaces Barbell Bench Press for today')).toBeInTheDocument()
     await user.click(within(sheet).getByRole('button', { name: /Keep targets · 3 × 8–12/ }))
@@ -74,7 +78,7 @@ describe('SwapPickerPage', () => {
     const { router, bench } = await startAndOpenSwap()
     const user = userEvent.setup()
     await search(user, 'dumbbell bench press')
-    await user.click(await screen.findByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }))
+    await user.click(await screen.findByRole('button', { name: /^Select Dumbbell Bench Press(?! with)/ }))
     await user.click(await screen.findByRole('button', { name: 'Reset targets' }))
     await waitFor(() => expect(router.state.location.pathname).toBe('/session'))
     expect((await db.workoutExercises.get(bench))?.targetsSnapshot).toBeUndefined()
@@ -84,7 +88,7 @@ describe('SwapPickerPage', () => {
     const { router, bench } = await startAndOpenSwap()
     const user = userEvent.setup()
     await search(user, 'dumbbell bench press')
-    await user.click(await screen.findByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }))
+    await user.click(await screen.findByRole('button', { name: /^Select Dumbbell Bench Press(?! with)/ }))
     const sheet = await screen.findByRole('dialog', { name: /Swap to/ })
     await user.click(within(sheet).getByRole('button', { name: 'Close' }))
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
@@ -133,7 +137,7 @@ describe('SwapPickerPage', () => {
     const { router, bench } = await startAndOpenSwap()
     const user = userEvent.setup()
     await search(user, 'ssb squat')
-    await user.click(await screen.findByRole('button', { name: /^SSB Squat/ }))
+    await user.click(await screen.findByRole('button', { name: /^Select SSB Squat/ }))
     const sheet = await screen.findByRole('dialog', { name: /Swap to SSB Squat/ })
     await user.click(within(sheet).getByRole('button', { name: /Reset/ }))
 
@@ -159,7 +163,7 @@ describe('SwapPickerPage', () => {
     render(<RouterProvider router={router} />)
     const user = userEvent.setup()
     await search(user, 'ssb squat')
-    expect(await screen.findByRole('button', { name: /^SSB Squat/ })).toBeDisabled()
+    expect(await screen.findByRole('button', { name: /^Select SSB Squat/ })).toBeDisabled()
   })
 
   it('does not list a deleted custom exercise', async () => {
@@ -169,7 +173,7 @@ describe('SwapPickerPage', () => {
     const user = userEvent.setup()
     await search(user, 'ssb squat')
     expect(await screen.findByRole('link', { name: 'Create "ssb squat"' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /^SSB Squat/ })).toBeNull()
+    expect(screen.queryByRole('link', { name: /^SSB Squat/ })).toBeNull()
   })
 
   it('has a + for this picker and an empty-state Create with the query', async () => {

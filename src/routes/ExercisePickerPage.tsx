@@ -2,19 +2,18 @@ import { useEffect, useMemo } from 'react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { BackLink } from '@/components/BackLink'
 import { NewExerciseButton } from '@/components/library/NewExerciseButton'
-import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import { ExerciseSearchPanel } from '@/components/library/ExerciseSearchPanel'
+import { PickerRow } from '@/components/library/PickerRow'
 import { PickerTray } from '@/components/programs/PickerTray'
 import { filterExercises } from '@/exercises/filtering'
 import { refKey } from '@/exercises/listing'
 import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore'
 import { useCustomExerciseFormStore } from '@/stores/customExerciseFormStore'
 import { useProgramDraftStore } from '@/stores/programDraftStore'
-import { cn } from '@/lib/utils'
 
 /**
- * Multi-select exercise picker for one day of the draft. Tap rows to toggle;
- * the check shows the add order. Back adds nothing; "Add N exercises" appends
+ * Multi-select exercise picker for one day of the draft. Tap a row's circle to
+ * toggle it (the name opens the exercise page); the circle shows the add order. Back adds nothing; "Add N exercises" appends
  * the selection in order and returns to the editor.
  */
 export function ExercisePickerPage() {
@@ -46,6 +45,15 @@ export function ExercisePickerPage() {
     const picks = useProgramDraftStore.getState()
     if (!picks.pickerSelection.some((r) => refKey(r) === refKey(pending))) picks.togglePick(pending)
   }, [])
+
+  // Coming back from an exercise page, drop picks that are no longer live
+  // (a custom exercise deleted from its page).
+  useEffect(() => {
+    const picks = useProgramDraftStore.getState()
+    for (const ref of picks.pickerSelection) {
+      if (!listedByKey.has(refKey(ref))) picks.togglePick(ref)
+    }
+  }, [listedByKey])
 
   const editorPath = programId ? `/programs/${programId}` : '/programs/new'
   const dayId = searchParams.get('day')
@@ -92,36 +100,15 @@ export function ExercisePickerPage() {
         const key = refKey(exercise.ref)
         const already = inDay.has(key)
         const order = selectedKeys.indexOf(key) + 1
-        const picked = order > 0
         return (
-          <button
-            type="button"
-            aria-pressed={already ? undefined : picked}
+          <PickerRow
+            exercise={exercise}
+            multi
+            order={order}
             disabled={already}
-            onClick={() => useProgramDraftStore.getState().togglePick(exercise.ref)}
-            className="block w-full rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            <ExerciseListItem
-              exercise={exercise}
-              muted={already}
-              subtitle={already ? `Already in ${day.name}` : undefined}
-              trailing={
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    'flex size-7 shrink-0 items-center justify-center rounded-full border-2 text-[13px] font-semibold tabular-nums',
-                    picked
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : already
-                        ? 'border-dashed border-border'
-                        : 'border-border',
-                  )}
-                >
-                  {picked ? order : null}
-                </span>
-              }
-            />
-          </button>
+            subtitle={already ? `Already in ${day.name}` : undefined}
+            onSelect={() => useProgramDraftStore.getState().togglePick(exercise.ref)}
+          />
         )
       }}
       footer={

@@ -160,10 +160,17 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => {
   }
 })
 
-/** Test-only: drop the pending timeout and re-run the module-load storage read. */
+/**
+ * Test-only: drop the pending timeout, re-run the module-load storage read and
+ * restore the store's real actions (a test may have replaced one with a mock).
+ */
 export function __resetRestTimerForTests() {
   cancelEnd()
-  useRestTimerStore.setState({ ...initialState(), defaultSeconds: DEFAULT_REST_SECONDS })
+  useRestTimerStore.setState({
+    ...useRestTimerStore.getInitialState(),
+    ...initialState(),
+    defaultSeconds: DEFAULT_REST_SECONDS,
+  })
 }
 
 // A hidden page may have frozen the end timeout: if the rest ended while away, drop it silently.

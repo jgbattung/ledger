@@ -318,3 +318,15 @@ describe('useRestRemaining', () => {
     expect(result.current.resting).toBe(false)
   })
 })
+
+describe('__resetRestTimerForTests', () => {
+  it('restores the real actions a test replaced with a mock', () => {
+    const real = useRestTimerStore.getInitialState().onSetCompleted
+    const mock = vi.fn()
+    useRestTimerStore.setState({ onSetCompleted: mock })
+    expect(timer().onSetCompleted).toBe(mock)
+    __resetRestTimerForTests()
+    expect(timer().onSetCompleted).toBe(real)
+    expect(timer().defaultSeconds).toBeGreaterThan(0)
+  })
+})

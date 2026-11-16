@@ -40,7 +40,7 @@ export function TargetsSheet({
         </SheetHeader>
         {list.length === 0 ? (
           <p className="border-t border-border px-4 py-4 text-sm text-muted-foreground">
-            No targets. This exercise started with 1 blank set.
+            No targets for this exercise in this workout.
           </p>
         ) : (
           <dl className="divide-y divide-border overflow-y-auto border-t border-border px-4 pb-2">

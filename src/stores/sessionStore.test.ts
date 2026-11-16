@@ -3,6 +3,7 @@ import { db } from '@/db/ledger'
 import { resetDb } from '@/db/test-utils'
 import { sets } from '@/db/repos/sets'
 import { workouts } from '@/db/repos/workouts'
+import { LastExerciseError, workoutExercises } from '@/db/repos/workoutExercises'
 import { useSessionStore } from '@/stores/sessionStore'
 import { __resetRestTimerForTests, useRestTimerStore } from '@/stores/restTimerStore'
 import { exercise, seedProgram } from '@/workouts/test-fixtures'
@@ -1045,5 +1046,250 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       expect(stored?.completedAt).toBeTypeOf('number')
       await expectDexieMatchesMemory(0)
     })
+  })
+})
+
+describe('sessionStore - add and remove exercises (LG-013)', () => {
+  const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
+
+  beforeEach(async () => {
+    await resetDb()
+    store().reset()
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+    __resetRestTimerForTests()
+  })
+
+  it('keeps the pick order when toggling and drops a ref when toggled again', () => {
+    store().toggleAddPick(ref('a'))
+    store().toggleAddPick(ref('b'))
+    store().toggleAddPick(ref('c'))
+    store().toggleAddPick(ref('b'))
+    expect(store().addSelection.map((r) => r.exerciseId)).toEqual(['a', 'c'])
+    store().setAddPosition({ kind: 'start' })
+    store().clearAddPicks()
+    expect(store().addSelection).toEqual([])
+    expect(store().addPosition).toEqual({ kind: 'end' })
+  })
+
+  it('add focuses the first new exercise, shows its prefilled sets and clears the picks', async () => {
+    await startPush()
+    store().toggleAddPick(ref('curl'))
+    store().toggleAddPick(ref('dip'))
+    const ok = await store().addExercises(store().addSelection, { kind: 'start' })
+    expect(ok).toBe(true)
+    expect(store().exercises.map((e) => e.exercise.exerciseRef.exerciseId)).toEqual([
+      'curl',
+      'dip',
+      'bench',
+      'fly',
+    ])
+    expect(store().focusedExerciseId).toBe(store().exercises[0].exercise.id)
+    expect(store().exercises[0].sets).toHaveLength(1)
+    expect(store().previousByExercise[store().exercises[0].exercise.id]).toEqual([])
+    expect(store().addSelection).toEqual([])
+    expect(store().addPosition).toEqual({ kind: 'end' })
+  })
+
+  it('a failed add reports the error, keeps the picks and resolves false', async () => {
+    await startPush()
+    store().toggleAddPick(ref('bench'))
+    const ok = await store().addExercises(store().addSelection, { kind: 'end' })
+    expect(ok).toBe(false)
+    expect(store().error).toMatch(/already/)
+    expect(store().addSelection).toHaveLength(1)
+    expect(store().exercises).toHaveLength(2)
+  })
+
+  it('reset and hydrating a different workout clear the add state', async () => {
+    await startPush()
+    store().toggleAddPick(ref('curl'))
+    store().setAddPosition({ kind: 'start' })
+    store().reset()
+    expect(store().addSelection).toEqual([])
+    expect(store().addPosition).toEqual({ kind: 'end' })
+
+    // Hydrating a workout this store has not shown yet starts from a clean picker.
+    store().toggleAddPick(ref('curl'))
+    await store().hydrate()
+    expect(store().workout).not.toBeNull()
+    expect(store().addSelection).toEqual([])
+  })
+
+  describe('removeExercise', () => {
+    async function startThree() {
+      const seeded = await seedProgram([exercise('a'), exercise('b'), exercise('c')])
+      await store().start(seeded.programId, seeded.pushId)
+      return store().exercises.map((e) => e.exercise.id)
+    }
+
+    it('moves focus to the next exercise, else the previous', async () => {
+      const [a, b, c] = await startThree()
+      store().focusExercise(b)
+      await store().removeExercise(b)
+      expect(store().exercises.map((e) => e.exercise.id)).toEqual([a, c])
+      expect(store().focusedExerciseId).toBe(c)
+
+      await store().removeExercise(c)
+      expect(store().focusedExerciseId).toBe(a)
+      expect(store().exercises.map((e) => e.exercise.orderIndex)).toEqual([0])
+    })
+
+    it('keeps focus when a different exercise is removed', async () => {
+      const [a, b] = await startThree()
+      store().focusExercise(a)
+      await store().removeExercise(b)
+      expect(store().focusedExerciseId).toBe(a)
+    })
+
+    it('closes a pad on its sets and drops pending patches', async () => {
+      const [a, b] = await startThree()
+      const target = store().exercises[1].sets[0]
+      store().focusExercise(b)
+      store().openPad(target.id, 'reps')
+      store().padKey('8')
+      const patchMany = vi.spyOn(sets, 'patchMany')
+      await store().removeExercise(b)
+      expect(store().pad).toBeNull()
+      await store().flushNotes()
+      const written = patchMany.mock.calls.flatMap(([entries]) => entries.map(([id]) => id))
+      expect(written).not.toContain(target.id)
+      expect((await db.sets.get(target.id))?.deletedAt).not.toBeNull()
+      expect((await db.sets.get(target.id))?.reps).toBe(0)
+      expect(store().exercises.map((e) => e.exercise.id)).toEqual([a, store().exercises[1].exercise.id])
+    })
+
+    it('cancels the note timer and unjournals the note', async () => {
+      const [, b] = await startThree()
+      store().setExerciseNote(b, 'draft')
+      expect(localStorage.getItem('ledger.pendingNotes')).toContain('draft')
+      const setNotes = vi.spyOn(workoutExercises, 'setNotes')
+      await store().removeExercise(b)
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      expect(setNotes).not.toHaveBeenCalled()
+      expect(localStorage.getItem('ledger.pendingNotes')).toBeNull()
+    })
+
+    it('rejects for the last exercise without touching state', async () => {
+      const seeded = await seedProgram([exercise('a')])
+      await store().start(seeded.programId, seeded.pushId)
+      const before = store().exercises
+      await expect(store().removeExercise(before[0].exercise.id)).rejects.toBeInstanceOf(
+        LastExerciseError,
+      )
+      expect(store().exercises).toBe(before)
+      expect(store().error).toBeNull()
+    })
+
+    it('leaves the rest timer alone', async () => {
+      const [a, b] = await startThree()
+      const first = store().exercises[0].sets[0]
+      store().openPad(first.id, 'reps')
+      store().padKey('8')
+      store().closePad()
+      store().toggleComplete(first.id)
+      const before = useRestTimerStore.getState().endsAt
+      await store().removeExercise(a)
+      expect(useRestTimerStore.getState().endsAt).toEqual(before)
+      expect(store().exercises[0].exercise.id).toBe(b)
+    })
+  })
+})
+
+describe('sessionStore - added exercises behave like planned ones (LG-013 QA)', () => {
+  const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
+  // Earlier tests in this file replace onSetCompleted with a mock that the reset helper does not
+  // restore; keep the real one (captured at collection time) so rest resolution is exercised.
+  const realOnSetCompleted = useRestTimerStore.getState().onSetCompleted
+
+  beforeEach(async () => {
+    await resetDb()
+    store().reset()
+    useRestTimerStore.setState({ onSetCompleted: realOnSetCompleted })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    __resetRestTimerForTests()
+  })
+
+  function logAndCheck(setId: string) {
+    store().openPad(setId, 'reps')
+    store().padKey('8')
+    store().toggleComplete(setId)
+  }
+
+  const byRef = (exerciseId: string) =>
+    store().exercises.find((e) => e.exercise.exerciseRef.exerciseId === exerciseId)!
+
+  it('rest after an added exercise set uses the Settings default; a planned one keeps its target', async () => {
+    await startPush()
+    useRestTimerStore.getState().setDefaultSeconds(150)
+    await store().addExercises([ref('curl')], { kind: 'end' })
+
+    logAndCheck(byRef('curl').sets[0].id)
+    expect(useRestTimerStore.getState().totalSeconds).toBe(150)
+
+    logAndCheck(byRef('bench').sets[0].id)
+    expect(useRestTimerStore.getState().totalSeconds).toBe(90)
+  })
+
+  it('checking the last set of the exercise before an added one advances onto it', async () => {
+    await startPush()
+    const [bench] = store().exercises
+    await store().addExercises([ref('curl')], {
+      kind: 'after',
+      workoutExerciseId: bench.exercise.id,
+    })
+    store().focusExercise(bench.exercise.id)
+    byRef('bench').sets.forEach((row) => logAndCheck(row.id))
+    expect(store().focusedExerciseId).toBe(byRef('curl').exercise.id)
+  })
+
+  it('the wrap to the first incomplete exercise includes an added one', async () => {
+    await startPush()
+    await store().addExercises([ref('curl')], { kind: 'start' })
+    // Finish the planned exercises first; the last check wraps back to the added one.
+    byRef('bench').sets.forEach((row) => logAndCheck(row.id))
+    store().focusExercise(byRef('fly').exercise.id)
+    byRef('fly').sets.forEach((row) => logAndCheck(row.id))
+    expect(store().focusedExerciseId).toBe(byRef('curl').exercise.id)
+  })
+
+  it('after a mix of adds and removes the store matches Dexie and focus is valid', async () => {
+    const seeded = await seedProgram([exercise('a'), exercise('b'), exercise('c')])
+    await store().start(seeded.programId, seeded.pushId)
+    const [a, b] = store().exercises.map((e) => e.exercise.id)
+    await store().addExercises([ref('m')], { kind: 'after', workoutExerciseId: a })
+    await store().removeExercise(b)
+    await store().addExercises([ref('s')], { kind: 'start' })
+    store().focusExercise(a)
+    await store().removeExercise(a)
+    await store().addExercises([ref('z')], { kind: 'end' })
+
+    const workoutId = store().workout!.id
+    const persisted = await workoutExercises.listByWorkout(workoutId)
+    expect(store().exercises.map((e) => [e.exercise.id, e.exercise.orderIndex])).toEqual(
+      persisted.map((row) => [row.id, row.orderIndex]),
+    )
+    expect(persisted.map((row) => row.exerciseRef.exerciseId)).toEqual(['s', 'm', 'c', 'z'])
+    expect(persisted.map((row) => row.orderIndex)).toEqual([0, 1, 2, 3])
+    expect(store().exercises.map((e) => e.exercise.id)).toContain(store().focusedExerciseId)
+  })
+
+  it('re-adding a removed exercise gives it new sets and a new row', async () => {
+    await startPush()
+    const fly = byRef('fly')
+    logAndCheck(fly.sets[0].id)
+    await store().removeExercise(fly.exercise.id)
+    expect(await store().addExercises([ref('fly')], { kind: 'end' })).toBe(true)
+    const readded = byRef('fly')
+    expect(readded.exercise.id).not.toBe(fly.exercise.id)
+    expect(readded.sets).toHaveLength(1)
+    expect(readded.sets[0].completedAt).toBeUndefined()
+    expect(store().focusedExerciseId).toBe(readded.exercise.id)
   })
 })

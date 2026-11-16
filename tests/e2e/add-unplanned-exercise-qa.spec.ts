@@ -88,8 +88,13 @@ test('adding and removing exercises mid-workout never changes the program', asyn
   await expect.poll(async () => JSON.stringify(await programTree(page))).toBe(JSON.stringify(before));
 
   // The Day page of the program still lists the planned exercises and not the added one.
-  await page.goto('/');
-  await page.getByRole('link', { name: /Push A/ }).click();
+  // Go straight to its URL: the Dashboard's day link opens the running session instead
+  // once the session store has hydrated, which made a click through it nondeterministic.
+  const pushA = (before.programDays as { id: string; programId: string; name: string }[]).find(
+    (day) => day.name === 'Push A',
+  )!;
+  await page.goto(`/programs/${pushA.programId}/days/${pushA.id}`);
+  await expect(page).toHaveURL(/\/days\//);
   await expect(page.getByText('Barbell Bench Press').first()).toBeVisible();
   await expect(page.getByText('Cable Hammer Curl')).toHaveCount(0);
 });

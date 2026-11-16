@@ -1,12 +1,12 @@
 import { useDeferredValue, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { filterExercises, getFilterOptions } from '@/exercises/filtering'
-import type { LibraryFilters } from '@/exercises/filtering'
+import { Link } from 'react-router-dom'
+import { filterExercises } from '@/exercises/filtering'
 import { BackLink } from '@/components/BackLink'
 import { ExerciseSearchField } from '@/components/library/ExerciseSearchField'
 import { FilterChipRow } from '@/components/library/FilterChipRow'
 import { FilterSheet } from '@/components/library/FilterSheet'
 import { EmptyResults } from '@/components/library/ExerciseSearchPanel'
+import { useSearchParamsFilters } from '@/components/library/useSearchParamsFilters'
 import { NewExerciseButton } from '@/components/library/NewExerciseButton'
 import { ExerciseListItem } from '@/components/library/ExerciseListItem'
 import type { Facet } from '@/components/library/types'
@@ -18,50 +18,10 @@ import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore
 const createHref = (query: string) => `/exercises/new?name=${encodeURIComponent(query)}`
 
 export function LibraryPage() {
-  // Search and filters live in the URL (replace, so typing never grows the
-  // history stack) so Back from an exercise page restores them.
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { query, setQuery, filters, facetOptions, setFacet, reset } = useSearchParamsFilters()
   const [openFacet, setOpenFacet] = useState<Facet | null>(null)
   const root = useRef<HTMLDivElement>(null)
   useScrollRestore(root)
-
-  const filterOptions = useMemo(() => getFilterOptions(), [])
-  const facetOptions: Record<Facet, string[]> = {
-    muscle: filterOptions.muscles,
-    category: filterOptions.categories,
-    equipment: filterOptions.equipment,
-  }
-
-  // The query lives in local state so the input stays synchronous (router state
-  // commits asynchronously and would drop characters and move the caret). The URL
-  // is a write-only mirror: read once on mount, never synced back into the input.
-  const [query, setQuery] = useState(() => searchParams.get('q') ?? '')
-  const filters = useMemo<LibraryFilters>(() => {
-    // Unknown values in a hand-edited URL are ignored.
-    const read = (name: Facet, options: string[]) => {
-      const value = searchParams.get(name)
-      return value !== null && options.includes(value) ? value : null
-    }
-    return {
-      muscle: read('muscle', filterOptions.muscles),
-      category: read('category', filterOptions.categories),
-      equipment: read('equipment', filterOptions.equipment),
-    }
-  }, [searchParams, filterOptions])
-
-  const update = (patch: Partial<Record<'q' | Facet, string | null>>) => {
-    setSearchParams(
-      (params) => {
-        const next = new URLSearchParams(params)
-        for (const [name, value] of Object.entries(patch)) {
-          if (value) next.set(name, value)
-          else next.delete(name)
-        }
-        return next
-      },
-      { replace: true },
-    )
-  }
 
   const deferredQuery = useDeferredValue(query)
   const custom = useCustomExerciseStore(selectLive)
@@ -69,11 +29,6 @@ export function LibraryPage() {
     () => filterExercises(deferredQuery, filters, custom),
     [deferredQuery, filters, custom],
   )
-
-  const reset = () => {
-    setQuery('')
-    update({ q: null, muscle: null, category: null, equipment: null })
-  }
 
   return (
     <div ref={root}>
@@ -84,14 +39,11 @@ export function LibraryPage() {
         </div>
         <h1 className="text-2xl font-semibold">Library</h1>
         <div className="mt-3 flex flex-col gap-2">
-          <ExerciseSearchField value={query} onChange={(value) => {
-              setQuery(value)
-              update({ q: value })
-            }} />
+          <ExerciseSearchField value={query} onChange={setQuery} />
           <FilterChipRow
             filters={filters}
             onOpenFacet={setOpenFacet}
-            onClearFacet={(facet) => update({ [facet]: null })}
+            onClearFacet={(facet) => setFacet(facet, null)}
           />
         </div>
       </div>
@@ -121,7 +73,7 @@ export function LibraryPage() {
         options={openFacet ? facetOptions[openFacet] : []}
         selected={openFacet ? filters[openFacet] : null}
         onSelect={(value) => {
-          if (openFacet) update({ [openFacet]: value })
+          if (openFacet) setFacet(openFacet, value)
           setOpenFacet(null)
         }}
         onOpenChange={(open) => {

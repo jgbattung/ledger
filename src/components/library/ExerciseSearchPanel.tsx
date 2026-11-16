@@ -1,13 +1,14 @@
-import { useDeferredValue, useMemo, useState, type ReactNode } from 'react'
+import { useDeferredValue, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ExerciseSearchField } from '@/components/library/ExerciseSearchField'
 import { FilterChipRow } from '@/components/library/FilterChipRow'
 import { FilterSheet } from '@/components/library/FilterSheet'
+import { useSearchParamsFilters } from '@/components/library/useSearchParamsFilters'
 import type { Facet } from '@/components/library/types'
-import { filterExercises, getFilterOptions } from '@/exercises/filtering'
-import type { LibraryFilters } from '@/exercises/filtering'
+import { filterExercises } from '@/exercises/filtering'
 import { refKey } from '@/exercises/listing'
 import type { ListedExercise } from '@/exercises/listing'
+import { useScrollRestore } from '@/lib/useScrollRestore'
 import { selectLive, useCustomExerciseStore } from '@/stores/customExerciseStore'
 
 export function EmptyResults({
@@ -52,8 +53,6 @@ export function EmptyResults({
   )
 }
 
-const EMPTY_FILTERS: LibraryFilters = { muscle: null, category: null, equipment: null }
-
 /**
  * Search field, filter chips, filter sheet, result count, results list and
  * empty state shared by the program picker and the swap picker. Selection
@@ -73,9 +72,10 @@ export function ExerciseSearchPanel({
   /** Where `Create "query"` goes (the custom exercise form); omit to hide it. */
   createHref?: (query: string) => string
 }) {
-  const [query, setQuery] = useState('')
-  const [filters, setFilters] = useState<LibraryFilters>(EMPTY_FILTERS)
+  const { query, setQuery, filters, facetOptions, setFacet, reset } = useSearchParamsFilters()
   const [openFacet, setOpenFacet] = useState<Facet | null>(null)
+  const root = useRef<HTMLDivElement>(null)
+  useScrollRestore(root)
 
   const deferredQuery = useDeferredValue(query)
   const custom = useCustomExerciseStore(selectLive)
@@ -83,21 +83,9 @@ export function ExerciseSearchPanel({
     () => filterExercises(deferredQuery, filters, custom),
     [deferredQuery, filters, custom],
   )
-  const filterOptions = useMemo(() => getFilterOptions(), [])
-
-  const facetOptions: Record<Facet, string[]> = {
-    muscle: filterOptions.muscles,
-    category: filterOptions.categories,
-    equipment: filterOptions.equipment,
-  }
-
-  const reset = () => {
-    setQuery('')
-    setFilters(EMPTY_FILTERS)
-  }
 
   return (
-    <div className="flex min-h-full flex-col">
+    <div ref={root} className="flex min-h-full flex-col">
       <div className="sticky top-0 z-10 bg-background px-4 pb-3">
         {header}
         <div className="flex flex-col gap-2">
@@ -105,7 +93,7 @@ export function ExerciseSearchPanel({
           <FilterChipRow
             filters={filters}
             onOpenFacet={setOpenFacet}
-            onClearFacet={(facet) => setFilters((prev) => ({ ...prev, [facet]: null }))}
+            onClearFacet={(facet) => setFacet(facet, null)}
           />
         </div>
       </div>
@@ -133,7 +121,7 @@ export function ExerciseSearchPanel({
         options={openFacet ? facetOptions[openFacet] : []}
         selected={openFacet ? filters[openFacet] : null}
         onSelect={(value) => {
-          if (openFacet) setFilters((prev) => ({ ...prev, [openFacet]: value }))
+          if (openFacet) setFacet(openFacet, value)
           setOpenFacet(null)
         }}
         onOpenChange={(open) => {

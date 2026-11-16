@@ -3,14 +3,93 @@ import type { Set as SetRecord, TargetsSnapshot, Workout } from '@/db/types'
 /** Values every new or reset set starts from (RIR is always 0, never the target). */
 export const BLANK_SET = { weight: 0, reps: 0, rir: 0, rirIsPlus: false } as const
 
-/** Pre-fill for working row `index` from last session's working sets: same row, else its last row, else blank. */
+export type Side = 'L' | 'R'
+
+type Unilateral = NonNullable<SetRecord['unilateral']>
+type SetLike = Pick<SetRecord, 'weight' | 'reps' | 'partialReps' | 'unilateral'>
+
+/**
+ * LOG-6: the one weight x reps an L/R set contributes to analytics. Heavier
+ * side wins; on a weight tie the side with FEWER reps wins; on a full tie, L.
+ */
+export function unilateralAggregate(u: Unilateral): { weight: number; reps: number; side: Side } {
+  const left = { weight: u.leftWeight, reps: u.leftReps, side: 'L' as const }
+  const right = { weight: u.rightWeight, reps: u.rightReps, side: 'R' as const }
+  if (left.weight !== right.weight) return left.weight > right.weight ? left : right
+  return right.reps < left.reps ? right : left
+}
+
+const positive = (value: number | undefined) => (value && value > 0 ? value : undefined)
+
+/** True when the two sides of an L/R set are not identical (weight, reps or partials). */
+export function sidesDiffer(set: Pick<SetRecord, 'unilateral'>): boolean {
+  const u = set.unilateral
+  if (!u) return false
+  return (
+    u.leftWeight !== u.rightWeight ||
+    u.leftReps !== u.rightReps ||
+    (u.leftPartialReps ?? 0) !== (u.rightPartialReps ?? 0)
+  )
+}
+
+/** Turns a normal set into an L/R set: both sides take the current values. */
+export function toUnilateral<T extends SetLike>(set: T): T {
+  const partial = positive(set.partialReps)
+  const unilateral: Unilateral = {
+    leftWeight: set.weight,
+    leftReps: set.reps,
+    rightWeight: set.weight,
+    rightReps: set.reps,
+  }
+  if (partial) {
+    unilateral.leftPartialReps = partial
+    unilateral.rightPartialReps = partial
+  }
+  const next = { ...set, unilateral }
+  delete next.partialReps
+  return next
+}
+
+/** Merges an L/R set back to one line: the aggregate side's weight, reps and partials. */
+export function fromUnilateral<T extends SetLike>(set: T): T {
+  const u = set.unilateral
+  if (!u) return set
+  const { weight, reps, side } = unilateralAggregate(u)
+  const partial = positive(side === 'L' ? u.leftPartialReps : u.rightPartialReps)
+  const next = { ...set, weight, reps }
+  delete next.unilateral
+  if (partial) next.partialReps = partial
+  else delete next.partialReps
+  return next
+}
+
+/**
+ * Pre-fill for working row `index` from last session's working sets: same
+ * row, else its last row, else blank. The exercise is L/R when the first
+ * previous row was (decision D); each row's sides come from its own row, and
+ * a normal row puts its weight and reps on both sides. Partials never carry.
+ */
 export function prefillFor(
-  previous: Pick<SetRecord, 'weight' | 'reps'>[],
+  previous: Pick<SetRecord, 'weight' | 'reps' | 'unilateral'>[],
   index: number,
-): { weight: number; reps: number } {
+): { weight: number; reps: number; unilateral?: Unilateral } {
   const source = previous[index] ?? previous[previous.length - 1]
   if (!source) return { weight: BLANK_SET.weight, reps: BLANK_SET.reps }
-  return { weight: source.weight, reps: source.reps }
+  if (!previous[0]?.unilateral) return { weight: source.weight, reps: source.reps }
+  const u = source.unilateral ?? {
+    leftWeight: source.weight,
+    leftReps: source.reps,
+    rightWeight: source.weight,
+    rightReps: source.reps,
+  }
+  const unilateral: Unilateral = {
+    leftWeight: u.leftWeight,
+    leftReps: u.leftReps,
+    rightWeight: u.rightWeight,
+    rightReps: u.rightReps,
+  }
+  const { weight, reps } = unilateralAggregate(unilateral)
+  return { weight, reps, unilateral }
 }
 
 type WorkoutTiming = Pick<Workout, 'startedAt' | 'pausedAt' | 'pausedMs' | 'finishedAt'>
@@ -80,9 +159,44 @@ export function formatPrevious(set: Pick<SetRecord, 'weight' | 'reps' | 'partial
   }
 }
 
-/** A set can be checked off only once it has at least one rep. */
-export function canCheck(set: { reps: number }): boolean {
+/** "20 kg × 12" (+ partial part) for one side of an L/R set. */
+export function formatSide(
+  weight: number,
+  reps: number,
+  partial?: number,
+): { text: string; partial?: string } {
+  const parts = formatReps(reps, partial)
+  return { text: `${weight} kg × ${parts.full}`, partial: parts.partial }
+}
+
+/** Per-side Previous / History parts for an L/R set; null for a normal set. */
+export function formatSides(
+  set: Pick<SetRecord, 'unilateral'>,
+): { side: Side; text: string; partial?: string }[] | null {
+  const u = set.unilateral
+  if (!u) return null
+  return [
+    { side: 'L', ...formatSide(u.leftWeight, u.leftReps, u.leftPartialReps) },
+    { side: 'R', ...formatSide(u.rightWeight, u.rightReps, u.rightPartialReps) },
+  ]
+}
+
+/** A set can be checked off only once it has a rep (both sides when L/R). */
+export function canCheck(set: {
+  reps: number
+  unilateral?: Pick<Unilateral, 'leftReps' | 'rightReps'>
+}): boolean {
+  if (set.unilateral) return set.unilateral.leftReps >= 1 && set.unilateral.rightReps >= 1
   return set.reps >= 1
+}
+
+/** Where the pad opens when an incomplete set is checked: the first side missing reps. */
+export function firstEmptyReps(set: { unilateral?: Pick<Unilateral, 'leftReps'> }): {
+  field: 'reps'
+  side?: Side
+} {
+  if (!set.unilateral) return { field: 'reps' }
+  return { field: 'reps', side: set.unilateral.leftReps >= 1 ? 'R' : 'L' }
 }
 
 /**
@@ -106,21 +220,31 @@ export function nextIncompleteExercise(
 
 export type PadField = 'weight' | 'reps'
 export type PadMode = 'F' | 'P'
-export type Cursor = { setId: string; field: PadField }
+export type Cursor = { setId: string; field: PadField; side?: Side }
 
 /**
  * Next-key order: weight -> reps -> next set's weight, and from the last set
- * of an exercise to the next exercise's first set. Null at the very end.
+ * of an exercise to the next exercise's first set. An L/R set runs
+ * L weight -> L reps -> R weight -> R reps. Null at the very end.
  */
 export function nextCursor(
   cursor: Cursor,
-  exercises: { sets: { id: string }[] }[],
+  exercises: { sets: { id: string; unilateral?: unknown }[] }[],
 ): Cursor | null {
-  if (cursor.field === 'weight') return { setId: cursor.setId, field: 'reps' }
-  const flat = exercises.flatMap((exercise) => exercise.sets.map((set) => set.id))
-  const index = flat.indexOf(cursor.setId)
-  const next = index >= 0 ? flat[index + 1] : undefined
-  return next ? { setId: next, field: 'weight' } : null
+  const all = exercises.flatMap((exercise) => exercise.sets)
+  const index = all.findIndex((set) => set.id === cursor.setId)
+  if (index >= 0 && all[index].unilateral) {
+    const side = cursor.side ?? 'L'
+    if (cursor.field === 'weight') return { setId: cursor.setId, field: 'reps', side }
+    if (side === 'L') return { setId: cursor.setId, field: 'weight', side: 'R' }
+  } else if (cursor.field === 'weight') {
+    return { setId: cursor.setId, field: 'reps' }
+  }
+  const next = index >= 0 ? all[index + 1] : undefined
+  if (!next) return null
+  return next.unilateral
+    ? { setId: next.id, field: 'weight', side: 'L' }
+    : { setId: next.id, field: 'weight' }
 }
 
 /**
@@ -129,6 +253,7 @@ export function nextCursor(
  */
 export type PadEntry = {
   field: PadField
+  side?: Side
   mode: PadMode
   fresh: boolean
   weight: string
@@ -142,9 +267,24 @@ export const WEIGHT_MAX_LENGTH = 6
 export const REPS_MAX_LENGTH = 3
 
 export function padEntryFor(
-  set: { weight: number; reps: number; partialReps?: number },
+  set: Pick<SetLike, 'weight' | 'reps' | 'partialReps'> & { unilateral?: Unilateral },
   field: PadField,
+  side?: Side,
 ): PadEntry {
+  const u = set.unilateral
+  if (u && side) {
+    const left = side === 'L'
+    const partial = left ? u.leftPartialReps : u.rightPartialReps
+    return {
+      field,
+      side,
+      mode: 'F',
+      fresh: true,
+      weight: `${left ? u.leftWeight : u.rightWeight}`,
+      reps: `${left ? u.leftReps : u.rightReps}`,
+      partial: partial ? `${partial}` : '',
+    }
+  }
   return {
     field,
     mode: 'F',
@@ -202,4 +342,35 @@ export function padEntryValues(entry: PadEntry): {
     reps: Number(entry.reps || 0),
     partialReps: partial > 0 ? partial : undefined,
   }
+}
+
+/**
+ * The fields to write when the pad commits `entry` to `set`. An L/R set gets
+ * its whole updated `unilateral` object plus the recomputed LOG-6 aggregate
+ * and never a set-level `partialReps`; a normal set gets today's fields.
+ */
+export function applyEntry(
+  set: Pick<SetLike, 'unilateral'>,
+  entry: PadEntry,
+): { weight: number; reps: number; partialReps?: number; unilateral?: Unilateral } {
+  const values = padEntryValues(entry)
+  if (!set.unilateral || !entry.side) return values
+  const unilateral: Unilateral =
+    entry.side === 'L'
+      ? {
+          ...set.unilateral,
+          leftWeight: values.weight,
+          leftReps: values.reps,
+          leftPartialReps: values.partialReps,
+        }
+      : {
+          ...set.unilateral,
+          rightWeight: values.weight,
+          rightReps: values.reps,
+          rightPartialReps: values.partialReps,
+        }
+  if (unilateral.leftPartialReps === undefined) delete unilateral.leftPartialReps
+  if (unilateral.rightPartialReps === undefined) delete unilateral.rightPartialReps
+  const { weight, reps } = unilateralAggregate(unilateral)
+  return { weight, reps, unilateral }
 }

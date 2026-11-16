@@ -1,5 +1,7 @@
 import { newId } from '@/db/ids'
 import { programs } from '@/db/repos/programs'
+import { sets } from '@/db/repos/sets'
+import { fromUnilateral, toUnilateral } from '@/workouts/model'
 import type { DraftExercise, ProgramDraft } from '@/programs/model'
 
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
@@ -30,3 +32,19 @@ export async function seedProgram(
   return { draft, programId: draft.id, pushId: draft.days[0].id, pullId: draft.days[1].id }
 }
 
+
+/** Test setup: converts every live set of a workout exercise to or from L/R through the repo. */
+export async function setAllUnilateral(workoutExerciseId: string, on: boolean): Promise<void> {
+  const rows = await sets.listByWorkoutExercise(workoutExerciseId)
+  await sets.patchMany(
+    rows
+      .filter((row) => (row.unilateral != null) !== on)
+      .map((row) => {
+        const next = on ? toUnilateral(row) : fromUnilateral(row)
+        return [
+          row.id,
+          { weight: next.weight, reps: next.reps, partialReps: next.partialReps, unilateral: next.unilateral },
+        ] as const
+      }),
+  )
+}

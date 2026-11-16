@@ -4,7 +4,7 @@ import { PartialDivider } from '@/components/session/SetRow'
 import { workouts } from '@/db/repos'
 import type { ExerciseHistoryEntry } from '@/db/repos'
 import type { ExerciseRef } from '@/db/types'
-import { formatPrevious } from '@/workouts/model'
+import { formatPrevious, formatSides } from '@/workouts/model'
 
 function HistoryBlock({ entry }: { entry: ExerciseHistoryEntry }) {
   const { workout, sets } = entry
@@ -35,21 +35,49 @@ function HistoryBlock({ entry }: { entry: ExerciseHistoryEntry }) {
         <ul>
           {sets.map((set) => {
             const logged = formatPrevious(set)
+            const sides = formatSides(set)
             return (
               <li
                 key={set.id}
                 className="flex items-baseline justify-between gap-2 py-0.5 text-base tabular-nums"
               >
-                <span>
-                  {logged.text}
-                  {logged.partial ? (
-                    <>
-                      <PartialDivider />
-                      {logged.partial}
-                    </>
-                  ) : null}
-                </span>
-                <span className="text-[13px] text-muted-foreground">{logged.rir}</span>
+                {sides ? (
+                  <span>
+                    {sides.map((side, index) => (
+                      <span key={side.side}>
+                        {index > 0 ? (
+                          <>
+                            {' '}
+                            <span aria-hidden="true" className="px-0.5 text-muted-foreground">
+                              ·
+                            </span>{' '}
+                          </>
+                        ) : null}
+                        <span className="text-[13px] font-semibold text-muted-foreground">
+                          {side.side}
+                        </span>{' '}
+                        {side.text}
+                        {side.partial ? (
+                          <>
+                            <PartialDivider />
+                            {side.partial}
+                          </>
+                        ) : null}
+                      </span>
+                    ))}
+                  </span>
+                ) : (
+                  <span>
+                    {logged.text}
+                    {logged.partial ? (
+                      <>
+                        <PartialDivider />
+                        {logged.partial}
+                      </>
+                    ) : null}
+                  </span>
+                )}
+                <span className="shrink-0 text-[13px] text-muted-foreground">{logged.rir}</span>
               </li>
             )
           })}

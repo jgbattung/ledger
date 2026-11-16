@@ -5,15 +5,19 @@ import type { SwapMode } from '@/db/repos/workoutExercises'
 import type { ExerciseRef, Set as SetRecord, Workout, WorkoutExercise } from '@/db/types'
 import { useRestTimerStore } from '@/stores/restTimerStore'
 import {
+  applyEntry,
   applyPadKey,
   canCheck,
+  firstEmptyReps,
+  fromUnilateral,
   nextCursor,
   nextIncompleteExercise,
   padEntryFor,
-  padEntryValues,
+  toUnilateral,
   type PadEntry,
   type PadField,
   type PadKey,
+  type Side,
 } from '@/workouts/model'
 
 /**
@@ -44,13 +48,15 @@ type SessionState = {
   hydrate: () => Promise<void>
   start: (programId: string, dayId: string) => Promise<string>
   focusExercise: (workoutExerciseId: string) => void
-  openPad: (setId: string, field: PadField) => void
+  openPad: (setId: string, field: PadField, side?: Side) => void
   padKey: (key: PadKey) => void
   padNext: () => void
   closePad: () => void
   setRir: (setId: string, rir: number, rirIsPlus: boolean) => void
   toggleComplete: (setId: string) => void
   addSet: (workoutExerciseId: string) => Promise<void>
+  /** Switches every set of the exercise to or from L/R (the exercise-level chip). */
+  setUnilateral: (workoutExerciseId: string, on: boolean) => void
   removeSet: (setId: string) => void
   setSwipeOpen: (setId: string | null) => void
   swap: (workoutExerciseId: string, newRef: ExerciseRef, mode: SwapMode) => Promise<void>
@@ -168,13 +174,23 @@ export const useSessionStore = create<SessionState>((set, get) => {
     return run
   }
 
+  // Invariant: Dexie writes for sets are always derived from in-memory rows, never re-derived from Dexie.
+  const takePending = (include: (setId: string) => boolean = () => true) => {
+    const entries: Array<[string, SetFields]> = []
+    for (const [setId, patch] of [...pendingPatches.entries()]) {
+      if (!include(setId)) continue
+      pendingPatches.delete(setId)
+      entries.push([setId, patch])
+    }
+    return entries
+  }
+
   const schedulePatch = (setId: string, fields: SetFields) => {
+    // Shallow merge by field: a `unilateral` in `fields` replaces the earlier object whole.
     pendingPatches.set(setId, { ...pendingPatches.get(setId), ...fields })
     void enqueue(async () => {
-      const patch = pendingPatches.get(setId)
-      if (!patch) return
-      pendingPatches.delete(setId)
-      await sets.patch(setId, patch)
+      // Empty when a flush or an L/R toggle task already wrote this entry.
+      await sets.patchMany(takePending((id) => id === setId))
     })
   }
 
@@ -267,10 +283,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
    * tasks no-ops; IndexedDB keeps same-store transactions in creation order.
    */
   const flushPending = () => {
-    for (const [setId, patch] of [...pendingPatches.entries()]) {
-      pendingPatches.delete(setId)
-      void sets.patch(setId, patch).catch(() => {})
-    }
+    const entries = takePending()
+    if (entries.length > 0) void sets.patchMany(entries).catch(() => {})
     for (const [key, value] of [...pendingNotes.entries()]) {
       clearTimeout(noteTimers.get(key))
       noteTimers.delete(key)
@@ -326,13 +340,20 @@ export const useSessionStore = create<SessionState>((set, get) => {
       set({ focusedExerciseId: workoutExerciseId, pad: keep ? pad : null, openSwipeSetId: null })
     },
 
-    openPad(setId, field) {
+    openPad(setId, field, side) {
       const found = findSet(setId)
       if (!found) return
       const current = get().pad
-      if (current && current.setId === setId && current.entry.field === field) return
+      if (
+        current &&
+        current.setId === setId &&
+        current.entry.field === field &&
+        current.entry.side === side
+      ) {
+        return
+      }
       set({
-        pad: { setId, entry: padEntryFor(found.set, field) },
+        pad: { setId, entry: padEntryFor(found.set, field, side) },
         focusedExerciseId: found.entry.exercise.id,
         openSwipeSetId: null,
       })
@@ -343,34 +364,33 @@ export const useSessionStore = create<SessionState>((set, get) => {
       if (!pad) return
       const entry = applyPadKey(pad.entry, key)
       if (entry === pad.entry) return
-      const values = padEntryValues(entry)
       const found = findSet(pad.setId)
       if (!found) return
-      const uncheck = found.set.completedAt != null && values.reps < 1
+      const fields = applyEntry(found.set, entry)
+      const uncheck = found.set.completedAt != null && !canCheck({ ...found.set, ...fields })
       set({ pad: { setId: pad.setId, entry } })
       mapSets(pad.setId, (row) => {
-        const next = { ...row, weight: values.weight, reps: values.reps, partialReps: values.partialReps }
+        const next = { ...row, ...fields }
         if (uncheck) delete next.completedAt
         return next
       })
-      schedulePatch(pad.setId, {
-        weight: values.weight,
-        reps: values.reps,
-        partialReps: values.partialReps,
-      })
+      schedulePatch(pad.setId, fields)
       if (uncheck) void enqueue(() => sets.setCompleted(pad.setId, false))
     },
 
     padNext() {
       const pad = get().pad
       if (!pad) return
-      const next = nextCursor({ setId: pad.setId, field: pad.entry.field }, get().exercises)
+      const next = nextCursor(
+        { setId: pad.setId, field: pad.entry.field, side: pad.entry.side },
+        get().exercises,
+      )
       if (!next) {
         set({ pad: null })
         return
       }
       set({ pad: null })
-      get().openPad(next.setId, next.field)
+      get().openPad(next.setId, next.field, next.side)
     },
 
     closePad() {
@@ -395,7 +415,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
         return
       }
       if (!canCheck(found.set)) {
-        get().openPad(setId, 'reps')
+        const target = firstEmptyReps(found.set)
+        get().openPad(setId, target.field, target.side)
         return
       }
       mapSets(setId, (row) => ({ ...row, completedAt: Date.now() }))
@@ -444,6 +465,49 @@ export const useSessionStore = create<SessionState>((set, get) => {
           ),
         }))
       })
+    },
+
+    setUnilateral(workoutExerciseId, on) {
+      const target = get().exercises.find((entry) => entry.exercise.id === workoutExerciseId)
+      const convert = (row: SetRecord) =>
+        (row.unilateral != null) === on ? row : on ? toUnilateral(row) : fromUnilateral(row)
+      // The converted rows are the truth: schedule their logged fields as ordinary pending patches.
+      for (const row of target?.sets ?? []) {
+        const next = convert(row)
+        if (next === row) continue
+        pendingPatches.set(row.id, {
+          ...pendingPatches.get(row.id),
+          weight: next.weight,
+          reps: next.reps,
+          partialReps: next.partialReps,
+          unilateral: next.unilateral,
+        })
+      }
+      set((state) => ({
+        exercises: state.exercises.map((entry) =>
+          entry.exercise.id === workoutExerciseId
+            ? {
+                ...entry,
+                sets: entry.sets.map(convert),
+              }
+            : entry,
+        ),
+        pad:
+          state.pad &&
+          state.exercises.some(
+            (entry) =>
+              entry.exercise.id === workoutExerciseId &&
+              entry.sets.some((row) => row.id === state.pad?.setId),
+          )
+            ? null
+            : state.pad,
+        openSwipeSetId: null,
+      }))
+      if (target) {
+        const ids = new Set(target.sets.map((row) => row.id))
+        // One transaction for every pending entry of the exercise, so the toggle never lands half-applied.
+        void enqueue(() => sets.patchMany(takePending((id) => ids.has(id))))
+      }
     },
 
     removeSet(setId) {

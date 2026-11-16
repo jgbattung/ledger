@@ -5,6 +5,7 @@ import { resetDb } from '@/db/test-utils'
 import { programs, settings, workouts } from '@/db/repos'
 import { getExerciseById } from '@/exercises/catalog'
 import { hasRequiredTargets } from '@/programs/model'
+import { unilateralAggregate } from '@/workouts/model'
 import { buildHistory } from '@/db/seed/history'
 import {
   DELETED_CUSTOM_NAME,
@@ -229,6 +230,27 @@ describe('seedDatabase history', () => {
       expect((set.weight * 2) % 1).toBe(0)
       expect(set.rirIsPlus).toBe(false)
     }
+  })
+
+  it('logs lunges per side with the LOG-6 aggregate and no set-level partials (LG-012)', async () => {
+    await seedDatabase(ANCHOR)
+    const lungeIds = new Set(
+      (await db.workoutExercises.toArray())
+        .filter((row) => row.exerciseRef.exerciseId === 'dumbbell-lunges')
+        .map((row) => row.id),
+    )
+    const lunges = (await db.sets.toArray()).filter((set) => lungeIds.has(set.workoutExerciseId))
+    expect(lunges.length).toBeGreaterThan(10)
+    for (const set of lunges) {
+      expect(set.unilateral).toBeDefined()
+      expect(set.partialReps).toBeUndefined()
+      const { weight, reps } = unilateralAggregate(set.unilateral!)
+      expect([set.weight, set.reps]).toEqual([weight, reps])
+    }
+    expect(lunges.some((set) => set.unilateral!.leftReps !== set.unilateral!.rightReps)).toBe(true)
+    // Nothing else is L/R.
+    const others = (await db.sets.toArray()).filter((set) => !lungeIds.has(set.workoutExerciseId))
+    expect(others.every((set) => set.unilateral === undefined)).toBe(true)
   })
 
   it('populates the Previous column for the up-next Legs day', async () => {

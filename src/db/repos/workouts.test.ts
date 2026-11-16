@@ -6,7 +6,7 @@ import { workouts, WorkoutInProgressError } from '@/db/repos/workouts'
 import { workoutExercises } from '@/db/repos/workoutExercises'
 import { sets } from '@/db/repos/sets'
 import type { ProgramDraft } from '@/programs/model'
-import { exercise, seedProgram } from '@/workouts/test-fixtures'
+import { exercise, seedProgram, setAllUnilateral } from '@/workouts/test-fixtures'
 
 const ref = (exerciseId: string) => ({ source: 'db' as const, exerciseId })
 
@@ -151,6 +151,26 @@ describe('workouts.startFromProgramDay', () => {
       for (const set of bench) {
         expect(set.partialReps).toBeUndefined()
         expect(set.completedAt).toBeUndefined()
+      }
+    })
+
+    it('LG-012: starts in L/R, pre-filled per side, when last session was logged L/R', async () => {
+      const { programId, pushId } = await seedProgram()
+      const first = await workouts.startFromProgramDay(programId, pushId)
+      const logged = (await workouts.loadSession(first))!.exercises[0]
+      await setAllUnilateral(logged.exercise.id, true)
+      const [row] = await sets.listByWorkoutExercise(logged.exercise.id)
+      const sides = { leftWeight: 20, leftReps: 12, rightWeight: 20, rightReps: 10 }
+      await sets.patch(row.id, { unilateral: sides, weight: 20, reps: 10 })
+      await sets.setCompleted(row.id, true)
+      await workouts.finish(first)
+
+      const second = await workouts.startFromProgramDay(programId, pushId)
+      const bench = (await workouts.loadSession(second))!.exercises[0].sets
+      expect(bench).toHaveLength(3)
+      for (const set of bench) {
+        expect(set.unilateral).toEqual(sides)
+        expect(set).toMatchObject({ weight: 20, reps: 10 })
       }
     })
 

@@ -3,7 +3,7 @@ import { SetRow } from '@/components/session/SetRow'
 import { ROW_GRID } from '@/components/session/styles'
 import { repPlaceholder } from '@/workouts/model'
 import type { Set as SetRecord, TargetsSnapshot } from '@/db/types'
-import type { PadEntry, PadField } from '@/workouts/model'
+import type { PadEntry, PadField, Side } from '@/workouts/model'
 
 /** The working-set table for one exercise (design-system 10a). Warm-ups never appear here. */
 export function SetTable({
@@ -22,7 +22,7 @@ export function SetTable({
   previous: SetRecord[]
   snapshot: TargetsSnapshot | undefined
   pad: { setId: string; entry: PadEntry } | null
-  onOpenPad: (setId: string, field: PadField) => void
+  onOpenPad: (setId: string, field: PadField, side?: Side) => void
   onToggle: (setId: string) => void
   onAddSet: () => void
   openSwipeSetId: string | null
@@ -57,11 +57,12 @@ export function SetTable({
             previous={previous[index]}
             placeholder={placeholder}
             pad={pad?.setId === set.id ? pad.entry : null}
-            onOpenPad={(field) => onOpenPad(set.id, field)}
+            onOpenPad={(field, side) => onOpenPad(set.id, field, side)}
             onToggle={() => onToggle(set.id)}
             swipeOpen={openSwipeSetId === set.id}
             onSwipeOpenChange={(open) => onSwipeOpenChange(open ? set.id : null)}
             onRemove={() => onRemove(set.id)}
+            divider={index > 0 && (set.unilateral != null || sets[index - 1].unilateral != null)}
           />
         ))}
       </div>

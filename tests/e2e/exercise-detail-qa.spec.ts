@@ -148,7 +148,7 @@ test('the Library list keeps one height as rows scroll in and out (ROW_HEIGHT_PX
   for (const h of rowHeights) expect(h).toBeGreaterThanOrEqual(56);
 });
 
-test('the program picker and swap picker rows keep their size and carry no info affordance', async ({
+test('the program picker and swap picker rows keep their size and open the exercise page from the name (LG-013)', async ({
   page,
 }) => {
   await seedActiveProgram(page);
@@ -164,7 +164,7 @@ test('the program picker and swap picker rows keep their size and carry no info 
   )) {
     expect(h).toBeGreaterThanOrEqual(56);
   }
-  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]').first()).toBeVisible();
   await expect(page.getByRole('button', { name: /info/i })).toHaveCount(0);
 
   await page.goto('/workout');
@@ -180,7 +180,7 @@ test('the program picker and swap picker rows keep their size and carry no info 
   )) {
     expect(h).toBeGreaterThanOrEqual(56);
   }
-  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="/exercises/db"], a[href^="/exercises/custom"]').first()).toBeVisible();
   await expect(page.getByRole('button', { name: /info/i })).toHaveCount(0);
 });
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { screen, waitFor, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { resetDb } from '@/db/test-utils'
 import { useCustomExerciseStore } from '@/stores/customExerciseStore'
@@ -18,7 +18,7 @@ type User = ReturnType<typeof userEvent.setup>
 async function narrowTo(user: User, query: string) {
   await user.click(screen.getByLabelText('Search exercises'))
   await user.paste(query)
-  await screen.findByRole('button', { name: /^Incline Barbell Bench Press/ })
+  await screen.findByRole('link', { name: /^Incline Barbell Bench Press/ })
 }
 
 /** Opens the picker for the first day of a seeded program through the editor link. */
@@ -31,7 +31,9 @@ async function openPicker(user: User) {
   return router
 }
 
-const row = (name: string) => screen.getByRole('button', { name: new RegExp('^' + name) })
+/** The selection circle of a row; the row's name is a link to the exercise page. */
+const row = (name: string) =>
+  screen.getByRole('button', { name: new RegExp('^(?:Select|Deselect) ' + name) })
 
 describe('ExercisePickerPage', () => {
   beforeEach(async () => {
@@ -84,9 +86,9 @@ describe('ExercisePickerPage', () => {
     await openPicker(user)
     await user.clear(screen.getByLabelText('Search exercises'))
     await narrowTo(user, 'Barbell Bench Press')
-    const existing = await screen.findByRole('button', { name: /^Barbell Bench Press/ })
-    expect(existing).toBeDisabled()
-    expect(existing).toHaveTextContent('Already in Push')
+    const link = await screen.findByRole('link', { name: /^Barbell Bench Press/ })
+    expect(link).toHaveTextContent('Already in Push')
+    expect(screen.getByRole('button', { name: 'Select Barbell Bench Press' })).toBeDisabled()
   })
 
   it('Add appends in selection order to the draft day and returns to the editor', async () => {
@@ -110,6 +112,34 @@ describe('ExercisePickerPage', () => {
     await user.click(screen.getByRole('button', { name: 'Back' }))
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/programs\/[^/]+$/))
     expect(await screen.findByText('1 exercise')).toBeInTheDocument()
+  })
+
+  it('tapping a name opens the exercise page and Back returns with query and selection intact', async () => {
+    const user = userEvent.setup()
+    const router = await openPicker(user)
+    await user.click(row('Incline Barbell Bench Press'))
+    await user.click(screen.getByRole('link', { name: /^Decline Barbell Bench Press/ }))
+    await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/exercises\/db\//))
+    await act(() => router.navigate(-1))
+    await screen.findByRole('heading', { name: 'Add to Push' })
+    expect(screen.getByLabelText('Search exercises')).toHaveValue('Bench Press')
+    expect(await screen.findByRole('button', { name: 'Add 1 exercise' })).toBeInTheDocument()
+    expect(router.state.location.search).toMatch(/day=/)
+    expect(router.state.location.search).toMatch(/q=Bench/)
+  })
+
+  it('drops a selected custom exercise that is no longer live', async () => {
+    const user = userEvent.setup()
+    const created = await useCustomExerciseStore.getState().create({
+      name: 'SSB Squat',
+      primaryMuscles: ['quads'],
+      secondaryMuscles: [],
+      mechanic: 'compound',
+    })
+    await openPicker(user)
+    useProgramDraftStore.getState().togglePick({ source: 'custom', exerciseId: created.id })
+    await useCustomExerciseStore.getState().remove(created.id)
+    await waitFor(() => expect(useProgramDraftStore.getState().pickerSelection).toEqual([]))
   })
 
   it('visiting the picker with no draft redirects to the editor', async () => {
@@ -169,7 +199,7 @@ describe('ExercisePickerPage', () => {
       const created = await useCustomExerciseStore.getState().create(input)
       const user = userEvent.setup()
       const { router } = await openPickerFor(user, 'ssb')
-      await user.click(await screen.findByRole('button', { name: /^SSB Squat/ }))
+      await user.click(await screen.findByRole('button', { name: /^Select SSB Squat/ }))
       await user.click(screen.getByRole('button', { name: 'Add 1 exercise' }))
       await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/programs\/[^/]+$/))
       expect(useProgramDraftStore.getState().draft!.days[0].exercises.at(-1)!.exerciseRef).toEqual({
@@ -184,7 +214,7 @@ describe('ExercisePickerPage', () => {
       const user = userEvent.setup()
       await openPickerFor(user, 'ssb squat')
       expect(await screen.findByRole('link', { name: 'Create "ssb squat"' })).toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: /^SSB Squat/ })).toBeNull()
+      expect(screen.queryByRole('link', { name: /^SSB Squat/ })).toBeNull()
     })
 
     it('disables a custom exercise already in the day', async () => {
@@ -201,9 +231,9 @@ describe('ExercisePickerPage', () => {
       await screen.findByRole('heading', { name: 'Add to Push' })
       await user.click(screen.getByLabelText('Search exercises'))
       await user.paste('ssb')
-      const existing = await screen.findByRole('button', { name: /^SSB Squat/ })
-      expect(existing).toBeDisabled()
-      expect(existing).toHaveTextContent('Already in Push')
+      const link = await screen.findByRole('link', { name: /^SSB Squat/ })
+      expect(link).toHaveTextContent('Already in Push')
+      expect(screen.getByRole('button', { name: 'Select SSB Squat' })).toBeDisabled()
     })
 
     it('has a + that opens the form for this picker and an empty-state Create with the query', async () => {
@@ -245,7 +275,7 @@ describe('ExercisePickerPage', () => {
       await useCustomExerciseStore.getState().create(input)
       const user = userEvent.setup()
       const { router, id } = await openPickerFor(user, 'ssb')
-      await user.click(await screen.findByRole('button', { name: /^SSB Squat/ }))
+      await user.click(await screen.findByRole('button', { name: /^Select SSB Squat/ }))
       expect(useProgramDraftStore.getState().pickerSelection).toHaveLength(1)
 
       const dayId = useProgramDraftStore.getState().draft!.days[0].id

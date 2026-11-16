@@ -229,9 +229,9 @@ test('LOG-10: swap bench to DB press keeping targets, finish, and swappedFrom is
   await page.getByRole('searchbox').fill('dumbbell bench press');
   // Exercises already in the workout are disabled.
   await page.getByRole('searchbox').fill('barbell bench press');
-  await expect(page.getByRole('button', { name: /^Barbell Bench Press/ }).first()).toBeDisabled();
+  await expect(page.getByRole('button', { name: /^Select Barbell Bench Press/ }).first()).toBeDisabled();
   await page.getByRole('searchbox').fill('dumbbell bench press');
-  await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click();
+  await page.getByRole('button', { name: /^Select Dumbbell Bench Press(?! with)/ }).click();
   const sheet = page.getByRole('dialog', { name: /Swap to Dumbbell Bench Press/ });
   await sheet.getByRole('button', { name: /Keep targets/ }).click();
 

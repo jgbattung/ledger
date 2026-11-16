@@ -258,9 +258,9 @@ for (const scheme of SCHEMES) {
       await shot(page, 'p1-picker-empty', scheme);
 
       await page.getByLabel('Search exercises').fill('squat');
-      await page.getByRole('button', { name: /^Front Barbell Squat/ }).first().click();
+      await page.getByRole('button', { name: /^Select Front Barbell Squat/ }).first().click();
       await page.getByLabel('Search exercises').fill('lunge');
-      await page.getByRole('button', { name: /^Dumbbell Lunges/ }).first().click();
+      await page.getByRole('button', { name: /^Select Dumbbell Lunges/ }).first().click();
       await expect(page.getByRole('button', { name: /^Add 2 exercises/ })).toBeVisible();
       await shot(page, 'p2-picker-selected', scheme);
       void legsId;

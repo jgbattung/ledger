@@ -118,7 +118,7 @@ async function swapBenchToDbPress(page: Page, mode: RegExp) {
   await page.getByRole('button', { name: 'Swap' }).click();
   await expect(page).toHaveURL(/\/session\/swap\//);
   await page.getByRole('searchbox').fill('dumbbell bench press');
-  await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click();
+  await page.getByRole('button', { name: /^Select Dumbbell Bench Press(?! with)/ }).click();
   const sheet = page.getByRole('dialog', { name: /Swap to Dumbbell Bench Press/ });
   await sheet.getByRole('button', { name: mode }).click();
   await expect(page).toHaveURL(/\/session$/);

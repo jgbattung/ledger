@@ -57,7 +57,7 @@ async function addSsbSquatFromPicker(page: Page) {
   await page.getByRole('link', { name: 'Add exercises' }).click();
   await expect(heading(page, /^Add to /)).toBeVisible();
   await page.getByLabel('Search exercises').fill('barbell squat');
-  await page.getByRole('button', { name: /^Barbell Squat/ }).first().click();
+  await page.getByRole('button', { name: /^Select Barbell Squat/ }).first().click();
 
   await page.getByLabel('Search exercises').fill('ssb squat');
   await page.getByRole('link', { name: 'Create "ssb squat"' }).click();

@@ -176,9 +176,9 @@ for (const scheme of SCHEMES) {
       await startFromDashboard(page);
       await page.getByRole('button', { name: 'Swap' }).click();
       await page.getByRole('searchbox').fill('bench press');
-      await expect(page.getByRole('button', { name: /^Barbell Bench Press/ }).first()).toBeDisabled();
+      await expect(page.getByRole('button', { name: /^Select Barbell Bench Press/ }).first()).toBeDisabled();
       await shot(page, '11-swap-picker', scheme);
-      await page.getByRole('button', { name: /^Dumbbell Bench Press(?! with)/ }).click();
+      await page.getByRole('button', { name: /^Select Dumbbell Bench Press(?! with)/ }).click();
       await expect(page.getByRole('dialog', { name: /Swap to/ })).toBeVisible();
       await shot(page, '12-swap-keep-reset', scheme);
     });

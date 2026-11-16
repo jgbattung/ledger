@@ -134,8 +134,8 @@ for (const scheme of SCHEMES) {
       await page.getByRole('tab', { name: 'Push' }).click();
       await page.getByRole('link', { name: 'Add exercises' }).click();
       await page.getByLabel('Search exercises').fill('bench press');
-      await page.getByRole('button', { name: /^Incline Barbell Bench Press/ }).click();
-      await page.getByRole('button', { name: /^Decline Barbell Bench Press/ }).click();
+      await page.getByRole('button', { name: /^Select Incline Barbell Bench Press/ }).click();
+      await page.getByRole('button', { name: /^Select Decline Barbell Bench Press/ }).click();
       await shot(page, 'picker', scheme);
 
       // BackLink regression screens.

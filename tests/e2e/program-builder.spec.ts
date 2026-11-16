@@ -26,7 +26,7 @@ test('program builder: create, save, reload, edit, activate, archive, restore, d
   await addExercises(page, 'pull', [/^Pull-Up/]);
   await page.getByRole('link', { name: 'Add exercises' }).click();
   await page.getByLabel('Search exercises').fill('barbell curl');
-  await page.getByRole('button', { name: /^Barbell Curl(?!s)/ }).click();
+  await page.getByRole('button', { name: /^Select Barbell Curl(?!s)/ }).click();
   await page.getByRole('button', { name: 'Add 1 exercise' }).click();
   await expect(page.getByText('2 exercises')).toBeVisible();
   await page.getByRole('button', { name: 'Day', exact: true }).click();

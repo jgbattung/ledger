@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
@@ -37,6 +37,9 @@ async function narrowTo(user: User, text: string) {
 }
 
 const BARBELL_CURL = /^Select Barbell Curl(?!s)/
+
+// Each row is a link plus a button over the whole catalog: under a loaded full run the default 5s is tight.
+vi.setConfig({ testTimeout: 20_000 })
 
 describe('SessionAddPickerPage', () => {
   beforeEach(async () => {

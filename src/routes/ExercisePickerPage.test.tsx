@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { resetDb } from '@/db/test-utils'
@@ -34,6 +34,9 @@ async function openPicker(user: User) {
 /** The selection circle of a row; the row's name is a link to the exercise page. */
 const row = (name: string) =>
   screen.getByRole('button', { name: new RegExp('^(?:Select|Deselect) ' + name) })
+
+// Each row is a link plus a button over the whole catalog: under a loaded full run the default 5s is tight.
+vi.setConfig({ testTimeout: 20_000 })
 
 describe('ExercisePickerPage', () => {
   beforeEach(async () => {

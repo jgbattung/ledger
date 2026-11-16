@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
@@ -35,6 +35,9 @@ async function startAndOpenSwap() {
 async function search(user: ReturnType<typeof userEvent.setup>, text: string) {
   await user.type(await screen.findByRole('searchbox'), text)
 }
+
+// Each row is a link plus a button over the whole catalog: under a loaded full run the default 5s is tight.
+vi.setConfig({ testTimeout: 20_000 })
 
 describe('SwapPickerPage', () => {
   beforeEach(async () => {

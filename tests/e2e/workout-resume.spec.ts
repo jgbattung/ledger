@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readStore, seedActiveProgram } from './workout-loop-helpers';
+import { readStore, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 type Row = Record<string, unknown>;
 
@@ -315,7 +315,7 @@ test('finishing while paused records a duration without the paused time', async 
   await page.getByRole('button', { name: 'Workout menu' }).click();
   await page.getByRole('button', { name: 'Finish workout' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
   await expect(bar(page)).toHaveCount(0);
 
   const [row] = await readStore<Row>(page, 'workouts');

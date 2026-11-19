@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export { seedActiveProgram, PPL_SIX } from './program-rotation-helpers';
 
@@ -52,4 +52,11 @@ export async function fillAllSets(page: Page, values: { reps: number; weight?: n
     db.close();
   }, values);
   await page.reload();
+}
+
+/** After a Finish: the workout's summary opens (LG-014), and Done goes to the Dashboard. */
+export async function doneFromSummary(page: Page) {
+  await expect(page).toHaveURL(/\/workouts\/[^/]+$/);
+  await page.getByRole('button', { name: 'Done' }).click();
+  await expect(page).toHaveURL(/\/$/);
 }

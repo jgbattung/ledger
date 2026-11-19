@@ -20,6 +20,7 @@ function renderSession() {
       { path: '/', element: <p>Dashboard</p> },
       { path: '/workout', element: <p>Workout tab</p> },
       { path: '/day', element: <p>Day page</p> },
+      { path: '/workouts/:workoutId', element: <p>Workout summary</p> },
       { path: '/session', element: <SessionPage /> },
       { path: '/session/swap/:workoutExerciseId', element: <p>Swap picker</p> },
       { path: '/exercises/:source/:exerciseId', element: <p>Exercise page</p> },
@@ -209,7 +210,7 @@ describe('SessionPage', () => {
     expect(await screen.findByRole('button', { name: 'Finish workout' })).toBeInTheDocument()
   })
 
-  it('finishing with unchecked sets asks first, then lands on the Dashboard and ticks the day', async () => {
+  it('finishing with unchecked sets asks first, then lands on the workout summary and ticks the day', async () => {
     const { programId, pushId } = await startPush()
     const user = userEvent.setup()
     const router = renderSession()
@@ -223,10 +224,11 @@ describe('SessionPage', () => {
     expect(within(confirm).getByText("Unchecked sets aren't saved.")).toBeInTheDocument()
     await user.click(within(confirm).getByRole('button', { name: 'Finish workout' }))
 
-    await waitFor(() => expect(router.state.location.pathname).toBe('/'))
-    expect(await screen.findByText('Dashboard')).toBeInTheDocument()
-    expect((await programs.get(programId))?.completedDayIds).toContain(pushId)
+    expect(await screen.findByText('Workout summary')).toBeInTheDocument()
     const stored = await db.workouts.toArray()
+    expect(router.state.location.pathname).toBe(`/workouts/${stored[0].id}`)
+    expect(router.state.location.state).toEqual({ fromFinish: true })
+    expect((await programs.get(programId))?.completedDayIds).toContain(pushId)
     expect(stored[0].status).toBe('finished')
   })
 

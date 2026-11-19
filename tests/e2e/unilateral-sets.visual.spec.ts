@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { seedActiveProgram } from './workout-loop-helpers';
+import { seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 /**
  * LG-012 visual gate. An artifact generator: writes full-viewport PNGs of
@@ -80,7 +80,7 @@ for (const scheme of SCHEMES) {
     if (await confirm.isVisible().catch(() => false)) {
       await confirm.getByRole('button', { name: 'Finish workout' }).click();
     }
-    await expect(page).toHaveURL(/\/$/);
+    await doneFromSummary(page);
     await page.goto('/exercises/db/barbell-bench-press');
     await page.getByRole('tab', { name: 'History' }).click();
     await expect(page.getByText(/L 20 kg × 12 · R 22 kg × 10/)).toBeVisible();

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { configureExercise, renameDay } from './program-builder-helpers';
-import { fillAllSets, readStore, seedActiveProgram } from './workout-loop-helpers';
+import { fillAllSets, readStore, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 type Row = Record<string, unknown>;
 
@@ -114,7 +114,7 @@ test('LIB-6: create SSB Squat from the picker, add it to a program, log it', asy
     }
   }
   await page.getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 
   const exercises = await readStore<{ exerciseRef: { source: string } }>(page, 'workoutExercises');
   expect(exercises.some((e) => e.exerciseRef.source === 'custom')).toBe(true);
@@ -145,7 +145,7 @@ test('LIB-7: delete keeps the program row, its page and its history', async ({ p
     }
   }
   await page.getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 
   // Delete it from its page: the confirm names the program.
   await page.goto('/more/library');

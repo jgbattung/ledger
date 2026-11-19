@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { seedActiveProgram } from './workout-loop-helpers';
+import { seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 /**
  * LG-017 rest timer: TIM-1 (auto-start), TIM-3 (amended: presets, floating bar),
@@ -214,7 +214,7 @@ test('lifecycle: finishing from the menu clears a running rest', async ({ page }
   await page.getByRole('button', { name: 'Workout menu' }).click();
   await page.getByRole('button', { name: 'Finish workout' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
   await expect(bar(page)).toHaveCount(0);
   await expect.poll(() => stored(page)).toBeNull();
 
@@ -316,6 +316,6 @@ test('wake lock: held while a workout is in progress across shells, released on 
   await page.getByRole('button', { name: 'Workout menu' }).click();
   await page.getByRole('button', { name: 'Finish workout' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
   await expect.poll(wake).toEqual(['request:screen', 'release']);
 });

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readStore, seedActiveProgram } from './workout-loop-helpers';
+import { readStore, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 type SetRow = {
   workoutExerciseId: string;
@@ -45,7 +45,7 @@ async function finish(page: Page) {
   if (await confirm.isVisible().catch(() => false)) {
     await confirm.getByRole('button', { name: 'Finish workout' }).click();
   }
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 }
 
 test('LIB-10: log 100x8, and the next session pre-fills set 1 with 100 and 8', async ({ page }) => {

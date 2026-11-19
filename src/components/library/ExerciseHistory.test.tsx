@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
 import { sets, workouts } from '@/db/repos'
 import { ExerciseDetailPage } from '@/routes/ExerciseDetailPage'
@@ -40,6 +40,15 @@ async function seed() {
   return seedProgram([exercise('barbell-bench-press', { workingSets: 3 })])
 }
 
+/** History blocks are links to the workout summary (LG-014), so they need a router. */
+function renderHistory() {
+  return render(
+    <MemoryRouter>
+      <ExerciseHistory exerciseRef={BENCH} />
+    </MemoryRouter>,
+  )
+}
+
 function thisYear(month: number, day: number) {
   return new Date(new Date().getFullYear(), month, day, 12)
 }
@@ -59,10 +68,8 @@ describe('ExerciseHistory', () => {
       { weight: 32.5, reps: 8, rir: 0 },
     ])
 
-    render(<ExerciseHistory exerciseRef={BENCH} />)
-    const blocks = await screen.findAllByRole('listitem').then((items) =>
-      items.filter((item) => item.className.includes('grid-cols-')),
-    )
+    renderHistory()
+    const blocks = await screen.findAllByRole('link', { name: /^Open workout, / })
     expect(blocks).toHaveLength(2)
 
     expect(within(blocks[0]).getByText('10')).toBeInTheDocument()
@@ -81,7 +88,7 @@ describe('ExerciseHistory', () => {
     await finishedWorkout(programId, pushId, thisYear(0, 10), [
       { weight: 32.5, reps: 8, rir: 0, partialReps: 2 },
     ])
-    render(<ExerciseHistory exerciseRef={BENCH} />)
+    renderHistory()
     const line = await screen.findByText(/^32\.5 kg × 8/)
     expect(line).toHaveTextContent('32.5 kg × 8|2')
   })
@@ -91,7 +98,7 @@ describe('ExerciseHistory', () => {
     await finishedWorkout(programId, pushId, thisYear(0, 10), [
       { weight: 20, reps: 12, rir: 6, rirIsPlus: true },
     ])
-    render(<ExerciseHistory exerciseRef={BENCH} />)
+    renderHistory()
     expect(await screen.findByText('RIR 6+')).toBeInTheDocument()
   })
 
@@ -100,13 +107,13 @@ describe('ExerciseHistory', () => {
     const past = new Date(new Date().getFullYear() - 1, 10, 4, 12)
     await finishedWorkout(programId, pushId, past, [{ weight: 30, reps: 10 }])
     await finishedWorkout(programId, pushId, thisYear(0, 10), [{ weight: 30, reps: 10 }])
-    render(<ExerciseHistory exerciseRef={BENCH} />)
+    renderHistory()
     await screen.findAllByText('30 kg × 10')
     expect(screen.getAllByText(String(past.getFullYear()))).toHaveLength(1)
   })
 
   it('shows the empty state when nothing is logged', async () => {
-    render(<ExerciseHistory exerciseRef={BENCH} />)
+    renderHistory()
     expect(await screen.findByText('No sets logged yet')).toBeInTheDocument()
     expect(screen.getByText('Sets you log for this exercise will show up here.')).toBeInTheDocument()
   })
@@ -152,7 +159,7 @@ describe('ExerciseHistory - L/R sets (LG-012, M3)', () => {
       },
       { weight: 30, reps: 8, rir: 0, partialReps: 2 },
     ])
-    render(<ExerciseHistory exerciseRef={BENCH} />)
+    renderHistory()
     const sideLine = await screen.findByText(/20 kg × 12/)
     expect(sideLine.closest('li')).toHaveTextContent('L 20 kg × 12|2 · R 22 kg × 10RIR 1')
     const normal = screen.getByText(/^30 kg × 8/)

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { format, isSameYear } from 'date-fns'
-import { PartialDivider } from '@/components/session/SetRow'
+import { LoggedSetLine } from '@/components/library/LoggedSetLine'
 import { workouts } from '@/db/repos'
 import type { ExerciseHistoryEntry } from '@/db/repos'
 import type { ExerciseRef } from '@/db/types'
-import { formatPrevious, formatSides } from '@/workouts/model'
 
 function HistoryBlock({ entry }: { entry: ExerciseHistoryEntry }) {
   const { workout, sets } = entry
@@ -33,54 +32,9 @@ function HistoryBlock({ entry }: { entry: ExerciseHistoryEntry }) {
           <p className="min-w-0 truncate">{line}</p>
         </div>
         <ul>
-          {sets.map((set) => {
-            const logged = formatPrevious(set)
-            const sides = formatSides(set)
-            return (
-              <li
-                key={set.id}
-                className="flex items-baseline justify-between gap-2 py-0.5 text-base tabular-nums"
-              >
-                {sides ? (
-                  <span>
-                    {sides.map((side, index) => (
-                      <span key={side.side}>
-                        {index > 0 ? (
-                          <>
-                            {' '}
-                            <span aria-hidden="true" className="px-0.5 text-muted-foreground">
-                              ·
-                            </span>{' '}
-                          </>
-                        ) : null}
-                        <span className="text-[13px] font-semibold text-muted-foreground">
-                          {side.side}
-                        </span>{' '}
-                        {side.text}
-                        {side.partial ? (
-                          <>
-                            <PartialDivider />
-                            {side.partial}
-                          </>
-                        ) : null}
-                      </span>
-                    ))}
-                  </span>
-                ) : (
-                  <span>
-                    {logged.text}
-                    {logged.partial ? (
-                      <>
-                        <PartialDivider />
-                        {logged.partial}
-                      </>
-                    ) : null}
-                  </span>
-                )}
-                <span className="shrink-0 text-[13px] text-muted-foreground">{logged.rir}</span>
-              </li>
-            )
-          })}
+          {sets.map((set) => (
+            <LoggedSetLine key={set.id} set={set} />
+          ))}
         </ul>
       </div>
     </li>

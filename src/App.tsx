@@ -24,6 +24,7 @@ import { SessionAddPickerPage } from '@/routes/SessionAddPickerPage'
 import { SwapPickerPage } from '@/routes/SwapPickerPage'
 import { ExerciseDetailPage } from '@/routes/ExerciseDetailPage'
 import { WorkoutSummaryPage } from '@/routes/WorkoutSummaryPage'
+import { WorkoutSharePage } from '@/routes/WorkoutSharePage'
 
 function createAppRouter() {
   return createBrowserRouter(
@@ -58,6 +59,7 @@ function createAppRouter() {
           <Route path="exercises/custom/:id/edit/muscles" element={<MusclePickerPage />} />
           <Route path="exercises/:source/:exerciseId" element={<ExerciseDetailPage />} />
           <Route path="workouts/:workoutId" element={<WorkoutSummaryPage />} />
+          <Route path="workouts/:workoutId/share" element={<WorkoutSharePage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </>,

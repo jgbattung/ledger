@@ -82,7 +82,7 @@ export function WorkoutSummaryPage() {
           <p className="mt-1 text-sm text-muted-foreground tabular-nums">{meta}</p>
         </div>
 
-        <MuscleMap setsByMuscle={summary.setsByMuscle} className="mx-4 mt-5" />
+        <MuscleMap setsByMuscle={summary.setsByMuscle} showViewLabels className="mx-4 mt-5" />
         {summary.workingSets > 0 ? (
           <>
             <MuscleLegend className="mx-4 mt-2.5" />

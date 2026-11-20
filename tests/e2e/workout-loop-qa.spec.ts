@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { fillAllSets, readStore, seedActiveProgram } from './workout-loop-helpers';
+import { fillAllSets, readStore, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 type SetRow = {
   workoutExerciseId: string;
@@ -97,7 +97,7 @@ test('AC34: finishing from the menu with unchecked sets asks, then drops only th
   const confirm = page.getByRole('dialog', { name: 'Finish with 4 sets not done?' });
   await expect(confirm).toContainText("Unchecked sets aren't saved.");
   await confirm.getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 
   const sets = await readStore<SetRow>(page, 'sets');
   expect(sets.filter((s) => s.deletedAt == null)).toHaveLength(2);
@@ -121,7 +121,7 @@ test('AC13: Previous shows the matching set of the last finished workout', async
     }
   }
   await page.getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 
   // Start Push A again from its Day page.
   await page.getByRole('link', { name: 'Workout', exact: true }).click();

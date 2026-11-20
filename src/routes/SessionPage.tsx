@@ -12,6 +12,7 @@ import { WorkoutNoteSheet } from '@/components/session/WorkoutNoteSheet'
 import { WorkoutTopBar } from '@/components/session/WorkoutTopBar'
 import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { getLastTab } from '@/lib/lastTab'
+import { workoutPath } from '@/lib/paths'
 import { useGoBack } from '@/lib/useGoBack'
 import { useSettings } from '@/settings/SettingsProvider'
 import { useRestTimerStore } from '@/stores/restTimerStore'
@@ -21,8 +22,8 @@ import { useInProgressWorkout } from '@/stores/useInProgressWorkout'
 
 /**
  * The Ongoing Workout (`/session`). Redirects to the Workout tab when nothing
- * is in progress. Back keeps the workout running; Finish returns to the
- * Dashboard and Discard to the Workout tab.
+ * is in progress. Back keeps the workout running; Finish opens the workout
+ * summary (LG-014) and Discard returns to the Workout tab.
  */
 export function SessionPage() {
   const { workout, ready } = useInProgressWorkout()
@@ -45,7 +46,7 @@ export function SessionPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   // Where to land once the store clears: set before finishing or discarding so
   // the redirect below does not win with its default.
-  const leaveTo = useRef<string | null>(null)
+  const leaveTo = useRef<{ to: string; state?: unknown } | null>(null)
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [restOpen, setRestOpen] = useState(false)
@@ -89,7 +90,10 @@ export function SessionPage() {
   }, [padSetId, padField])
 
   if (!ready) return null
-  if (!workout) return <Navigate to={leaveTo.current ?? '/workout'} replace />
+  if (!workout) {
+    const leave = leaveTo.current
+    return <Navigate to={leave?.to ?? '/workout'} state={leave?.state} replace />
+  }
 
   const focused = exercises.find((entry) => entry.exercise.id === focusedId) ?? exercises[0]
   const allSets = exercises.flatMap((entry) => entry.sets)
@@ -97,7 +101,8 @@ export function SessionPage() {
   const allDone = allSets.length > 0 && unchecked === 0
 
   const finish = async () => {
-    leaveTo.current = '/'
+    // Finish lands on the workout's summary; replace keeps Back from returning to /session.
+    leaveTo.current = { to: workoutPath(workout.id), state: { fromFinish: true } }
     try {
       await useSessionStore.getState().finish()
     } catch {
@@ -110,7 +115,7 @@ export function SessionPage() {
     else void finish()
   }
   const discard = async () => {
-    leaveTo.current = '/workout'
+    leaveTo.current = { to: '/workout' }
     try {
       await useSessionStore.getState().discard()
     } catch {

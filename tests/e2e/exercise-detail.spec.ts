@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { addExercises, configureExercise } from './program-builder-helpers';
 import type { Page } from '@playwright/test';
-import { fillAllSets, seedActiveProgram } from './workout-loop-helpers';
+import { fillAllSets, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 test('Library: open a result, read it, and Back restores query, count and scroll', async ({ page }) => {
   await page.goto('/more/library');
@@ -108,7 +108,7 @@ async function finishPushWorkout(page: Page, weight: number, reps: number) {
     await page.getByRole('checkbox', { name: `Mark set ${n} done` }).click();
   }
   await page.getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 }
 
 test('LIB-9: sets logged across two workouts show both sessions, newest first', async ({ page }) => {
@@ -134,6 +134,29 @@ test('LIB-9: sets logged across two workouts show both sessions, newest first', 
   await expect(blocks.nth(1)).toContainText('60 kg × 8');
   await expect(blocks.nth(1)).toContainText('Push A');
   await expect(page.locator('body')).not.toContainText(/e1rm|1rm/i);
+});
+
+test('a History block opens that workout summary, and Back returns to the History tab', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await seedActiveProgram(page, { days: [{ name: 'Push A', exercises: ['barbell-bench-press'] }] });
+  await finishPushWorkout(page, 60, 8);
+
+  await page.goto('/exercises/db/barbell-bench-press');
+  await page.getByRole('tab', { name: 'History' }).click();
+  await expect(page).toHaveURL(/tab=history/);
+  await page.getByRole('link', { name: /^Open workout, Push A, / }).click();
+
+  await expect(page).toHaveURL(/\/workouts\/[^/]+$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Push A' })).toBeVisible();
+  await expect(page.getByText('60 kg × 8')).toHaveCount(3);
+  // A past workout has no Done: Back is the way out.
+  await expect(page.getByRole('button', { name: 'Done' })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Back' }).click();
+  await expect(page).toHaveURL(/\/exercises\/db\/barbell-bench-press\?tab=history$/);
+  await expect(page.getByRole('link', { name: /^Open workout, Push A, / })).toBeVisible();
 });
 
 test('the session Info chip opens the page and Back returns with logged values intact', async ({

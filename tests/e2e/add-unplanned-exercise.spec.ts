@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { readStore, seedActiveProgram } from './workout-loop-helpers';
+import { readStore, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 type Row = Record<string, unknown>;
 type ExerciseRow = { id: string; exerciseRef: { exerciseId: string }; deletedAt: number | null; orderIndex: number };
@@ -58,7 +58,7 @@ async function finishFromMenu(page: Page) {
   await page.getByRole('button', { name: 'Finish workout' }).click();
   const confirm = page.getByRole('dialog', { name: /Finish with \d+ sets? not done\?/ });
   await confirm.getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 }
 
 test('LOG-11 accept: append cable curls to a program-day workout, they save with the workout', async ({

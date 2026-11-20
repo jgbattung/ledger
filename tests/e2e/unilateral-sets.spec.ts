@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { readStore, seedActiveProgram } from './workout-loop-helpers';
+import { readStore, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 type SetRow = {
   workoutExerciseId: string;
@@ -69,7 +69,7 @@ async function finish(page: Page) {
   if (await confirm.isVisible().catch(() => false)) {
     await confirm.getByRole('button', { name: 'Finish workout' }).click();
   }
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 }
 
 test('LG-012: log L/R sets, persist, merge confirm, history and next-session carry', async ({

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { fillAllSets, readStore, seedActiveProgram } from './workout-loop-helpers';
+import { fillAllSets, readStore, seedActiveProgram, doneFromSummary } from './workout-loop-helpers';
 
 type Row = Record<string, unknown>;
 
@@ -38,8 +38,14 @@ test('start from a Workout tab day row, check every set, finish, and the day is 
   await expect(page.getByRole('button', { name: 'Finish workout' })).toBeVisible();
   await page.getByRole('button', { name: 'Finish workout' }).click();
 
-  // Finish lands on the Dashboard, which now offers Pull A.
-  await expect(page).toHaveURL(/\/$/);
+  // Finish lands on the workout's summary (LG-014): 6 sets x 60 kg x 8, both muscles worked.
+  await expect(page).toHaveURL(/\/workouts\/[^/]+$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Push A' })).toBeVisible();
+  await expect(page.locator('dl')).toHaveText(/^Working sets6Volume2,880kgDuration\d+m$/);
+  await expect(page.getByText('Chest 3 · Side delts 3')).toBeVisible();
+
+  // Done goes to the Dashboard, which now offers Pull A.
+  await doneFromSummary(page);
   await expect(page.getByRole('heading', { level: 2, name: 'Pull A' })).toBeVisible();
 
   const workouts = await readStore<Row>(page, 'workouts');
@@ -249,7 +255,7 @@ test('LOG-10: swap bench to DB press keeping targets, finish, and swappedFrom is
     }
   }
   await page.getByRole('button', { name: 'Finish workout' }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await doneFromSummary(page);
 
   const exercises = await readStore<{
     exerciseRef: { exerciseId: string };

@@ -62,6 +62,14 @@
   --rir-5: oklch(0.74 0.14 230);
   --rir-6: oklch(0.74 0.14 285);
   --rir-ink: oklch(0.2 0.02 250);
+
+  /* Muscle map heat ramp (design-system 14). Mixed in oklab: oklch hue interpolation from white drifts to violet. Redefined per theme block so a nested
+     .dark element (the share card) re-resolves the mixes against its own tokens. */
+  --heat-body: color-mix(in oklab, var(--muted-foreground) 16%, var(--background));
+  --heat-0: color-mix(in oklab, var(--muted-foreground) 30%, var(--background));
+  --heat-1: color-mix(in oklab, var(--primary) 52%, var(--background));
+  --heat-2: color-mix(in oklab, var(--primary) 76%, var(--background));
+  --heat-3: var(--primary);
 }
 
 .dark {
@@ -100,6 +108,14 @@
   --rir-5: oklch(0.7 0.13 230);
   --rir-6: oklch(0.7 0.13 285);
   --rir-ink: oklch(0.17 0.015 250);
+
+  /* Muscle map heat ramp (design-system 14). Mixed in oklab: oklch hue interpolation from white drifts to violet. Redefined per theme block so a nested
+     .dark element (the share card) re-resolves the mixes against its own tokens. */
+  --heat-body: color-mix(in oklab, var(--muted-foreground) 16%, var(--background));
+  --heat-0: color-mix(in oklab, var(--muted-foreground) 30%, var(--background));
+  --heat-1: color-mix(in oklab, var(--primary) 52%, var(--background));
+  --heat-2: color-mix(in oklab, var(--primary) 76%, var(--background));
+  --heat-3: var(--primary);
 }
 
 @theme inline {
@@ -139,6 +155,11 @@
   --color-rir-5: var(--rir-5);
   --color-rir-6: var(--rir-6);
   --color-rir-ink: var(--rir-ink);
+  --color-heat-body: var(--heat-body);
+  --color-heat-0: var(--heat-0);
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

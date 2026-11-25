@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { format } from 'date-fns'
-import { Plus } from 'lucide-react'
+import { Ellipsis, Plus } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
+import { EditExerciseSheet } from '@/components/session/EditExerciseSheet'
 import { ExerciseNoteCard } from '@/components/session/ExerciseNoteCard'
 import { NumberPad } from '@/components/session/NumberPad'
 import { SetTable } from '@/components/session/SetTable'
 import { FieldError } from '@/components/ui/field-error'
+import { exercisePath } from '@/exercises/detail'
 import { exerciseName } from '@/programs/model'
 import { workoutEditAddPath, workoutPath } from '@/lib/paths'
 import { useGoBack } from '@/lib/useGoBack'
 import { cn } from '@/lib/utils'
+import type { SessionExercise } from '@/stores/sessionStore'
 import { useWorkoutEditStore, type EditLoadResult } from '@/stores/workoutEditStore'
 
 const FOOTER_BUTTON =
@@ -54,6 +57,9 @@ export function WorkoutEditPage() {
   const saving = useWorkoutEditStore((state) => state.saving)
   const error = useWorkoutEditStore((state) => state.error)
   const scrollRef = useRef<HTMLDivElement>(null)
+  // Snapshot of the exercise the actions sheet was opened for (it outlives the exercise on removal).
+  const [moreEntry, setMoreEntry] = useState<SessionExercise | null>(null)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   useEffect(() => {
     if (!workoutId) return
@@ -135,6 +141,17 @@ export function WorkoutEditPage() {
                 <h3 className="min-w-0 flex-1 text-lg leading-tight font-semibold">
                   {exerciseName(exercise.exerciseRef)}
                 </h3>
+                <button
+                  type="button"
+                  aria-label={`${exerciseName(exercise.exerciseRef)} actions`}
+                  onClick={() => {
+                    setMoreEntry({ exercise, sets })
+                    setMoreOpen(true)
+                  }}
+                  className="flex size-touch-min shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                >
+                  <Ellipsis className="size-5" aria-hidden="true" />
+                </button>
               </div>
               <SetTable
                 sets={sets}
@@ -169,6 +186,22 @@ export function WorkoutEditPage() {
       </div>
 
       <EditNumberPad />
+      {moreEntry ? (
+        <EditExerciseSheet
+          open={moreOpen}
+          onOpenChange={setMoreOpen}
+          entry={moreEntry}
+          isOnly={exercises.length <= 1}
+          onInfo={() => navigate(exercisePath(moreEntry.exercise.exerciseRef))}
+          onRemove={() => {
+            try {
+              store().removeExercise(moreEntry.exercise.id)
+            } catch {
+              // The sheet already refuses the last exercise.
+            }
+          }}
+        />
+      ) : null}
       {pad ? null : (
         <footer className="shrink-0 border-t border-border bg-background px-4 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
           {error ? <FieldError alert message="Couldn't save. Try again." className="mt-0 pb-2" /> : null}

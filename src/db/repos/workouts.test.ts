@@ -2,7 +2,14 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '@/db/ledger'
 import { resetDb } from '@/db/test-utils'
 import { programs } from '@/db/repos/programs'
-import { workouts, WorkoutInProgressError } from '@/db/repos/workouts'
+import {
+  workouts,
+  WorkoutInProgressError,
+  type WorkoutEditDraft,
+  type WorkoutSession,
+} from '@/db/repos/workouts'
+import { newId } from '@/db/ids'
+import type { Set as SetRecord } from '@/db/types'
 import { workoutExercises } from '@/db/repos/workoutExercises'
 import { sets } from '@/db/repos/sets'
 import type { ProgramDraft } from '@/programs/model'
@@ -400,6 +407,185 @@ describe('workouts finish, discard, previous', () => {
       5, 5, 5,
     ])
     expect(await workouts.previousSets(ref('squat'), current)).toEqual([])
+  })
+
+  it('previousSets with a before cutoff returns the newest session finished before it, not a later one', async () => {
+    const { programId, pushId } = await seedProgram()
+    for (const [reps, finishedAt] of [
+      [5, 1_000],
+      [8, 2_000],
+      [12, 3_000],
+    ]) {
+      const id = await workouts.startFromProgramDay(programId, pushId)
+      await logAll(id, reps)
+      await workouts.finish(id)
+      await workouts.update(id, { finishedAt })
+    }
+
+    const reps = async (before: number) =>
+      (await workouts.previousSets(ref('bench'), 'none', before)).map((set) => set.reps)
+    expect(await reps(2_500)).toEqual([8, 8, 8])
+    expect(await reps(2_000)).toEqual([5, 5, 5])
+    expect(await reps(1_000)).toEqual([])
+  })
+})
+
+describe('workouts.saveEdit', () => {
+  beforeEach(async () => {
+    await resetDb()
+  })
+
+  /** A finished Push workout: bench 3 x (60 x 8), fly 2 x (60 x 8). */
+  async function finishedPush() {
+    const seeded = await seedProgram()
+    const id = await workouts.startFromProgramDay(seeded.programId, seeded.pushId)
+    await logAll(id, 8)
+    await workouts.finish(id)
+    const session = (await workouts.loadSession(id))!
+    return { ...seeded, id, session }
+  }
+
+  /** A copy of the stored session in the draft shape the edit page saves. */
+  function draftOf(session: WorkoutSession): WorkoutEditDraft {
+    return {
+      notes: session.workout.notes,
+      exercises: session.exercises.map(({ exercise, sets: rows }) => ({
+        exercise: { ...exercise },
+        sets: rows.map((row) => ({ ...row })),
+      })),
+    }
+  }
+
+  const newSet = (from: SetRecord, fields: Partial<SetRecord>): SetRecord => ({
+    ...from,
+    id: newId(),
+    completedAt: undefined,
+    ...fields,
+  })
+
+  it('persists an edited set, an added set and a removed set', async () => {
+    const { id, session } = await finishedPush()
+    const draft = draftOf(session)
+    const bench = draft.exercises[0]
+    const [first, second, third] = bench.sets
+    bench.sets = [{ ...first, weight: 80, reps: 6 }, third, newSet(third, { weight: 70, reps: 5 })]
+
+    await workouts.saveEdit(id, draft)
+
+    const saved = (await workouts.loadSession(id))!.exercises[0].sets
+    expect(saved.map((set) => [set.weight, set.reps, set.orderIndex])).toEqual([
+      [80, 6, 0],
+      [60, 8, 1],
+      [70, 5, 2],
+    ])
+    expect(saved[0].id).toBe(first.id)
+    expect((await db.sets.get(second.id))?.deletedAt).toBeTypeOf('number')
+  })
+
+  it('persists an added exercise at its position, a removed exercise with its sets, and both note types', async () => {
+    const { id, session } = await finishedPush()
+    const draft = draftOf(session)
+    const [bench, fly] = draft.exercises
+    const added = {
+      exercise: { ...bench.exercise, id: newId(), exerciseRef: ref('dip'), notes: 'Slow negatives' },
+      sets: [newSet(bench.sets[0], { workoutExerciseId: '', weight: 20, reps: 10 })],
+    }
+    draft.exercises = [{ ...bench, exercise: { ...bench.exercise, notes: 'Pause reps' } }, added]
+    draft.notes = 'Felt strong'
+
+    await workouts.saveEdit(id, draft)
+
+    const saved = (await workouts.loadSession(id))!
+    expect(saved.workout.notes).toBe('Felt strong')
+    expect(saved.exercises.map((e) => [e.exercise.exerciseRef.exerciseId, e.exercise.orderIndex])).toEqual([
+      ['bench', 0],
+      ['dip', 1],
+    ])
+    expect(saved.exercises[0].exercise.notes).toBe('Pause reps')
+    expect(saved.exercises[1].exercise.notes).toBe('Slow negatives')
+    expect(saved.exercises[1].sets.map((set) => [set.weight, set.reps, set.workoutExerciseId])).toEqual([
+      [20, 10, added.exercise.id],
+    ])
+    expect((await db.workoutExercises.get(fly.exercise.id))?.deletedAt).toBeTypeOf('number')
+    for (const set of fly.sets) expect((await db.sets.get(set.id))?.deletedAt).toBeTypeOf('number')
+
+    // Clearing a note removes it from the row.
+    const cleared = draftOf(saved)
+    cleared.notes = ''
+    cleared.exercises[0].exercise.notes = ''
+    await workouts.saveEdit(id, cleared)
+    expect('notes' in (await db.workouts.get(id))!).toBe(false)
+    expect('notes' in (await db.workoutExercises.get(bench.exercise.id))!).toBe(false)
+  })
+
+  it('marks dirty exactly the rows it wrote, and an unchanged draft writes nothing', async () => {
+    const { id, session } = await finishedPush()
+    const changed = draftOf(session)
+    const target = changed.exercises[1].sets[1]
+    changed.exercises[1].sets[1] = { ...target, reps: 9 }
+    await db.syncState.clear()
+
+    await workouts.saveEdit(id, changed)
+    expect((await db.syncState.toArray()).map((row) => [row.table, row.recordId])).toEqual([
+      ['sets', target.id],
+    ])
+
+    const before = (await workouts.loadSession(id))!
+    await db.syncState.clear()
+    await workouts.saveEdit(id, draftOf(before))
+    expect(await db.syncState.toArray()).toEqual([])
+    expect(await workouts.loadSession(id)).toEqual(before)
+  })
+
+  it('never changes the workout status, times, name or the program pass', async () => {
+    const { id, session, programId } = await finishedPush()
+    const workoutBefore = (await db.workouts.get(id))!
+    const passBefore = (await programs.get(programId))?.completedDayIds
+    const draft = draftOf(session)
+    draft.notes = 'Edited'
+    draft.exercises[0].sets[0] = { ...draft.exercises[0].sets[0], weight: 100 }
+
+    await workouts.saveEdit(id, draft)
+
+    const after = (await db.workouts.get(id))!
+    const pick = (w: typeof after) => [w.status, w.startedAt, w.finishedAt, w.pausedMs, w.pausedAt, w.name]
+    expect(pick(after)).toEqual(pick(workoutBefore))
+    expect((await programs.get(programId))?.completedDayIds).toEqual(passBefore)
+  })
+
+  it('rejects a workout that is not finished, and a missing one', async () => {
+    const { programId, pushId } = await seedProgram()
+    const id = await workouts.startFromProgramDay(programId, pushId)
+    const session = (await workouts.loadSession(id))!
+    const draft = draftOf(session)
+    draft.exercises[0].sets[0] = { ...draft.exercises[0].sets[0], weight: 100, reps: 5 }
+
+    await expect(workouts.saveEdit(id, draft)).rejects.toThrow('Workout is not finished')
+    expect(await workouts.loadSession(id)).toEqual(session)
+    await expect(workouts.saveEdit('missing', draft)).rejects.toThrow('Workout not found')
+  })
+
+  it('drops sets with no reps and stamps new sets with the workout finish time', async () => {
+    const { id, session } = await finishedPush()
+    const finishedAt = session.workout.finishedAt
+    const draft = draftOf(session)
+    const bench = draft.exercises[0]
+    const [first, second, third] = bench.sets
+    const empty = newSet(third, { weight: 50, reps: 0 })
+    const fresh = newSet(third, { weight: 65, reps: 4 })
+    bench.sets = [{ ...first, reps: 0 }, second, empty, third, fresh]
+
+    await workouts.saveEdit(id, draft)
+
+    const saved = (await workouts.loadSession(id))!.exercises[0].sets
+    expect(saved.map((set) => [set.id, set.orderIndex])).toEqual([
+      [second.id, 0],
+      [third.id, 1],
+      [fresh.id, 2],
+    ])
+    expect((await db.sets.get(first.id))?.deletedAt).toBeTypeOf('number')
+    expect(await db.sets.get(empty.id)).toBeUndefined()
+    expect(saved[2].completedAt).toBe(finishedAt)
   })
 })
 

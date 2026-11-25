@@ -3,13 +3,15 @@ import { finishedWorkout, typeCell } from './edit-past-workouts-helpers';
 
 /**
  * LG-015 accept test (LOG-13): a past workout holds a typo'd 1000 kg set;
- * editing it to 80 kg and saving updates the summary's volume.
+ * editing it to 80 kg and saving updates the summary's volume and the
+ * exercise's History tab.
  */
-test('fix a typo\'d 1000 kg set from the summary and the volume updates', async ({ page }) => {
+test('fix a typo\'d 1000 kg set from the summary and the volume and History update', async ({ page }) => {
   test.setTimeout(120_000);
   await finishedWorkout(page);
   const volume = page.locator('dl').getByText('Volume').locator('..').locator('dd');
-  const before = await volume.innerText();
+  // 6 sets of 1000 kg x 10.
+  await expect(volume).toContainText('60,000');
 
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(page).toHaveURL(/\/edit$/);
@@ -17,7 +19,15 @@ test('fix a typo\'d 1000 kg set from the summary and the volume updates', async 
   await page.getByRole('button', { name: 'Save' }).click();
 
   await expect(page).toHaveURL(/\/workouts\/[^/]+$/);
-  await expect(volume).not.toHaveText(before);
+  // 80 x 10 + 5 x (1000 x 10).
+  await expect(volume).toContainText('50,800');
+
+  await page.goto('/exercises/db/barbell-bench-press?tab=history');
+  const lines = page.getByRole('tabpanel').locator('> ul > li').first().locator('li');
+  await expect(lines).toHaveCount(3);
+  await expect(lines.nth(0)).toContainText('80 kg × 10');
+  await expect(lines.nth(1)).toContainText(/^1,?000 kg × 10/);
+  await expect(lines.nth(2)).toContainText(/^1,?000 kg × 10/);
 });
 
 test('Cancel with changes asks, and discarding leaves the workout unchanged', async ({ page }) => {
@@ -44,7 +54,7 @@ test('Cancel without changes leaves silently', async ({ page }) => {
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
 
-test('an empty set asks before saving and is not saved', async ({ page }) => {
+test('an empty set asks before saving', async ({ page }) => {
   test.setTimeout(120_000);
   await finishedWorkout(page);
   await page.getByRole('button', { name: 'Edit', exact: true }).click();

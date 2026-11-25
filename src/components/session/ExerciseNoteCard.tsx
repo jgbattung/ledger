@@ -11,10 +11,14 @@ export function ExerciseNoteCard({
   programNote,
   value,
   onChange,
+  label = 'Exercise note',
+  placeholder = 'Add a note for today…',
 }: {
   programNote?: string
   value: string
   onChange: (value: string) => void
+  label?: string
+  placeholder?: string
 }) {
   const id = useId()
   return (
@@ -26,13 +30,13 @@ export function ExerciseNoteCard({
         </p>
       ) : null}
       <label htmlFor={id} className="text-sm font-semibold">
-        Exercise note
+        {label}
       </label>
       <textarea
         id={id}
         value={value}
         rows={2}
-        placeholder="Add a note for today…"
+        placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
         className={cn(FIELD_CLASS, 'mt-2 block resize-none py-2.5')}
       />

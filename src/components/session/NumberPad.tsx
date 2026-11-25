@@ -2,7 +2,8 @@ import { Delete } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { RIR_FILL } from '@/components/session/styles'
 import { cn } from '@/lib/utils'
-import { useSessionStore } from '@/stores/sessionStore'
+import type { Set as SetRecord } from '@/db/types'
+import type { PadState } from '@/stores/sessionStore'
 import type { PadKey } from '@/workouts/model'
 
 const KEY =
@@ -16,9 +17,11 @@ function Key({
   label,
   className,
   disabled,
+  onKey,
   children,
 }: {
   keyName: PadKey
+  onKey: (key: PadKey) => void
   label: string
   className?: string
   disabled?: boolean
@@ -29,7 +32,7 @@ function Key({
       type="button"
       aria-label={label}
       disabled={disabled}
-      onClick={() => useSessionStore.getState().padKey(keyName)}
+      onClick={() => onKey(keyName)}
       className={cn(KEY, disabled && DIMMED, className)}
     >
       {children}
@@ -70,13 +73,21 @@ const RIR_VALUES = [0, 1, 2, 3, 4, 5, 6] as const
  * scrim and at most 40svh, so the system keyboard never opens. Layout
  * `1 2 3 F|P / 4 5 6 Next / 7 8 9 Next / . 0 delete hide`.
  */
-export function NumberPad() {
-  const pad = useSessionStore((state) => state.pad)
-  const activeSet = useSessionStore((state) =>
-    state.pad
-      ? state.exercises.flatMap((entry) => entry.sets).find((row) => row.id === state.pad?.setId)
-      : undefined,
-  )
+export function NumberPad({
+  pad,
+  activeSet,
+  onKey,
+  onRir,
+  onNext,
+  onClose,
+}: {
+  pad: PadState | null
+  activeSet: SetRecord | undefined
+  onKey: (key: PadKey) => void
+  onRir: (setId: string, rir: number, rirIsPlus: boolean) => void
+  onNext: () => void
+  onClose: () => void
+}) {
   if (!pad || !activeSet) return null
 
   const { entry } = pad
@@ -100,7 +111,7 @@ export function NumberPad() {
                 type="button"
                 aria-label={`RIR ${value === 6 ? '6 or more' : value}`}
                 aria-pressed={selected}
-                onClick={() => useSessionStore.getState().setRir(activeSet.id, value, value === 6)}
+                onClick={() => onRir(activeSet.id, value, value === 6)}
                 className="flex h-10 min-w-10 items-center justify-center rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 <span
@@ -120,7 +131,7 @@ export function NumberPad() {
 
       <div className="grid grid-cols-[repeat(3,minmax(0,1fr))_1.1fr] gap-1.5">
         {DIGITS[0].map((digit) => (
-          <Key key={digit} keyName={digit} label={digit}>
+          <Key key={digit} keyName={digit} label={digit} onKey={onKey}>
             {digit}
           </Key>
         ))}
@@ -129,7 +140,7 @@ export function NumberPad() {
           aria-label="Partial reps"
           aria-pressed={entry.mode === 'P'}
           disabled={weight}
-          onClick={() => useSessionStore.getState().padKey('fp')}
+          onClick={() => onKey('fp')}
           className={cn(
             KEY,
             'overflow-hidden bg-secondary p-0 text-base font-semibold',
@@ -155,37 +166,37 @@ export function NumberPad() {
         </button>
 
         {DIGITS[1].map((digit) => (
-          <Key key={digit} keyName={digit} label={digit}>
+          <Key key={digit} keyName={digit} label={digit} onKey={onKey}>
             {digit}
           </Key>
         ))}
         <button
           type="button"
-          onClick={() => useSessionStore.getState().padNext()}
+          onClick={() => onNext()}
           className="row-span-2 flex items-center justify-center rounded-lg bg-primary text-base font-medium text-primary-foreground outline-none transition-colors hover:bg-primary/90 focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
           Next
         </button>
 
         {DIGITS[2].map((digit) => (
-          <Key key={digit} keyName={digit} label={digit}>
+          <Key key={digit} keyName={digit} label={digit} onKey={onKey}>
             {digit}
           </Key>
         ))}
 
-        <Key keyName="." label="Decimal point" disabled={!weight}>
+        <Key keyName="." label="Decimal point" disabled={!weight} onKey={onKey}>
           .
         </Key>
-        <Key keyName="0" label="0">
+        <Key keyName="0" label="0" onKey={onKey}>
           0
         </Key>
-        <Key keyName="back" label="Delete" className="bg-secondary">
+        <Key keyName="back" label="Delete" className="bg-secondary" onKey={onKey}>
           <Delete className="size-5" aria-hidden="true" />
         </Key>
         <button
           type="button"
           aria-label="Hide keypad"
-          onClick={() => useSessionStore.getState().closePad()}
+          onClick={() => onClose()}
           className={cn(KEY, 'bg-secondary')}
         >
           <KeyboardDownIcon />

@@ -92,7 +92,48 @@ export function prefillFor(
   return { weight, reps, unilateral }
 }
 
-type WorkoutTiming = Pick<Workout, 'startedAt' | 'pausedAt' | 'pausedMs' | 'finishedAt'>
+/**
+ * The fields of the next working set appended to an exercise (the "Add set"
+ * rule). L/R mode follows the last row, else the same row of last session;
+ * weight and reps come from that same previous row when it exists, else weight
+ * from the last row and reps blank; RIR is copied from the last row.
+ * `orderIndex` is the last live index + 1 (never the row count).
+ */
+export function nextSetFields(
+  existing: SetRecord[],
+  previous: SetRecord[],
+): Pick<SetRecord, 'orderIndex' | 'type' | 'weight' | 'reps' | 'rir' | 'rirIsPlus' | 'unilateral'> {
+  const last = existing[existing.length - 1]
+  const sameRow = previous[existing.length]
+  const unilateralMode = last ? last.unilateral != null : sameRow?.unilateral != null
+  const rir = { rir: last?.rir ?? BLANK_SET.rir, rirIsPlus: last?.rirIsPlus ?? BLANK_SET.rirIsPlus }
+  const orderIndex = last ? last.orderIndex + 1 : 0
+  if (unilateralMode) {
+    const sides = sameRow?.unilateral ?? {
+      leftWeight: last?.unilateral?.leftWeight ?? last?.weight ?? BLANK_SET.weight,
+      leftReps: 0,
+      rightWeight: last?.unilateral?.rightWeight ?? last?.weight ?? BLANK_SET.weight,
+      rightReps: 0,
+    }
+    const unilateral: Unilateral = {
+      leftWeight: sides.leftWeight,
+      leftReps: sides.leftReps,
+      rightWeight: sides.rightWeight,
+      rightReps: sides.rightReps,
+    }
+    const { weight, reps } = unilateralAggregate(unilateral)
+    return { orderIndex, type: 'working', weight, reps, ...rir, unilateral }
+  }
+  return {
+    orderIndex,
+    type: 'working',
+    weight: sameRow?.weight ?? last?.weight ?? BLANK_SET.weight,
+    reps: sameRow?.reps ?? 0,
+    ...rir,
+  }
+}
+
+type WorkoutTiming =Pick<Workout, 'startedAt' | 'pausedAt' | 'pausedMs' | 'finishedAt'>
 
 /** True while the workout clock is frozen. */
 export function isPaused(workout: Pick<Workout, 'pausedAt'>): boolean {

@@ -1,8 +1,10 @@
+import type { Table } from 'dexie'
 import { db } from '@/db/ledger'
 import { newId, now } from '@/db/ids'
 import { createRepo } from '@/db/repos/base'
 import { programs } from '@/db/repos/programs'
 import { markDirty } from '@/db/repos/syncState'
+import { planEdit, type WorkoutEditDraft } from '@/workouts/edit'
 import { BLANK_SET, prefillFor, toTargetsSnapshot } from '@/workouts/model'
 import type { ExerciseRef, Set as SetRecord, Workout, WorkoutExercise } from '@/db/types'
 
@@ -19,6 +21,8 @@ export type WorkoutSession = {
   workout: Workout
   exercises: { exercise: WorkoutExercise; sets: SetRecord[] }[]
 }
+
+export type { WorkoutEditDraft }
 
 export type ExerciseHistoryEntry = { workout: Workout; sets: SetRecord[] }
 
@@ -143,11 +147,22 @@ export const workouts = {
   /**
    * Working sets of the newest finished workout that contains the exercise
    * (Previous column). Ignores discarded and in-progress workouts, soft
-   * deleted rows and finished runs where the exercise logged nothing.
+   * deleted rows and finished runs where the exercise logged nothing. With
+   * `before`, only workouts finished earlier than that time count, so editing
+   * an old workout compares against the session before it, not a later one.
    */
-  async previousSets(exerciseRef: ExerciseRef, excludeWorkoutId: string): Promise<SetRecord[]> {
+  async previousSets(
+    exerciseRef: ExerciseRef,
+    excludeWorkoutId: string,
+    before?: number,
+  ): Promise<SetRecord[]> {
     const finished = (await db.workouts.where('status').equals('finished').toArray())
-      .filter((row) => row.deletedAt == null && row.id !== excludeWorkoutId)
+      .filter(
+        (row) =>
+          row.deletedAt == null &&
+          row.id !== excludeWorkoutId &&
+          (before == null || (row.finishedAt ?? 0) < before),
+      )
       .sort((a, b) => (b.finishedAt ?? 0) - (a.finishedAt ?? 0))
     for (const workout of finished) {
       const matches = (await db.workoutExercises.where('workoutId').equals(workout.id).toArray())
@@ -246,6 +261,53 @@ export const workouts = {
         if (message !== 'Program not found' && message !== 'Day not found') throw error
       }
     }
+  },
+
+  /**
+   * Saves an edited finished workout: the draft's difference from what is
+   * stored, written in one transaction (`planEdit` decides the writes). Only
+   * changed rows are written and marked dirty. Never touches the workout's
+   * status, timing, program link or name, nor any `programs` row.
+   */
+  async saveEdit(workoutId: string, draft: WorkoutEditDraft): Promise<void> {
+    await db.transaction(
+      'rw',
+      [db.workouts, db.workoutExercises, db.sets, db.syncState],
+      async () => {
+        const workout = await db.workouts.get(workoutId)
+        if (!workout || workout.deletedAt != null) throw new Error('Workout not found')
+        if (workout.status !== 'finished') throw new Error('Workout is not finished')
+        const stored = await workouts.loadSession(workoutId)
+        if (!stored) throw new Error('Workout not found')
+
+        const timestamp = now()
+        for (const write of planEdit(stored, draft, workout.finishedAt ?? timestamp)) {
+          const table = db[write.table] as Table<{ id: string } & Record<string, unknown>, string>
+          if (write.op === 'create') {
+            await table.put({
+              ...write.row,
+              createdAt: timestamp,
+              updatedAt: timestamp,
+              deletedAt: null,
+            })
+            await markDirty(write.table, write.row.id)
+            continue
+          }
+          const row = await table.get(write.id)
+          if (!row) throw new Error('Row not found')
+          if (write.op === 'delete') {
+            await table.put({ ...row, deletedAt: timestamp, updatedAt: timestamp })
+          } else {
+            const next: Record<string, unknown> = { ...row, ...write.fields, updatedAt: timestamp }
+            for (const key of Object.keys(write.fields)) {
+              if (next[key] === undefined) delete next[key]
+            }
+            await table.put(next as { id: string } & Record<string, unknown>)
+          }
+          await markDirty(write.table, write.id)
+        }
+      },
+    )
   },
 
   /** Freezes the workout clock at `at`. No write unless in progress and running. */

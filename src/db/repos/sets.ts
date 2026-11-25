@@ -3,11 +3,7 @@ import { now } from '@/db/ids'
 import { createRepo } from '@/db/repos/base'
 import { markDirty } from '@/db/repos/syncState'
 import { workouts } from '@/db/repos/workouts'
-import {
-  BLANK_SET,
-  canCheck,
-  unilateralAggregate,
-} from '@/workouts/model'
+import { canCheck, nextSetFields } from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
 
 const baseRepo = createRepo<SetRecord>(db.sets, 'sets')
@@ -41,46 +37,11 @@ export const sets = {
       [db.sets, db.workouts, db.workoutExercises, db.syncState],
       async () => {
         const existing = await liveSets(workoutExerciseId)
-        const last = existing[existing.length - 1]
         const exercise = await db.workoutExercises.get(workoutExerciseId)
         const previous = exercise
           ? await workouts.previousSets(exercise.exerciseRef, exercise.workoutId)
           : []
-        const sameRow = previous[existing.length]
-        const unilateralMode = last ? last.unilateral != null : sameRow?.unilateral != null
-        const rir = { rir: last?.rir ?? BLANK_SET.rir, rirIsPlus: last?.rirIsPlus ?? BLANK_SET.rirIsPlus }
-        if (unilateralMode) {
-          const sides = sameRow?.unilateral ?? {
-            leftWeight: last?.unilateral?.leftWeight ?? last?.weight ?? BLANK_SET.weight,
-            leftReps: 0,
-            rightWeight: last?.unilateral?.rightWeight ?? last?.weight ?? BLANK_SET.weight,
-            rightReps: 0,
-          }
-          const unilateral = {
-            leftWeight: sides.leftWeight,
-            leftReps: sides.leftReps,
-            rightWeight: sides.rightWeight,
-            rightReps: sides.rightReps,
-          }
-          const { weight, reps } = unilateralAggregate(unilateral)
-          return baseRepo.create({
-            workoutExerciseId,
-            orderIndex: last ? last.orderIndex + 1 : 0,
-            type: 'working',
-            weight,
-            reps,
-            ...rir,
-            unilateral,
-          })
-        }
-        return baseRepo.create({
-          workoutExerciseId,
-          orderIndex: last ? last.orderIndex + 1 : 0,
-          type: 'working',
-          weight: sameRow?.weight ?? last?.weight ?? BLANK_SET.weight,
-          reps: sameRow?.reps ?? 0,
-          ...rir,
-        })
+        return baseRepo.create({ workoutExerciseId, ...nextSetFields(existing, previous) })
       },
     )
   },

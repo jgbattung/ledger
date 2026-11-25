@@ -12,3 +12,6 @@ export const RIR_FILL = [
 ] as const
 
 export const ROW_GRID = 'grid grid-cols-[32px_minmax(0,1fr)_64px_64px_44px] items-center gap-x-1.5'
+
+/** The no-check grid of the edit page (design-system 15a): 68px cells, 8px right inset for the RIR badge. */
+export const EDIT_ROW_GRID = 'grid grid-cols-[32px_minmax(0,1fr)_68px_68px] items-center gap-x-1.5 pr-2'

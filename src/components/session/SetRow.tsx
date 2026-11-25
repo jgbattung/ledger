@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Check, Minus } from 'lucide-react'
-import { RIR_FILL, ROW_GRID } from '@/components/session/styles'
+import { EDIT_ROW_GRID, RIR_FILL, ROW_GRID } from '@/components/session/styles'
 import { cn } from '@/lib/utils'
 import { formatPrevious, formatSide, formatSides, rirLabel } from '@/workouts/model'
 import type { PadEntry, PadField, Side } from '@/workouts/model'
@@ -49,7 +49,8 @@ export function SetRow({
   placeholder: string
   pad: PadEntry | null
   onOpenPad: (field: PadField, side?: Side) => void
-  onToggle: () => void
+  /** Omit for the no-check variant used when editing a past workout (design-system 15a). */
+  onToggle?: () => void
   /** The row is swiped open, showing its remove button. */
   swipeOpen: boolean
   onSwipeOpenChange: (open: boolean) => void
@@ -62,7 +63,9 @@ export function SetRow({
   const suppressClick = useRef(false)
   const checked = set.completedAt != null
   const editing = pad !== null
-  const dim = checked && !editing
+  const noCheck = onToggle === undefined
+  const dim = !noCheck && checked && !editing
+  const grid = noCheck ? EDIT_ROW_GRID : ROW_GRID
 
   const unilateral = set.unilateral
   const repsActive = pad?.field === 'reps'
@@ -220,7 +223,7 @@ export function SetRow({
     </div>
   )
 
-  const checkCell = (
+  const checkCell = noCheck ? null : (
     <div role="cell" className="flex justify-end">
       <button
         type="button"
@@ -333,7 +336,7 @@ export function SetRow({
         )}
       >
         {unilateral ? (
-          <div className={cn(ROW_GRID, 'gap-y-1.5 py-1.5')}>
+          <div className={cn(grid, 'gap-y-1.5 py-1.5')}>
             <div className="col-start-1 row-start-1">{numberCell}</div>
             <div className="col-start-2 row-start-1 min-w-0">{renderSidePrevious('L')}</div>
             {renderCells(
@@ -345,7 +348,7 @@ export function SetRow({
               },
               true,
             )}
-            <div className="col-start-5 row-span-2 row-start-1">{checkCell}</div>
+            {checkCell ? <div className="col-start-5 row-span-2 row-start-1">{checkCell}</div> : null}
             <div className="col-start-2 row-start-2 min-w-0">{renderSidePrevious('R')}</div>
             {renderCells(
               'R',
@@ -358,7 +361,7 @@ export function SetRow({
             )}
           </div>
         ) : (
-          <div className={cn(ROW_GRID, 'min-h-14')}>
+          <div className={cn(grid, 'min-h-14')}>
             {numberCell}
 
             <div

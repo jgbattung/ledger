@@ -24,6 +24,8 @@ import { SessionAddPickerPage } from '@/routes/SessionAddPickerPage'
 import { SwapPickerPage } from '@/routes/SwapPickerPage'
 import { ExerciseDetailPage } from '@/routes/ExerciseDetailPage'
 import { WorkoutSummaryPage } from '@/routes/WorkoutSummaryPage'
+import { WorkoutEditAddPickerPage } from '@/routes/WorkoutEditAddPickerPage'
+import { WorkoutEditPage } from '@/routes/WorkoutEditPage'
 import { WorkoutSharePage } from '@/routes/WorkoutSharePage'
 
 function createAppRouter() {
@@ -60,6 +62,8 @@ function createAppRouter() {
           <Route path="exercises/:source/:exerciseId" element={<ExerciseDetailPage />} />
           <Route path="workouts/:workoutId" element={<WorkoutSummaryPage />} />
           <Route path="workouts/:workoutId/share" element={<WorkoutSharePage />} />
+          <Route path="workouts/:workoutId/edit" element={<WorkoutEditPage />} />
+          <Route path="workouts/:workoutId/edit/add" element={<WorkoutEditAddPickerPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </>,

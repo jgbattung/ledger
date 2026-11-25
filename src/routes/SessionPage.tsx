@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import { ExerciseFocus } from '@/components/session/ExerciseFocus'
 import { ExerciseStrip } from '@/components/session/ExerciseStrip'
 import { FinishBar } from '@/components/session/FinishBar'
-import { NumberPad } from '@/components/session/NumberPad'
+import { SessionNumberPad } from '@/components/session/SessionNumberPad'
 import { RestTimerSheet } from '@/components/session/RestTimerSheet'
 import { SessionExerciseSheet } from '@/components/session/SessionExerciseSheet'
 import { WorkoutMenuSheet } from '@/components/session/WorkoutMenuSheet'
@@ -167,7 +167,7 @@ export function SessionPage() {
           </div>
         ) : null}
       </div>
-      <NumberPad />
+      <SessionNumberPad />
       {allDone && !pad ? <FinishBar onFinish={requestFinish} /> : null}
 
       <RestTimerSheet open={restOpen} onOpenChange={setRestOpen} />

@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 import { SetRow } from '@/components/session/SetRow'
-import { ROW_GRID } from '@/components/session/styles'
+import { EDIT_ROW_GRID, ROW_GRID } from '@/components/session/styles'
 import { repPlaceholder } from '@/workouts/model'
 import type { Set as SetRecord, TargetsSnapshot } from '@/db/types'
 import type { PadEntry, PadField, Side } from '@/workouts/model'
@@ -23,19 +23,21 @@ export function SetTable({
   snapshot: TargetsSnapshot | undefined
   pad: { setId: string; entry: PadEntry } | null
   onOpenPad: (setId: string, field: PadField, side?: Side) => void
-  onToggle: (setId: string) => void
+  /** Omit for the no-check variant used when editing a past workout. */
+  onToggle?: (setId: string) => void
   onAddSet: () => void
   openSwipeSetId: string | null
   onSwipeOpenChange: (setId: string | null) => void
   onRemove: (setId: string) => void
 }) {
   const placeholder = repPlaceholder(snapshot)
+  const noCheck = onToggle === undefined
   return (
     <div className="px-4 pt-1.5">
       <div role="table" aria-label="Sets">
         <div
           role="row"
-          className={`${ROW_GRID} min-h-[30px] text-xs font-medium text-muted-foreground`}
+          className={`${noCheck ? EDIT_ROW_GRID : ROW_GRID} min-h-[30px] text-xs font-medium text-muted-foreground`}
         >
           <span role="columnheader">Set</span>
           <span role="columnheader">Previous</span>
@@ -45,9 +47,11 @@ export function SetTable({
           <span role="columnheader" className="text-center">
             Reps
           </span>
-          <span role="columnheader" className="sr-only">
-            Done
-          </span>
+          {noCheck ? null : (
+            <span role="columnheader" className="sr-only">
+              Done
+            </span>
+          )}
         </div>
         {sets.map((set, index) => (
           <SetRow
@@ -58,7 +62,7 @@ export function SetTable({
             placeholder={placeholder}
             pad={pad?.setId === set.id ? pad.entry : null}
             onOpenPad={(field, side) => onOpenPad(set.id, field, side)}
-            onToggle={() => onToggle(set.id)}
+            onToggle={onToggle ? () => onToggle(set.id) : undefined}
             swipeOpen={openSwipeSetId === set.id}
             onSwipeOpenChange={(open) => onSwipeOpenChange(open ? set.id : null)}
             onRemove={() => onRemove(set.id)}

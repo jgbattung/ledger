@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { format } from 'date-fns'
-import { Upload } from 'lucide-react'
+import { MessageSquareText, Pencil, Upload } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
 import { LoggedSetLine } from '@/components/library/LoggedSetLine'
 import { MuscleLegend, MuscleMap, WorkedMuscles } from '@/components/summary/MuscleMap'
 import { WorkoutRecords } from '@/components/summary/WorkoutRecords'
-import { workoutSharePath } from '@/lib/paths'
+import { workoutEditPath, workoutSharePath } from '@/lib/paths'
 import { useGoBack } from '@/lib/useGoBack'
 import { exerciseName } from '@/programs/model'
 import {
@@ -73,13 +73,30 @@ export function WorkoutSummaryPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="flex h-[52px] shrink-0 items-center px-4">
+      <header className="flex h-[52px] shrink-0 items-center justify-between px-4">
         <BackLink onBack={fromFinish ? goDashboard : goBack} label="Back" />
+        <button
+          type="button"
+          onClick={() => navigate(workoutEditPath(workout.id))}
+          className="-mr-2 flex h-touch-min items-center gap-1.5 rounded-md px-2 text-[15px] font-medium text-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        >
+          <Pencil className="size-4" aria-hidden="true" />
+          Edit
+        </button>
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="px-4 pt-0.5">
           <h1 className="text-2xl leading-tight font-semibold">{workout.name}</h1>
           <p className="mt-1 text-sm text-muted-foreground tabular-nums">{meta}</p>
+          {workout.notes ? (
+            <p className="mt-2.5 flex gap-1.5 text-sm">
+              <MessageSquareText
+                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+              />
+              <span className="min-w-0 whitespace-pre-line">{workout.notes}</span>
+            </p>
+          ) : null}
         </div>
 
         <MuscleMap setsByMuscle={summary.setsByMuscle} showViewLabels className="mx-4 mt-5" />
@@ -118,6 +135,11 @@ export function WorkoutSummaryPage() {
                     </span>
                   ) : null}
                 </div>
+                {exercise.notes ? (
+                  <p className="mb-1 text-[13px] whitespace-pre-line text-muted-foreground">
+                    {exercise.notes}
+                  </p>
+                ) : null}
                 {logged.length > 0 ? (
                   <ul>
                     {logged.map((set) => (

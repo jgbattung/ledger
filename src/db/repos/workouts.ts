@@ -143,11 +143,22 @@ export const workouts = {
   /**
    * Working sets of the newest finished workout that contains the exercise
    * (Previous column). Ignores discarded and in-progress workouts, soft
-   * deleted rows and finished runs where the exercise logged nothing.
+   * deleted rows and finished runs where the exercise logged nothing. With
+   * `before`, only workouts finished earlier than that time count, so editing
+   * an old workout compares against the session before it, not a later one.
    */
-  async previousSets(exerciseRef: ExerciseRef, excludeWorkoutId: string): Promise<SetRecord[]> {
+  async previousSets(
+    exerciseRef: ExerciseRef,
+    excludeWorkoutId: string,
+    before?: number,
+  ): Promise<SetRecord[]> {
     const finished = (await db.workouts.where('status').equals('finished').toArray())
-      .filter((row) => row.deletedAt == null && row.id !== excludeWorkoutId)
+      .filter(
+        (row) =>
+          row.deletedAt == null &&
+          row.id !== excludeWorkoutId &&
+          (before == null || (row.finishedAt ?? 0) < before),
+      )
       .sort((a, b) => (b.finishedAt ?? 0) - (a.finishedAt ?? 0))
     for (const workout of finished) {
       const matches = (await db.workoutExercises.where('workoutId').equals(workout.id).toArray())

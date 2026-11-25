@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useBlocker, useNavigate, useParams } from 'react-router-dom'
 import { format } from 'date-fns'
 import { Ellipsis, Plus } from 'lucide-react'
 import { BackLink } from '@/components/BackLink'
@@ -7,14 +7,20 @@ import { EditExerciseSheet } from '@/components/session/EditExerciseSheet'
 import { ExerciseNoteCard } from '@/components/session/ExerciseNoteCard'
 import { NumberPad } from '@/components/session/NumberPad'
 import { SetTable } from '@/components/session/SetTable'
+import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { FieldError } from '@/components/ui/field-error'
 import { exercisePath } from '@/exercises/detail'
 import { exerciseName } from '@/programs/model'
-import { workoutEditAddPath, workoutPath } from '@/lib/paths'
+import { workoutEditAddPath, workoutEditPath, workoutPath } from '@/lib/paths'
 import { useGoBack } from '@/lib/useGoBack'
 import { cn } from '@/lib/utils'
 import type { SessionExercise } from '@/stores/sessionStore'
-import { useWorkoutEditStore, type EditLoadResult } from '@/stores/workoutEditStore'
+import {
+  selectEmptySetCount,
+  selectIsDirty,
+  useWorkoutEditStore,
+  type EditLoadResult,
+} from '@/stores/workoutEditStore'
 
 const FOOTER_BUTTON =
   'inline-flex h-12 min-w-0 flex-1 items-center justify-center rounded-md text-base font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-60'
@@ -57,6 +63,24 @@ export function WorkoutEditPage() {
   const saving = useWorkoutEditStore((state) => state.saving)
   const error = useWorkoutEditStore((state) => state.error)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const dirty = useWorkoutEditStore(selectIsDirty)
+  const emptySets = useWorkoutEditStore(selectEmptySetCount)
+  const [discardOpen, setDiscardOpen] = useState(false)
+  const [emptyOpen, setEmptyOpen] = useState(false)
+
+  // The picker, the create form and exercise pages are detours that return
+  // here, so they never count as leaving. Leaving clean drops the draft so the
+  // next visit starts fresh; the post-Save replace is never blocked because
+  // save() resets the store (clean) before navigating.
+  const editBase = workoutId ? workoutEditPath(workoutId) : ''
+  const blocker = useBlocker(({ nextLocation }) => {
+    const inside =
+      nextLocation.pathname.startsWith(`${editBase}/add`) ||
+      nextLocation.pathname.startsWith('/exercises/')
+    const dirtyNow = selectIsDirty(store())
+    if (!inside && !dirtyNow) store().reset()
+    return dirtyNow && !inside
+  })
   // Snapshot of the exercise the actions sheet was opened for (it outlives the exercise on removal).
   const [moreEntry, setMoreEntry] = useState<SessionExercise | null>(null)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -100,11 +124,21 @@ export function WorkoutEditPage() {
   const save = async () => {
     if (await store().save()) navigate(workoutPath(workoutId), { replace: true })
   }
+  const requestSave = () => {
+    if (emptySets > 0) setEmptyOpen(true)
+    else void save()
+  }
+  // Back and Cancel: ask first when there is something to lose.
+  const requestLeave = () => {
+    if (dirty) setDiscardOpen(true)
+    else goBack()
+  }
+  const blocked = blocker.state === 'blocked'
 
   return (
     <div className="flex h-full flex-col">
       <header className="flex h-[52px] shrink-0 items-center gap-2 px-4">
-        <BackLink onBack={goBack} label="Back" />
+        <BackLink onBack={requestLeave} label="Back" />
         <h1 className="min-w-0 flex-1 truncate text-center text-base font-semibold">Edit workout</h1>
         <span aria-hidden="true" className="size-touch-min shrink-0" />
       </header>
@@ -209,7 +243,7 @@ export function WorkoutEditPage() {
             <button
               type="button"
               disabled={saving}
-              onClick={goBack}
+              onClick={requestLeave}
               className={cn(FOOTER_BUTTON, 'border border-border bg-background text-foreground hover:bg-muted')}
             >
               Cancel
@@ -217,7 +251,7 @@ export function WorkoutEditPage() {
             <button
               type="button"
               disabled={saving}
-              onClick={() => void save()}
+              onClick={requestSave}
               className={cn(FOOTER_BUTTON, 'bg-primary text-primary-foreground hover:bg-primary/90')}
             >
               Save
@@ -225,6 +259,39 @@ export function WorkoutEditPage() {
           </div>
         </footer>
       )}
+
+      <ConfirmSheet
+        open={discardOpen || blocked}
+        onOpenChange={(open) => {
+          if (open) return
+          setDiscardOpen(false)
+          if (blocked) blocker.reset()
+        }}
+        title="Discard your changes?"
+        description="Your edits to this workout aren't saved."
+        confirmLabel="Discard changes"
+        cancelLabel="Keep editing"
+        tone="destructive"
+        onConfirm={() => {
+          setDiscardOpen(false)
+          store().reset()
+          if (blocked) blocker.proceed()
+          else goBack()
+        }}
+      />
+      <ConfirmSheet
+        open={emptyOpen}
+        onOpenChange={setEmptyOpen}
+        title={`Save without ${emptySets} empty ${emptySets === 1 ? 'set' : 'sets'}?`}
+        description="Sets with no reps aren't saved."
+        confirmLabel="Save workout"
+        cancelLabel="Keep editing"
+        tone="neutral"
+        onConfirm={() => {
+          setEmptyOpen(false)
+          void save()
+        }}
+      />
     </div>
   )
 }

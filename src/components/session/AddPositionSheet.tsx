@@ -52,6 +52,7 @@ export function AddPositionSheet({
   focusedId,
   value,
   onSelect,
+  formatProgress = progress,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -59,6 +60,8 @@ export function AddPositionSheet({
   focusedId: string | null
   value: InsertPosition
   onSelect: (position: InsertPosition) => void
+  /** The per-row progress line; the live session's wording by default. */
+  formatProgress?: (entry: SessionExercise, current: boolean) => string
 }) {
   const pick = (position: InsertPosition) => {
     onSelect(position)
@@ -94,7 +97,7 @@ export function AddPositionSheet({
                     After {exerciseName(entry.exercise.exerciseRef)}
                   </span>
                   <span className="block truncate text-[13px] text-muted-foreground">
-                    {progress(entry, entry.exercise.id === focusedId)}
+                    {formatProgress(entry, entry.exercise.id === focusedId)}
                   </span>
                 </span>
               </PositionRow>

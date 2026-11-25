@@ -122,7 +122,8 @@ export function CustomExerciseFormPage() {
       : current.mode === 'new' || current.mode === 'duplicate'
     if (matches) return
     const pick = searchParams.get('pick')
-    const pickOrigin: PickOrigin | undefined = pick === 'program' || pick === 'swap' || pick === 'session' ? pick : undefined
+    const pickOrigin: PickOrigin | undefined = pick === 'program' || pick === 'swap' || pick === 'session' || pick === 'edit'
+        ? pick : undefined
     if (isEdit) {
       current.start({ mode: 'edit', editingId: id })
       return

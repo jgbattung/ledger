@@ -1,5 +1,6 @@
 import { PartialDivider } from '@/components/session/SetRow'
 import type { Set as SetRecord } from '@/db/types'
+import { useUnit } from '@/settings/SettingsProvider'
 import { formatPrevious, formatSides } from '@/workouts/model'
 
 /**
@@ -8,8 +9,9 @@ import { formatPrevious, formatSides } from '@/workouts/model'
  * the exercise History tab and the workout summary. Renders an `li`.
  */
 export function LoggedSetLine({ set }: { set: SetRecord }) {
-  const logged = formatPrevious(set)
-  const sides = formatSides(set)
+  const unit = useUnit()
+  const logged = formatPrevious(set, unit)
+  const sides = formatSides(set, unit)
   return (
     <li className="flex items-baseline justify-between gap-2 py-0.5 text-base tabular-nums">
       {sides ? (

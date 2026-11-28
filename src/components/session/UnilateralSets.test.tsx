@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { useSessionStore } from '@/stores/sessionStore'
 import { ExerciseFocus } from '@/components/session/ExerciseFocus'
 import type { Set as SetRecord } from '@/db/types'
@@ -32,9 +33,11 @@ async function setup() {
   const tree = (await programs.loadTree(programId))!
   await store().start(programId, tree.days[0].day.id)
   render(
-    <MemoryRouter>
-      <Harness />
-    </MemoryRouter>,
+    <SettingsProvider>
+      <MemoryRouter>
+        <Harness />
+      </MemoryRouter>
+    </SettingsProvider>,
   )
 }
 

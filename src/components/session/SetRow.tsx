@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Check, Minus } from 'lucide-react'
 import { EDIT_ROW_GRID, RIR_FILL, ROW_GRID } from '@/components/session/styles'
 import { cn } from '@/lib/utils'
+import { useUnit } from '@/settings/SettingsProvider'
 import { formatPrevious, formatSide, formatSides, rirLabel } from '@/workouts/model'
 import type { PadEntry, PadField, Side } from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
@@ -58,6 +59,7 @@ export function SetRow({
   /** A hairline above the row, between sets where an L/R row is involved (10n). */
   divider?: boolean
 }) {
+  const unit = useUnit()
   const [drag, setDrag] = useState<number | null>(null)
   const gesture = useRef<{ x: number; y: number; moved: boolean } | null>(null)
   const suppressClick = useRef(false)
@@ -73,16 +75,16 @@ export function SetRow({
     ? Math.max(unilateral.leftReps, unilateral.rightReps) > 0
     : set.reps > 0
 
-  const prev = previous && !unilateral ? formatPrevious(previous) : null
+  const prev = previous && !unilateral ? formatPrevious(previous, unit) : null
   const prevSides = previous
-    ? (formatSides(previous) ?? [
+    ? (formatSides(previous, unit) ?? [
         {
           side: 'L' as const,
-          ...formatSide(previous.weight, previous.reps, previous.partialReps),
+          ...formatSide(previous.weight, previous.reps, previous.partialReps, unit),
         },
         {
           side: 'R' as const,
-          ...formatSide(previous.weight, previous.reps, previous.partialReps),
+          ...formatSide(previous.weight, previous.reps, previous.partialReps, unit),
         },
       ])
     : null

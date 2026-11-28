@@ -1,4 +1,5 @@
-import type { Set as SetRecord, TargetsSnapshot, Workout } from '@/db/types'
+import type { Set as SetRecord, TargetsSnapshot, Unit, Workout } from '@/db/types'
+import { formatWeight, unitLabel } from '@/workouts/units'
 
 /** Values every new or reset set starts from (RIR is always 0, never the target). */
 export const BLANK_SET = { weight: 0, reps: 0, rir: 0, rirIsPlus: false } as const
@@ -187,14 +188,17 @@ export function rirLabel(rir: number, rirIsPlus: boolean): string {
 }
 
 /** "60 kg × 8" (+ partial part) with its RIR line, for the read-only Previous column. */
-export function formatPrevious(set: Pick<SetRecord, 'weight' | 'reps' | 'partialReps' | 'rir' | 'rirIsPlus'>): {
+export function formatPrevious(
+  set: Pick<SetRecord, 'weight' | 'reps' | 'partialReps' | 'rir' | 'rirIsPlus'>,
+  unit: Unit,
+): {
   text: string
   partial?: string
   rir: string
 } {
   const { full, partial } = formatReps(set.reps, set.partialReps)
   return {
-    text: `${set.weight} kg × ${full}`,
+    text: `${formatWeight(set.weight, unit)} ${unitLabel(unit)} × ${full}`,
     partial,
     rir: `RIR ${rirLabel(set.rir, set.rirIsPlus)}`,
   }
@@ -204,21 +208,23 @@ export function formatPrevious(set: Pick<SetRecord, 'weight' | 'reps' | 'partial
 export function formatSide(
   weight: number,
   reps: number,
-  partial?: number,
+  partial: number | undefined,
+  unit: Unit,
 ): { text: string; partial?: string } {
   const parts = formatReps(reps, partial)
-  return { text: `${weight} kg × ${parts.full}`, partial: parts.partial }
+  return { text: `${formatWeight(weight, unit)} ${unitLabel(unit)} × ${parts.full}`, partial: parts.partial }
 }
 
 /** Per-side Previous / History parts for an L/R set; null for a normal set. */
 export function formatSides(
   set: Pick<SetRecord, 'unilateral'>,
+  unit: Unit,
 ): { side: Side; text: string; partial?: string }[] | null {
   const u = set.unilateral
   if (!u) return null
   return [
-    { side: 'L', ...formatSide(u.leftWeight, u.leftReps, u.leftPartialReps) },
-    { side: 'R', ...formatSide(u.rightWeight, u.rightReps, u.rightPartialReps) },
+    { side: 'L', ...formatSide(u.leftWeight, u.leftReps, u.leftPartialReps, unit) },
+    { side: 'R', ...formatSide(u.rightWeight, u.rightReps, u.rightPartialReps, unit) },
   ]
 }
 

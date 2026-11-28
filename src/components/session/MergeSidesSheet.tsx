@@ -1,5 +1,6 @@
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
+import { useUnit } from '@/settings/SettingsProvider'
 import { formatSide } from '@/workouts/model'
 
 const BUTTON =
@@ -29,7 +30,8 @@ export function MergeSidesSheet({
   partial?: number
   onConfirm: () => void
 }) {
-  const merged = formatSide(weight, reps, partial)
+  const unit = useUnit()
+  const merged = formatSide(weight, reps, partial, unit)
   const result = merged.partial ? `${merged.text} | ${merged.partial}` : merged.text
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

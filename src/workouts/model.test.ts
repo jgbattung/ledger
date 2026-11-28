@@ -107,13 +107,13 @@ describe('formatReps / formatPrevious / rirLabel', () => {
   })
 
   it('formats previous sets with and without partials', () => {
-    expect(formatPrevious({ weight: 60, reps: 8, rir: 1, rirIsPlus: false })).toEqual({
+    expect(formatPrevious({ weight: 60, reps: 8, rir: 1, rirIsPlus: false }, 'kg')).toEqual({
       text: '60 kg × 8',
       partial: undefined,
       rir: 'RIR 1',
     })
     expect(
-      formatPrevious({ weight: 62.5, reps: 8, partialReps: 2, rir: 6, rirIsPlus: true }),
+      formatPrevious({ weight: 62.5, reps: 8, partialReps: 2, rir: 6, rirIsPlus: true }, 'kg'),
     ).toEqual({ text: '62.5 kg × 8', partial: '2', rir: 'RIR 6+' })
   })
 })
@@ -368,13 +368,13 @@ describe('firstEmptyReps', () => {
 
 describe('formatSide / formatSides', () => {
   it('formats one side with and without a partial', () => {
-    expect(formatSide(20, 12)).toEqual({ text: '20 kg × 12', partial: undefined })
-    expect(formatSide(22, 10, 2)).toEqual({ text: '22 kg × 10', partial: '2' })
+    expect(formatSide(20, 12, undefined, 'kg')).toEqual({ text: '20 kg × 12', partial: undefined })
+    expect(formatSide(22, 10, 2, 'kg')).toEqual({ text: '22 kg × 10', partial: '2' })
   })
 
   it('returns per-side parts for an L/R set and null otherwise', () => {
-    expect(formatSides({})).toBeNull()
-    expect(formatSides({ unilateral: { ...sides(20, 12, 22, 10), leftPartialReps: 2 } })).toEqual([
+    expect(formatSides({}, 'kg')).toBeNull()
+    expect(formatSides({ unilateral: { ...sides(20, 12, 22, 10), leftPartialReps: 2 } }, 'kg')).toEqual([
       { side: 'L', text: '20 kg × 12', partial: '2' },
       { side: 'R', text: '22 kg × 10', partial: undefined },
     ])

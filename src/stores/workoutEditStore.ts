@@ -3,7 +3,7 @@ import { workouts } from '@/db/repos'
 import { newId, now } from '@/db/ids'
 import { LastExerciseError, type InsertPosition } from '@/db/repos/workoutExercises'
 import { refKey } from '@/exercises/listing'
-import type { ExerciseRef, Set as SetRecord, Workout } from '@/db/types'
+import type { ExerciseRef, Set as SetRecord, Unit, Workout } from '@/db/types'
 import type { PadState, SessionExercise } from '@/stores/sessionStore'
 import {
   BLANK_SET,
@@ -45,7 +45,7 @@ type EditState = {
   error: string | null
 
   load: (id: string) => Promise<EditLoadResult>
-  openPad: (setId: string, field: PadField, side?: Side) => void
+  openPad: (setId: string, field: PadField, side: Side | undefined, unit: Unit) => void
   padKey: (key: PadKey) => void
   padNext: () => void
   closePad: () => void
@@ -126,7 +126,7 @@ export const useWorkoutEditStore = create<EditState>((set, get) => {
       return 'ready'
     },
 
-    openPad(setId, field, side) {
+    openPad(setId, field, side, unit) {
       const found = findSet(setId)
       if (!found) return
       const current = get().pad
@@ -138,7 +138,7 @@ export const useWorkoutEditStore = create<EditState>((set, get) => {
       ) {
         return
       }
-      set({ pad: { setId, entry: padEntryFor(found, field, side) }, openSwipeSetId: null })
+      set({ pad: { setId, entry: padEntryFor(found, field, side, unit) }, openSwipeSetId: null })
     },
 
     padKey(key) {
@@ -152,7 +152,7 @@ export const useWorkoutEditStore = create<EditState>((set, get) => {
       set({ pad: { setId: pad.setId, entry } })
       mapSets(pad.setId, (row) => {
         const next = { ...row, ...fields }
-        if (fields.partialReps === undefined) delete next.partialReps
+        if ('partialReps' in fields && fields.partialReps === undefined) delete next.partialReps
         return next
       })
     },
@@ -166,7 +166,7 @@ export const useWorkoutEditStore = create<EditState>((set, get) => {
         draft.exercises,
       )
       set({ pad: null })
-      if (next) get().openPad(next.setId, next.field, next.side)
+      if (next) get().openPad(next.setId, next.field, next.side, pad.entry.unit)
     },
 
     closePad() {

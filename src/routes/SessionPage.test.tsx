@@ -48,7 +48,7 @@ async function startPush() {
 /** Logs `reps` on a set through the store, like the pad would. */
 function logReps(setId: string, reps: string) {
   act(() => {
-    store().openPad(setId, 'reps')
+    store().openPad(setId, 'reps', undefined, 'kg')
     for (const digit of reps) store().padKey(digit as '1')
     store().closePad()
   })
@@ -157,15 +157,15 @@ describe('SessionPage', () => {
     const { programId, pushId } = await startPush()
     const first = store().exercises[0].sets[0].id
     act(() => {
-      store().openPad(first, 'weight')
+      store().openPad(first, 'weight', undefined, 'kg')
       for (const key of ['6', '0'] as const) store().padKey(key)
-      store().openPad(first, 'reps')
+      store().openPad(first, 'reps', undefined, 'kg')
       store().padKey('8')
       store().padKey('fp')
       store().padKey('2')
       store().closePad()
       store().setRir(first, 1, false)
-      store().toggleComplete(first)
+      store().toggleComplete(first, 'kg')
     })
     await act(() => store().finish())
 
@@ -185,7 +185,7 @@ describe('SessionPage', () => {
     renderSession()
     const first = store().exercises[0].sets[0].id
     act(() => {
-      store().openPad(first, 'weight')
+      store().openPad(first, 'weight', undefined, 'kg')
       store().padKey('7')
       store().padKey('0')
       store().closePad()
@@ -204,7 +204,7 @@ describe('SessionPage', () => {
     for (const entry of store().exercises) {
       for (const set of entry.sets) {
         logReps(set.id, '8')
-        act(() => store().toggleComplete(set.id))
+        act(() => store().toggleComplete(set.id, 'kg'))
       }
     }
     expect(await screen.findByRole('button', { name: 'Finish workout' })).toBeInTheDocument()
@@ -216,7 +216,7 @@ describe('SessionPage', () => {
     const router = renderSession()
     const setId = store().exercises[0].sets[0].id
     logReps(setId, '8')
-    act(() => store().toggleComplete(setId))
+    act(() => store().toggleComplete(setId, 'kg'))
 
     await user.click(await screen.findByRole('button', { name: 'Workout menu' }))
     await user.click(await screen.findByRole('button', { name: 'Finish workout' }))
@@ -311,7 +311,7 @@ describe('SessionPage', () => {
     renderSession()
     const setId = store().exercises[0].sets[0].id
     logReps(setId, '8')
-    act(() => store().toggleComplete(setId))
+    act(() => store().toggleComplete(setId, 'kg'))
     await user.click(await screen.findByRole('button', { name: 'Swap' }))
     expect(await screen.findByRole('status')).toHaveTextContent(/only available before any set/)
   })
@@ -345,7 +345,7 @@ describe('SessionPage', () => {
       act(() => store().focusExercise(pull.exercise.id))
       for (const set of pull.sets) {
         logReps(set.id, '8')
-        act(() => store().toggleComplete(set.id))
+        act(() => store().toggleComplete(set.id, 'kg'))
       }
       expect(await screen.findByRole('heading', { level: 2, name: 'Barbell Bench Press' })).toBeInTheDocument()
       expect(slideWrapper()?.getAttribute('style')).toContain('calc(-1 *')

@@ -38,7 +38,7 @@ async function start(ids: string[]) {
 
 function logReps(setId: string, reps: string) {
   act(() => {
-    store().openPad(setId, 'reps')
+    store().openPad(setId, 'reps', undefined, 'kg')
     for (const digit of reps) store().padKey(digit as '1')
     store().closePad()
   })
@@ -101,7 +101,7 @@ describe('session: add tile, More sheet and removing an exercise', () => {
     await screen.findByRole('heading', { level: 2, name: 'Barbell Bench Press' })
     const [first, second] = store().exercises[0].sets
     logReps(first.id, '8')
-    act(() => store().toggleComplete(first.id))
+    act(() => store().toggleComplete(first.id, 'kg'))
     act(() => store().focusExercise(store().exercises[0].exercise.id))
     await user.click(await screen.findByRole('button', { name: 'More' }))
     await user.click(await screen.findByRole('button', { name: 'Remove exercise' }))
@@ -112,7 +112,7 @@ describe('session: add tile, More sheet and removing an exercise', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 
     logReps(second.id, '8')
-    act(() => store().toggleComplete(second.id))
+    act(() => store().toggleComplete(second.id, 'kg'))
     act(() => store().focusExercise(store().exercises[0].exercise.id))
     await user.click(await screen.findByRole('button', { name: 'More' }))
     await user.click(await screen.findByRole('button', { name: 'Remove exercise' }))

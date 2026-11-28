@@ -1,5 +1,5 @@
 import type { Set as SetRecord, TargetsSnapshot, Unit, Workout } from '@/db/types'
-import { formatWeight, unitLabel } from '@/workouts/units'
+import { formatWeight, fromDisplay, unitLabel } from '@/workouts/units'
 
 /** Values every new or reset set starts from (RIR is always 0, never the target). */
 export const BLANK_SET = { weight: 0, reps: 0, rir: 0, rirIsPlus: false } as const
@@ -301,6 +301,8 @@ export function nextCursor(
 export type PadEntry = {
   field: PadField
   side?: Side
+  /** The unit the weight buffer is typed in; applyEntry converts it to kg. */
+  unit: Unit
   mode: PadMode
   fresh: boolean
   weight: string
@@ -316,7 +318,8 @@ export const REPS_MAX_LENGTH = 3
 export function padEntryFor(
   set: Pick<SetLike, 'weight' | 'reps' | 'partialReps'> & { unilateral?: Unilateral },
   field: PadField,
-  side?: Side,
+  side: Side | undefined,
+  unit: Unit,
 ): PadEntry {
   const u = set.unilateral
   if (u && side) {
@@ -325,18 +328,20 @@ export function padEntryFor(
     return {
       field,
       side,
+      unit,
       mode: 'F',
       fresh: true,
-      weight: `${left ? u.leftWeight : u.rightWeight}`,
+      weight: formatWeight(left ? u.leftWeight : u.rightWeight, unit),
       reps: `${left ? u.leftReps : u.rightReps}`,
       partial: partial ? `${partial}` : '',
     }
   }
   return {
     field,
+    unit,
     mode: 'F',
     fresh: true,
-    weight: `${set.weight}`,
+    weight: formatWeight(set.weight, unit),
     reps: `${set.reps}`,
     partial: set.partialReps ? `${set.partialReps}` : '',
   }
@@ -377,7 +382,7 @@ export function applyPadKey(entry: PadEntry, key: PadKey): PadEntry {
   return { ...entry, fresh: false, [target]: next }
 }
 
-/** Numeric values a pad entry commits to a set. Zero partials mean "none". */
+/** Numeric values a pad entry holds, in the entry's own unit. Zero partials mean "none". */
 export function padEntryValues(entry: PadEntry): {
   weight: number
   reps: number
@@ -392,30 +397,37 @@ export function padEntryValues(entry: PadEntry): {
 }
 
 /**
- * The fields to write when the pad commits `entry` to `set`. An L/R set gets
- * its whole updated `unilateral` object plus the recomputed LOG-6 aggregate
- * and never a set-level `partialReps`; a normal set gets today's fields.
+ * The fields to write when the pad commits `entry` to `set`. Only the field
+ * being typed in is returned, so editing reps never rewrites a stored weight
+ * from the (rounded) display buffer. A weight entry converts the typed value
+ * to kg at full precision. An L/R set gets its whole updated `unilateral`
+ * object plus the recomputed LOG-6 aggregate and never a set-level
+ * `partialReps`; a normal set gets just the edited fields.
  */
 export function applyEntry(
   set: Pick<SetLike, 'unilateral'>,
   entry: PadEntry,
-): { weight: number; reps: number; partialReps?: number; unilateral?: Unilateral } {
+): { weight?: number; reps?: number; partialReps?: number; unilateral?: Unilateral } {
   const values = padEntryValues(entry)
-  if (!set.unilateral || !entry.side) return values
-  const unilateral: Unilateral =
-    entry.side === 'L'
-      ? {
-          ...set.unilateral,
-          leftWeight: values.weight,
-          leftReps: values.reps,
-          leftPartialReps: values.partialReps,
-        }
-      : {
-          ...set.unilateral,
-          rightWeight: values.weight,
-          rightReps: values.reps,
-          rightPartialReps: values.partialReps,
-        }
+  const typingWeight = entry.field === 'weight'
+  if (!set.unilateral || !entry.side) {
+    return typingWeight
+      ? { weight: fromDisplay(values.weight, entry.unit) }
+      : { reps: values.reps, partialReps: values.partialReps }
+  }
+  const unilateral: Unilateral = { ...set.unilateral }
+  if (entry.side === 'L') {
+    if (typingWeight) unilateral.leftWeight = fromDisplay(values.weight, entry.unit)
+    else {
+      unilateral.leftReps = values.reps
+      unilateral.leftPartialReps = values.partialReps
+    }
+  } else if (typingWeight) {
+    unilateral.rightWeight = fromDisplay(values.weight, entry.unit)
+  } else {
+    unilateral.rightReps = values.reps
+    unilateral.rightPartialReps = values.partialReps
+  }
   if (unilateral.leftPartialReps === undefined) delete unilateral.leftPartialReps
   if (unilateral.rightPartialReps === undefined) delete unilateral.rightPartialReps
   const { weight, reps } = unilateralAggregate(unilateral)

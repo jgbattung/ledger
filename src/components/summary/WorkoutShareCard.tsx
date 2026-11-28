@@ -4,8 +4,11 @@ import { MuscleMap } from '@/components/summary/MuscleMap'
 import { PartialDivider } from '@/components/session/SetRow'
 import { APP_NAME } from '@/config/app'
 import type { WorkoutSession } from '@/db/repos'
+import type { Unit } from '@/db/types'
 import { cn } from '@/lib/utils'
 import { exerciseName } from '@/programs/model'
+import { useUnit } from '@/settings/SettingsProvider'
+import { unitLabel } from '@/workouts/units'
 import {
   formatDuration,
   formatSetRuns,
@@ -19,9 +22,9 @@ export type ShareTemplate = 'map' | 'sticker' | 'ledger'
 type CardExercise = { name: string; runs: SetRuns }
 
 /** Exercises that have at least one logged working set, in workout order. */
-function loggedExercises(exercises: WorkoutSession['exercises']): CardExercise[] {
+function loggedExercises(exercises: WorkoutSession['exercises'], unit: Unit): CardExercise[] {
   return exercises.flatMap(({ exercise, sets }) => {
-    const runs = formatSetRuns(sets)
+    const runs = formatSetRuns(sets, unit)
     return runs.runs.length > 0 ? [{ name: exerciseName(exercise.exerciseRef), runs }] : []
   })
 }
@@ -54,10 +57,11 @@ function SetRunsLine({ runs }: { runs: SetRuns }) {
 }
 
 function Volume({ summary }: { summary: WorkoutSummary }) {
+  const unit = useUnit()
   return (
     <>
-      {formatVolume(summary.volumeKg)}
-      <span className="ml-0.5 text-sm font-medium text-muted-foreground">kg</span>
+      {formatVolume(summary.volumeKg, unit)}
+      <span className="ml-0.5 text-sm font-medium text-muted-foreground">{unitLabel(unit)}</span>
     </>
   )
 }
@@ -132,7 +136,8 @@ export function WorkoutShareCard({
 }) {
   const { workout } = session
   const date = new Date(workout.startedAt)
-  const exercises = loggedExercises(session.exercises)
+  const unit = useUnit()
+  const exercises = loggedExercises(session.exercises, unit)
   const root = 'dark flex h-[640px] w-[360px] flex-col overflow-hidden font-sans text-foreground'
 
   if (template === 'sticker') {
@@ -168,8 +173,10 @@ export function WorkoutShareCard({
       [
         'Volume',
         <>
-          {formatVolume(summary.volumeKg)}
-          <small className="ml-0.5 text-[15px] font-medium text-muted-foreground">kg</small>
+          {formatVolume(summary.volumeKg, unit)}
+          <small className="ml-0.5 text-[15px] font-medium text-muted-foreground">
+            {unitLabel(unit)}
+          </small>
         </>,
       ],
       ['Duration', formatDuration(summary.durationMs)],

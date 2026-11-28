@@ -9,6 +9,8 @@ import { WorkoutRecords } from '@/components/summary/WorkoutRecords'
 import { workoutEditPath, workoutSharePath } from '@/lib/paths'
 import { useGoBack } from '@/lib/useGoBack'
 import { exerciseName } from '@/programs/model'
+import { useUnit } from '@/settings/SettingsProvider'
+import { unitLabel } from '@/workouts/units'
 import {
   formatDuration,
   formatVolume,
@@ -42,6 +44,7 @@ export function WorkoutSummaryPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const goBack = useGoBack('/')
+  const unit = useUnit()
   const fromFinish = (location.state as { fromFinish?: boolean } | null)?.fromFinish === true
 
   const session = state.status === 'ready' ? state.session : null
@@ -110,8 +113,10 @@ export function WorkoutSummaryPage() {
         <dl className="mx-4 mt-5 grid grid-cols-3 border-y border-border">
           <Stat label="Working sets">{summary.workingSets}</Stat>
           <Stat label="Volume">
-            {formatVolume(summary.volumeKg)}
-            <span className="ml-0.5 text-sm font-medium text-muted-foreground">kg</span>
+            {formatVolume(summary.volumeKg, unit)}
+            <span className="ml-0.5 text-sm font-medium text-muted-foreground">
+              {unitLabel(unit)}
+            </span>
           </Stat>
           <Stat label="Duration">{formatDuration(summary.durationMs)}</Stat>
         </dl>

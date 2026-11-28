@@ -5,6 +5,7 @@ import { resetDb } from '@/db/test-utils'
 import { programs, workouts } from '@/db/repos'
 import { WorkoutSummaryPage } from '@/routes/WorkoutSummaryPage'
 import { seedProgram } from '@/routes/editorTestUtils'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 
 function renderSummary(id: string) {
   const router = createMemoryRouter(
@@ -15,7 +16,11 @@ function renderSummary(id: string) {
     ],
     { initialEntries: [`/workouts/${id}`] },
   )
-  render(<RouterProvider router={router} />)
+  render(
+    <SettingsProvider>
+      <RouterProvider router={router} />
+    </SettingsProvider>,
+  )
   return router
 }
 

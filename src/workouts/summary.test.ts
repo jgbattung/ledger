@@ -122,7 +122,7 @@ describe('formatSetRuns', () => {
         set({ weight: 80, reps: 8 }),
         set({ weight: 80, reps: 8 }),
         set({ weight: 80, reps: 7, partialReps: 2 }),
-      ]),
+      ], 'kg'),
     ).toEqual({
       runs: [{ weight: '80', reps: [{ full: '8' }, { full: '8' }, { full: '7', partial: '2' }] }],
     })
@@ -134,7 +134,7 @@ describe('formatSetRuns', () => {
         set({ weight: 30, reps: 10 }),
         set({ weight: 32, reps: 8 }),
         set({ weight: 34, reps: 6 }),
-      ]),
+      ], 'kg'),
     ).toEqual({
       runs: [
         { weight: '30', reps: [{ full: '10' }] },
@@ -152,7 +152,7 @@ describe('formatSetRuns', () => {
           reps: 0,
           unilateral: { leftWeight: 20, leftReps: 12, rightWeight: 22, rightReps: 10, rightPartialReps: 2 },
         }),
-      ]),
+      ], 'kg'),
     ).toEqual({ prefix: 'L/R ', runs: [{ weight: '22', reps: [{ full: '10', partial: '2' }] }] })
   })
 })

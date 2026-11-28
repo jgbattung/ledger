@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { useSessionStore } from '@/stores/sessionStore'
 import { ExerciseFocus } from '@/components/session/ExerciseFocus'
 
@@ -31,9 +32,11 @@ async function setup() {
   const tree = (await programs.loadTree(programId))!
   await store().start(programId, tree.days[0].day.id)
   render(
-    <MemoryRouter>
-      <Harness />
-    </MemoryRouter>,
+    <SettingsProvider>
+      <MemoryRouter>
+        <Harness />
+      </MemoryRouter>
+    </SettingsProvider>,
   )
 }
 
@@ -115,10 +118,10 @@ describe('SetRow swipe-to-remove', () => {
     await setup()
     const first = store().exercises[0].sets[0].id
     act(() => {
-      store().openPad(first, 'reps')
+      store().openPad(first, 'reps', undefined, 'kg')
       store().padKey('8')
       store().closePad()
-      store().toggleComplete(first)
+      store().toggleComplete(first, 'kg')
     })
     swipe(rows()[0], -40)
     await userEvent.setup().click(screen.getByRole('button', { name: 'Remove set 1' }))
@@ -164,10 +167,10 @@ describe('SetRow checked dimming (AC21)', () => {
     await setup()
     const first = store().exercises[0].sets[0]
     act(() => {
-      store().openPad(first.id, 'reps')
+      store().openPad(first.id, 'reps', undefined, 'kg')
       store().padKey('8')
       store().closePad()
-      store().toggleComplete(first.id)
+      store().toggleComplete(first.id, 'kg')
     })
     const row = rows()[0]
     expect(dimmed(row).length).toBeGreaterThanOrEqual(3)

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { WorkoutSession } from '@/db/repos'
 import type { ExerciseRef, Set as SetRecord, Workout, WorkoutExercise } from '@/db/types'
 import type { Muscle } from '@/exercises/types'
-import { formatDuration, formatSetRuns, summarizeWorkout } from '@/workouts/summary'
+import { formatDuration, formatSetRuns, formatVolume, summarizeWorkout } from '@/workouts/summary'
 
 const base = { createdAt: 0, updatedAt: 0, deletedAt: null }
 const DONE = 1_000
@@ -122,7 +122,7 @@ describe('formatSetRuns', () => {
         set({ weight: 80, reps: 8 }),
         set({ weight: 80, reps: 8 }),
         set({ weight: 80, reps: 7, partialReps: 2 }),
-      ]),
+      ], 'kg'),
     ).toEqual({
       runs: [{ weight: '80', reps: [{ full: '8' }, { full: '8' }, { full: '7', partial: '2' }] }],
     })
@@ -134,7 +134,7 @@ describe('formatSetRuns', () => {
         set({ weight: 30, reps: 10 }),
         set({ weight: 32, reps: 8 }),
         set({ weight: 34, reps: 6 }),
-      ]),
+      ], 'kg'),
     ).toEqual({
       runs: [
         { weight: '30', reps: [{ full: '10' }] },
@@ -152,7 +152,7 @@ describe('formatSetRuns', () => {
           reps: 0,
           unilateral: { leftWeight: 20, leftReps: 12, rightWeight: 22, rightReps: 10, rightPartialReps: 2 },
         }),
-      ]),
+      ], 'kg'),
     ).toEqual({ prefix: 'L/R ', runs: [{ weight: '22', reps: [{ full: '10', partial: '2' }] }] })
   })
 })
@@ -162,5 +162,12 @@ describe('formatDuration', () => {
     expect(formatDuration(64 * 60_000 + 59_000)).toBe('1h 4m')
     expect(formatDuration(48 * 60_000 + 30_000)).toBe('48m')
     expect(formatDuration(59_000)).toBe('0m')
+  })
+})
+
+describe('formatVolume', () => {
+  it('shows kg volume as whole, grouped lb in lb mode and unchanged in kg mode', () => {
+    expect(formatVolume(6000, 'lb')).toBe('13,228')
+    expect(formatVolume(6000, 'kg')).toBe('6,000')
   })
 })

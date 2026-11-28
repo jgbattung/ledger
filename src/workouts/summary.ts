@@ -1,9 +1,10 @@
-import type { ExerciseRef, Set as SetRecord } from '@/db/types'
+import type { ExerciseRef, Set as SetRecord, Unit } from '@/db/types'
 import type { WorkoutSession } from '@/db/repos'
 import { getExerciseById } from '@/exercises/catalog'
 import type { Muscle } from '@/exercises/types'
 import { getCustomExercise } from '@/stores/customExerciseStore'
 import { formatReps, fromUnilateral, workoutElapsedMs } from '@/workouts/model'
+import { formatWeight, toDisplay } from '@/workouts/units'
 
 export type WorkoutSummary = {
   /** Checked working sets. */
@@ -58,8 +59,8 @@ export function summarizeWorkout(
 const volumeFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
 
 /** "3,800": whole number with grouping. The unit is rendered separately. */
-export function formatVolume(kg: number): string {
-  return volumeFormat.format(kg)
+export function formatVolume(kg: number, unit: Unit): string {
+  return volumeFormat.format(toDisplay(kg, unit))
 }
 
 /** "1h 4m", "48m", "0m": whole minutes, floored. */
@@ -87,17 +88,17 @@ export type SetRuns = {
 
 /**
  * Share-card set lines. Checked working sets in order; consecutive sets with
- * the same weight form one run ("80 × 8, 8, 7|2"), a weight change starts a
+ * the same weight (as displayed) form one run ("80 × 8, 8, 7|2"), a weight change starts a
  * new run (the card joins runs with " · "). Unilateral exercises use each
  * set's stored aggregate and get the "L/R " prefix. No unit.
  */
-export function formatSetRuns(sets: SetRecord[]): SetRuns {
+export function formatSetRuns(sets: SetRecord[], unit: Unit): SetRuns {
   const counted = sets.filter((set) => set.type === 'working' && set.completedAt != null)
   const result: SetRuns = { runs: [] }
   if (counted.some((set) => set.unilateral)) result.prefix = 'L/R '
   for (const original of counted) {
     const set = fromUnilateral(original)
-    const weight = `${set.weight}`
+    const weight = formatWeight(set.weight, unit)
     const reps = formatReps(set.reps, set.partialReps)
     const last = result.runs[result.runs.length - 1]
     if (last && last.weight === weight) last.reps.push(reps)

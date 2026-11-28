@@ -31,9 +31,9 @@ function press(entry: PadEntry, ...keys: PadKey[]): PadEntry {
   return keys.reduce(applyPadKey, entry)
 }
 
-const weightEntry = (weight = 0) => padEntryFor({ weight, reps: 0 }, 'weight')
+const weightEntry = (weight = 0) => padEntryFor({ weight, reps: 0 }, 'weight', undefined, 'kg')
 const repsEntry = (reps = 0, partialReps?: number) =>
-  padEntryFor({ weight: 0, reps, partialReps }, 'reps')
+  padEntryFor({ weight: 0, reps, partialReps }, 'reps', undefined, 'kg')
 
 describe('toTargetsSnapshot', () => {
   it('copies only the defined target fields', () => {
@@ -107,13 +107,13 @@ describe('formatReps / formatPrevious / rirLabel', () => {
   })
 
   it('formats previous sets with and without partials', () => {
-    expect(formatPrevious({ weight: 60, reps: 8, rir: 1, rirIsPlus: false })).toEqual({
+    expect(formatPrevious({ weight: 60, reps: 8, rir: 1, rirIsPlus: false }, 'kg')).toEqual({
       text: '60 kg × 8',
       partial: undefined,
       rir: 'RIR 1',
     })
     expect(
-      formatPrevious({ weight: 62.5, reps: 8, partialReps: 2, rir: 6, rirIsPlus: true }),
+      formatPrevious({ weight: 62.5, reps: 8, partialReps: 2, rir: 6, rirIsPlus: true }, 'kg'),
     ).toEqual({ text: '62.5 kg × 8', partial: '2', rir: 'RIR 6+' })
   })
 })
@@ -218,7 +218,7 @@ describe('applyPadKey', () => {
   })
 
   it('padEntryFor seeds from the set and starts fresh in F mode', () => {
-    const entry = padEntryFor({ weight: 62.5, reps: 8, partialReps: 2 }, 'reps')
+    const entry = padEntryFor({ weight: 62.5, reps: 8, partialReps: 2 }, 'reps', undefined, 'kg')
     expect(entry).toMatchObject({ weight: '62.5', reps: '8', partial: '2', mode: 'F', fresh: true })
   })
 })
@@ -368,13 +368,13 @@ describe('firstEmptyReps', () => {
 
 describe('formatSide / formatSides', () => {
   it('formats one side with and without a partial', () => {
-    expect(formatSide(20, 12)).toEqual({ text: '20 kg × 12', partial: undefined })
-    expect(formatSide(22, 10, 2)).toEqual({ text: '22 kg × 10', partial: '2' })
+    expect(formatSide(20, 12, undefined, 'kg')).toEqual({ text: '20 kg × 12', partial: undefined })
+    expect(formatSide(22, 10, 2, 'kg')).toEqual({ text: '22 kg × 10', partial: '2' })
   })
 
   it('returns per-side parts for an L/R set and null otherwise', () => {
-    expect(formatSides({})).toBeNull()
-    expect(formatSides({ unilateral: { ...sides(20, 12, 22, 10), leftPartialReps: 2 } })).toEqual([
+    expect(formatSides({}, 'kg')).toBeNull()
+    expect(formatSides({ unilateral: { ...sides(20, 12, 22, 10), leftPartialReps: 2 } }, 'kg')).toEqual([
       { side: 'L', text: '20 kg × 12', partial: '2' },
       { side: 'R', text: '22 kg × 10', partial: undefined },
     ])
@@ -424,13 +424,13 @@ describe('L/R pad entry and cursor', () => {
   }
 
   it('reads the tapped side', () => {
-    expect(padEntryFor(set, 'reps', 'L')).toMatchObject({
+    expect(padEntryFor(set, 'reps', 'L', 'kg')).toMatchObject({
       side: 'L',
       weight: '20',
       reps: '12',
       partial: '2',
     })
-    expect(padEntryFor(set, 'weight', 'R')).toMatchObject({
+    expect(padEntryFor(set, 'weight', 'R', 'kg')).toMatchObject({
       side: 'R',
       weight: '22',
       reps: '10',
@@ -464,13 +464,13 @@ describe('L/R pad entry and cursor', () => {
 
 describe('applyEntry', () => {
   it('writes the normal fields for a normal set', () => {
-    const entry = press(padEntryFor({ weight: 0, reps: 0 }, 'reps'), '8')
-    expect(applyEntry({}, entry)).toEqual({ weight: 0, reps: 8, partialReps: undefined })
+    const entry = press(padEntryFor({ weight: 0, reps: 0 }, 'reps', undefined, 'kg'), '8')
+    expect(applyEntry({}, entry)).toEqual({ reps: 8, partialReps: undefined })
   })
 
   it('writes the edited side and recomputes the aggregate as R passes L', () => {
     const base = { weight: 20, reps: 12, unilateral: sides(20, 12, 20, 12) }
-    const entry = press(padEntryFor(base, 'weight', 'R'), '2', '2')
+    const entry = press(padEntryFor(base, 'weight', 'R', 'kg'), '2', '2')
     const out = applyEntry(base, entry)
     expect(out.unilateral).toEqual(sides(20, 12, 22, 12))
     expect(out).toMatchObject({ weight: 22, reps: 12 })
@@ -479,7 +479,7 @@ describe('applyEntry', () => {
 
   it('stores a per-side partial and never a set-level one', () => {
     const base = { weight: 20, reps: 10, unilateral: sides(20, 12, 20, 10) }
-    const entry = press(padEntryFor(base, 'reps', 'L'), 'fp', '3')
+    const entry = press(padEntryFor(base, 'reps', 'L', 'kg'), 'fp', '3')
     const out = applyEntry(base, entry)
     expect(out.unilateral).toEqual({ ...sides(20, 12, 20, 10), leftPartialReps: 3 })
     expect(out.partialReps).toBeUndefined()
@@ -492,7 +492,31 @@ describe('applyEntry', () => {
       reps: 10,
       unilateral: { ...sides(20, 12, 20, 10), leftPartialReps: 3 },
     }
-    const entry = press(padEntryFor(base, 'reps', 'L'), 'fp', 'back')
+    const entry = press(padEntryFor(base, 'reps', 'L', 'kg'), 'fp', 'back')
     expect(applyEntry(base, entry).unilateral).toEqual(sides(20, 12, 20, 10))
+  })
+
+  it('stores a weight typed in lb as kg, for a normal set and for one L/R side', () => {
+    const normal = press(padEntryFor({ weight: 0, reps: 0 }, 'weight', undefined, 'lb'), '2', '2', '0', '.', '5')
+    const out = applyEntry({}, normal)
+    expect(Object.keys(out)).toEqual(['weight'])
+    expect(out.weight).toBeCloseTo(100.0171176, 6)
+
+    const base = { weight: 20, reps: 12, unilateral: sides(20, 12, 20, 12) }
+    const side = press(padEntryFor(base, 'weight', 'R', 'lb'), '2', '2', '0', '.', '5')
+    const lr = applyEntry(base, side)
+    expect(lr.unilateral!.leftWeight).toBe(20)
+    expect(lr.unilateral!.rightWeight).toBeCloseTo(100.0171176, 6)
+  })
+
+  it('editing reps in lb never rewrites a stored 100 kg weight', () => {
+    const normal = press(padEntryFor({ weight: 100, reps: 5 }, 'reps', undefined, 'lb'), '8')
+    expect(applyEntry({}, normal)).toEqual({ reps: 8, partialReps: undefined })
+
+    const base = { weight: 100, reps: 5, unilateral: sides(100, 5, 100, 5) }
+    const side = press(padEntryFor(base, 'reps', 'L', 'lb'), '8')
+    const lr = applyEntry(base, side)
+    expect(lr.unilateral).toEqual(sides(100, 8, 100, 5))
+    expect(lr.weight).toBe(100)
   })
 })

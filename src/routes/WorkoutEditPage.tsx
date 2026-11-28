@@ -11,6 +11,7 @@ import { ConfirmSheet } from '@/components/ui/confirm-sheet'
 import { FieldError } from '@/components/ui/field-error'
 import { exercisePath } from '@/exercises/detail'
 import { exerciseName } from '@/programs/model'
+import { useUnit } from '@/settings/SettingsProvider'
 import { workoutEditAddPath, workoutEditPath, workoutPath } from '@/lib/paths'
 import { useGoBack } from '@/lib/useGoBack'
 import { cn } from '@/lib/utils'
@@ -35,6 +36,10 @@ function EditNumberPad() {
       ? state.draft?.exercises.flatMap((entry) => entry.sets).find((row) => row.id === state.pad?.setId)
       : undefined,
   )
+  const unit = useUnit()
+  useEffect(() => {
+    store().syncPadUnit(unit)
+  }, [unit, pad])
   return (
     <NumberPad
       pad={pad}
@@ -54,6 +59,7 @@ function EditNumberPad() {
 export function WorkoutEditPage() {
   const { workoutId } = useParams()
   const navigate = useNavigate()
+  const unit = useUnit()
   const goBack = useGoBack(workoutId ? workoutPath(workoutId) : '/')
   const [status, setStatus] = useState<EditLoadResult | 'loading'>('loading')
   const draft = useWorkoutEditStore((state) => state.draft)
@@ -192,7 +198,7 @@ export function WorkoutEditPage() {
                 previous={previousByExercise[exercise.id] ?? []}
                 snapshot={exercise.targetsSnapshot}
                 pad={pad}
-                onOpenPad={(setId, field, side) => store().openPad(setId, field, side)}
+                onOpenPad={(setId, field, side) => store().openPad(setId, field, side, unit)}
                 onAddSet={() => store().addSet(exercise.id)}
                 openSwipeSetId={openSwipeSetId}
                 onSwipeOpenChange={(setId) => store().setSwipeOpen(setId)}

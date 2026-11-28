@@ -109,10 +109,10 @@ describe('SwapPickerPage', () => {
     await store().start(programId, tree.days[0].day.id)
     const first = store().exercises[0].sets[0].id
     act(() => {
-      store().openPad(first, 'reps')
+      store().openPad(first, 'reps', undefined, 'kg')
       store().padKey('8')
       store().closePad()
-      store().toggleComplete(first)
+      store().toggleComplete(first, 'kg')
     })
     const router = createMemoryRouter(
       [

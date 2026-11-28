@@ -3,7 +3,7 @@ import { sets, workoutExercises, workouts } from '@/db/repos'
 import type { SetFields } from '@/db/repos/sets'
 import { LastExerciseError, type InsertPosition, type SwapMode } from '@/db/repos/workoutExercises'
 import { refKey } from '@/exercises/listing'
-import type { ExerciseRef, Set as SetRecord, Workout, WorkoutExercise } from '@/db/types'
+import type { ExerciseRef, Set as SetRecord, Unit, Workout, WorkoutExercise } from '@/db/types'
 import { useRestTimerStore } from '@/stores/restTimerStore'
 import {
   applyEntry,
@@ -52,12 +52,14 @@ type SessionState = {
   hydrate: () => Promise<void>
   start: (programId: string, dayId: string) => Promise<string>
   focusExercise: (workoutExerciseId: string) => void
-  openPad: (setId: string, field: PadField, side?: Side) => void
+  openPad: (setId: string, field: PadField, side: Side | undefined, unit: Unit) => void
+  syncPadUnit: (unit: Unit) => void
   padKey: (key: PadKey) => void
   padNext: () => void
   closePad: () => void
   setRir: (setId: string, rir: number, rirIsPlus: boolean) => void
-  toggleComplete: (setId: string) => void
+  /** `unit` is the display unit, used when checking opens the pad for the missing reps. */
+  toggleComplete: (setId: string, unit: Unit) => void
   addSet: (workoutExerciseId: string) => Promise<void>
   /** Switches every set of the exercise to or from L/R (the exercise-level chip). */
   setUnilateral: (workoutExerciseId: string, on: boolean) => void
@@ -207,6 +209,10 @@ export const useSessionStore = create<SessionState>((set, get) => {
     })
   }
 
+  /** Completion write that no-ops once its set has left the session (e.g. removed while queued). */
+  const writeCompleted = (setId: string, completed: boolean) =>
+    void enqueue(() => (findSet(setId) ? sets.setCompleted(setId, completed) : Promise.resolve()))
+
   async function loadPrevious(entries: SessionExercise[], workoutId: string) {
     const previous: Record<string, SetRecord[]> = {}
     for (const entry of entries) {
@@ -355,7 +361,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
       set({ focusedExerciseId: workoutExerciseId, pad: keep ? pad : null, openSwipeSetId: null })
     },
 
-    openPad(setId, field, side) {
+    openPad(setId, field, side, unit) {
       const found = findSet(setId)
       if (!found) return
       const current = get().pad
@@ -368,9 +374,22 @@ export const useSessionStore = create<SessionState>((set, get) => {
         return
       }
       set({
-        pad: { setId, entry: padEntryFor(found.set, field, side) },
+        pad: { setId, entry: padEntryFor(found.set, field, side, unit) },
         focusedExerciseId: found.entry.exercise.id,
         openSwipeSetId: null,
+      })
+    },
+
+    syncPadUnit(unit) {
+      const pad = get().pad
+      if (!pad || pad.entry.unit === unit) return
+      const found = findSet(pad.setId)
+      if (!found) {
+        set({ pad: null })
+        return
+      }
+      set({
+        pad: { setId: pad.setId, entry: padEntryFor(found.set, pad.entry.field, pad.entry.side, unit) },
       })
     },
 
@@ -390,7 +409,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         return next
       })
       schedulePatch(pad.setId, fields)
-      if (uncheck) void enqueue(() => sets.setCompleted(pad.setId, false))
+      if (uncheck) writeCompleted(pad.setId, false)
     },
 
     padNext() {
@@ -405,7 +424,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         return
       }
       set({ pad: null })
-      get().openPad(next.setId, next.field, next.side)
+      get().openPad(next.setId, next.field, next.side, pad.entry.unit)
     },
 
     closePad() {
@@ -417,7 +436,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
       schedulePatch(setId, { rir, rirIsPlus })
     },
 
-    toggleComplete(setId) {
+    toggleComplete(setId, unit) {
       const found = findSet(setId)
       if (!found) return
       if (found.set.completedAt != null) {
@@ -426,16 +445,16 @@ export const useSessionStore = create<SessionState>((set, get) => {
           delete next.completedAt
           return next
         })
-        void enqueue(() => sets.setCompleted(setId, false))
+        writeCompleted(setId, false)
         return
       }
       if (!canCheck(found.set)) {
         const target = firstEmptyReps(found.set)
-        get().openPad(setId, target.field, target.side)
+        get().openPad(setId, target.field, target.side, unit)
         return
       }
       mapSets(setId, (row) => ({ ...row, completedAt: Date.now() }))
-      void enqueue(() => sets.setCompleted(setId, true))
+      writeCompleted(setId, true)
       // Checking a set is training: a paused workout clock starts again.
       get().resume()
       useRestTimerStore.getState().onSetCompleted(found.entry.exercise.id)

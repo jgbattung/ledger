@@ -1,7 +1,9 @@
 import { Plus } from 'lucide-react'
 import { SetRow } from '@/components/session/SetRow'
 import { EDIT_ROW_GRID, ROW_GRID } from '@/components/session/styles'
+import { useUnit } from '@/settings/SettingsProvider'
 import { repPlaceholder } from '@/workouts/model'
+import { unitLabel } from '@/workouts/units'
 import type { Set as SetRecord, TargetsSnapshot } from '@/db/types'
 import type { PadEntry, PadField, Side } from '@/workouts/model'
 
@@ -30,6 +32,7 @@ export function SetTable({
   onSwipeOpenChange: (setId: string | null) => void
   onRemove: (setId: string) => void
 }) {
+  const unit = useUnit()
   const placeholder = repPlaceholder(snapshot)
   const noCheck = onToggle === undefined
   return (
@@ -42,7 +45,7 @@ export function SetTable({
           <span role="columnheader">Set</span>
           <span role="columnheader">Previous</span>
           <span role="columnheader" className="text-center">
-            kg
+            {unitLabel(unit)}
           </span>
           <span role="columnheader" className="text-center">
             Reps

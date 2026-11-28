@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { useSessionStore } from '@/stores/sessionStore'
 import { SessionNumberPad } from '@/components/session/SessionNumberPad'
 
@@ -14,8 +15,12 @@ async function startAndOpen(field: 'weight' | 'reps') {
   const programId = await seedProgram('PPL', [{ name: 'Push', ids: ['barbell-bench-press'] }])
   const tree = (await programs.loadTree(programId))!
   await store().start(programId, tree.days[0].day.id)
-  act(() => store().openPad(firstSet().id, field))
-  render(<SessionNumberPad />)
+  act(() => store().openPad(firstSet().id, field, undefined, 'kg'))
+  render(
+    <SettingsProvider>
+      <SessionNumberPad />
+    </SettingsProvider>,
+  )
 }
 
 describe('NumberPad', () => {
@@ -25,7 +30,11 @@ describe('NumberPad', () => {
   })
 
   it('renders nothing while no cell is being edited', () => {
-    render(<SessionNumberPad />)
+    render(
+    <SettingsProvider>
+      <SessionNumberPad />
+    </SettingsProvider>,
+  )
     expect(screen.queryByRole('group', { name: 'Number pad' })).toBeNull()
   })
 
@@ -45,7 +54,7 @@ describe('NumberPad', () => {
     expect(screen.queryByRole('button', { name: /^RIR/ })).toBeNull()
     expect(screen.getByRole('button', { name: 'Partial reps' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Decimal point' })).toBeEnabled()
-    act(() => store().openPad(firstSet().id, 'reps'))
+    act(() => store().openPad(firstSet().id, 'reps', undefined, 'kg'))
     expect(screen.getByRole('button', { name: 'Decimal point' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Partial reps' })).toBeEnabled()
     expect(screen.getAllByRole('button', { name: /^RIR/ })).toHaveLength(7)

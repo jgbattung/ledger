@@ -65,7 +65,7 @@ describe('sessionStore', () => {
   it('key presses update state synchronously and Dexie ends up with the last state', async () => {
     await startPush()
     const first = store().exercises[0].sets[0]
-    store().openPad(first.id, 'weight')
+    store().openPad(first.id, 'weight', undefined, 'kg')
     for (const key of ['6', '2', '.', '5'] as const) store().padKey(key)
     expect(store().exercises[0].sets[0].weight).toBe(62.5)
 
@@ -85,7 +85,7 @@ describe('sessionStore', () => {
     await startPush()
     const [bench, fly] = store().exercises
     const last = bench.sets[bench.sets.length - 1]
-    store().openPad(last.id, 'reps')
+    store().openPad(last.id, 'reps', undefined, 'kg')
     store().padNext()
     expect(store().pad).toMatchObject({ setId: fly.sets[0].id })
     expect(store().pad?.entry.field).toBe('weight')
@@ -95,7 +95,7 @@ describe('sessionStore', () => {
   it('Next after the very last field closes the pad', async () => {
     await startPush()
     const fly = store().exercises[1]
-    store().openPad(fly.sets[fly.sets.length - 1].id, 'reps')
+    store().openPad(fly.sets[fly.sets.length - 1].id, 'reps', undefined, 'kg')
     store().padNext()
     expect(store().pad).toBeNull()
   })
@@ -105,7 +105,7 @@ describe('sessionStore', () => {
     const onSetCompleted = vi.fn()
     useRestTimerStore.setState({ onSetCompleted })
     const first = store().exercises[0].sets[0]
-    store().toggleComplete(first.id)
+    store().toggleComplete(first.id, 'kg')
     expect(store().exercises[0].sets[0].completedAt).toBeUndefined()
     expect(store().pad).toMatchObject({ setId: first.id })
     expect(store().pad?.entry.field).toBe('reps')
@@ -118,14 +118,14 @@ describe('sessionStore', () => {
     useRestTimerStore.setState({ onSetCompleted })
     const entry = store().exercises[0]
     const first = entry.sets[0]
-    store().openPad(first.id, 'reps')
+    store().openPad(first.id, 'reps', undefined, 'kg')
     store().padKey('8')
     store().closePad()
 
-    store().toggleComplete(first.id)
+    store().toggleComplete(first.id, 'kg')
     expect(onSetCompleted).toHaveBeenCalledTimes(1)
     expect(onSetCompleted).toHaveBeenCalledWith(entry.exercise.id)
-    store().toggleComplete(first.id)
+    store().toggleComplete(first.id, 'kg')
     expect(onSetCompleted).toHaveBeenCalledTimes(1)
     await settle()
     expect((await db.sets.get(first.id))?.completedAt).toBeUndefined()
@@ -134,11 +134,11 @@ describe('sessionStore', () => {
   it('clearing the reps of a checked set unchecks it', async () => {
     await startPush()
     const first = store().exercises[0].sets[0]
-    store().openPad(first.id, 'reps')
+    store().openPad(first.id, 'reps', undefined, 'kg')
     store().padKey('8')
-    store().toggleComplete(first.id)
+    store().toggleComplete(first.id, 'kg')
     expect(store().exercises[0].sets[0].completedAt).toBeTypeOf('number')
-    store().openPad(first.id, 'reps')
+    store().openPad(first.id, 'reps', undefined, 'kg')
     store().padKey('back')
     expect(store().exercises[0].sets[0].completedAt).toBeUndefined()
     await settle()
@@ -161,6 +161,21 @@ describe('sessionStore', () => {
     expect(store().exercises[0].sets.map((s) => s.orderIndex)).toEqual([0, 2, 3])
     await settle()
     expect((await db.sets.get(bench.sets[1].id))?.deletedAt).toBeTypeOf('number')
+  })
+
+  it('removing a set right after checking it keeps it removed once the queue settles', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    const first = bench.sets[0]
+    store().openPad(first.id, 'reps', undefined, 'kg')
+    store().padKey('8')
+    store().toggleComplete(first.id, 'kg')
+    store().removeSet(first.id)
+    await settle()
+
+    expect(store().exercises[0].sets.map((s) => s.id)).toEqual(bench.sets.slice(1).map((s) => s.id))
+    expect(store().error).toBeNull()
+    expect((await db.sets.get(first.id))?.deletedAt).toBeTypeOf('number')
   })
 
   it('debounces notes by 400ms and flushes on finish', async () => {
@@ -188,7 +203,7 @@ describe('sessionStore', () => {
   it('survives a reload: a fresh store hydrates the persisted state', async () => {
     await startPush()
     const first = store().exercises[0].sets[0]
-    store().openPad(first.id, 'weight')
+    store().openPad(first.id, 'weight', undefined, 'kg')
     store().padKey('7')
     store().padKey('5')
     await settle()
@@ -231,9 +246,9 @@ describe('sessionStore', () => {
     expect(entry.exercise.exerciseRef).toEqual(customRef)
     expect(exerciseName(entry.exercise.exerciseRef)).toBe('SSB Squat')
     const set = entry.sets[0]
-    store().openPad(set.id, 'reps')
+    store().openPad(set.id, 'reps', undefined, 'kg')
     store().padKey('8')
-    store().toggleComplete(set.id)
+    store().toggleComplete(set.id, 'kg')
     await store().finish()
     expect((await db.sets.get(set.id))?.completedAt).not.toBeNull()
   })
@@ -242,13 +257,13 @@ describe('sessionStore', () => {
     const seeded = await seedProgram()
     await store().start(seeded.programId, seeded.pushId)
     const first = store().exercises[0].sets[0]
-    store().openPad(first.id, 'weight')
+    store().openPad(first.id, 'weight', undefined, 'kg')
     store().padKey('6')
     store().padKey('0')
     store().padNext()
     store().padKey('8')
     store().closePad()
-    store().toggleComplete(first.id)
+    store().toggleComplete(first.id, 'kg')
     await store().finish()
 
     await store().start(seeded.programId, seeded.pullId)
@@ -260,9 +275,9 @@ describe('sessionStore', () => {
 
   describe('auto-advance on the last set', () => {
     function logAndCheck(setId: string) {
-      store().openPad(setId, 'reps')
+      store().openPad(setId, 'reps', undefined, 'kg')
       store().padKey('8')
-      store().toggleComplete(setId)
+      store().toggleComplete(setId, 'kg')
     }
 
     it('does not advance when a non-final set is checked, or when a set is unchecked', async () => {
@@ -270,7 +285,7 @@ describe('sessionStore', () => {
       const [bench] = store().exercises
       logAndCheck(bench.sets[0].id)
       expect(store().focusedExerciseId).toBe(bench.exercise.id)
-      store().toggleComplete(bench.sets[0].id)
+      store().toggleComplete(bench.sets[0].id, 'kg')
       expect(store().focusedExerciseId).toBe(bench.exercise.id)
     })
 
@@ -278,10 +293,10 @@ describe('sessionStore', () => {
       await startPush()
       const [bench, fly] = store().exercises
       bench.sets.slice(0, -1).forEach((row) => logAndCheck(row.id))
-      store().openPad(bench.sets[bench.sets.length - 1].id, 'reps')
+      store().openPad(bench.sets[bench.sets.length - 1].id, 'reps', undefined, 'kg')
       store().padKey('8')
       expect(store().pad).not.toBeNull()
-      store().toggleComplete(bench.sets[bench.sets.length - 1].id)
+      store().toggleComplete(bench.sets[bench.sets.length - 1].id, 'kg')
       expect(store().focusedExerciseId).toBe(fly.exercise.id)
       expect(store().pad).toBeNull()
     })
@@ -337,9 +352,9 @@ describe('sessionStore', () => {
       await startPush()
       const [bench] = store().exercises
       store().pause()
-      store().openPad(bench.sets[0].id, 'reps')
+      store().openPad(bench.sets[0].id, 'reps', undefined, 'kg')
       store().padKey('8')
-      store().toggleComplete(bench.sets[0].id)
+      store().toggleComplete(bench.sets[0].id, 'kg')
       expect(store().workout?.pausedAt).toBeNull()
       expect((await persisted())?.pausedAt).toBeNull()
     })
@@ -347,11 +362,11 @@ describe('sessionStore', () => {
     it('unchecking while paused does not resume', async () => {
       await startPush()
       const [bench] = store().exercises
-      store().openPad(bench.sets[0].id, 'reps')
+      store().openPad(bench.sets[0].id, 'reps', undefined, 'kg')
       store().padKey('8')
-      store().toggleComplete(bench.sets[0].id)
+      store().toggleComplete(bench.sets[0].id, 'kg')
       store().pause()
-      store().toggleComplete(bench.sets[0].id)
+      store().toggleComplete(bench.sets[0].id, 'kg')
       expect(store().workout?.pausedAt).not.toBeNull()
     })
 
@@ -359,7 +374,7 @@ describe('sessionStore', () => {
       await startPush()
       const [bench] = store().exercises
       store().pause()
-      store().toggleComplete(bench.sets[0].id)
+      store().toggleComplete(bench.sets[0].id, 'kg')
       expect(store().workout?.pausedAt).not.toBeNull()
     })
 
@@ -386,7 +401,7 @@ describe('sessionStore', () => {
       await startPush()
       const bench = store().exercises[0]
       const first = bench.sets[0].id
-      store().openPad(first, 'reps')
+      store().openPad(first, 'reps', undefined, 'kg')
       store().padKey('9')
       store().setExerciseNote(bench.exercise.id, 'last words')
       store().setWorkoutNote('session')
@@ -543,7 +558,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     store().setUnilateral(bench.exercise.id, true)
     const id = bench.sets[0].id
 
-    store().openPad(id, 'weight', 'L')
+    store().openPad(id, 'weight', 'L', 'kg')
     type('2', '0')
     store().padNext()
     expect(store().pad?.entry).toMatchObject({ field: 'reps', side: 'L' })
@@ -573,7 +588,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     const bench = store().exercises[0]
     store().setUnilateral(bench.exercise.id, true)
     const id = bench.sets[0].id
-    store().openPad(id, 'reps', 'R')
+    store().openPad(id, 'reps', 'R', 'kg')
     type('8', 'fp', '2')
     await settle()
     const stored = await db.sets.get(id)
@@ -586,16 +601,16 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     const bench = store().exercises[0]
     store().setUnilateral(bench.exercise.id, true)
     const id = bench.sets[0].id
-    store().toggleComplete(id)
+    store().toggleComplete(id, 'kg')
     expect(store().exercises[0].sets[0].completedAt).toBeUndefined()
     expect(store().pad?.entry).toMatchObject({ field: 'reps', side: 'L' })
 
-    store().openPad(id, 'reps', 'L')
+    store().openPad(id, 'reps', 'L', 'kg')
     type('1', '0')
-    store().toggleComplete(id)
+    store().toggleComplete(id, 'kg')
     expect(store().pad?.entry).toMatchObject({ field: 'reps', side: 'R' })
     type('9')
-    store().toggleComplete(id)
+    store().toggleComplete(id, 'kg')
     expect(store().exercises[0].sets[0].completedAt).toBeTypeOf('number')
   })
 
@@ -604,11 +619,11 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     const bench = store().exercises[0]
     store().setUnilateral(bench.exercise.id, true)
     const id = bench.sets[0].id
-    store().openPad(id, 'reps', 'L')
+    store().openPad(id, 'reps', 'L', 'kg')
     type('1', '0')
-    store().openPad(id, 'reps', 'R')
+    store().openPad(id, 'reps', 'R', 'kg')
     type('9')
-    store().toggleComplete(id)
+    store().toggleComplete(id, 'kg')
     expect(store().exercises[0].sets[0].completedAt).toBeTypeOf('number')
     type('back')
     expect(store().exercises[0].sets[0].completedAt).toBeUndefined()
@@ -620,7 +635,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     await startPush()
     const bench = store().exercises[0]
     const id = bench.sets[0].id
-    store().openPad(id, 'weight')
+    store().openPad(id, 'weight', undefined, 'kg')
     type('2', '0')
     store().setUnilateral(bench.exercise.id, true)
     expect(store().pad).toBeNull()
@@ -640,7 +655,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     await startPush()
     const bench = store().exercises[0]
     store().setUnilateral(bench.exercise.id, true)
-    store().openPad(bench.sets[0].id, 'weight', 'R')
+    store().openPad(bench.sets[0].id, 'weight', 'R', 'kg')
     type('3', '0')
     await settle()
 
@@ -658,10 +673,10 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     await settle()
 
     // An L/R patch is still queued when L/R goes off and the merged row is edited.
-    store().openPad(id, 'reps', 'L')
+    store().openPad(id, 'reps', 'L', 'kg')
     type('9')
     store().setUnilateral(bench.exercise.id, false)
-    store().openPad(id, 'reps')
+    store().openPad(id, 'reps', undefined, 'kg')
     type('1', '1')
 
     expect(store().exercises[0].sets[0]).toMatchObject({ reps: 11 })
@@ -676,7 +691,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     await startPush()
     const bench = store().exercises[0]
     const id = bench.sets[0].id
-    store().openPad(id, 'weight')
+    store().openPad(id, 'weight', undefined, 'kg')
     type('2', '5')
     store().setUnilateral(bench.exercise.id, true)
     await settle()
@@ -685,7 +700,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       weight: 25,
     })
 
-    store().openPad(id, 'weight', 'R')
+    store().openPad(id, 'weight', 'R', 'kg')
     type('back', 'back', '3', '0')
     store().setUnilateral(bench.exercise.id, false)
     await settle()
@@ -698,10 +713,10 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     await startPush()
     const bench = store().exercises[0]
     const id = bench.sets[0].id
-    store().openPad(id, 'weight')
+    store().openPad(id, 'weight', undefined, 'kg')
     type('2', '0')
     store().setUnilateral(bench.exercise.id, true)
-    store().openPad(id, 'weight', 'R')
+    store().openPad(id, 'weight', 'R', 'kg')
     type('back', 'back', '2', '2')
 
     await settle()
@@ -713,7 +728,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
   it('toggling L/R keeps a pad that is open on another exercise', async () => {
     await startPush()
     const [bench, fly] = store().exercises
-    store().openPad(fly.sets[0].id, 'weight')
+    store().openPad(fly.sets[0].id, 'weight', undefined, 'kg')
     store().setUnilateral(bench.exercise.id, true)
     expect(store().pad?.setId).toBe(fly.sets[0].id)
     expect(store().exercises[1].sets.every((row) => row.unilateral == null)).toBe(true)
@@ -724,7 +739,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     const [bench, fly] = store().exercises
     store().setUnilateral(bench.exercise.id, true)
     const last = bench.sets.at(-1)!
-    store().openPad(last.id, 'reps', 'R')
+    store().openPad(last.id, 'reps', 'R', 'kg')
     store().padNext()
     expect(store().pad?.setId).toBe(fly.sets[0].id)
     expect(store().pad?.entry).toMatchObject({ field: 'weight' })
@@ -745,16 +760,16 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       await startPush()
       const bench = store().exercises[0]
       const id = bench.sets[0].id
-      store().openPad(id, 'weight')
+      store().openPad(id, 'weight', undefined, 'kg')
       type('2', '0')
       store().setUnilateral(bench.exercise.id, true)
-      store().openPad(id, 'reps', 'L')
+      store().openPad(id, 'reps', 'L', 'kg')
       type('9')
       store().setUnilateral(bench.exercise.id, false)
-      store().openPad(id, 'reps')
+      store().openPad(id, 'reps', undefined, 'kg')
       type('1', '1')
       store().setUnilateral(bench.exercise.id, true)
-      store().openPad(id, 'weight', 'R')
+      store().openPad(id, 'weight', 'R', 'kg')
       type('back', 'back', '2', '4')
 
       expect(memory(0, 0)).toMatchObject({ weight: 24, reps: 11 })
@@ -766,13 +781,13 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       await startPush()
       const [bench, fly] = store().exercises
       const flyId = fly.sets[0].id
-      store().openPad(flyId, 'weight')
+      store().openPad(flyId, 'weight', undefined, 'kg')
       type('1', '5')
       store().setUnilateral(bench.exercise.id, true)
       await settle()
       expect((await db.sets.get(flyId))?.weight).toBe(15)
 
-      store().openPad(flyId, 'reps')
+      store().openPad(flyId, 'reps', undefined, 'kg')
       type('1', '2')
       store().setUnilateral(bench.exercise.id, false)
       type('back', '4')
@@ -784,13 +799,13 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     it('no toggle: coalesced patches across sets all persist', async () => {
       await startPush()
       const [bench, fly] = store().exercises
-      store().openPad(bench.sets[0].id, 'weight')
+      store().openPad(bench.sets[0].id, 'weight', undefined, 'kg')
       type('6', '0')
-      store().openPad(fly.sets[0].id, 'weight')
+      store().openPad(fly.sets[0].id, 'weight', undefined, 'kg')
       type('1', '2')
-      store().openPad(bench.sets[0].id, 'reps')
+      store().openPad(bench.sets[0].id, 'reps', undefined, 'kg')
       type('8')
-      store().openPad(bench.sets[1].id, 'reps')
+      store().openPad(bench.sets[1].id, 'reps', undefined, 'kg')
       type('7')
       await settle()
       expect(await stored(bench.sets[0].id)).toEqual(memory(0, 0))
@@ -806,10 +821,10 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       store().setUnilateral(bench.exercise.id, true)
       await settle()
 
-      store().openPad(id, 'reps', 'L')
+      store().openPad(id, 'reps', 'L', 'kg')
       type('9')
       store().setUnilateral(bench.exercise.id, false)
-      store().openPad(id, 'reps')
+      store().openPad(id, 'reps', undefined, 'kg')
       type('1', '1')
       store().flushPending()
 
@@ -822,10 +837,10 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       await startPush()
       const bench = store().exercises[0]
       const id = bench.sets[0].id
-      store().openPad(id, 'weight')
+      store().openPad(id, 'weight', undefined, 'kg')
       type('2', '0')
       store().setUnilateral(bench.exercise.id, true)
-      store().openPad(id, 'weight', 'R')
+      store().openPad(id, 'weight', 'R', 'kg')
       type('back', 'back', '2', '2')
       store().flushPending()
 
@@ -837,9 +852,9 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     it('a flush with no toggle still writes every pending entry', async () => {
       await startPush()
       const [bench, fly] = store().exercises
-      store().openPad(bench.sets[0].id, 'weight')
+      store().openPad(bench.sets[0].id, 'weight', undefined, 'kg')
       type('6', '0')
-      store().openPad(fly.sets[0].id, 'reps')
+      store().openPad(fly.sets[0].id, 'reps', undefined, 'kg')
       type('1', '2')
       store().flushPending()
 
@@ -855,10 +870,10 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       const bench = store().exercises[0]
       const id = bench.sets[0].id
       store().setUnilateral(bench.exercise.id, true)
-      store().openPad(id, 'reps', 'L')
+      store().openPad(id, 'reps', 'L', 'kg')
       type('9')
       store().setUnilateral(bench.exercise.id, false)
-      store().openPad(id, 'reps')
+      store().openPad(id, 'reps', undefined, 'kg')
       type('1', '1')
       store().flushPending()
       await settle()
@@ -892,7 +907,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
     const withPartial = async () => {
       await startPush()
       const bench = store().exercises[0]
-      store().openPad(bench.sets[0].id, 'reps')
+      store().openPad(bench.sets[0].id, 'reps', undefined, 'kg')
       type('8', 'fp', '2')
       store().closePad()
       await settle()
@@ -920,11 +935,11 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       const bench = await withPartial()
       const id = bench.sets[0].id
       store().setUnilateral(bench.exercise.id, true)
-      store().openPad(id, 'weight', 'L')
+      store().openPad(id, 'weight', 'L', 'kg')
       type('back', 'back', '2', '4')
       store().flushPending()
       store().setUnilateral(bench.exercise.id, false)
-      store().openPad(id, 'reps')
+      store().openPad(id, 'reps', undefined, 'kg')
       type('1', '0')
       await settle()
 
@@ -951,10 +966,10 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       const bench = store().exercises[0]
       const [first, second] = bench.sets
       store().setUnilateral(bench.exercise.id, true)
-      store().openPad(first.id, 'reps', 'R')
+      store().openPad(first.id, 'reps', 'R', 'kg')
       type('7')
       store().removeSet(first.id)
-      store().openPad(second.id, 'reps', 'L')
+      store().openPad(second.id, 'reps', 'L', 'kg')
       type('9')
       await settle()
 
@@ -985,7 +1000,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       const id = bench.sets[0].id
       const spy = vi.spyOn(sets, 'patchMany').mockRejectedValueOnce(new Error('QuotaExceededError'))
       store().setUnilateral(bench.exercise.id, true)
-      store().openPad(id, 'weight', 'R')
+      store().openPad(id, 'weight', 'R', 'kg')
       type('back', 'back', '2', '2')
       await settle()
       spy.mockRestore()
@@ -1006,7 +1021,7 @@ describe('sessionStore - L/R sets (LG-012)', () => {
         .mockImplementationOnce(() => new Promise<void>((_, reject) => (fail = reject)))
       store().setUnilateral(bench.exercise.id, true)
       await vi.waitFor(() => expect(spy).toHaveBeenCalledTimes(1))
-      store().openPad(id, 'weight', 'R')
+      store().openPad(id, 'weight', 'R', 'kg')
       type('back', 'back', '2', '2')
       fail(new Error('QuotaExceededError'))
       await settle()
@@ -1020,8 +1035,8 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       const bench = await withPartial()
       const id = bench.sets[0].id
       store().setRir(id, 2, true)
-      store().toggleComplete(id)
-      store().openPad(id, 'weight')
+      store().toggleComplete(id, 'kg')
+      store().openPad(id, 'weight', undefined, 'kg')
       type('back', 'back', '6', '0')
       await settle()
 
@@ -1035,8 +1050,8 @@ describe('sessionStore - L/R sets (LG-012)', () => {
       const id = bench.sets[0].id
       store().setUnilateral(bench.exercise.id, true)
       store().setRir(id, 1, false)
-      store().toggleComplete(id)
-      store().openPad(id, 'weight', 'R')
+      store().toggleComplete(id, 'kg')
+      store().openPad(id, 'weight', 'R', 'kg')
       type('back', 'back', '2', '2')
       await settle()
 
@@ -1149,7 +1164,7 @@ describe('sessionStore - add and remove exercises (LG-013)', () => {
       const [a, b] = await startThree()
       const target = store().exercises[1].sets[0]
       store().focusExercise(b)
-      store().openPad(target.id, 'reps')
+      store().openPad(target.id, 'reps', undefined, 'kg')
       store().padKey('8')
       const patchMany = vi.spyOn(sets, 'patchMany')
       await store().removeExercise(b)
@@ -1187,10 +1202,10 @@ describe('sessionStore - add and remove exercises (LG-013)', () => {
     it('leaves the rest timer alone', async () => {
       const [a, b] = await startThree()
       const first = store().exercises[0].sets[0]
-      store().openPad(first.id, 'reps')
+      store().openPad(first.id, 'reps', undefined, 'kg')
       store().padKey('8')
       store().closePad()
-      store().toggleComplete(first.id)
+      store().toggleComplete(first.id, 'kg')
       const before = useRestTimerStore.getState().endsAt
       await store().removeExercise(a)
       expect(useRestTimerStore.getState().endsAt).toEqual(before)
@@ -1217,9 +1232,9 @@ describe('sessionStore - added exercises behave like planned ones (LG-013 QA)', 
   })
 
   function logAndCheck(setId: string) {
-    store().openPad(setId, 'reps')
+    store().openPad(setId, 'reps', undefined, 'kg')
     store().padKey('8')
-    store().toggleComplete(setId)
+    store().toggleComplete(setId, 'kg')
   }
 
   const byRef = (exerciseId: string) =>

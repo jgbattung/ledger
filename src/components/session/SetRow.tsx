@@ -2,7 +2,9 @@ import { useRef, useState } from 'react'
 import { Check, Minus } from 'lucide-react'
 import { EDIT_ROW_GRID, RIR_FILL, ROW_GRID } from '@/components/session/styles'
 import { cn } from '@/lib/utils'
+import { useUnit } from '@/settings/SettingsProvider'
 import { formatPrevious, formatSide, formatSides, rirLabel } from '@/workouts/model'
+import { formatWeight, unitName } from '@/workouts/units'
 import type { PadEntry, PadField, Side } from '@/workouts/model'
 import type { Set as SetRecord } from '@/db/types'
 
@@ -24,7 +26,7 @@ const CELL =
   'relative flex h-11 w-full items-center justify-center rounded-lg bg-muted text-lg font-medium tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
 
 /**
- * One set row (design-system 10a-10f): Set | Previous | kg | Reps | check.
+ * One set row (design-system 10a-10f): Set | Previous | weight | Reps | check.
  * An L/R set (design-system 10n) renders two lines inside the same row, so
  * swipe, dim and check behave identically. `pad` is the live pad buffer when
  * this row is the one being edited.
@@ -58,6 +60,7 @@ export function SetRow({
   /** A hairline above the row, between sets where an L/R row is involved (10n). */
   divider?: boolean
 }) {
+  const unit = useUnit()
   const [drag, setDrag] = useState<number | null>(null)
   const gesture = useRef<{ x: number; y: number; moved: boolean } | null>(null)
   const suppressClick = useRef(false)
@@ -73,21 +76,21 @@ export function SetRow({
     ? Math.max(unilateral.leftReps, unilateral.rightReps) > 0
     : set.reps > 0
 
-  const prev = previous && !unilateral ? formatPrevious(previous) : null
+  const prev = previous && !unilateral ? formatPrevious(previous, unit) : null
   const prevSides = previous
-    ? (formatSides(previous) ?? [
+    ? (formatSides(previous, unit) ?? [
         {
           side: 'L' as const,
-          ...formatSide(previous.weight, previous.reps, previous.partialReps),
+          ...formatSide(previous.weight, previous.reps, previous.partialReps, unit),
         },
         {
           side: 'R' as const,
-          ...formatSide(previous.weight, previous.reps, previous.partialReps),
+          ...formatSide(previous.weight, previous.reps, previous.partialReps, unit),
         },
       ])
     : null
 
-  /** The kg and reps cells of one line; `side` is set only on an L/R set. */
+  /** The weight and reps cells of one line; `side` is set only on an L/R set. */
   const renderCells = (
     side: Side | undefined,
     value: { weight: number; reps: number; partial?: number },
@@ -111,7 +114,7 @@ export function SetRow({
         ? pad.weight
         : value.weight === 0 && !checked
           ? ''
-          : `${value.weight}`
+          : formatWeight(value.weight, unit)
     const repsText =
       lineRepsActive && pad.mode === 'F' && !pad.fresh
         ? pad.reps
@@ -126,7 +129,7 @@ export function SetRow({
         <div role="cell" className={cn(place[0], dim && 'opacity-50')}>
           <button
             type="button"
-            aria-label={`Set ${number} ${name}weight in kilograms`}
+            aria-label={`Set ${number} ${name}weight in ${unitName(unit)}`}
             aria-current={weightActive ? 'true' : undefined}
             onClick={() => onOpenPad('weight', side)}
             className={cn(CELL, weightActive && 'bg-background ring-2 ring-ring')}

@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { useSessionStore } from '@/stores/sessionStore'
 import { ExerciseFocus } from '@/components/session/ExerciseFocus'
 import type { Set as SetRecord } from '@/db/types'
@@ -32,9 +33,11 @@ async function setup() {
   const tree = (await programs.loadTree(programId))!
   await store().start(programId, tree.days[0].day.id)
   render(
-    <MemoryRouter>
-      <Harness />
-    </MemoryRouter>,
+    <SettingsProvider>
+      <MemoryRouter>
+        <Harness />
+      </MemoryRouter>
+    </SettingsProvider>,
   )
 }
 
@@ -45,7 +48,7 @@ const chip = () => screen.getByRole('button', { name: 'L/R' })
 /** Types `keys` on the given side/field of the first set and leaves the pad closed. */
 function type(setId: string, field: 'weight' | 'reps', side: 'L' | 'R', ...keys: string[]) {
   act(() => {
-    store().openPad(setId, field, side)
+    store().openPad(setId, field, side, 'kg')
     for (const key of keys) store().padKey(key as never)
     store().closePad()
   })
@@ -159,7 +162,7 @@ describe('L/R set row (LG-012, M2)', () => {
     const first = store().exercises[0].sets[0].id
     type(first, 'reps', 'L', '1', '2')
     type(first, 'reps', 'R', '1', '0')
-    act(() => store().toggleComplete(first))
+    act(() => store().toggleComplete(first, 'kg'))
     const row = rows()[0]
     expect(row.querySelectorAll('.opacity-50').length).toBeGreaterThanOrEqual(5)
 

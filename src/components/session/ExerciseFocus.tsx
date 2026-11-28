@@ -7,6 +7,7 @@ import { SetTable } from '@/components/session/SetTable'
 import { TargetsSheet } from '@/components/session/TargetsSheet'
 import { exercisePath } from '@/exercises/detail'
 import { exerciseName } from '@/programs/model'
+import { useUnit } from '@/settings/SettingsProvider'
 import { fromUnilateral, repPlaceholder, sidesDiffer } from '@/workouts/model'
 import { cn } from '@/lib/utils'
 import { useSessionStore } from '@/stores/sessionStore'
@@ -42,6 +43,7 @@ export function ExerciseFocus({
   onMore?: () => void
 }) {
   const navigate = useNavigate()
+  const unit = useUnit()
   const [targetsOpen, setTargetsOpen] = useState(false)
   const [swapHint, setSwapHint] = useState(false)
   const [mergeOpen, setMergeOpen] = useState(false)
@@ -177,8 +179,10 @@ export function ExerciseFocus({
         previous={previous ?? []}
         snapshot={exercise.targetsSnapshot}
         pad={pad}
-        onOpenPad={(setId, field, side) => useSessionStore.getState().openPad(setId, field, side)}
-        onToggle={(setId) => useSessionStore.getState().toggleComplete(setId)}
+        onOpenPad={(setId, field, side) =>
+          useSessionStore.getState().openPad(setId, field, side, unit)
+        }
+        onToggle={(setId) => useSessionStore.getState().toggleComplete(setId, unit)}
         onAddSet={() => void useSessionStore.getState().addSet(exercise.id)}
         openSwipeSetId={openSwipeSetId}
         onSwipeOpenChange={(setId) => useSessionStore.getState().setSwipeOpen(setId)}

@@ -88,10 +88,10 @@ describe('WorkoutBar', () => {
 
     const first = store().exercises[0].sets[0]
     act(() => {
-      store().openPad(first.id, 'reps')
+      store().openPad(first.id, 'reps', undefined, 'kg')
       store().padKey('8')
       store().closePad()
-      store().toggleComplete(first.id)
+      store().toggleComplete(first.id, 'kg')
     })
     expect(link).toHaveTextContent(`1 of ${total} sets`)
   })

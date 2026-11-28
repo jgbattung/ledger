@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react'
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router-dom'
 import { resetDb } from '@/db/test-utils'
 import { sets, workouts } from '@/db/repos'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { ExerciseDetailPage } from '@/routes/ExerciseDetailPage'
 import { ExerciseHistory } from '@/components/library/ExerciseHistory'
 import { exercise, seedProgram } from '@/workouts/test-fixtures'
@@ -43,9 +44,11 @@ async function seed() {
 /** History blocks are links to the workout summary (LG-014), so they need a router. */
 function renderHistory() {
   return render(
-    <MemoryRouter>
-      <ExerciseHistory exerciseRef={BENCH} />
-    </MemoryRouter>,
+    <SettingsProvider>
+      <MemoryRouter>
+        <ExerciseHistory exerciseRef={BENCH} />
+      </MemoryRouter>
+    </SettingsProvider>,
   )
 }
 
@@ -131,7 +134,11 @@ describe('ExerciseDetailPage History tab', () => {
       [{ path: '/exercises/:source/:exerciseId', element: <ExerciseDetailPage /> }],
       { initialEntries: ['/exercises/db/barbell-bench-press?tab=history'] },
     )
-    const { container } = render(<RouterProvider router={router} />)
+    const { container } = render(
+      <SettingsProvider>
+        <RouterProvider router={router} />
+      </SettingsProvider>,
+    )
     expect(await screen.findByText('30 kg × 10')).toBeInTheDocument()
     expect(container.textContent).not.toMatch(/e1rm|1rm/i)
   })

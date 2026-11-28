@@ -495,4 +495,28 @@ describe('applyEntry', () => {
     const entry = press(padEntryFor(base, 'reps', 'L', 'kg'), 'fp', 'back')
     expect(applyEntry(base, entry).unilateral).toEqual(sides(20, 12, 20, 10))
   })
+
+  it('stores a weight typed in lb as kg, for a normal set and for one L/R side', () => {
+    const normal = press(padEntryFor({ weight: 0, reps: 0 }, 'weight', undefined, 'lb'), '2', '2', '0', '.', '5')
+    const out = applyEntry({}, normal)
+    expect(Object.keys(out)).toEqual(['weight'])
+    expect(out.weight).toBeCloseTo(100.0171176, 6)
+
+    const base = { weight: 20, reps: 12, unilateral: sides(20, 12, 20, 12) }
+    const side = press(padEntryFor(base, 'weight', 'R', 'lb'), '2', '2', '0', '.', '5')
+    const lr = applyEntry(base, side)
+    expect(lr.unilateral!.leftWeight).toBe(20)
+    expect(lr.unilateral!.rightWeight).toBeCloseTo(100.0171176, 6)
+  })
+
+  it('editing reps in lb never rewrites a stored 100 kg weight', () => {
+    const normal = press(padEntryFor({ weight: 100, reps: 5 }, 'reps', undefined, 'lb'), '8')
+    expect(applyEntry({}, normal)).toEqual({ reps: 8, partialReps: undefined })
+
+    const base = { weight: 100, reps: 5, unilateral: sides(100, 5, 100, 5) }
+    const side = press(padEntryFor(base, 'reps', 'L', 'lb'), '8')
+    const lr = applyEntry(base, side)
+    expect(lr.unilateral).toEqual(sides(100, 8, 100, 5))
+    expect(lr.weight).toBe(100)
+  })
 })

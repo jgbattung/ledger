@@ -92,3 +92,50 @@ test('LOG-15: 100 kg shows as 220.5 lb and back as 100 kg, and stored sets never
   // Toggling twice never touched the stored sets.
   expect(await storedSets(page)).toEqual(before);
 });
+
+/**
+ * F2 regression (PB5): the pad stays open across in-app navigation, so a pad
+ * opened in kg must follow a switch to lb. Typing 225 then stores 225 lb as
+ * kg, never 225 kg.
+ */
+test('a pad opened in kg and kept open across a switch to lb stores 225 lb, not 225 kg', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await seedActiveProgram(page, { days: [{ name: 'Push A', exercises: ['barbell-bench-press'] }] });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start workout' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: BENCH })).toBeVisible();
+
+  const pad = page.getByRole('group', { name: 'Number pad' });
+  const key = (name: string) => pad.getByRole('button', { name, exact: true });
+  await page.getByRole('button', { name: 'Set 1 weight in kilograms' }).click();
+  await expect(pad).toBeVisible();
+
+  // Minimize and switch to lb through client-side navigation, so the store keeps the pad.
+  await page.getByRole('button', { name: 'Workout menu' }).click();
+  await page.getByRole('button', { name: /Minimize/ }).click();
+  await expect(page).not.toHaveURL(/\/session$/);
+  await page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: 'More' }).click();
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByRole('radiogroup', { name: 'Units' }).getByRole('radio', { name: 'lb' }).click();
+  await expect
+    .poll(async () => (await readStore<{ unit: Unit }>(page, 'settings'))[0]?.unit)
+    .toBe('lb');
+  await page.getByRole('link', { name: /^Open workout, / }).click();
+  await expect(page).toHaveURL(/\/session$/);
+
+  // The pad is still open; typing 225 now means 225 lb.
+  await expect(pad).toBeVisible();
+  for (const digit of '225') await key(digit).click();
+  await page.getByRole('button', { name: 'Hide keypad' }).click();
+  await expect(page.getByRole('button', { name: 'Set 1 weight in pounds' })).toHaveText('225');
+
+  // The workout has one exercise, so set 1 is the live set with the lowest orderIndex.
+  const set1Weight = async () => {
+    const rows = await readStore<{ orderIndex: number; weight: number; deletedAt?: number }>(page, 'sets');
+    const live = rows.filter((row) => row.deletedAt == null).sort((a, b) => a.orderIndex - b.orderIndex);
+    return live[0]?.weight;
+  };
+  await expect.poll(set1Weight).toBeCloseTo(102.05828325, 6);
+});

@@ -53,6 +53,7 @@ type SessionState = {
   start: (programId: string, dayId: string) => Promise<string>
   focusExercise: (workoutExerciseId: string) => void
   openPad: (setId: string, field: PadField, side: Side | undefined, unit: Unit) => void
+  syncPadUnit: (unit: Unit) => void
   padKey: (key: PadKey) => void
   padNext: () => void
   closePad: () => void
@@ -372,6 +373,19 @@ export const useSessionStore = create<SessionState>((set, get) => {
         pad: { setId, entry: padEntryFor(found.set, field, side, unit) },
         focusedExerciseId: found.entry.exercise.id,
         openSwipeSetId: null,
+      })
+    },
+
+    syncPadUnit(unit) {
+      const pad = get().pad
+      if (!pad || pad.entry.unit === unit) return
+      const found = findSet(pad.setId)
+      if (!found) {
+        set({ pad: null })
+        return
+      }
+      set({
+        pad: { setId: pad.setId, entry: padEntryFor(found.set, pad.entry.field, pad.entry.side, unit) },
       })
     },
 

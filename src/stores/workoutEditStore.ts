@@ -46,6 +46,7 @@ type EditState = {
 
   load: (id: string) => Promise<EditLoadResult>
   openPad: (setId: string, field: PadField, side: Side | undefined, unit: Unit) => void
+  syncPadUnit: (unit: Unit) => void
   padKey: (key: PadKey) => void
   padNext: () => void
   closePad: () => void
@@ -139,6 +140,19 @@ export const useWorkoutEditStore = create<EditState>((set, get) => {
         return
       }
       set({ pad: { setId, entry: padEntryFor(found, field, side, unit) }, openSwipeSetId: null })
+    },
+
+    syncPadUnit(unit) {
+      const pad = get().pad
+      if (!pad || pad.entry.unit === unit) return
+      const found = findSet(pad.setId)
+      if (!found) {
+        set({ pad: null })
+        return
+      }
+      set({
+        pad: { setId: pad.setId, entry: padEntryFor(found, pad.entry.field, pad.entry.side, unit) },
+      })
     },
 
     padKey(key) {

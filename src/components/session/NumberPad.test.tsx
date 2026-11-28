@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { programs } from '@/db/repos'
 import { resetDb } from '@/db/test-utils'
 import { seedProgram } from '@/routes/editorTestUtils'
+import { SettingsProvider } from '@/settings/SettingsProvider'
 import { useSessionStore } from '@/stores/sessionStore'
 import { SessionNumberPad } from '@/components/session/SessionNumberPad'
 
@@ -15,7 +16,11 @@ async function startAndOpen(field: 'weight' | 'reps') {
   const tree = (await programs.loadTree(programId))!
   await store().start(programId, tree.days[0].day.id)
   act(() => store().openPad(firstSet().id, field, undefined, 'kg'))
-  render(<SessionNumberPad />)
+  render(
+    <SettingsProvider>
+      <SessionNumberPad />
+    </SettingsProvider>,
+  )
 }
 
 describe('NumberPad', () => {
@@ -25,7 +30,11 @@ describe('NumberPad', () => {
   })
 
   it('renders nothing while no cell is being edited', () => {
-    render(<SessionNumberPad />)
+    render(
+    <SettingsProvider>
+      <SessionNumberPad />
+    </SettingsProvider>,
+  )
     expect(screen.queryByRole('group', { name: 'Number pad' })).toBeNull()
   })
 

@@ -36,6 +36,10 @@ function EditNumberPad() {
       ? state.draft?.exercises.flatMap((entry) => entry.sets).find((row) => row.id === state.pad?.setId)
       : undefined,
   )
+  const unit = useUnit()
+  useEffect(() => {
+    store().syncPadUnit(unit)
+  }, [unit, pad])
   return (
     <NumberPad
       pad={pad}

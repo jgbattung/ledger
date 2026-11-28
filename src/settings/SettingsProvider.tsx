@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { settings as settingsRepo } from '@/db/repos'
-import type { Settings, Theme } from '@/db/types'
+import type { Settings, Theme, Unit } from '@/db/types'
 
 const THEME_CACHE_KEY = 'ledger-theme'
 
@@ -84,4 +84,8 @@ export function useSettings() {
 export function useTheme() {
   const { theme, resolvedTheme, setTheme } = useSettings()
   return { theme, resolvedTheme, setTheme }
+}
+
+export function useUnit(): Unit {
+  return useSettings().settings?.unit ?? 'kg'
 }

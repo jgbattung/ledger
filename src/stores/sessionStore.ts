@@ -209,6 +209,10 @@ export const useSessionStore = create<SessionState>((set, get) => {
     })
   }
 
+  /** Completion write that no-ops once its set has left the session (e.g. removed while queued). */
+  const writeCompleted = (setId: string, completed: boolean) =>
+    void enqueue(() => (findSet(setId) ? sets.setCompleted(setId, completed) : Promise.resolve()))
+
   async function loadPrevious(entries: SessionExercise[], workoutId: string) {
     const previous: Record<string, SetRecord[]> = {}
     for (const entry of entries) {
@@ -405,7 +409,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         return next
       })
       schedulePatch(pad.setId, fields)
-      if (uncheck) void enqueue(() => sets.setCompleted(pad.setId, false))
+      if (uncheck) writeCompleted(pad.setId, false)
     },
 
     padNext() {
@@ -441,7 +445,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
           delete next.completedAt
           return next
         })
-        void enqueue(() => sets.setCompleted(setId, false))
+        writeCompleted(setId, false)
         return
       }
       if (!canCheck(found.set)) {
@@ -450,7 +454,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         return
       }
       mapSets(setId, (row) => ({ ...row, completedAt: Date.now() }))
-      void enqueue(() => sets.setCompleted(setId, true))
+      writeCompleted(setId, true)
       // Checking a set is training: a paused workout clock starts again.
       get().resume()
       useRestTimerStore.getState().onSetCompleted(found.entry.exercise.id)

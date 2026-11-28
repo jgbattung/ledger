@@ -220,7 +220,7 @@ describe('SessionPage', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Workout menu' }))
     await user.click(await screen.findByRole('button', { name: 'Finish workout' }))
-    const confirm = await screen.findByRole('dialog', { name: 'Finish with 6 sets not done?' })
+    const confirm = await screen.findByRole('dialog', { name: 'Finish with 5 sets not done?' })
     expect(within(confirm).getByText("Unchecked sets aren't saved.")).toBeInTheDocument()
     await user.click(within(confirm).getByRole('button', { name: 'Finish workout' }))
 

@@ -163,6 +163,21 @@ describe('sessionStore', () => {
     expect((await db.sets.get(bench.sets[1].id))?.deletedAt).toBeTypeOf('number')
   })
 
+  it('removing a set right after checking it keeps it removed once the queue settles', async () => {
+    await startPush()
+    const bench = store().exercises[0]
+    const first = bench.sets[0]
+    store().openPad(first.id, 'reps', undefined, 'kg')
+    store().padKey('8')
+    store().toggleComplete(first.id, 'kg')
+    store().removeSet(first.id)
+    await settle()
+
+    expect(store().exercises[0].sets.map((s) => s.id)).toEqual(bench.sets.slice(1).map((s) => s.id))
+    expect(store().error).toBeNull()
+    expect((await db.sets.get(first.id))?.deletedAt).toBeTypeOf('number')
+  })
+
   it('debounces notes by 400ms and flushes on finish', async () => {
     await startPush()
     const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
